@@ -36,10 +36,6 @@ jacoco {
     toolVersion = '0.8.9'
 }
 
-jacocoTestReport {
-    reports.xml.required = false
-}
-
 test {
     useJUnitPlatform()
 
