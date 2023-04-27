@@ -48,6 +48,9 @@ dependencies {
 
 	// https://mvnrepository.com/artifact/com.squareup.retrofit2/retrofit
 	implementation group: 'com.squareup.retrofit2', name: 'retrofit', version: '2.9.0'
+
+	// https://mvnrepository.com/artifact/com.google.dagger/dagger
+	implementation group: 'com.google.dagger', name: 'dagger', version: '2.42'
 }
 
 javafx {
