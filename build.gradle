@@ -4,6 +4,8 @@ plugins {
 
     // https://plugins.gradle.org/plugin/org.openjfx.javafxplugin
     id 'org.openjfx.javafxplugin' version '0.0.13'
+	// https://plugins.gradle.org/plugin/org.fulib.fulibGradle
+	id 'org.fulib.fulibGradle' version '0.5.0'
 }
 
 group 'de.uniks'
@@ -25,6 +27,24 @@ dependencies {
 
     // https://mvnrepository.com/artifact/org.testfx/openjfx-monocle
     testImplementation group: 'org.testfx', name: 'openjfx-monocle', version: 'jdk-12.0.1+2'
+
+    // https://mvnrepository.com/artifact/org.fulib/fulibScenarios
+	fulibScenarios group: 'org.fulib', name: 'fulibScenarios', version: '1.7.0'
+
+	// https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
+	fulibScenarios group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.36'
+
+	// https://mvnrepository.com/artifact/org.fulib/fulibTools
+	testImplementation group: 'org.fulib', name: 'fulibTools', version: '1.5.1'
+
+	// https://mvnrepository.com/artifact/org.fulib/fulibTables
+	testImplementation group: 'org.fulib', name: 'fulibTables', version: '1.4.0'
+
+	// https://mvnrepository.com/artifact/org.fulib/fulibMockups
+	testImplementation group: 'org.fulib', name: 'fulibMockups', version: '0.4.0'
+
+    // https://mvnrepository.com/artifact/org.fulib/fulibYaml
+    implementation group: 'org.fulib', name: 'fulibYaml', version: '1.5.0'
 }
 
 javafx {
