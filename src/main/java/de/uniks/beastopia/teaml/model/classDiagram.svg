@@ -1,0 +1,89 @@
+<svg width="562px" height="249px"
+ viewBox="0.00 0.00 562.00 249.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1.0 1.0) rotate(0) translate(4 245)">
+<title>de.uniks.beastopia.teaml.model</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-245 558,-245 558,4 -4,4"/>
+<!-- Group -->
+<g id="node1" class="node">
+<title>Group</title>
+<polygon fill="none" stroke="black" points="8.5,-69.5 8.5,-90.5 113.5,-90.5 113.5,-69.5 8.5,-69.5"/>
+<text text-anchor="start" x="42.5" y="-76.3" font-family="Times New Roman,serif" font-size="14.00">Group</text>
+<polygon fill="none" stroke="black" points="8.5,-3.5 8.5,-69.5 113.5,-69.5 113.5,-3.5 8.5,-3.5"/>
+<text text-anchor="start" x="11.5" y="-55.3" font-family="Times New Roman,serif" font-size="14.00">createdAt :String</text>
+<text text-anchor="start" x="11.5" y="-40.3" font-family="Times New Roman,serif" font-size="14.00">updatedAt :String</text>
+<text text-anchor="start" x="11.5" y="-25.3" font-family="Times New Roman,serif" font-size="14.00">id :String</text>
+<text text-anchor="start" x="11.5" y="-10.3" font-family="Times New Roman,serif" font-size="14.00">name :String</text>
+</g>
+<!-- User -->
+<g id="node5" class="node">
+<title>User</title>
+<polygon fill="none" stroke="black" points="155.5,-216 155.5,-237 260.5,-237 260.5,-216 155.5,-216"/>
+<text text-anchor="start" x="194.5" y="-222.8" font-family="Times New Roman,serif" font-size="14.00">User</text>
+<polygon fill="none" stroke="black" points="155.5,-135 155.5,-216 260.5,-216 260.5,-135 155.5,-135"/>
+<text text-anchor="start" x="158.5" y="-201.8" font-family="Times New Roman,serif" font-size="14.00">createdAt :String</text>
+<text text-anchor="start" x="158.5" y="-186.8" font-family="Times New Roman,serif" font-size="14.00">updatedAt :String</text>
+<text text-anchor="start" x="158.5" y="-171.8" font-family="Times New Roman,serif" font-size="14.00">name :String</text>
+<text text-anchor="start" x="158.5" y="-156.8" font-family="Times New Roman,serif" font-size="14.00">status :String</text>
+<text text-anchor="start" x="158.5" y="-141.8" font-family="Times New Roman,serif" font-size="14.00">avatar :String</text>
+</g>
+<!-- Group&#45;&gt;User -->
+<g id="edge4" class="edge">
+<title>Group&#45;&gt;User</title>
+<path fill="none" stroke="black" d="M110.68,-95.09C123.07,-106.6 136.45,-119.03 149.19,-130.86"/>
+<text text-anchor="middle" x="118.19" y="-119.66" font-family="Times New Roman,serif" font-size="14.00">members *</text>
+<text text-anchor="middle" x="85.68" y="-98.89" font-family="Times New Roman,serif" font-size="14.00">groups *</text>
+</g>
+<!-- LoginResult -->
+<g id="node2" class="node">
+<title>LoginResult</title>
+<polygon fill="none" stroke="black" points="147.5,-54.5 147.5,-75.5 268.5,-75.5 268.5,-54.5 147.5,-54.5"/>
+<text text-anchor="start" x="174" y="-61.3" font-family="Times New Roman,serif" font-size="14.00">LoginResult</text>
+<polygon fill="none" stroke="black" points="147.5,-18.5 147.5,-54.5 268.5,-54.5 268.5,-18.5 147.5,-18.5"/>
+<text text-anchor="start" x="150.5" y="-40.3" font-family="Times New Roman,serif" font-size="14.00">accessToken :String</text>
+<text text-anchor="start" x="150.5" y="-25.3" font-family="Times New Roman,serif" font-size="14.00">refreshToken :String</text>
+</g>
+<!-- LoginResult&#45;&gt;User -->
+<g id="edge2" class="edge">
+<title>LoginResult&#45;&gt;User</title>
+<path fill="none" stroke="black" d="M207.5,-80.16C207.5,-95.2 207.5,-113.61 207.5,-130.78"/>
+<text text-anchor="middle" x="195.5" y="-119.58" font-family="Times New Roman,serif" font-size="14.00">user</text>
+<text text-anchor="middle" x="202" y="-83.96" font-family="Times New Roman,serif" font-size="14.00"> *</text>
+</g>
+<!-- Message -->
+<g id="node3" class="node">
+<title>Message</title>
+<polygon fill="none" stroke="black" points="302.5,-69.5 302.5,-90.5 407.5,-90.5 407.5,-69.5 302.5,-69.5"/>
+<text text-anchor="start" x="330.5" y="-76.3" font-family="Times New Roman,serif" font-size="14.00">Message</text>
+<polygon fill="none" stroke="black" points="302.5,-3.5 302.5,-69.5 407.5,-69.5 407.5,-3.5 302.5,-3.5"/>
+<text text-anchor="start" x="305.5" y="-55.3" font-family="Times New Roman,serif" font-size="14.00">createdAt :String</text>
+<text text-anchor="start" x="305.5" y="-40.3" font-family="Times New Roman,serif" font-size="14.00">updatedAt :String</text>
+<text text-anchor="start" x="305.5" y="-25.3" font-family="Times New Roman,serif" font-size="14.00">id :String</text>
+<text text-anchor="start" x="305.5" y="-10.3" font-family="Times New Roman,serif" font-size="14.00">body :String</text>
+</g>
+<!-- Message&#45;&gt;User -->
+<g id="edge1" class="edge">
+<title>Message&#45;&gt;User</title>
+<path fill="none" stroke="black" d="M304.32,-95.09C291.93,-106.6 278.55,-119.03 265.81,-130.86"/>
+<text text-anchor="middle" x="247.31" y="-119.66" font-family="Times New Roman,serif" font-size="14.00">sender</text>
+<text text-anchor="middle" x="298.82" y="-98.89" font-family="Times New Roman,serif" font-size="14.00"> *</text>
+</g>
+<!-- Region -->
+<g id="node4" class="node">
+<title>Region</title>
+<polygon fill="none" stroke="black" points="441.5,-69.5 441.5,-90.5 546.5,-90.5 546.5,-69.5 441.5,-69.5"/>
+<text text-anchor="start" x="474" y="-76.3" font-family="Times New Roman,serif" font-size="14.00">Region</text>
+<polygon fill="none" stroke="black" points="441.5,-3.5 441.5,-69.5 546.5,-69.5 546.5,-3.5 441.5,-3.5"/>
+<text text-anchor="start" x="444.5" y="-55.3" font-family="Times New Roman,serif" font-size="14.00">createdAt :String</text>
+<text text-anchor="start" x="444.5" y="-40.3" font-family="Times New Roman,serif" font-size="14.00">updatedAt :String</text>
+<text text-anchor="start" x="444.5" y="-25.3" font-family="Times New Roman,serif" font-size="14.00">id :String</text>
+<text text-anchor="start" x="444.5" y="-10.3" font-family="Times New Roman,serif" font-size="14.00">name :String</text>
+</g>
+<!-- User&#45;&gt;User -->
+<g id="edge3" class="edge">
+<title>User&#45;&gt;User</title>
+<path fill="none" stroke="black" d="M268.06,-161.74C278.64,-164.98 286,-173.06 286,-186 286,-198.94 278.64,-207.02 268.06,-210.26"/>
+<text text-anchor="middle" x="292.56" y="-199.06" font-family="Times New Roman,serif" font-size="14.00">friends *</text>
+<text text-anchor="middle" x="273.56" y="-150.54" font-family="Times New Roman,serif" font-size="14.00"> *</text>
+</g>
+</g>
+</svg>
