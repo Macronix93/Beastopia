@@ -1,11 +1,25 @@
 - c: 	org.fulib.classmodel.ClassModel
-  classes: 	region 	group 	user 	message 	loginResult
+  classes: 	validationErrorRespone 	errorRespone 	region 	group 	user 	message 	loginResult
   defaultCollectionType: 	c1
   defaultPropertyStyle: 	Bean
   defaultRoleType: 	"java.util.ArrayList<%s>"
   mainJavaDir: 	"src/main/java"
   packageName: 	de.uniks.beastopia.teaml.model
   packageSrcFolder: 	"src/main/java/de/uniks/beastopia/teaml/model"
+
+- validationErrorRespone: 	org.fulib.classmodel.Clazz
+  attributes: 	validationErrorRespone_statusCode 	validationErrorRespone_error 	validationErrorRespone_message
+  model: 	c
+  modified: 	false
+  name: 	ValidationErrorRespone
+  propertyStyle: 	Bean
+
+- errorRespone: 	org.fulib.classmodel.Clazz
+  attributes: 	errorRespone_statusCode 	errorRespone_error 	errorRespone_message
+  model: 	c
+  modified: 	false
+  name: 	ErrorRespone
+  propertyStyle: 	Bean
 
 - region: 	org.fulib.classmodel.Clazz
   attributes: 	region_createdAt 	region_updatedAt 	region_id 	region_name
@@ -23,7 +37,7 @@
   roles: 	group_members
 
 - user: 	org.fulib.classmodel.Clazz
-  attributes: 	user_createdAt 	user_updatedAt 	user_name 	user_status 	user_avatar
+  attributes: 	user_createdAt 	user_updatedAt 	user_id 	user_name 	user_status 	user_avatar
   model: 	c
   modified: 	false
   name: 	User
@@ -52,6 +66,60 @@
   itf: 	org.fulib.classmodel.CollectionInterface.List
   qualifiedImplName: 	java.util.ArrayList
   simpleImplName: 	ArrayList
+
+- validationErrorRespone_statusCode: 	org.fulib.classmodel.Attribute
+  clazz: 	validationErrorRespone
+  id: 	ValidationErrorRespone_statusCode
+  modified: 	false
+  name: 	statusCode
+  propertyStyle: 	Bean
+  type: 	int
+  typeSignature: 	int
+
+- validationErrorRespone_error: 	org.fulib.classmodel.Attribute
+  clazz: 	validationErrorRespone
+  id: 	ValidationErrorRespone_error
+  modified: 	false
+  name: 	error
+  propertyStyle: 	Bean
+  type: 	String
+  typeSignature: 	String
+
+- validationErrorRespone_message: 	org.fulib.classmodel.Attribute
+  clazz: 	validationErrorRespone
+  id: 	ValidationErrorRespone_message
+  modified: 	false
+  name: 	message
+  propertyStyle: 	Bean
+  type: 	String
+  typeSignature: 	String
+
+- errorRespone_statusCode: 	org.fulib.classmodel.Attribute
+  clazz: 	errorRespone
+  id: 	ErrorRespone_statusCode
+  modified: 	false
+  name: 	statusCode
+  propertyStyle: 	Bean
+  type: 	int
+  typeSignature: 	int
+
+- errorRespone_error: 	org.fulib.classmodel.Attribute
+  clazz: 	errorRespone
+  id: 	ErrorRespone_error
+  modified: 	false
+  name: 	error
+  propertyStyle: 	Bean
+  type: 	String
+  typeSignature: 	String
+
+- errorRespone_message: 	org.fulib.classmodel.Attribute
+  clazz: 	errorRespone
+  id: 	ErrorRespone_message
+  modified: 	false
+  name: 	message
+  propertyStyle: 	Bean
+  type: 	String
+  typeSignature: 	String
 
 - region_createdAt: 	org.fulib.classmodel.Attribute
   clazz: 	region
@@ -151,6 +219,15 @@
   id: 	User_updatedAt
   modified: 	false
   name: 	updatedAt
+  propertyStyle: 	Bean
+  type: 	String
+  typeSignature: 	String
+
+- user_id: 	org.fulib.classmodel.Attribute
+  clazz: 	user
+  id: 	User_id
+  modified: 	false
+  name: 	id
   propertyStyle: 	Bean
   type: 	String
   typeSignature: 	String

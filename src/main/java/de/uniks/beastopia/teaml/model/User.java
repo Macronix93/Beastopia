@@ -14,6 +14,7 @@ public class User
    public static final String PROPERTY_STATUS = "status";
    public static final String PROPERTY_AVATAR = "avatar";
    public static final String PROPERTY_GROUPS = "groups";
+   public static final String PROPERTY_ID = "id";
    public static final String PROPERTY_FRIENDS = "friends";
    private String createdAt;
    private String updatedAt;
@@ -22,6 +23,7 @@ public class User
    private String avatar;
    protected PropertyChangeSupport listeners;
    private List<Group> groups;
+   private String id;
    private List<User> friends;
 
    public String getCreatedAt()
@@ -180,6 +182,24 @@ public class User
       return this;
    }
 
+   public String getId()
+   {
+      return this.id;
+   }
+
+   public User setId(String value)
+   {
+      if (Objects.equals(value, this.id))
+      {
+         return this;
+      }
+
+      final String oldValue = this.id;
+      this.id = value;
+      this.firePropertyChange(PROPERTY_ID, oldValue, value);
+      return this;
+   }
+
    public List<User> getFriends()
    {
       return this.friends != null ? Collections.unmodifiableList(this.friends) : Collections.emptyList();
@@ -269,6 +289,7 @@ public class User
       final StringBuilder result = new StringBuilder();
       result.append(' ').append(this.getCreatedAt());
       result.append(' ').append(this.getUpdatedAt());
+      result.append(' ').append(this.getId());
       result.append(' ').append(this.getName());
       result.append(' ').append(this.getStatus());
       result.append(' ').append(this.getAvatar());
