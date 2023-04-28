@@ -16,6 +16,7 @@ public class GenModel implements ClassModelDecorator {
     public class User {
         String createdAt;
         String updatedAt;
+        String id;
         String name;
         String status;
         String avatar;
@@ -59,6 +60,18 @@ public class GenModel implements ClassModelDecorator {
         String updatedAt;
         String id;
         String name;
+    }
+
+    public class ErrorRespone {
+        int statusCode;
+        String error;
+        String message;
+    }
+
+    public class ValidationErrorRespone {
+        int statusCode;
+        String error;
+        String message;
     }
 
 }
