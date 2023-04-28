@@ -4,8 +4,8 @@ plugins {
 
     // https://plugins.gradle.org/plugin/org.openjfx.javafxplugin
     id 'org.openjfx.javafxplugin' version '0.0.13'
-	// https://plugins.gradle.org/plugin/org.fulib.fulibGradle
-	id 'org.fulib.fulibGradle' version '0.5.0'
+    // https://plugins.gradle.org/plugin/org.fulib.fulibGradle
+    id 'org.fulib.fulibGradle' version '0.5.0'
 }
 
 group 'de.uniks.beastopia.teaml'
@@ -28,37 +28,37 @@ dependencies {
     // https://mvnrepository.com/artifact/org.testfx/openjfx-monocle
     testImplementation group: 'org.testfx', name: 'openjfx-monocle', version: 'jdk-12.0.1+2'
 
-	// https://mvnrepository.com/artifact/org.fulib/fulib
-	fulibScenarios group: 'org.fulib', name: 'fulib', version: '1.6.1'
+    // https://mvnrepository.com/artifact/org.fulib/fulib
+    fulibScenarios group: 'org.fulib', name: 'fulib', version: '1.6.1'
 
     // https://mvnrepository.com/artifact/org.fulib/fulibScenarios
-	fulibScenarios group: 'org.fulib', name: 'fulibScenarios', version: '1.7.0'
+    fulibScenarios group: 'org.fulib', name: 'fulibScenarios', version: '1.7.0'
 
-	// https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
-	fulibScenarios group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.36'
+    // https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
+    fulibScenarios group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.36'
 
-	// https://mvnrepository.com/artifact/org.fulib/fulibTools
-	testImplementation group: 'org.fulib', name: 'fulibTools', version: '1.5.1'
+    // https://mvnrepository.com/artifact/org.fulib/fulibTools
+    testImplementation group: 'org.fulib', name: 'fulibTools', version: '1.5.1'
 
-	// https://mvnrepository.com/artifact/org.fulib/fulibTables
-	testImplementation group: 'org.fulib', name: 'fulibTables', version: '1.4.0'
+    // https://mvnrepository.com/artifact/org.fulib/fulibTables
+    testImplementation group: 'org.fulib', name: 'fulibTables', version: '1.4.0'
 
-	// https://mvnrepository.com/artifact/org.fulib/fulibMockups
-	testImplementation group: 'org.fulib', name: 'fulibMockups', version: '0.4.0'
+    // https://mvnrepository.com/artifact/org.fulib/fulibMockups
+    testImplementation group: 'org.fulib', name: 'fulibMockups', version: '0.4.0'
 
     // https://mvnrepository.com/artifact/org.fulib/fulibYaml
     implementation group: 'org.fulib', name: 'fulibYaml', version: '1.5.0'
 
-	// https://mvnrepository.com/artifact/com.squareup.retrofit2/retrofit
-	implementation group: 'com.squareup.retrofit2', name: 'retrofit', version: '2.9.0'
+    // https://mvnrepository.com/artifact/com.squareup.retrofit2/retrofit
+    implementation group: 'com.squareup.retrofit2', name: 'retrofit', version: '2.9.0'
 
-	// https://mvnrepository.com/artifact/com.google.dagger/dagger
-	implementation group: 'com.google.dagger', name: 'dagger', version: '2.42'
+    // https://mvnrepository.com/artifact/com.google.dagger/dagger
+    implementation group: 'com.google.dagger', name: 'dagger', version: '2.42'
 }
 
 javafx {
     version = '20'
-    modules = [ 'javafx.controls', 'javafx.graphics', 'javafx.fxml' ]
+    modules = ['javafx.controls', 'javafx.graphics', 'javafx.fxml']
 }
 
 jacoco {
@@ -66,7 +66,7 @@ jacoco {
 }
 
 jacocoTestReport {
-	reports.xml.required = true
+    reports.xml.required = true
 }
 
 test {
@@ -78,18 +78,18 @@ test {
     }
 
     if (hasProperty('headless') || System.getenv('CI')) {
-		systemProperties = [
-				'java.awt.headless': 'true',
-				'testfx.robot': 'glass',
-				'testfx.headless': 'true',
-				'glass.platform': 'Monocle',
-				'monocle.platform': 'Headless',
-				'prism.order': 'sw',
-				'prism.text': 't2k',
-		]
-	}
+        systemProperties = [
+                'java.awt.headless': 'true',
+                'testfx.robot'     : 'glass',
+                'testfx.headless'  : 'true',
+                'glass.platform'   : 'Monocle',
+                'monocle.platform' : 'Headless',
+                'prism.order'      : 'sw',
+                'prism.text'       : 't2k',
+        ]
+    }
 }
 
 generateScenarioSource {
-	classDiagramSVG = true
+    classDiagramSVG = true
 }
