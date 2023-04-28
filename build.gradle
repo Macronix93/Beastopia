@@ -54,6 +54,8 @@ dependencies {
 
     // https://mvnrepository.com/artifact/com.google.dagger/dagger
     implementation group: 'com.google.dagger', name: 'dagger', version: '2.42'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.42'
+    testAnnotationProcessor 'com.google.dagger:dagger-compiler:2.42'
 }
 
 javafx {
