@@ -28,6 +28,9 @@ dependencies {
     // https://mvnrepository.com/artifact/org.testfx/openjfx-monocle
     testImplementation group: 'org.testfx', name: 'openjfx-monocle', version: 'jdk-12.0.1+2'
 
+	// https://mvnrepository.com/artifact/org.fulib/fulib
+	fulibScenarios group: 'org.fulib', name: 'fulib', version: '1.6.1'
+
     // https://mvnrepository.com/artifact/org.fulib/fulibScenarios
 	fulibScenarios group: 'org.fulib', name: 'fulibScenarios', version: '1.7.0'
 
