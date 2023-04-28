@@ -8,6 +8,11 @@ import java.util.List;
 
 public class GenModel implements ClassModelDecorator {
 
+    @Override
+    public void decorate(ClassModelManager mm) {
+        mm.haveNestedClasses(GenModel.class);
+    }
+
     public class User {
         String createdAt;
         String updatedAt;
@@ -54,11 +59,6 @@ public class GenModel implements ClassModelDecorator {
         String updatedAt;
         String id;
         String name;
-    }
-
-    @Override
-    public void decorate(ClassModelManager mm) {
-        mm.haveNestedClasses(GenModel.class);
     }
 
 }
