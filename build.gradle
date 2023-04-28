@@ -86,3 +86,7 @@ test {
 		]
 	}
 }
+
+generateScenarioSource {
+	classDiagramSVG = true
+}
