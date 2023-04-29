@@ -2,10 +2,13 @@ package de.uniks.beastopia.teaml;
 
 import dagger.BindsInstance;
 import dagger.Component;
+import de.uniks.beastopia.teaml.modules.HttpModule;
+import de.uniks.beastopia.teaml.modules.MainModule;
+import de.uniks.beastopia.teaml.modules.PrefModule;
 
 import javax.inject.Singleton;
 
-@Component(modules = { MainModule.class, HttpModule.class, PrefModule.class })
+@Component(modules = {MainModule.class, HttpModule.class, PrefModule.class})
 @Singleton
 public interface MainComponent {
     @Component.Builder
@@ -17,5 +20,11 @@ public interface MainComponent {
     }
 }
 
-//in App final MainComponent component = DaggerMainComponent.builder().mainApp(this).build();
-//in Controller @Inject und public ...controller() {}
+//TODO
+// in App
+// final MainComponent component = DaggerMainComponent.builder().mainApp(this).build();
+// in Controller
+// protected final CompositeDisposable disposables = new CompositeDisposable();
+// onDestroy Methode mit
+// disposables.add(Disposable.fromRunnable(action));
+

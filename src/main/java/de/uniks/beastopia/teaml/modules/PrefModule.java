@@ -1,4 +1,4 @@
-package de.uniks.beastopia.teaml;
+package de.uniks.beastopia.teaml.modules;
 
 import dagger.Module;
 
