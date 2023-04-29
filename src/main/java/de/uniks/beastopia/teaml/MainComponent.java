@@ -19,12 +19,3 @@ public interface MainComponent {
         MainComponent build();
     }
 }
-
-//TODO
-// in App
-// final MainComponent component = DaggerMainComponent.builder().mainApp(this).build();
-// in Controller
-// protected final CompositeDisposable disposables = new CompositeDisposable();
-// onDestroy Methode mit
-// disposables.add(Disposable.fromRunnable(action));
-
