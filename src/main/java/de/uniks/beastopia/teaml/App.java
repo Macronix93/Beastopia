@@ -33,5 +33,36 @@ public class App extends Application {
         stage.setScene(scene);
 
         stage.show();
+
+        if (controller != null) {
+            initAndRender(controller);
+            return;
+        }
+
+        //controller = new LoginController();
+        initAndRender(controller);
+    }
+
+    @Override
+    public void stop() {
+        cleanup();
+    }
+
+    public void show(Controller controller) {
+        cleanup();
+        this.controller = controller;
+        initAndRender(controller);
+    }
+
+    private void initAndRender(Controller controller) {
+        controller.init();
+        stage.getScene().setRoot(controller.render());
+    }
+
+    private void cleanup() {
+        if (controller != null) {
+            controller.destroy();
+            controller = null;
+        }
     }
 }
