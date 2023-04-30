@@ -5,6 +5,8 @@ import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 
+import javax.inject.Inject;
+
 public class LoginController extends Controller {
     @FXML
     public TextField usernameInput;
@@ -19,6 +21,11 @@ public class LoginController extends Controller {
     @FXML
     public CheckBox germanCheckBox;
     private BooleanBinding isInValid;
+
+    @Inject
+    public LoginController() {
+
+    }
 
     @Override
     public Parent render() {
