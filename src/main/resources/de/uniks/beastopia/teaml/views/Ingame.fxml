@@ -7,7 +7,7 @@
 
 <HBox fx:id="ingame" alignment="BOTTOM_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="750.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.uniks.beastopia.teaml.controller.IngameController">
    <children>
-      <Button fx:id="pause" mnemonicParsing="false" onAction="#pauseMenu" text="\%OpensPauseMenu" HBox.hgrow="ALWAYS">
+      <Button fx:id="pause" mnemonicParsing="false" onAction="#pauseMenu" text="%OpensPauseMenu" HBox.hgrow="ALWAYS">
          <HBox.margin>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
          </HBox.margin>
