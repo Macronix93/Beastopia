@@ -2,6 +2,7 @@ package de.uniks.beastopia.teaml;
 
 import de.uniks.beastopia.teaml.controller.Controller;
 
+import de.uniks.beastopia.teaml.controller.LoginController;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -40,8 +41,8 @@ public class App extends Application {
             return;
         }
 
-        //controller = new LoginController();
-        //initAndRender(controller);
+        controller = new LoginController();
+        initAndRender(controller);
     }
 
     @Override
