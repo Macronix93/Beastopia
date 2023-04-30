@@ -28,13 +28,6 @@ public class MenuController extends Controller {
     public Parent render() {
         final Parent parent;
         parent = super.render();
-        /*
-        try {
-            parent = super.render();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        */
         return parent;
     }
 
