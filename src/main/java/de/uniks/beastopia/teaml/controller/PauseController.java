@@ -8,5 +8,5 @@ public class PauseController extends Controller {
     @FXML
     private Button editProfileButton;
     @FXML
-    private Button backtoMainButton;
+    private Button backToMainButton;
 }
