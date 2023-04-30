@@ -30,11 +30,7 @@ public class IngameController extends Controller {
     @Override
     public Parent render() {
         final Parent parent;
-        try {
             parent = super.render();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
         return parent;
     }
 }
