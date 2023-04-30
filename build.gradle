@@ -52,8 +52,22 @@ dependencies {
     // https://mvnrepository.com/artifact/com.squareup.retrofit2/retrofit
     implementation group: 'com.squareup.retrofit2', name: 'retrofit', version: '2.9.0'
 
+    // https://mvnrepository.com/artifact/com.squareup.retrofit2/converter-jackson
+    implementation group: 'com.squareup.retrofit2', name: 'converter-jackson', version: '2.9.0'
+
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.13.3'
+
+    // https://mvnrepository.com/artifact/io.reactivex.rxjava3/rxjava
+    implementation group: 'io.reactivex.rxjava3', name: 'rxjava', version: '3.1.4'
+
+    // https://mvnrepository.com/artifact/com.squareup.retrofit2/adapter-rxjava3
+    implementation group: 'com.squareup.retrofit2', name: 'adapter-rxjava3', version: '2.9.0'
+
     // https://mvnrepository.com/artifact/com.google.dagger/dagger
     implementation group: 'com.google.dagger', name: 'dagger', version: '2.42'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.42'
+    testAnnotationProcessor 'com.google.dagger:dagger-compiler:2.42'
 }
 
 javafx {

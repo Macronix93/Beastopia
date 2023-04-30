@@ -1,18 +1,27 @@
 package de.uniks.beastopia.teaml.controller;
 
 import de.uniks.beastopia.teaml.Main;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.disposables.Disposable;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 
 import java.io.IOException;
 
 public abstract class Controller {
+
+    protected final CompositeDisposable disposables = new CompositeDisposable();
+
     public void init() {
 
     }
 
     public void destroy() {
+        disposables.dispose();
+    }
 
+    public void onDestroy(Runnable action) {
+        disposables.add(Disposable.fromRunnable(action));
     }
 
     public Parent render() {
