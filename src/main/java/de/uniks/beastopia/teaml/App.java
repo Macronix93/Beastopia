@@ -40,8 +40,12 @@ public class App extends Application {
             return;
         }
 
-        //controller = new LoginController();
+
+        final MainComponent component = DaggerMainComponent.builder().mainApp(this).build();
+        //controller = component.loginController();
         //initAndRender(controller);
+
+        //TODO in LoginController @Inject und leerer Konstruktor
     }
 
     @Override
