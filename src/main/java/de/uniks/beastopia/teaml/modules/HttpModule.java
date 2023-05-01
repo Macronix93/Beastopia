@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dagger.Module;
 import dagger.Provides;
 import de.uniks.beastopia.teaml.Main;
+import de.uniks.beastopia.teaml.service.AuthAPIService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -42,5 +43,11 @@ public class HttpModule {
                 .addConverterFactory(JacksonConverterFactory.create(objectMapper))
                 .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
                 .build();
+    }
+
+    @Provides
+    @Singleton
+    AuthAPIService auth(Retrofit retrofit) {
+        return retrofit.create(AuthAPIService.class);
     }
 }

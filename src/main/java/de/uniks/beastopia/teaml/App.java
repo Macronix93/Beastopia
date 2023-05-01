@@ -2,7 +2,6 @@ package de.uniks.beastopia.teaml;
 
 import de.uniks.beastopia.teaml.controller.Controller;
 
-import de.uniks.beastopia.teaml.controller.RegistrationController;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -10,7 +9,7 @@ import javafx.stage.Stage;
 
 public class App extends Application {
     private Stage stage;
-    private Controller controller = new RegistrationController(this);
+    private Controller controller;
 
     public App() {
 
@@ -43,8 +42,8 @@ public class App extends Application {
 
 
         final MainComponent component = DaggerMainComponent.builder().mainApp(this).build();
-        //controller = component.loginController();
-        //initAndRender(controller);
+        controller = component.registrationController();
+        initAndRender(controller);
 
         //TODO in LoginController @Inject und leerer Konstruktor
     }
@@ -62,6 +61,9 @@ public class App extends Application {
 
     private void initAndRender(Controller controller) {
         controller.init();
+        if (controller.getTitle() != null) {
+            stage.setTitle(controller.getTitle());
+        }
         stage.getScene().setRoot(controller.render());
     }
 

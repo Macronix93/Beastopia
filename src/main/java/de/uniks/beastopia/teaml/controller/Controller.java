@@ -20,6 +20,8 @@ public abstract class Controller {
         disposables.dispose();
     }
 
+    public String getTitle() { return "Beastopia"; }
+
     public void onDestroy(Runnable action) {
         disposables.add(Disposable.fromRunnable(action));
     }
