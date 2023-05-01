@@ -62,12 +62,6 @@ public class GenModel implements ClassModelDecorator {
         String name;
     }
 
-    public class ErrorRespone {
-        int statusCode;
-        String error;
-        String message;
-    }
-
     public class ValidationErrorRespone {
         int statusCode;
         String error;

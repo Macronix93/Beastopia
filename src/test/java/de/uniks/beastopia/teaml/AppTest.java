@@ -8,14 +8,16 @@ import org.testfx.framework.junit5.ApplicationTest;
 import static org.junit.jupiter.api.Assertions.*;
 
 class AppTest extends ApplicationTest {
+    private Stage stage;
+
     @Override
     public void start(Stage stage) throws Exception {
+        this.stage = stage;
         new App().start(stage);
     }
 
     @Test
     void testLoading() {
-        final Label loading = lookup("Loading...").query();
-        assertNotNull(loading);
+        assertEquals("Beastopia - Registration", stage.getTitle());
     }
 }
