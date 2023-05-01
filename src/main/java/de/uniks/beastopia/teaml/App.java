@@ -2,6 +2,7 @@ package de.uniks.beastopia.teaml;
 
 import de.uniks.beastopia.teaml.controller.Controller;
 
+import de.uniks.beastopia.teaml.controller.RegistrationController;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -9,7 +10,7 @@ import javafx.stage.Stage;
 
 public class App extends Application {
     private Stage stage;
-    private Controller controller;
+    private Controller controller = new RegistrationController(this);
 
     public App() {
 
