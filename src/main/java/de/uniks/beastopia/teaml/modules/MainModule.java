@@ -18,7 +18,7 @@ public class MainModule {
     ResourceBundle bundle(Preferences preferences) {
         //locale is
         final String locale = preferences.get("locale", Locale.ROOT.toLanguageTag());
-        return ResourceBundle.getBundle("de.uniks.beastopia.teaml.lang", Locale.forLanguageTag(locale));
+        return ResourceBundle.getBundle("de/uniks/beastopia/teaml/lang/lang", Locale.forLanguageTag(locale));
     }
 
     @Provides
