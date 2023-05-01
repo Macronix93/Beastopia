@@ -11,44 +11,44 @@
 
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
-   <Text layoutX="300.0" layoutY="83.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Language">
+   <Text layoutX="300.0" layoutY="83.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%Language">
       <font>
          <Font size="20.0" />
       </font>
    </Text>
-   <Text layoutX="300.0" layoutY="176.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Username">
+   <Text layoutX="300.0" layoutY="176.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%Username">
       <font>
          <Font size="20.0" />
       </font>
    </Text>
-   <Text layoutX="299.0" layoutY="269.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Password">
+   <Text layoutX="299.0" layoutY="269.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%Password">
       <font>
          <Font size="20.0" />
       </font>
    </Text>
-   <Text layoutX="474.0" layoutY="356.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Don't have an account yet?">
+   <Text layoutX="474.0" layoutY="356.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%NoAccount">
       <font>
          <Font size="15.0" />
       </font>
    </Text>
    <TextField fx:id="usernameInput" layoutX="299.0" layoutY="188.0" />
    <TextField fx:id="passwordInput" layoutX="299.0" layoutY="279.0" />
-   <Button fx:id="loginButton" defaultButton="true" layoutX="299.0" layoutY="340.0" mnemonicParsing="false" prefHeight="68.0" prefWidth="138.0" style="-fx-background-radius: 20;" text="Login">
+   <Button fx:id="loginButton" defaultButton="true" layoutX="299.0" layoutY="340.0" mnemonicParsing="false" prefHeight="68.0" prefWidth="138.0" style="-fx-background-radius: 20;" text="%Login">
       <font>
          <Font size="20.0" />
       </font>
    </Button>
-   <Button fx:id="signUpButton" layoutX="526.0" layoutY="374.0" mnemonicParsing="false" style="-fx-background-color: transparent;" text="Sign up!" textFill="#0430c3" underline="true">
+   <Button fx:id="signUpButton" layoutX="526.0" layoutY="374.0" mnemonicParsing="false" style="-fx-background-color: transparent;" text="%SignUp" textFill="#0430c3" underline="true">
       <font>
          <Font size="15.0" />
       </font>
    </Button>
-   <CheckBox fx:id="englishCheckBox" layoutX="300.0" layoutY="102.0" mnemonicParsing="false" style="-fx-background-radius: 100;" text="English">
+   <CheckBox fx:id="englishCheckBox" layoutX="300.0" layoutY="102.0" mnemonicParsing="false" style="-fx-background-radius: 100;" text="%English">
       <font>
          <Font size="20.0" />
       </font>
    </CheckBox>
-   <CheckBox fx:id="germanCheckBox" layoutX="437.0" layoutY="102.0" mnemonicParsing="false" text="Deutsch">
+   <CheckBox fx:id="germanCheckBox" layoutX="437.0" layoutY="102.0" mnemonicParsing="false" text="%Deutsch">
       <font>
          <Font size="20.0" />
       </font>
