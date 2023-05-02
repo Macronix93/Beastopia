@@ -35,7 +35,7 @@
             </Button>
          </children>
       </HBox>
-      <ScrollPane fx:id="scrollFrieneds" layoutY="60.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="240.0" prefWidth="200.0">
+      <ScrollPane fx:id="scrollFriends" layoutY="60.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="240.0" prefWidth="200.0">
          <content>
             <HBox fx:id="friendList" prefHeight="240.0" prefWidth="200.0" />
          </content>
