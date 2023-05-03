@@ -1,20 +1,15 @@
 package de.uniks.beastopia.teaml.controller;
 
-import de.uniks.beastopia.teaml.model.User;
 import de.uniks.beastopia.teaml.service.LoginService;
-import io.reactivex.rxjava3.core.Observable;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 
 import javax.inject.Inject;
-import java.util.List;
 
 public class FriendListController extends Controller {
     @FXML
@@ -28,7 +23,8 @@ public class FriendListController extends Controller {
     @FXML
     public Button showChats;
 
-    @Inject LoginService loginService;
+    @Inject
+    LoginService loginService;
 
     @Inject
     public FriendListController() {
@@ -44,6 +40,7 @@ public class FriendListController extends Controller {
     public void init() {
         loginService.login("string", "stringst").subscribe(lr -> {
             System.out.println(lr.getFriends());
+            //Get friends
             //friend subcontroller
         });
     }
