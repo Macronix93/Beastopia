@@ -40,6 +40,7 @@ public class App extends Application {
             return;
         }
 
+
         final MainComponent component = DaggerMainComponent.builder().mainApp(this).build();
         controller = component.loginController();
         initAndRender(controller);
@@ -58,6 +59,9 @@ public class App extends Application {
 
     private void initAndRender(Controller controller) {
         controller.init();
+        if (controller.getTitle() != null) {
+            stage.setTitle(controller.getTitle());
+        }
         stage.getScene().setRoot(controller.render());
     }
 

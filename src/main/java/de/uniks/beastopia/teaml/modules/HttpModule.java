@@ -5,6 +5,7 @@ import dagger.Module;
 import dagger.Provides;
 import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.service.AuthApiService;
+import de.uniks.beastopia.teaml.rest.UserAPIService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -43,6 +44,12 @@ public class HttpModule {
                 .addConverterFactory(JacksonConverterFactory.create(objectMapper))
                 .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
                 .build();
+    }
+
+    @Provides
+    @Singleton
+    UserAPIService auth(Retrofit retrofit) {
+        return retrofit.create(UserAPIService.class);
     }
 
     @Provides

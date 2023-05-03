@@ -1,5 +1,5 @@
 - c: 	org.fulib.classmodel.ClassModel
-  classes: 	validationErrorRespone 	errorRespone 	region 	group 	user 	message 	loginResult
+  classes: 	validationErrorRespone 	region 	group 	user 	message 	loginResult
   defaultCollectionType: 	c1
   defaultPropertyStyle: 	Bean
   defaultRoleType: 	"java.util.ArrayList<%s>"
@@ -12,13 +12,6 @@
   model: 	c
   modified: 	false
   name: 	ValidationErrorRespone
-  propertyStyle: 	Bean
-
-- errorRespone: 	org.fulib.classmodel.Clazz
-  attributes: 	errorRespone_statusCode 	errorRespone_error 	errorRespone_message
-  model: 	c
-  modified: 	false
-  name: 	ErrorRespone
   propertyStyle: 	Bean
 
 - region: 	org.fulib.classmodel.Clazz
@@ -88,33 +81,6 @@
 - validationErrorRespone_message: 	org.fulib.classmodel.Attribute
   clazz: 	validationErrorRespone
   id: 	ValidationErrorRespone_message
-  modified: 	false
-  name: 	message
-  propertyStyle: 	Bean
-  type: 	String
-  typeSignature: 	String
-
-- errorRespone_statusCode: 	org.fulib.classmodel.Attribute
-  clazz: 	errorRespone
-  id: 	ErrorRespone_statusCode
-  modified: 	false
-  name: 	statusCode
-  propertyStyle: 	Bean
-  type: 	int
-  typeSignature: 	int
-
-- errorRespone_error: 	org.fulib.classmodel.Attribute
-  clazz: 	errorRespone
-  id: 	ErrorRespone_error
-  modified: 	false
-  name: 	error
-  propertyStyle: 	Bean
-  type: 	String
-  typeSignature: 	String
-
-- errorRespone_message: 	org.fulib.classmodel.Attribute
-  clazz: 	errorRespone
-  id: 	ErrorRespone_message
   modified: 	false
   name: 	message
   propertyStyle: 	Bean
