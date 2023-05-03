@@ -18,6 +18,8 @@ public interface MainComponent {
 
     FriendListController friendListController();
 
+    FriendController friendController();
+
     @Component.Builder
     interface Builder {
         @BindsInstance
