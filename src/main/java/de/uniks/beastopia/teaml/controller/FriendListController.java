@@ -6,10 +6,11 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 
 import javax.inject.Inject;
-import java.util.List;
 
 public class FriendListController extends Controller {
     @FXML
@@ -22,6 +23,7 @@ public class FriendListController extends Controller {
     public HBox friendList;
     @FXML
     public Button showChats;
+
     @Inject
     public FriendListController() {
 
@@ -35,14 +37,15 @@ public class FriendListController extends Controller {
 
     @Override
     public void init() {
-
+        //create for every friend a subcontroller friend in scrollpane
     }
 
+    @FXML
     public void showChats(ActionEvent actionEvent) {
 
     }
 
-
+    @FXML
     public void searchUser(ActionEvent actionEvent) {
     }
 }
