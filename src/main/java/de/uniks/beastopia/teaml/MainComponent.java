@@ -16,7 +16,6 @@ public interface MainComponent {
 
     LoginController loginController();
 
-
     App app();
     RegistrationController registrationController();
 

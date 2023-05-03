@@ -1,6 +1,6 @@
 package de.uniks.beastopia.teaml.service;
 
-import de.uniks.beastopia.teaml.dto.LoginDto;
+import de.uniks.beastopia.teaml.rest.LoginDto;
 import de.uniks.beastopia.teaml.model.LoginResult;
 import io.reactivex.rxjava3.core.Observable;
 
@@ -17,10 +17,10 @@ public class LoginService {
     }
 
     public Observable<LoginResult> login(String username, String password) {
-        /*authApiService.login(new LoginDto(username, password)).map(lr -> {
+        authApiService.login(new LoginDto(username, password)).map(lr -> {
             tokenStorage.setToken(lr.getAccessToken());
             return lr;
-        });*/
+        });
         return null;
     }
 }

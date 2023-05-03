@@ -54,7 +54,7 @@ public class HttpModule {
 
     @Provides
     @Singleton
-    AuthApiService auth(Retrofit retrofit) {
+    AuthApiService login(Retrofit retrofit) {
         return retrofit.create(AuthApiService.class);
     }
 }
