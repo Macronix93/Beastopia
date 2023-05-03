@@ -13,7 +13,4 @@ import java.util.List;
 public interface UserAPIService {
     @POST("users")
     Observable<User> createUser(@Body CreateUserDto userDto);
-
-    @GET("users/{id}/friends")
-    Observable<List<User>> getFriends(@Path("friends") List<String> ids);
 }

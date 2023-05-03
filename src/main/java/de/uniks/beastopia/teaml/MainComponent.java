@@ -16,6 +16,8 @@ public interface MainComponent {
     App app();
     RegistrationController registrationController();
 
+    FriendListController friendListController();
+
     @Component.Builder
     interface Builder {
         @BindsInstance
