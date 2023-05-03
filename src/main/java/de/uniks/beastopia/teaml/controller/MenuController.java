@@ -1,4 +1,5 @@
 package de.uniks.beastopia.teaml.controller;
 
-public class MenuController {
+public class MenuController extends Controller {
+
 }

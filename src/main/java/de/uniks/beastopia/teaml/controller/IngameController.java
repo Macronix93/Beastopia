@@ -23,14 +23,8 @@ public class IngameController extends Controller {
         //ToDo Show Pause Menu
     }
 
-    public String getTitle() {
-        return ("Beastopia");
-    }
-
     @Override
-    public Parent render() {
-        final Parent parent;
-            parent = super.render();
-        return parent;
+    public String getTitle() {
+        return "Beastopia";
     }
 }

@@ -42,8 +42,8 @@ public class App extends Application {
 
 
         final MainComponent component = DaggerMainComponent.builder().mainApp(this).build();
-        //controller = component.loginController();
-        //initAndRender(controller);
+        controller = component.registrationController();
+        initAndRender(controller);
 
         //TODO in LoginController @Inject und leerer Konstruktor
     }
@@ -61,6 +61,9 @@ public class App extends Application {
 
     private void initAndRender(Controller controller) {
         controller.init();
+        if (controller.getTitle() != null) {
+            stage.setTitle(controller.getTitle());
+        }
         stage.getScene().setRoot(controller.render());
     }
 
