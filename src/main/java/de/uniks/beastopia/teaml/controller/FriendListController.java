@@ -1,5 +1,7 @@
 package de.uniks.beastopia.teaml.controller;
 
+import de.uniks.beastopia.teaml.model.User;
+import de.uniks.beastopia.teaml.service.FriendService;
 import de.uniks.beastopia.teaml.service.LoginService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -27,6 +29,9 @@ public class FriendListController extends Controller {
     LoginService loginService;
 
     @Inject
+    FriendService friendService;
+
+    @Inject
     public FriendListController() {
 
     }
@@ -43,6 +48,13 @@ public class FriendListController extends Controller {
             //Get friends
             //friend subcontroller
         });
+        User user = new User();
+        //get friends from user
+        //for every fiend
+        for (User friend : user.getFriends()) {
+            friendService.getFriend(friend.getId());
+            //Braucht man FriendService oder hat man die Liste schon so?
+        }
     }
 
     @FXML
