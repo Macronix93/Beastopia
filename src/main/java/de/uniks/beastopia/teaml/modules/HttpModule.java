@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dagger.Module;
 import dagger.Provides;
 import de.uniks.beastopia.teaml.Main;
+import de.uniks.beastopia.teaml.rest.AuthApiService;
 import de.uniks.beastopia.teaml.rest.UserAPIService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import okhttp3.OkHttpClient;
@@ -49,5 +50,11 @@ public class HttpModule {
     @Singleton
     UserAPIService auth(Retrofit retrofit) {
         return retrofit.create(UserAPIService.class);
+    }
+
+    @Provides
+    @Singleton
+    AuthApiService login(Retrofit retrofit) {
+        return retrofit.create(AuthApiService.class);
     }
 }

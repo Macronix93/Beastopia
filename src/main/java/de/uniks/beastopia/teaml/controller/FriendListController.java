@@ -1,5 +1,8 @@
 package de.uniks.beastopia.teaml.controller;
 
+import de.uniks.beastopia.teaml.model.User;
+import de.uniks.beastopia.teaml.service.LoginService;
+import io.reactivex.rxjava3.core.Observable;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -11,6 +14,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 
 import javax.inject.Inject;
+import java.util.List;
 
 public class FriendListController extends Controller {
     @FXML
@@ -24,6 +28,8 @@ public class FriendListController extends Controller {
     @FXML
     public Button showChats;
 
+    @Inject LoginService loginService;
+
     @Inject
     public FriendListController() {
 
@@ -31,13 +37,15 @@ public class FriendListController extends Controller {
 
     @Override
     public Parent render() {
-        final Parent parent = super.render();
-        return parent;
+        return super.render();
     }
 
     @Override
     public void init() {
-        //create for every friend a subcontroller friend in scrollpane
+        loginService.login("string", "stringst").subscribe(lr -> {
+            System.out.println(lr.getFriends());
+            //friend subcontroller
+        });
     }
 
     @FXML
