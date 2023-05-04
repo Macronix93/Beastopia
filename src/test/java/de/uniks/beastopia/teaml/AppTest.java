@@ -1,11 +1,10 @@
 package de.uniks.beastopia.teaml;
 
-import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 import org.testfx.framework.junit5.ApplicationTest;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class AppTest extends ApplicationTest {
     private Stage stage;
@@ -18,6 +17,6 @@ class AppTest extends ApplicationTest {
 
     @Test
     void testLoading() {
-        assertEquals("Beastopia - Registration", stage.getTitle());
+        assertEquals("Beastopia - Login", stage.getTitle());
     }
 }

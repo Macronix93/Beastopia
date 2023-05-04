@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.*?>
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0"
+      prefWidth="800.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="de.uniks.beastopia.teaml.controller.LoginController">
    <Text layoutX="300.0" layoutY="83.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%Language">
       <font>
-         <Font size="20.0" />
+         <Font size="20.0"/>
       </font>
    </Text>
    <Text layoutX="300.0" layoutY="176.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%Username">
       <font>
-         <Font size="20.0" />
+         <Font size="20.0"/>
       </font>
    </Text>
    <Text layoutX="299.0" layoutY="269.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%Password">
@@ -28,31 +29,36 @@
       </font>
    </Text>
    <TextField fx:id="usernameInput" layoutX="299.0" layoutY="188.0" />
-   <TextField fx:id="passwordInput" layoutX="299.0" layoutY="279.0" />
-   <Button fx:id="loginButton" defaultButton="true" layoutX="299.0" layoutY="340.0" mnemonicParsing="false" prefHeight="68.0" prefWidth="138.0" style="-fx-background-radius: 20;" text="%Login">
+   <Button fx:id="loginButton" defaultButton="true" layoutX="299.0" layoutY="340.0" mnemonicParsing="false"
+           onAction="#login" prefHeight="68.0" prefWidth="138.0" style="-fx-background-radius: 20;" text="%Login">
       <font>
          <Font size="20.0" />
       </font>
    </Button>
-   <Button fx:id="signUpButton" layoutX="526.0" layoutY="374.0" mnemonicParsing="false" style="-fx-background-color: transparent;" text="%SignUp" textFill="#0430c3" underline="true">
+   <Button layoutX="526.0" layoutY="374.0" mnemonicParsing="false" onAction="#register"
+           style="-fx-background-color: transparent;" text="%SignUp" textFill="#0430c3" underline="true">
       <font>
-         <Font size="15.0" />
+         <Font size="15.0"/>
       </font>
    </Button>
-   <CheckBox fx:id="englishCheckBox" layoutX="300.0" layoutY="102.0" mnemonicParsing="false" style="-fx-background-radius: 100;" text="%English">
-      <font>
-         <Font size="20.0" />
-      </font>
-   </CheckBox>
-   <CheckBox fx:id="germanCheckBox" layoutX="437.0" layoutY="102.0" mnemonicParsing="false" text="%German">
+   <ImageView fitHeight="177.0" fitWidth="200.0" layoutX="48.0" layoutY="61.0">
+      <Image url="@../assets/DeadBirdsSociety_Logo_tr.PNG"/>
+   </ImageView>
+   <ImageView fitHeight="62.0" fitWidth="200.0" layoutX="48.0" layoutY="231.0">
+      <Image url="@../assets/Lumnix_Logo_tr.png"/>
+   </ImageView>
+   <PasswordField fx:id="passwordInput" layoutX="300.0" layoutY="281.0"/>
+   <RadioButton layoutX="300.0" layoutY="98.0" mnemonicParsing="false" selected="true" text="%English">
       <font>
          <Font size="20.0"/>
       </font>
-   </CheckBox>
-   <ImageView fitHeight="177.0" fitWidth="200.0" layoutX="48.0" layoutY="61.0">
-      <Image url="@../assets/DeadBirdsSociety_Logo_tr.PNG" />
-   </ImageView>
-   <ImageView fitHeight="62.0" fitWidth="200.0" layoutX="48.0" layoutY="231.0">
-      <Image url="@../assets/Lumnix_Logo_tr.png" />
-   </ImageView>
+      <toggleGroup>
+         <ToggleGroup fx:id="language"/>
+      </toggleGroup>
+   </RadioButton>
+   <RadioButton layoutX="449.0" layoutY="98.0" mnemonicParsing="false" text="%German" toggleGroup="$language">
+      <font>
+         <Font size="20.0"/>
+      </font>
+   </RadioButton>
 </Pane>
