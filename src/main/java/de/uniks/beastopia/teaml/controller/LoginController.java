@@ -9,7 +9,10 @@ import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 import retrofit2.HttpException;
 
 import javax.inject.Inject;
@@ -22,12 +25,6 @@ public class LoginController extends Controller {
     public PasswordField passwordInput;
     @FXML
     public Button loginButton;
-    @FXML
-    public Button signUpButton;
-    @FXML
-    public CheckBox englishCheckBox;
-    @FXML
-    public CheckBox germanCheckBox;
 
     @Inject
     App app;
