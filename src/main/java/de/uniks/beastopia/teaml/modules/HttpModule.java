@@ -4,15 +4,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dagger.Module;
 import dagger.Provides;
 import de.uniks.beastopia.teaml.Main;
-import de.uniks.beastopia.teaml.service.AuthApiService;
+import de.uniks.beastopia.teaml.rest.RegionApiService;
 import de.uniks.beastopia.teaml.rest.UserAPIService;
+import de.uniks.beastopia.teaml.service.AuthApiService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory;
 import retrofit2.converter.jackson.JacksonConverterFactory;
-
 
 import javax.inject.Singleton;
 
@@ -56,5 +56,11 @@ public class HttpModule {
     @Singleton
     AuthApiService login(Retrofit retrofit) {
         return retrofit.create(AuthApiService.class);
+    }
+
+    @Provides
+    @Singleton
+    RegionApiService region(Retrofit retrofit) {
+        return retrofit.create(RegionApiService.class);
     }
 }
