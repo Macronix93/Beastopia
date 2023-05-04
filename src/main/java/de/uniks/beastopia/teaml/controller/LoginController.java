@@ -58,6 +58,7 @@ public class LoginController extends Controller {
         return parent;
     }
 
+    @FXML
     public void login() {
         if (isInValid.get()) {
             return;
@@ -86,6 +87,7 @@ public class LoginController extends Controller {
         }));
     }
 
+    @FXML
     public void register() {
         app.show(registrationControllerProvider.get());
     }
