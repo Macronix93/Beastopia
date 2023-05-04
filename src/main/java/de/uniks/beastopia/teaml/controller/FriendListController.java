@@ -48,7 +48,8 @@ public class FriendListController extends Controller {
         //get friends from user
         //for every fiend
         for (User friend : user.getFriends()) {
-            friendList.getChildren().add(new FriendController(friend).render());
+            //Friend
+            friendList.getChildren().add(new FriendController().render());
             //Braucht man FriendService oder hat man die Liste schon so?
         }
     }

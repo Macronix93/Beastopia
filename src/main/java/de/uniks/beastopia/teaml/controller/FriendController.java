@@ -27,16 +27,18 @@ public class FriendController extends Controller {
     @FXML
     public Button pin;
 
-    private final User user;
+    private User user;
 
     @Inject
-    public FriendController(User user) {
-        this.user = user;
+    public FriendController() {
+
     }
 
     @Override
     public Parent render() {
         Parent parent = super.render();
+
+        user = new User();
 
         friendAvatar.setImage(new Image(user.getAvatar()));
 
