@@ -27,7 +27,7 @@ public class FriendController extends Controller {
     @FXML
     public Button pin;
 
-    private User user;
+    private final User user;
 
     @Inject
     public FriendController(User friend) {
@@ -53,6 +53,7 @@ public class FriendController extends Controller {
 
     @FXML
     public void editFriendList(ActionEvent actionEvent) {
+        //Icons for methods in assets\buttons
     }
 
     @FXML
