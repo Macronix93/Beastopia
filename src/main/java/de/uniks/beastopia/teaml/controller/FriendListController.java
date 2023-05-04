@@ -13,6 +13,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
+import java.util.List;
 
 public class FriendListController extends Controller {
     @FXML
@@ -44,6 +45,8 @@ public class FriendListController extends Controller {
     @Override
     public void init() {
         disposables.add(refreshService.refresh(tokenStorage.getRefreshToken()).subscribe(r -> {
+            List<String> ids = r.getFriends();
+            //für jede friend id user holen für ejden user subcxontroller
             User currentUser = new User()
                     .withFriends(r.getFriends());
             for (User friend : currentUser.getFriends()) {

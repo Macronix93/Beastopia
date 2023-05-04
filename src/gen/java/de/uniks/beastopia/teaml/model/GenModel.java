@@ -16,29 +16,19 @@ public class GenModel implements ClassModelDecorator {
     public class User {
         String createdAt;
         String updatedAt;
-        String id;
+        String _id;
         String name;
         String status;
         String avatar;
 
-        @Link
-        List<User> friends;
         @Link("members")
         List<Group> groups;
-    }
-
-    public class LoginResult {
-        String accessToken;
-        String refreshToken;
-
-        @Link
-        User user;
     }
 
     public class Message {
         String createdAt;
         String updatedAt;
-        String id;
+        String _id;
         String body;
 
         @Link
@@ -48,7 +38,7 @@ public class GenModel implements ClassModelDecorator {
     public class Group {
         String createdAt;
         String updatedAt;
-        String id;
+        String _id;
         String name;
 
         @Link("groups")
@@ -58,7 +48,7 @@ public class GenModel implements ClassModelDecorator {
     public class Region {
         String createdAt;
         String updatedAt;
-        String id;
+        String _id;
         String name;
     }
 

@@ -1,5 +1,6 @@
 package de.uniks.beastopia.teaml.service;
 
+import de.uniks.beastopia.teaml.model.LoginResult;
 import de.uniks.beastopia.teaml.model.User;
 import de.uniks.beastopia.teaml.rest.AuthApiService;
 import de.uniks.beastopia.teaml.rest.RefreshDto;
@@ -14,7 +15,7 @@ public class RefreshService {
     public RefreshService() {
     }
 
-    public Observable<User> refresh(String refreshToken){
+    public Observable<LoginResult> refresh(String refreshToken){
         return authApiService.refresh(new RefreshDto(refreshToken));
     }
 }

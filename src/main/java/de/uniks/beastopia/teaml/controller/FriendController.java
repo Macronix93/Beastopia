@@ -42,7 +42,7 @@ public class FriendController extends Controller {
 
         name.setText(user.getName());
 
-        if (user.getStatus() == "online") {
+        if (user.getStatus().equals("online")) {
             statusCircle.setFill(Paint.valueOf("green"));
         } else {
             statusCircle.setFill(Paint.valueOf("red"));

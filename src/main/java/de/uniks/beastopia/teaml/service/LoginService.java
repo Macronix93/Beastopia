@@ -2,6 +2,7 @@ package de.uniks.beastopia.teaml.service;
 
 import de.uniks.beastopia.teaml.model.LoginResult;
 import de.uniks.beastopia.teaml.rest.LoginDto;
+import de.uniks.beastopia.teaml.rest.AuthApiService;
 import io.reactivex.rxjava3.core.Observable;
 
 import javax.inject.Inject;
