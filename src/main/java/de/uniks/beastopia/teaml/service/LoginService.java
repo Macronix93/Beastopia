@@ -1,21 +1,25 @@
 package de.uniks.beastopia.teaml.service;
 
-import de.uniks.beastopia.teaml.model.User;
-import de.uniks.beastopia.teaml.rest.AuthApiService;
+import de.uniks.beastopia.teaml.model.LoginResult;
 import de.uniks.beastopia.teaml.rest.LoginDto;
 import io.reactivex.rxjava3.core.Observable;
 
 import javax.inject.Inject;
 
 public class LoginService {
-    @Inject
-    AuthApiService authApiService;
+    private final TokenStorage tokenStorage;
+    private final AuthApiService authApiService;
 
     @Inject
-    public LoginService() {
+    public LoginService(TokenStorage tokenStorage, AuthApiService authApiService) {
+        this.tokenStorage = tokenStorage;
+        this.authApiService = authApiService;
     }
 
-    public Observable<User> login(String name, String password) {
-        return authApiService.login(new LoginDto(name, password));
+    public Observable<LoginResult> login(String username, String password) {
+        return authApiService.login(new LoginDto(username, password)).map(lr -> {
+            tokenStorage.setToken(lr.getAccessToken());
+            return lr;
+        });
     }
 }
