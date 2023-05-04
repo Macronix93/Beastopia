@@ -18,7 +18,8 @@ public class LoginService {
 
     public Observable<LoginResult> login(String username, String password) {
         return authApiService.login(new LoginDto(username, password)).map(lr -> {
-            tokenStorage.setToken(lr.getAccessToken());
+            tokenStorage.setAccessToken(lr.getAccessToken());
+            tokenStorage.setRefreshToken(lr.getRefreshToken());
             return lr;
         });
     }

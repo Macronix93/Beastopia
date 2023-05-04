@@ -2,6 +2,8 @@ package de.uniks.beastopia.teaml.controller;
 
 import de.uniks.beastopia.teaml.model.User;
 import de.uniks.beastopia.teaml.service.LoginService;
+import de.uniks.beastopia.teaml.service.RefreshService;
+import de.uniks.beastopia.teaml.service.TokenStorage;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -25,7 +27,9 @@ public class FriendListController extends Controller {
     public Button showChats;
 
     @Inject
-    LoginService loginService;
+    RefreshService refreshService;
+    @Inject
+    TokenStorage tokenStorage;
 
     @Inject
     public FriendListController() {
@@ -39,19 +43,18 @@ public class FriendListController extends Controller {
 
     @Override
     public void init() {
-        loginService.login("string", "stringst").subscribe(lr -> {
-            System.out.println(lr.getFriends());
-            //Get friends
-            //friend subcontroller
-        });
-        User user = new User();
-        //get friends from user
-        //for every fiend
-        for (User friend : user.getFriends()) {
-            //Friend
+        refreshService.refresh(tokenStorage.getRefreshToken()).subscribe(r -> {
+            User currentUser = new User()
+                    .setAvatar(r.getAvatar())
+                    .setId(r.getId())
+                    .withFriends(r.getFriends())
+                    .setName(r.getName())
+                    .setStatus(r.getStatus())
+                    .setCreatedAt(r.getCreatedAt())
+                    .setUpdatedAt(r.getUpdatedAt());
             friendList.getChildren().add(new FriendController().render());
-            //Braucht man FriendService oder hat man die Liste schon so?
-        }
+            //TODO das richtig
+        });
     }
 
     @FXML

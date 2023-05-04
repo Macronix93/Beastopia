@@ -8,4 +8,7 @@ import retrofit2.http.POST;
 public interface AuthApiService {
     @POST("auth/login")
     Observable<User> login(@Body LoginDto loginDto);
+
+    @POST("auth/refresh")
+    Observable<User> refresh(@Body RefreshDto refreshDto);
 }
