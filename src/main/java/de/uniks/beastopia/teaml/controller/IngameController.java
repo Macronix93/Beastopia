@@ -8,7 +8,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 
 public class IngameController extends Controller {
 
@@ -18,8 +17,10 @@ public class IngameController extends Controller {
     private Button pause;
     @Inject
     App app;
+    /* TODO remove the comment surrounding the following lines, if PauseController is implemented
     @Inject
-    Provider<MenuController> menuControllerProvider;
+    Provider<PauseController> pauseControllerProvider;
+    */
 
     @Inject
     public IngameController() {
@@ -36,7 +37,8 @@ public class IngameController extends Controller {
 
     public void escape(KeyEvent keyEvent) {
         if (keyEvent.getCode().equals(KeyCode.ESCAPE)) {
-            app.show(menuControllerProvider.get());
+            // TODO open PauseController
+            // app.show(pauseControllerProvider.get());
         }
     }
 }
