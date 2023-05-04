@@ -28,9 +28,6 @@ public class FriendListController extends Controller {
     LoginService loginService;
 
     @Inject
-    FriendService friendService;
-
-    @Inject
     public FriendListController() {
 
     }
@@ -51,7 +48,7 @@ public class FriendListController extends Controller {
         //get friends from user
         //for every fiend
         for (User friend : user.getFriends()) {
-
+            friendList.getChildren().add(new FriendController(friend).render());
             //Braucht man FriendService oder hat man die Liste schon so?
         }
     }
