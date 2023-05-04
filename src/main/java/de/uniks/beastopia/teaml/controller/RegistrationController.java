@@ -11,6 +11,7 @@ import javafx.scene.control.TextField;
 import retrofit2.HttpException;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 public class RegistrationController extends Controller {
 
@@ -27,6 +28,9 @@ public class RegistrationController extends Controller {
 
     @Inject
     RegistrationService registrationService;
+
+    @Inject
+    Provider<LoginController> loginControllerProvider;
 
     @Inject
     App app;
@@ -89,7 +93,6 @@ public class RegistrationController extends Controller {
 
     @FXML
     private void switchToSignIn() {
-        // TODO: Implement when login is implemented
-//        main.app().show(main.loginController());
+        app.show(loginControllerProvider.get());
     }
 }
