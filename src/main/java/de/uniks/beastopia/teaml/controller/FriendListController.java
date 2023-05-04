@@ -4,6 +4,7 @@ import de.uniks.beastopia.teaml.model.User;
 import de.uniks.beastopia.teaml.service.LoginService;
 import de.uniks.beastopia.teaml.service.RefreshService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
+import de.uniks.beastopia.teaml.service.UserService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -29,6 +30,9 @@ public class FriendListController extends Controller {
 
     @Inject
     RefreshService refreshService;
+
+    @Inject
+    UserService userService;
     @Inject
     TokenStorage tokenStorage;
 
@@ -45,12 +49,10 @@ public class FriendListController extends Controller {
     @Override
     public void init() {
         disposables.add(refreshService.refresh(tokenStorage.getRefreshToken()).subscribe(r -> {
-            List<String> ids = r.getFriends();
-            //für jede friend id user holen für ejden user subcxontroller
-            User currentUser = new User()
-                    .withFriends(r.getFriends());
-            for (User friend : currentUser.getFriends()) {
-                friendList.getChildren().add(new FriendController(friend).render());
+            for (String friendId : r.friends()) {
+                disposables.add(userService.getUser(friendId).subscribe(f -> {
+                    friendList.getChildren().add(new FriendController(f).render());
+                }));
             }
         }));
     }
