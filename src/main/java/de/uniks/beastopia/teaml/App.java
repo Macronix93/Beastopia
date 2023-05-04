@@ -2,10 +2,13 @@ package de.uniks.beastopia.teaml;
 
 import de.uniks.beastopia.teaml.controller.Controller;
 
+import fr.brouillard.oss.cssfx.CSSFX;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
+
+import java.util.Objects;
 
 public class App extends Application {
     private Stage stage;
@@ -33,6 +36,9 @@ public class App extends Application {
         final Scene scene = new Scene(new Label("Loading..."));
         stage.setScene(scene);
 
+        scene.getStylesheets().add(Objects.requireNonNull(Main.class.getResource("views/styles.css")).toString());
+        CSSFX.start(scene);
+
         stage.show();
 
         if (controller != null) {
@@ -42,10 +48,8 @@ public class App extends Application {
 
 
         final MainComponent component = DaggerMainComponent.builder().mainApp(this).build();
-        controller = component.registrationController();
+        controller = component.loginController();
         initAndRender(controller);
-
-        //TODO in LoginController @Inject und leerer Konstruktor
     }
 
     @Override
