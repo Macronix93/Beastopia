@@ -30,15 +30,13 @@ public class FriendController extends Controller {
     private User user;
 
     @Inject
-    public FriendController() {
-
+    public FriendController(User friend) {
+        this.user = friend;
     }
 
     @Override
     public Parent render() {
         Parent parent = super.render();
-
-        user = new User();
 
         friendAvatar.setImage(new Image(user.getAvatar()));
 

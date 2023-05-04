@@ -43,18 +43,13 @@ public class FriendListController extends Controller {
 
     @Override
     public void init() {
-        refreshService.refresh(tokenStorage.getRefreshToken()).subscribe(r -> {
+        disposables.add(refreshService.refresh(tokenStorage.getRefreshToken()).subscribe(r -> {
             User currentUser = new User()
-                    .setAvatar(r.getAvatar())
-                    .setId(r.getId())
-                    .withFriends(r.getFriends())
-                    .setName(r.getName())
-                    .setStatus(r.getStatus())
-                    .setCreatedAt(r.getCreatedAt())
-                    .setUpdatedAt(r.getUpdatedAt());
-            friendList.getChildren().add(new FriendController().render());
-            //TODO das richtig
-        });
+                    .withFriends(r.getFriends());
+            for (User friend : currentUser.getFriends()) {
+                friendList.getChildren().add(new FriendController(friend).render());
+            }
+        }));
     }
 
     @FXML
