@@ -2,6 +2,7 @@ package de.uniks.beastopia.teaml.controller;
 
 import javafx.fxml.FXML;
 import javafx.scene.layout.VBox;
+
 import javax.inject.Inject;
 
 public class MenuController extends Controller {
@@ -17,6 +18,7 @@ public class MenuController extends Controller {
 
     }
 
+    @Override
     public String getTitle() {
         return "Beastopia - Main Menu";
     }
