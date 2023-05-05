@@ -1,11 +1,26 @@
 package de.uniks.beastopia.teaml.rest;
 
-import de.uniks.beastopia.teaml.model.User;
 import io.reactivex.rxjava3.core.Observable;
-import retrofit2.http.Body;
-import retrofit2.http.POST;
+import retrofit2.http.*;
 
-public interface UserAPIService {
+import java.util.List;
+
+public interface UserApiService {
+    public static final String STATUS_ONLINE = "online";
+    public static final String STATUS_OFFLINE = "offline";
+
     @POST("users")
     Observable<User> createUser(@Body CreateUserDto userDto);
+
+    @GET("users")
+    Observable<List<User>> getUsers(@Query("ids") List<String> ids, @Query("status") String status);
+
+    @GET("users/{id}")
+    Observable<User> getUser(@Path("id") String id);
+
+    @PATCH("users/{id}")
+    Observable<User> updateUser(@Path("id") String id, @Body UpdateUserDto userDto);
+
+    @DELETE("users/{id}")
+    Observable<Void> deleteUser(@Path("id") String id);
 }
