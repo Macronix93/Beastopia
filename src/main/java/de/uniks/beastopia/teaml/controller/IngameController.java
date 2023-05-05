@@ -26,19 +26,16 @@ public class IngameController extends Controller {
     public IngameController() {
     }
 
-    public void pauseMenu() {
-        //ToDo Show Pause Menu
+    @FXML
+    public void pauseMenu(KeyEvent keyEvent) {
+        if (keyEvent.getCode().equals(KeyCode.ESCAPE)) {
+            // TODO open PauseController
+            // app.show(pauseControllerProvider.get());
+        }
     }
 
     @Override
     public String getTitle() {
         return "Beastopia";
-    }
-
-    public void escape(KeyEvent keyEvent) {
-        if (keyEvent.getCode().equals(KeyCode.ESCAPE)) {
-            // TODO open PauseController
-            // app.show(pauseControllerProvider.get());
-        }
     }
 }
