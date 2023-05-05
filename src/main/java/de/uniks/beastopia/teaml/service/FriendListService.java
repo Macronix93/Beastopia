@@ -3,7 +3,7 @@ package de.uniks.beastopia.teaml.service;
 import de.uniks.beastopia.teaml.rest.AuthApiService;
 import de.uniks.beastopia.teaml.rest.UpdateUserDto;
 import de.uniks.beastopia.teaml.rest.User;
-import de.uniks.beastopia.teaml.rest.UserApService;
+import de.uniks.beastopia.teaml.rest.UserApiService;
 import io.reactivex.rxjava3.core.Observable;
 
 import javax.inject.Inject;
@@ -21,7 +21,7 @@ public class FriendListService {
     TokenStorage tokenStorage;
 
     @Inject
-    UserApService userApService;
+    UserApiService userApiService;
     @Inject
     AuthApiService authApiService;
 
@@ -30,22 +30,22 @@ public class FriendListService {
     }
 
     public Observable<List<User>> getUsers() {
-        return userApService.getUsers(null, null);
+        return userApiService.getUsers(null, null);
     }
 
     public Observable<List<String>> getFriendIDs() {
-        return userApService
+        return userApiService
                 .getUser(tokenStorage.getCurrentUser()._id())
                 .map(User::friends);
     }
 
     public Observable<List<User>> getFriends() {
-        return userApService
+        return userApiService
                 .getUsers(tokenStorage.getCurrentUser().friends(), null);
     }
 
     public Observable<List<User>> getFriends(Status status) {
-        return userApService
+        return userApiService
                 .getUsers(tokenStorage.getCurrentUser().friends(), switch (status) {
                     case Online -> "online";
                     case Offline -> "offline";
@@ -57,7 +57,7 @@ public class FriendListService {
             List<String> friendsCopy = new ArrayList<>(friends);
             friendsCopy.add(friend._id());
             String userID = tokenStorage.getCurrentUser()._id();
-            tokenStorage.setCurrentUser(userApService.updateUser(userID, new UpdateUserDto(null, null, null, friendsCopy, null)).blockingFirst());
+            tokenStorage.setCurrentUser(userApiService.updateUser(userID, new UpdateUserDto(null, null, null, friendsCopy, null)).blockingFirst());
             return tokenStorage.getCurrentUser();
         });
     }
@@ -67,7 +67,7 @@ public class FriendListService {
             List<String> friendsCopy = new ArrayList<>(friends);
             friendsCopy.remove(friend._id());
             String userID = tokenStorage.getCurrentUser()._id();
-            tokenStorage.setCurrentUser(userApService.updateUser(userID, new UpdateUserDto(null, null, null, friendsCopy, null)).blockingFirst());
+            tokenStorage.setCurrentUser(userApiService.updateUser(userID, new UpdateUserDto(null, null, null, friendsCopy, null)).blockingFirst());
             return tokenStorage.getCurrentUser();
         });
     }

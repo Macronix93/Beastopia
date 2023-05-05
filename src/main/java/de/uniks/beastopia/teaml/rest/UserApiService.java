@@ -5,7 +5,7 @@ import retrofit2.http.*;
 
 import java.util.List;
 
-public interface UserApService {
+public interface UserApiService {
     public static final String STATUS_ONLINE = "online";
     public static final String STATUS_OFFLINE = "offline";
 

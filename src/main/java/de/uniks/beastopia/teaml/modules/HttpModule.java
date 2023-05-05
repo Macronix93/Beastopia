@@ -66,8 +66,8 @@ public class HttpModule {
 
     @Provides
     @Singleton
-    UserApService user(Retrofit retrofit) {
-        return retrofit.create(UserApService.class);
+    UserApiService user(Retrofit retrofit) {
+        return retrofit.create(UserApiService.class);
     }
 
     @Provides

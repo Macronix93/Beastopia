@@ -11,7 +11,7 @@ public class AuthService {
     @Inject
     AuthApiService authApiService;
     @Inject
-    UserApService userApService;
+    UserApiService userApiService;
 
     @Inject
     public AuthService() {
@@ -22,7 +22,7 @@ public class AuthService {
             tokenStorage.setAccessToken(lr.accessToken());
             tokenStorage.setRefreshToken(lr.refreshToken());
             tokenStorage.setCurrentUser(new User(lr.createdAt(), lr.updatedAt(), lr._id(), lr.name(), lr.status(), lr.avatar(), lr.friends()));
-            userApService.updateUser(tokenStorage.getCurrentUser()._id(), new UpdateUserDto(null, UserApService.STATUS_ONLINE, null, null, null)).subscribe();
+            userApiService.updateUser(tokenStorage.getCurrentUser()._id(), new UpdateUserDto(null, UserApiService.STATUS_ONLINE, null, null, null)).subscribe();
             return lr;
         });
     }
@@ -32,13 +32,13 @@ public class AuthService {
             tokenStorage.setAccessToken(lr.accessToken());
             tokenStorage.setRefreshToken(lr.refreshToken());
             tokenStorage.setCurrentUser(new User(lr.createdAt(), lr.updatedAt(), lr._id(), lr.name(), lr.status(), lr.avatar(), lr.friends()));
-            userApService.updateUser(tokenStorage.getCurrentUser()._id(), new UpdateUserDto(null, UserApService.STATUS_ONLINE, null, null, null)).subscribe();
+            userApiService.updateUser(tokenStorage.getCurrentUser()._id(), new UpdateUserDto(null, UserApiService.STATUS_ONLINE, null, null, null)).subscribe();
             return lr;
         });
     }
 
     public Observable<Void> logout() {
-        return userApService.updateUser(tokenStorage.getCurrentUser()._id(), new UpdateUserDto(null, UserApService.STATUS_OFFLINE, null, null, null)).map(user -> {
+        return userApiService.updateUser(tokenStorage.getCurrentUser()._id(), new UpdateUserDto(null, UserApiService.STATUS_OFFLINE, null, null, null)).map(user -> {
             return authApiService.logout().blockingFirst();
         });
     }
