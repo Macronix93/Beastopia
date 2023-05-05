@@ -1,6 +1,7 @@
 package de.uniks.beastopia.teaml.controller;
 
-import de.uniks.beastopia.teaml.model.User;
+
+import de.uniks.beastopia.teaml.rest.User;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -11,7 +12,9 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 
+import javax.imageio.stream.FileImageInputStream;
 import javax.inject.Inject;
+import java.io.FileInputStream;
 
 public class FriendController extends Controller {
     @FXML
@@ -27,22 +30,30 @@ public class FriendController extends Controller {
     @FXML
     public Button pin;
 
-    private final User user;
+    private User user;
 
     @Inject
-    public FriendController(User friend) {
-        this.user = friend;
+    public FriendController() {
+
+    }
+
+    public FriendController setUser(User user) {
+        this.user = user;
+        return this;
     }
 
     @Override
     public Parent render() {
         Parent parent = super.render();
 
-        friendAvatar.setImage(new Image(user.getAvatar()));
+        //TODO change avatar URL when avatar upload is implemented to individual link
+        Image image = new Image("de/uniks/beastopia/teaml/assets/Lumnix_Logo_tr.png", 40.0,
+                40.0, false, false);
+        friendAvatar.setImage(image);
 
-        name.setText(user.getName());
+        name.setText(user.name());
 
-        if (user.getStatus().equals("online")) {
+        if (user.status().equals("online")) {
             statusCircle.setFill(Paint.valueOf("green"));
         } else {
             statusCircle.setFill(Paint.valueOf("red"));

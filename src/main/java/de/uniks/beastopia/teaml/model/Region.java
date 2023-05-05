@@ -6,13 +6,13 @@ public class Region
 {
    public static final String PROPERTY_CREATED_AT = "createdAt";
    public static final String PROPERTY_UPDATED_AT = "updatedAt";
-   public static final String PROPERTY_ID = "id";
    public static final String PROPERTY_NAME = "name";
+   public static final String PROPERTY__ID = "_id";
    private String createdAt;
    private String updatedAt;
-   private String id;
    private String name;
    protected PropertyChangeSupport listeners;
+   private String _id;
 
    public String getCreatedAt()
    {
@@ -50,24 +50,6 @@ public class Region
       return this;
    }
 
-   public String getId()
-   {
-      return this.id;
-   }
-
-   public Region setId(String value)
-   {
-      if (Objects.equals(value, this.id))
-      {
-         return this;
-      }
-
-      final String oldValue = this.id;
-      this.id = value;
-      this.firePropertyChange(PROPERTY_ID, oldValue, value);
-      return this;
-   }
-
    public String getName()
    {
       return this.name;
@@ -83,6 +65,24 @@ public class Region
       final String oldValue = this.name;
       this.name = value;
       this.firePropertyChange(PROPERTY_NAME, oldValue, value);
+      return this;
+   }
+
+   public String get_id()
+   {
+      return this._id;
+   }
+
+   public Region set_id(String value)
+   {
+      if (Objects.equals(value, this._id))
+      {
+         return this;
+      }
+
+      final String oldValue = this._id;
+      this._id = value;
+      this.firePropertyChange(PROPERTY__ID, oldValue, value);
       return this;
    }
 
@@ -111,7 +111,7 @@ public class Region
       final StringBuilder result = new StringBuilder();
       result.append(' ').append(this.getCreatedAt());
       result.append(' ').append(this.getUpdatedAt());
-      result.append(' ').append(this.getId());
+      result.append(' ').append(this.get_id());
       result.append(' ').append(this.getName());
       return result.substring(1);
    }

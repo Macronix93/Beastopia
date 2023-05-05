@@ -5,7 +5,7 @@ import dagger.Module;
 import dagger.Provides;
 import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.rest.AuthApiService;
-import de.uniks.beastopia.teaml.rest.UserAPIService;
+import de.uniks.beastopia.teaml.rest.UserApiService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -47,13 +47,13 @@ public class HttpModule {
 
     @Provides
     @Singleton
-    UserAPIService auth(Retrofit retrofit) {
-        return retrofit.create(UserAPIService.class);
+    UserApiService user(Retrofit retrofit) {
+        return retrofit.create(UserApiService.class);
     }
 
     @Provides
     @Singleton
-    AuthApiService login(Retrofit retrofit) {
+    AuthApiService auth(Retrofit retrofit) {
         return retrofit.create(AuthApiService.class);
     }
 }

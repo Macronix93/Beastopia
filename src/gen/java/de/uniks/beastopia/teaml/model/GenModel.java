@@ -13,26 +13,12 @@ public class GenModel implements ClassModelDecorator {
         mm.haveNestedClasses(GenModel.class);
     }
 
-    public class User {
-        String createdAt;
-        String updatedAt;
-        String _id;
-        String name;
-        String status;
-        String avatar;
-
-        @Link("members")
-        List<Group> groups;
-    }
-
     public class Message {
         String createdAt;
         String updatedAt;
         String _id;
         String body;
 
-        @Link
-        User sender;
     }
 
     public class Group {
@@ -40,9 +26,6 @@ public class GenModel implements ClassModelDecorator {
         String updatedAt;
         String _id;
         String name;
-
-        @Link("groups")
-        List<User> members;
     }
 
     public class Region {

@@ -10,15 +10,13 @@ public class Group
 {
    public static final String PROPERTY_CREATED_AT = "createdAt";
    public static final String PROPERTY_UPDATED_AT = "updatedAt";
-   public static final String PROPERTY_ID = "id";
    public static final String PROPERTY_NAME = "name";
-   public static final String PROPERTY_MEMBERS = "members";
+   public static final String PROPERTY__ID = "_id";
    private String createdAt;
    private String updatedAt;
-   private String id;
    private String name;
    protected PropertyChangeSupport listeners;
-   private List<User> members;
+   private String _id;
 
    public String getCreatedAt()
    {
@@ -56,24 +54,6 @@ public class Group
       return this;
    }
 
-   public String getId()
-   {
-      return this.id;
-   }
-
-   public Group setId(String value)
-   {
-      if (Objects.equals(value, this.id))
-      {
-         return this;
-      }
-
-      final String oldValue = this.id;
-      this.id = value;
-      this.firePropertyChange(PROPERTY_ID, oldValue, value);
-      return this;
-   }
-
    public String getName()
    {
       return this.name;
@@ -92,69 +72,21 @@ public class Group
       return this;
    }
 
-   public List<User> getMembers()
+   public String get_id()
    {
-      return this.members != null ? Collections.unmodifiableList(this.members) : Collections.emptyList();
+      return this._id;
    }
 
-   public Group withMembers(User value)
+   public Group set_id(String value)
    {
-      if (this.members == null)
+      if (Objects.equals(value, this._id))
       {
-         this.members = new ArrayList<>();
+         return this;
       }
-      if (!this.members.contains(value))
-      {
-         this.members.add(value);
-         value.withGroups(this);
-         this.firePropertyChange(PROPERTY_MEMBERS, null, value);
-      }
-      return this;
-   }
 
-   public Group withMembers(User... value)
-   {
-      for (final User item : value)
-      {
-         this.withMembers(item);
-      }
-      return this;
-   }
-
-   public Group withMembers(Collection<? extends User> value)
-   {
-      for (final User item : value)
-      {
-         this.withMembers(item);
-      }
-      return this;
-   }
-
-   public Group withoutMembers(User value)
-   {
-      if (this.members != null && this.members.remove(value))
-      {
-         value.withoutGroups(this);
-         this.firePropertyChange(PROPERTY_MEMBERS, value, null);
-      }
-      return this;
-   }
-
-   public Group withoutMembers(User... value)
-   {
-      for (final User item : value)
-      {
-         this.withoutMembers(item);
-      }
-      return this;
-   }
-
-   public Group withoutMembers(Collection<? extends User> value)
-   {
-      for (final User item : value)
-      {
-         this.withoutMembers(item);
-      }
+      final String oldValue = this._id;
+      this._id = value;
+      this.firePropertyChange(PROPERTY__ID, oldValue, value);
       return this;
    }
 
@@ -183,13 +115,8 @@ public class Group
       final StringBuilder result = new StringBuilder();
       result.append(' ').append(this.getCreatedAt());
       result.append(' ').append(this.getUpdatedAt());
-      result.append(' ').append(this.getId());
+      result.append(' ').append(this.get_id());
       result.append(' ').append(this.getName());
       return result.substring(1);
-   }
-
-   public void removeYou()
-   {
-      this.withoutMembers(new ArrayList<>(this.getMembers()));
    }
 }
