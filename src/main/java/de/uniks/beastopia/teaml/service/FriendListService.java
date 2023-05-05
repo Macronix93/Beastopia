@@ -21,7 +21,7 @@ public class FriendListService {
     TokenStorage tokenStorage;
 
     @Inject
-    UserApiService userAPIService;
+    UserApiService userApiService;
     @Inject
     AuthApiService authApiService;
 
@@ -30,22 +30,22 @@ public class FriendListService {
     }
 
     public Observable<List<User>> getUsers() {
-        return userAPIService.getUsers(null, null);
+        return userApiService.getUsers(null, null);
     }
 
     public Observable<List<String>> getFriendIDs() {
-        return userAPIService
+        return userApiService
                 .getUser(tokenStorage.getCurrentUser()._id())
                 .map(User::friends);
     }
 
     public Observable<List<User>> getFriends() {
-        return userAPIService
+        return userApiService
                 .getUsers(tokenStorage.getCurrentUser().friends(), null);
     }
 
     public Observable<List<User>> getFriends(Status status) {
-        return userAPIService
+        return userApiService
                 .getUsers(tokenStorage.getCurrentUser().friends(), switch (status) {
                     case Online -> "online";
                     case Offline -> "offline";
@@ -57,7 +57,7 @@ public class FriendListService {
             List<String> friendsCopy = new ArrayList<>(friends);
             friendsCopy.add(friend._id());
             String userID = tokenStorage.getCurrentUser()._id();
-            tokenStorage.setCurrentUser(userAPIService.updateUser(userID, new UpdateUserDto(null, null, null, friendsCopy, null)).blockingFirst());
+            tokenStorage.setCurrentUser(userApiService.updateUser(userID, new UpdateUserDto(null, null, null, friendsCopy, null)).blockingFirst());
             return tokenStorage.getCurrentUser();
         });
     }
@@ -67,7 +67,7 @@ public class FriendListService {
             List<String> friendsCopy = new ArrayList<>(friends);
             friendsCopy.remove(friend._id());
             String userID = tokenStorage.getCurrentUser()._id();
-            tokenStorage.setCurrentUser(userAPIService.updateUser(userID, new UpdateUserDto(null, null, null, friendsCopy, null)).blockingFirst());
+            tokenStorage.setCurrentUser(userApiService.updateUser(userID, new UpdateUserDto(null, null, null, friendsCopy, null)).blockingFirst());
             return tokenStorage.getCurrentUser();
         });
     }
