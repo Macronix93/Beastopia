@@ -65,7 +65,9 @@ public class LoginController extends Controller {
         }
 
         disposables.add(loginService.login(usernameInput.getText(), passwordInput.getText()).subscribe(lr -> {
-            app.show(new MenuController());
+            Platform.runLater(() -> {
+                app.show(new MenuController());
+            });
         }, error -> {
             Platform.runLater(() -> {
                 if (error instanceof HttpException httpError) {
