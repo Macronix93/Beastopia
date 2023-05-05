@@ -22,6 +22,8 @@ public interface MainComponent {
     App app();
     RegistrationController registrationController();
 
+    MenuController menuController();
+
     FriendListController friendListController();
 
     FriendController friendController();

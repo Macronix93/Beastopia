@@ -37,7 +37,7 @@
       </HBox>
       <ScrollPane fx:id="scrollFriends" hbarPolicy="NEVER" prefHeight="3500.0">
          <content>
-            <VBox fx:id="friendList" alignment="TOP_CENTER" />
+            <VBox fx:id="friendList" alignment="TOP_CENTER" minHeight="240.0" minWidth="175.0" />
          </content>
       </ScrollPane>
       <VBox alignment="CENTER" prefHeight="1000.0">

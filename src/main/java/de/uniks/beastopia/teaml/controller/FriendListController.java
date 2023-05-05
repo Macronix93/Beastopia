@@ -48,11 +48,7 @@ public class FriendListController extends Controller {
 
     @Override
     public Parent render() {
-        return super.render();
-    }
-
-    @Override
-    public void init() {
+        Parent parent = super.render();
         disposables.add(refreshService.refresh(tokenStorage.getRefreshToken()).subscribe(r -> {
             for (String friendId : r.friends()) {
                 disposables.add(userService.getUser(friendId).subscribe(f -> {
@@ -64,6 +60,7 @@ public class FriendListController extends Controller {
                 }));
             }
         }));
+        return parent;
     }
 
     @Override
