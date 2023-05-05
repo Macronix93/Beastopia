@@ -37,6 +37,11 @@ public class MenuController extends Controller {
     }
 
     @Override
+    public void destroy() {
+        subControllers.forEach(Controller::destroy);
+    }
+
+    @Override
     public String getTitle() {
         return "Beastopia - Main Menu";
     }
