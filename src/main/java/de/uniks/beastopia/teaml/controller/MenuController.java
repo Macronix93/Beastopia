@@ -1,21 +1,26 @@
 package de.uniks.beastopia.teaml.controller;
 
-import de.uniks.beastopia.teaml.service.FriendListService;
-import javafx.scene.Parent;
+import javafx.fxml.FXML;
+import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
 
 public class MenuController extends Controller {
-
-    @Inject
-    FriendListService friendListService;
+    private Controller regionController;
+    private Controller friendListController;
+    @FXML
+    private VBox friendListContainer;
+    @FXML
+    private VBox regionContainer;
 
     @Inject
     public MenuController() {
+
     }
 
     @Override
-    public Parent render() {
-        return super.render();
+    public String getTitle() {
+        return "Beastopia - Main Menu";
     }
+
 }
