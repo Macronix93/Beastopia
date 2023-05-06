@@ -62,7 +62,6 @@ public class FriendListController extends Controller {
                                 .setFriendController(friend, friendListController, true);
                         subControllers.add(subController);
                         friendList.getChildren().add(0, subController.render());
-                        friendControllerProvider.get().setFriendController(friend, friendListController, true);
                     } else {
                         Controller subController = friendControllerProvider.get()
                                 .setFriendController(friend, friendListController, false);
