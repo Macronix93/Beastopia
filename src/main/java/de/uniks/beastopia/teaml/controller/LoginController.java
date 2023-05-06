@@ -1,6 +1,7 @@
 package de.uniks.beastopia.teaml.controller;
 
 import com.google.gson.Gson;
+import dagger.Provides;
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.rest.ErrorResponse;
 import de.uniks.beastopia.teaml.service.LoginService;
@@ -30,6 +31,9 @@ public class LoginController extends Controller {
     App app;
     @Inject
     Provider<RegistrationController> registrationControllerProvider;
+
+    @Inject
+    Provider<MenuController> menuControllerProvider;
     @Inject
     LoginService loginService;
     @Inject
@@ -65,7 +69,9 @@ public class LoginController extends Controller {
         }
 
         disposables.add(loginService.login(usernameInput.getText(), passwordInput.getText()).subscribe(lr -> {
-            app.show(new MenuController());
+            Platform.runLater(() -> {
+                app.show(menuControllerProvider.get());
+            });
         }, error -> {
             Platform.runLater(() -> {
                 if (error instanceof HttpException httpError) {
