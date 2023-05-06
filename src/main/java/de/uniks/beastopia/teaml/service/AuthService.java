@@ -21,8 +21,7 @@ public class AuthService {
         return authApiService.login(new LoginDto(username, password)).map(lr -> {
             tokenStorage.setAccessToken(lr.accessToken());
             tokenStorage.setRefreshToken(lr.refreshToken());
-            tokenStorage.setCurrentUser(new User(lr.createdAt(), lr.updatedAt(), lr._id(), lr.name(), lr.status(), lr.avatar(), lr.friends()));
-            userApiService.updateUser(tokenStorage.getCurrentUser()._id(), new UpdateUserDto(null, UserApiService.STATUS_ONLINE, null, null, null)).subscribe();
+            tokenStorage.setCurrentUser(userApiService.updateUser(lr._id(), new UpdateUserDto(null, UserApiService.STATUS_ONLINE, null, null, null)).blockingFirst());
             return lr;
         });
     }
@@ -31,8 +30,7 @@ public class AuthService {
         return authApiService.refresh(new RefreshDto(tokenStorage.getRefreshToken())).map(lr -> {
             tokenStorage.setAccessToken(lr.accessToken());
             tokenStorage.setRefreshToken(lr.refreshToken());
-            tokenStorage.setCurrentUser(new User(lr.createdAt(), lr.updatedAt(), lr._id(), lr.name(), lr.status(), lr.avatar(), lr.friends()));
-            userApiService.updateUser(tokenStorage.getCurrentUser()._id(), new UpdateUserDto(null, UserApiService.STATUS_ONLINE, null, null, null)).subscribe();
+            tokenStorage.setCurrentUser(userApiService.updateUser(lr._id(), new UpdateUserDto(null, UserApiService.STATUS_ONLINE, null, null, null)).blockingFirst());
             return lr;
         });
     }
