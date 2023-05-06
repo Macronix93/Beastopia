@@ -4,7 +4,6 @@ package de.uniks.beastopia.teaml.controller;
 import de.uniks.beastopia.teaml.rest.User;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
@@ -14,10 +13,8 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 
-import javax.imageio.stream.FileImageInputStream;
 import javax.inject.Inject;
-import javax.inject.Provider;
-import java.io.FileInputStream;
+import java.util.prefs.Preferences;
 
 public class FriendController extends Controller {
     @FXML
@@ -38,8 +35,11 @@ public class FriendController extends Controller {
     private User user;
     private FriendListController friendListController;
 
-    private ImageView notPinned;
-    private ImageView pinned;
+    private final ImageView notPinned = createImage("de/uniks/beastopia/teaml/assets/buttons/pin.png");
+    private final ImageView pinned = createImage("de/uniks/beastopia/teaml/assets/buttons/filled_pin.png");
+
+    @Inject
+    Preferences preferences;
 
     @Inject
     public FriendController() {
@@ -69,21 +69,27 @@ public class FriendController extends Controller {
             statusCircle.setFill(Paint.valueOf("red"));
         }
 
-        this.notPinned = new ImageView("de/uniks/beastopia/teaml/assets/buttons/pin.png");
-        this.notPinned.setFitHeight(25.0);
-        this.notPinned.setFitWidth(25.0);
-        this.pinned = new ImageView("de/uniks/beastopia/teaml/assets/buttons/filled_pin.png");
-        this.pinned.setFitHeight(25.0);
-        this.pinned.setFitWidth(25.0);
-
-        pin.setGraphic(notPinned);
+        boolean friendPinned = preferences.getBoolean(user._id() + "_pinned", false);
+        if (friendPinned) {
+            friendListController.friendList.getChildren().remove(_rootElement);
+            friendListController.friendList.getChildren().add(0, this.render());
+            pin.setGraphic(pinned);
+        } else {
+            pin.setGraphic(notPinned);
+        }
 
         return parent;
     }
 
+    private ImageView createImage(String imageUrl) {
+        ImageView imageView = new ImageView(new Image(imageUrl));
+        imageView.setFitHeight(25.0);
+        imageView.setFitWidth(25.0);
+        return imageView;
+    }
+
     @FXML
     public void editFriendList(ActionEvent actionEvent) {
-        //Icons for methods in assets\buttons
     }
 
     @FXML
@@ -96,8 +102,10 @@ public class FriendController extends Controller {
             friendListController.friendList.getChildren().remove(_rootElement);
             friendListController.friendList.getChildren().add(0, this.render());
             pin.setGraphic(pinned);
+            preferences.putBoolean(this.user._id() + "_pinned", true);
         } else {
             pin.setGraphic(notPinned);
+            preferences.putBoolean(this.user._id() + "_pinned", false);
         }
     }
 }
