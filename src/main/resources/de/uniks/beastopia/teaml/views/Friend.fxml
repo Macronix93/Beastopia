@@ -30,14 +30,7 @@
                 </VBox>
                 <HBox alignment="CENTER" prefHeight="10000.0" spacing="15.0">
                     <children>
-                        <Button fx:id="editFriend" minHeight="25.0" minWidth="25.0" mnemonicParsing="false" onAction="#editFriendList">
-                     <graphic>
-                        <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../assets/buttons/minus.png" />
-                           </image>
-                        </ImageView>
-                     </graphic></Button>
+                        <Button fx:id="editFriend" minHeight="25.0" minWidth="25.0" mnemonicParsing="false" onAction="#editFriendList" />
                         <Button fx:id="chat" minHeight="25.0" minWidth="25.0" mnemonicParsing="false" onAction="#openFriendChat">
                      <graphic>
                         <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
@@ -46,14 +39,7 @@
                            </image>
                         </ImageView>
                      </graphic></Button>
-                        <Button fx:id="pin" minHeight="25.0" minWidth="25.0" mnemonicParsing="false" onAction="#pinFriend">
-                     <graphic>
-                        <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../assets/buttons/pin.png" />
-                           </image>
-                        </ImageView>
-                     </graphic></Button>
+                        <Button fx:id="pin" minHeight="25.0" minWidth="25.0" mnemonicParsing="false" onAction="#pinFriend" />
                     </children>
                 </HBox>
             </children>

@@ -38,6 +38,9 @@ public class FriendController extends Controller {
     private User user;
     private FriendListController friendListController;
 
+    private ImageView notPinned;
+    private ImageView pinned;
+
     @Inject
     public FriendController() {
 
@@ -66,6 +69,15 @@ public class FriendController extends Controller {
             statusCircle.setFill(Paint.valueOf("red"));
         }
 
+        this.notPinned = new ImageView("de/uniks/beastopia/teaml/assets/buttons/pin.png");
+        this.notPinned.setFitHeight(25.0);
+        this.notPinned.setFitWidth(25.0);
+        this.pinned = new ImageView("de/uniks/beastopia/teaml/assets/buttons/filled_pin.png");
+        this.pinned.setFitHeight(25.0);
+        this.pinned.setFitWidth(25.0);
+
+        pin.setGraphic(notPinned);
+
         return parent;
     }
 
@@ -80,7 +92,12 @@ public class FriendController extends Controller {
 
     @FXML
     public void pinFriend(ActionEvent actionEvent) {
-        friendListController.friendList.getChildren().remove(_rootElement);
-        friendListController.friendList.getChildren().add(0, this.render());
+        if (pin.getGraphic() == notPinned) {
+            friendListController.friendList.getChildren().remove(_rootElement);
+            friendListController.friendList.getChildren().add(0, this.render());
+            pin.setGraphic(pinned);
+        } else {
+            pin.setGraphic(notPinned);
+        }
     }
 }
