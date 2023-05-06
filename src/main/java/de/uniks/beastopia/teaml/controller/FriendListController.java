@@ -57,15 +57,12 @@ public class FriendListController extends Controller {
 
 
                     boolean friendPinned = preferences.getBoolean(friend._id() + "_pinned", true);
+                    Controller subController = friendControllerProvider.get()
+                            .setFriendController(friend, friendListController, friendPinned);
+                    subControllers.add(subController);
                     if (friendPinned) {
-                        Controller subController = friendControllerProvider.get()
-                                .setFriendController(friend, friendListController, true);
-                        subControllers.add(subController);
                         friendList.getChildren().add(0, subController.render());
                     } else {
-                        Controller subController = friendControllerProvider.get()
-                                .setFriendController(friend, friendListController, false);
-                        subControllers.add(subController);
                         friendList.getChildren().add(subController.render());
                     }
                 }
