@@ -30,6 +30,7 @@ public class FriendController extends Controller {
     @FXML
     public Button pin;
 
+    @FXML
     public HBox _rootElement;
 
     private User user;
