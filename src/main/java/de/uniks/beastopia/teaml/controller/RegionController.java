@@ -33,12 +33,7 @@ public class RegionController extends Controller {
         final ListView<Region> regions = new ListView<>(this.regions);
         regions.setCellFactory(param -> new RegionCell());
         regionList.getChildren().add(regions);
-        return parent;
-    }
-
-    @Override
-    public void init() {
-        super.init();
         disposables.add(regionService.getRegions().subscribe(this.regions::setAll));
+        return parent;
     }
 }
