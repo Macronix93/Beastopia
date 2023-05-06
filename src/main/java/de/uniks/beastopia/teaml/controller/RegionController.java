@@ -12,6 +12,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 public class RegionController extends Controller {
 
@@ -24,6 +25,9 @@ public class RegionController extends Controller {
     RegionService regionService;
 
     @Inject
+    Provider<RegionCell> regionCellProvider;
+
+    @Inject
     public RegionController() {
     }
 
@@ -31,7 +35,7 @@ public class RegionController extends Controller {
     public Parent render() {
         Parent parent = super.render();
         final ListView<Region> regions = new ListView<>(this.regions);
-        regions.setCellFactory(param -> new RegionCell());
+        regions.setCellFactory(param -> regionCellProvider.get());
         regionList.getChildren().add(regions);
         disposables.add(regionService.getRegions().subscribe(this.regions::setAll));
         return parent;

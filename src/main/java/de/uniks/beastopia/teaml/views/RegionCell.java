@@ -1,10 +1,27 @@
 package de.uniks.beastopia.teaml.views;
 
+import de.uniks.beastopia.teaml.App;
+import de.uniks.beastopia.teaml.controller.IngameController;
 import de.uniks.beastopia.teaml.rest.Region;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListCell;
 
+import javax.inject.Inject;
+import javax.inject.Provider;
+
 public class RegionCell extends ListCell<Region> {
+
+    @Inject
+    Provider<IngameController> ingameControllerProvider;
+
+    @Inject
+    App app;
+
+    @Inject
+    public RegionCell() {
+    }
+
     @Override
     protected void updateItem(Region item, boolean empty) {
         super.updateItem(item, empty);
@@ -12,12 +29,12 @@ public class RegionCell extends ListCell<Region> {
             setGraphic(null);
             setText(null);
         } else {
-            final Button join = new Button("Join");
+            final Button join = new Button(item.name() + " %join");
             join.setOnAction(event -> {
-                System.out.println("Joining region " + item.name());
-                //TODO join region
+                app.show(ingameControllerProvider.get());
             });
-            setText(item.name());
+            setGraphic(join);
         }
+        setAlignment(Pos.CENTER);
     }
 }
