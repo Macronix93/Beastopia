@@ -109,7 +109,3 @@ test {
         ]
     }
 }
-
-generateScenarioSource {
-    classDiagramSVG = true
-}

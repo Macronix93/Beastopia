@@ -1,14 +1,10 @@
 package de.uniks.beastopia.teaml.controller;
 
-import com.google.gson.Gson;
-import de.uniks.beastopia.teaml.App;
-import de.uniks.beastopia.teaml.rest.ErrorResponse;
 import de.uniks.beastopia.teaml.service.RegistrationService;
-import javafx.application.Platform;
+import de.uniks.beastopia.teaml.utils.Dialog;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
-import retrofit2.HttpException;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -31,9 +27,6 @@ public class RegistrationController extends Controller {
 
     @Inject
     Provider<LoginController> loginControllerProvider;
-
-    @Inject
-    App app;
 
     @Inject
     public RegistrationController() {
@@ -61,33 +54,10 @@ public class RegistrationController extends Controller {
         }
 
         disposables.add(registrationService.createUser(usernameInput.getText(), LUMNIX_LOGO_URL, passwordInput.getText())
-                .subscribe(user -> {
-                    Platform.runLater(() -> {
-                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                        alert.setTitle("Success");
-                        alert.setHeaderText("Registration successful");
-                        alert.setContentText("The registration was successful. You can now sign in.");
-                        alert.showAndWait();
-                        // TODO: show login when implemented
-                    });
+                .observeOn(FX_SCHEDULER).subscribe(user -> {
+                    Dialog.info("Registration successful", "You can now sign in with your new account.");
                 }, error -> {
-                    Platform.runLater(() -> {
-                        if (error instanceof HttpException httpError) {
-                            String message;
-                            try {
-                                String json = httpError.response().errorBody().string();
-                                ErrorResponse response = new Gson().fromJson(json, ErrorResponse.class);
-                                message = response.message();
-                            } catch (Exception e) {
-                                throw new RuntimeException(e);
-                            }
-                            Alert alert = new Alert(Alert.AlertType.ERROR);
-                            alert.setTitle("Error");
-                            alert.setHeaderText("Registration failed");
-                            alert.setContentText(message);
-                            alert.showAndWait();
-                        }
-                    });
+                    Dialog.error(error, "Registration failed");
                 }));
     }
 

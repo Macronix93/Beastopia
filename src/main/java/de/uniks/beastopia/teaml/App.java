@@ -1,7 +1,6 @@
 package de.uniks.beastopia.teaml;
 
 import de.uniks.beastopia.teaml.controller.Controller;
-
 import fr.brouillard.oss.cssfx.CSSFX;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -48,8 +47,7 @@ public class App extends Application {
 
 
         final MainComponent component = DaggerMainComponent.builder().mainApp(this).build();
-        controller = component.loginController();
-        initAndRender(controller);
+        show(component.loginController());
     }
 
     @Override

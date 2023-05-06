@@ -1,10 +1,8 @@
 package de.uniks.beastopia.teaml.controller;
 
 import de.uniks.beastopia.teaml.rest.User;
-import de.uniks.beastopia.teaml.service.RefreshService;
+import de.uniks.beastopia.teaml.service.FriendListService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
-import de.uniks.beastopia.teaml.service.UserService;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -33,10 +31,7 @@ public class FriendListController extends Controller {
     @Inject
     Provider<FriendController> friendControllerProvider;
     @Inject
-    RefreshService refreshService;
-
-    @Inject
-    UserService userService;
+    FriendListService friendListService;
     @Inject
     TokenStorage tokenStorage;
 
@@ -50,27 +45,22 @@ public class FriendListController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
-        FriendListController friendListController = this;
-        disposables.add(refreshService.refresh(tokenStorage.getRefreshToken()).subscribe(r -> {
-            if (r.friends() != null) {
-                for (String friendId : r.friends()) {
-                    disposables.add(userService.getUser(friendId).subscribe(f -> {
-                        Platform.runLater(() -> {
-                            Controller subController = friendControllerProvider.get()
-                                    .setUserConttroller(f, friendListController);
-                            subControllers.add(subController);
-                            friendList.getChildren().add(subController.render());
-                        });
-                    }));
-                }
+
+        disposables.add(friendListService.getFriends().observeOn(FX_SCHEDULER).subscribe(friends -> {
+            for (User friend : friends) {
+                Controller subController = friendControllerProvider.get().setUser(friend);
+                subControllers.add(subController);
+                friendList.getChildren().add(subController.render());
             }
         }));
+
         return parent;
     }
 
     @Override
     public void destroy() {
         subControllers.forEach(Controller::destroy);
+        super.destroy();
     }
 
     @FXML

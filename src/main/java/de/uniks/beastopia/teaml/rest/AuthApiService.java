@@ -9,5 +9,8 @@ public interface AuthApiService {
     Observable<LoginResult> login(@Body LoginDto dto);
 
     @POST("auth/refresh")
-    Observable<LoginResult> refresh(@Body RefreshDto refreshDto);
+    Observable<LoginResult> refresh(@Body RefreshDto dto);
+
+    @POST("auth/logout")
+    Observable<Void> logout();
 }

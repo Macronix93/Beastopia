@@ -10,13 +10,14 @@ import javax.inject.Inject;
 public class RegistrationService {
 
     @Inject
-    UserApiService userAPIService;
+    UserApiService userApiService;
 
     @Inject
-    public RegistrationService() {}
+    public RegistrationService() {
+    }
 
     public Observable<User> createUser(String name, String avatar, String password) {
-        return userAPIService.createUser(new CreateUserDto(name, avatar, password));
+        return userApiService.createUser(new CreateUserDto(name, avatar, password));
     }
 
 }
