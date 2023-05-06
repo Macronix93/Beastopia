@@ -46,11 +46,14 @@ public class FriendListController extends Controller {
     public Parent render() {
         Parent parent = super.render();
 
+        FriendListController friendListController = this;
         disposables.add(friendListService.getFriends().observeOn(FX_SCHEDULER).subscribe(friends -> {
-            for (User friend : friends) {
-                Controller subController = friendControllerProvider.get().setUser(friend);
-                subControllers.add(subController);
-                friendList.getChildren().add(subController.render());
+            if (friends != null) {
+                for (User friend : friends) {
+                    Controller subController = friendControllerProvider.get().setUserConttroller(friend, friendListController);
+                    subControllers.add(subController);
+                    friendList.getChildren().add(subController.render());
+                }
             }
         }));
 
