@@ -1,6 +1,6 @@
 package de.uniks.beastopia.teaml.controller;
 
-import de.uniks.beastopia.teaml.model.Region;
+import de.uniks.beastopia.teaml.rest.Region;
 import de.uniks.beastopia.teaml.service.RegionService;
 import de.uniks.beastopia.teaml.views.RegionCell;
 import javafx.collections.FXCollections;

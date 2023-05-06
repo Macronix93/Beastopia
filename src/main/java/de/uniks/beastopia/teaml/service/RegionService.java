@@ -1,6 +1,6 @@
 package de.uniks.beastopia.teaml.service;
 
-import de.uniks.beastopia.teaml.model.Region;
+import de.uniks.beastopia.teaml.rest.Region;
 import de.uniks.beastopia.teaml.rest.RegionApiService;
 import io.reactivex.rxjava3.core.Observable;
 
