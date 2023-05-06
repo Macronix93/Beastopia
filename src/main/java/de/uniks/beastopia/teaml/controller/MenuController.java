@@ -18,7 +18,9 @@ public class MenuController extends Controller {
     @FXML
     private VBox regionContainer;
 
-    List<Controller> subControllers = new ArrayList<>();
+    private final List<Controller> subControllers = new ArrayList<Controller>();
+    @Inject
+    Provider<FriendListController> friendListControllerProvider;
 
     @Inject
     public MenuController() {
@@ -26,22 +28,26 @@ public class MenuController extends Controller {
     }
 
     @Override
-    public String getTitle() {
-        return "Beastopia - Main Menu";
-    }
-
-    @Override
-    public void init() {
-        super.init();
-        subControllers.add(regionControllerProvider.get());
-        onDestroy(() -> subControllers.forEach(Controller::destroy));
-    }
-
-    @Override
     public Parent render() {
         Parent parent = super.render();
-        regionContainer.getChildren().add(subControllers.get(0).render());
+        Controller friendListController = friendListControllerProvider.get();
+        subControllers.add(friendListController);
+        friendListContainer.getChildren().add(friendListController.render());
+        Controller regionController = regionControllerProvider.get();
+        subControllers.add(regionController);
+        regionContainer.getChildren().add(regionController.render());
         return parent;
+    }
+
+    @Override
+    public void destroy() {
+        subControllers.forEach(Controller::destroy);
+        super.destroy();
+    }
+
+    @Override
+    public String getTitle() {
+        return "Beastopia - Main Menu";
     }
 
 }
