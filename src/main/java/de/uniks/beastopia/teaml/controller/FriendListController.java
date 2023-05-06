@@ -1,5 +1,6 @@
 package de.uniks.beastopia.teaml.controller;
 
+import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.RefreshService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.service.UserService;
@@ -49,15 +50,19 @@ public class FriendListController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
+        FriendListController friendListController = this;
         disposables.add(refreshService.refresh(tokenStorage.getRefreshToken()).subscribe(r -> {
-            for (String friendId : r.friends()) {
-                disposables.add(userService.getUser(friendId).subscribe(f -> {
-                    Platform.runLater(() -> {
-                        Controller subController = friendControllerProvider.get().setUser(f);
-                        subControllers.add(subController);
-                        friendList.getChildren().add(subController.render());
-                    });
-                }));
+            if (r.friends() != null) {
+                for (String friendId : r.friends()) {
+                    disposables.add(userService.getUser(friendId).subscribe(f -> {
+                        Platform.runLater(() -> {
+                            Controller subController = friendControllerProvider.get()
+                                    .setUserConttroller(f, friendListController);
+                            subControllers.add(subController);
+                            friendList.getChildren().add(subController.render());
+                        });
+                    }));
+                }
             }
         }));
         return parent;

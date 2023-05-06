@@ -4,6 +4,7 @@ package de.uniks.beastopia.teaml.controller;
 import de.uniks.beastopia.teaml.rest.User;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
@@ -14,6 +15,7 @@ import javafx.scene.text.Text;
 
 import javax.imageio.stream.FileImageInputStream;
 import javax.inject.Inject;
+import javax.inject.Provider;
 import java.io.FileInputStream;
 
 public class FriendController extends Controller {
@@ -31,14 +33,16 @@ public class FriendController extends Controller {
     public Button pin;
 
     private User user;
+    private FriendListController friendListController;
 
     @Inject
     public FriendController() {
 
     }
 
-    public FriendController setUser(User user) {
+    public FriendController setUserConttroller(User user, FriendListController friendListController) {
         this.user = user;
+        this.friendListController = friendListController;
         return this;
     }
 
@@ -73,5 +77,9 @@ public class FriendController extends Controller {
 
     @FXML
     public void pinFriend(ActionEvent actionEvent) {
+        FriendController friendController = this;
+        friendListController.friendList.getChildren().remove(this.render());
+        this.destroy();
+        friendListController.friendList.getChildren().add(0, friendController.render());
     }
 }
