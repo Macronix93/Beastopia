@@ -1,11 +1,8 @@
 package de.uniks.beastopia.teaml.controller;
 
-import com.google.gson.Gson;
-import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.service.AuthService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.utils.Dialog;
-import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -24,8 +21,6 @@ public class LoginController extends Controller {
     @FXML
     public Button loginButton;
 
-    @Inject
-    App app;
     @Inject
     Provider<RegistrationController> registrationControllerProvider;
     @Inject
@@ -64,13 +59,12 @@ public class LoginController extends Controller {
             return;
         }
 
-        disposables.add(authService.login(usernameInput.getText(), passwordInput.getText()).subscribe(lr -> {
-            Platform.runLater(() -> {
-                app.show(menuControllerProvider.get());
-            });
-        }, error -> {
-            Dialog.error(error, "Login failed");
-        }));
+        disposables.add(authService.login(usernameInput.getText(), passwordInput.getText())
+                .observeOn(FX_SCHEDULER).subscribe(lr -> {
+                    app.show(menuControllerProvider.get());
+                }, error -> {
+                    Dialog.error(error, "Login failed");
+                }));
     }
 
     @FXML

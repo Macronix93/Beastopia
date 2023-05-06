@@ -7,7 +7,6 @@ import de.uniks.beastopia.teaml.rest.UserApiService;
 import io.reactivex.rxjava3.core.Observable;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.List;
 
 public class FriendListService {
@@ -33,10 +32,12 @@ public class FriendListService {
         return userApiService.getUsers(null, null);
     }
 
-    public Observable<List<String>> getFriendIDs() {
-        return userApiService
-                .getUser(tokenStorage.getCurrentUser()._id())
-                .map(User::friends);
+    public List<String> getFriendIDs() {
+        return tokenStorage.getCurrentUser().friends();
+    }
+
+    public Observable<User> getUser(String id) {
+        return userApiService.getUser(id);
     }
 
     public Observable<List<User>> getFriends() {
@@ -53,22 +54,24 @@ public class FriendListService {
     }
 
     public Observable<User> addFriend(User friend) {
-        return getFriendIDs().map(friends -> {
-            List<String> friendsCopy = new ArrayList<>(friends);
-            friendsCopy.add(friend._id());
+        return Observable.create(source -> {
+            List<String> friends = tokenStorage.getCurrentUser().friends();
+            friends.add(friend._id());
             String userID = tokenStorage.getCurrentUser()._id();
-            tokenStorage.setCurrentUser(userApiService.updateUser(userID, new UpdateUserDto(null, null, null, friendsCopy, null)).blockingFirst());
-            return tokenStorage.getCurrentUser();
+            tokenStorage.setCurrentUser(userApiService.updateUser(userID, new UpdateUserDto(null, null, null, friends, null)).blockingFirst());
+            source.onNext(tokenStorage.getCurrentUser());
+            source.onComplete();
         });
     }
 
     public Observable<User> removeFriend(User friend) {
-        return getFriendIDs().map(friends -> {
-            List<String> friendsCopy = new ArrayList<>(friends);
-            friendsCopy.remove(friend._id());
+        return Observable.create(source -> {
+            List<String> friends = tokenStorage.getCurrentUser().friends();
+            friends.remove(friend._id());
             String userID = tokenStorage.getCurrentUser()._id();
-            tokenStorage.setCurrentUser(userApiService.updateUser(userID, new UpdateUserDto(null, null, null, friendsCopy, null)).blockingFirst());
-            return tokenStorage.getCurrentUser();
+            tokenStorage.setCurrentUser(userApiService.updateUser(userID, new UpdateUserDto(null, null, null, friends, null)).blockingFirst());
+            source.onNext(tokenStorage.getCurrentUser());
+            source.onComplete();
         });
     }
 }

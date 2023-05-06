@@ -1,6 +1,5 @@
 package de.uniks.beastopia.teaml.controller;
 
-import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.service.RegistrationService;
 import de.uniks.beastopia.teaml.utils.Dialog;
 import javafx.fxml.FXML;
@@ -30,9 +29,6 @@ public class RegistrationController extends Controller {
     Provider<LoginController> loginControllerProvider;
 
     @Inject
-    App app;
-
-    @Inject
     public RegistrationController() {
     }
 
@@ -58,7 +54,7 @@ public class RegistrationController extends Controller {
         }
 
         disposables.add(registrationService.createUser(usernameInput.getText(), LUMNIX_LOGO_URL, passwordInput.getText())
-                .subscribe(user -> {
+                .observeOn(FX_SCHEDULER).subscribe(user -> {
                     Dialog.info("Registration successful", "You can now sign in with your new account.");
                 }, error -> {
                     Dialog.error(error, "Registration failed");
