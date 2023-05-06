@@ -1,6 +1,5 @@
 package de.uniks.beastopia.teaml.controller;
 
-import dagger.Provides;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.layout.VBox;
@@ -39,6 +38,7 @@ public class MenuController extends Controller {
     @Override
     public void destroy() {
         subControllers.forEach(Controller::destroy);
+        super.destroy();
     }
 
     @Override
