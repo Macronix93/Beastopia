@@ -35,9 +35,11 @@ public class FriendController extends Controller {
     private User user;
     private FriendListController friendListController;
 
-    private final ImageView notPinned = createImage("de/uniks/beastopia/teaml/assets/buttons/pin.png");
+    private Boolean friendPin;
+
     private final ImageView pinned = createImage("de/uniks/beastopia/teaml/assets/buttons/filled_pin.png");
 
+    private final ImageView notPinned = createImage("de/uniks/beastopia/teaml/assets/buttons/pin.png");
     @Inject
     Preferences preferences;
 
@@ -46,9 +48,10 @@ public class FriendController extends Controller {
 
     }
 
-    public FriendController setUserConttroller(User user, FriendListController friendListController) {
+    public FriendController setFriendController(User user, FriendListController friendListController, boolean friendPin) {
         this.user = user;
         this.friendListController = friendListController;
+        this.friendPin = friendPin;
         return this;
     }
 
@@ -69,13 +72,10 @@ public class FriendController extends Controller {
             statusCircle.setFill(Paint.valueOf("red"));
         }
 
-        boolean friendPinned = preferences.getBoolean(user._id() + "_pinned", false);
-        if (friendPinned) {
-            friendListController.friendList.getChildren().remove(_rootElement);
-            friendListController.friendList.getChildren().add(0, this.render());
-            pin.setGraphic(pinned);
+        if (this.friendPin) {
+            this.pin.setGraphic(pinned);
         } else {
-            pin.setGraphic(notPinned);
+            this.pin.setGraphic(notPinned);
         }
 
         return parent;

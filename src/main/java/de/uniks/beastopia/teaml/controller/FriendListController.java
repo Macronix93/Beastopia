@@ -15,6 +15,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.prefs.Preferences;
 
 public class FriendListController extends Controller {
     @FXML
@@ -35,6 +36,9 @@ public class FriendListController extends Controller {
     @Inject
     TokenStorage tokenStorage;
 
+    @Inject
+    Preferences preferences;
+
     private final List<Controller> subControllers = new ArrayList<Controller>();
 
     @Inject
@@ -50,9 +54,21 @@ public class FriendListController extends Controller {
         disposables.add(friendListService.getFriends().observeOn(FX_SCHEDULER).subscribe(friends -> {
             if (friends != null) {
                 for (User friend : friends) {
-                    Controller subController = friendControllerProvider.get().setUserConttroller(friend, friendListController);
-                    subControllers.add(subController);
-                    friendList.getChildren().add(subController.render());
+
+
+                    boolean friendPinned = preferences.getBoolean(friend._id() + "_pinned", true);
+                    if (friendPinned) {
+                        Controller subController = friendControllerProvider.get()
+                                .setFriendController(friend, friendListController, true);
+                        subControllers.add(subController);
+                        friendList.getChildren().add(0, subController.render());
+                        friendControllerProvider.get().setFriendController(friend, friendListController, true);
+                    } else {
+                        Controller subController = friendControllerProvider.get()
+                                .setFriendController(friend, friendListController, false);
+                        subControllers.add(subController);
+                        friendList.getChildren().add(subController.render());
+                    }
                 }
             }
         }));
