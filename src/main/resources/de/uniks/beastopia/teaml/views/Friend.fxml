@@ -9,7 +9,7 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Text?>
 
-<HBox alignment="CENTER" prefHeight="60.0" prefWidth="175.0" style="-fx-border-color: black; -fx-border-width: 1;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.uniks.beastopia.teaml.controller.FriendController">
+<HBox fx:id="_rootElement" alignment="CENTER" prefHeight="60.0" prefWidth="175.0" style="-fx-border-color: black; -fx-border-width: 1;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.uniks.beastopia.teaml.controller.FriendController">
     <children>
         <VBox alignment="CENTER" prefWidth="10000.0">
             <children>

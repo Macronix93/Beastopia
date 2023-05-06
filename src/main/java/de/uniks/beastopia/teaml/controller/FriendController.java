@@ -9,6 +9,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
@@ -31,6 +32,8 @@ public class FriendController extends Controller {
     public Button chat;
     @FXML
     public Button pin;
+
+    public HBox _rootElement;
 
     private User user;
     private FriendListController friendListController;
@@ -77,9 +80,7 @@ public class FriendController extends Controller {
 
     @FXML
     public void pinFriend(ActionEvent actionEvent) {
-        FriendController friendController = this;
-        friendListController.friendList.getChildren().remove(this.render());
-        this.destroy();
-        friendListController.friendList.getChildren().add(0, friendController.render());
+        friendListController.friendList.getChildren().remove(_rootElement);
+        friendListController.friendList.getChildren().add(0, this.render());
     }
 }
