@@ -65,12 +65,11 @@ class LoginControllerTest extends ApplicationTest {
         if (System.getenv("CI") != null || System.getProperty("headless") != null) {
             lookup("#usernameInput").queryAs(TextField.class).setText("string");
             lookup("#passwordInput").queryAs(TextField.class).setText("stringst");
-            lookup("#loginButton").queryAs(Button.class).fire();
         } else {
             write("string\t\t");
             write("stringst");
-            clickOn("#loginButton");
         }
+        clickOn("#loginButton");
 
         verify(app).show(mock);
     }
@@ -85,12 +84,11 @@ class LoginControllerTest extends ApplicationTest {
         if (System.getenv("CI") != null || System.getProperty("headless") != null) {
             lookup("#usernameInput").queryAs(TextField.class).setText("string");
             lookup("#passwordInput").queryAs(TextField.class).setText("12345678");
-            lookup("#loginButton").queryAs(Button.class).fire();
         } else {
             write("string\t\t");
             write("12345678");
-            clickOn("#loginButton");
         }
+        clickOn("#loginButton");
 
         Node dialogPane = lookup(".dialog-pane").query();
         from(dialogPane).lookup((Text t) -> t.getText().startsWith("Login failed")).query();
