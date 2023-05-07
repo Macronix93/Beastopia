@@ -2,11 +2,7 @@ package de.uniks.beastopia.teaml;
 
 import dagger.BindsInstance;
 import dagger.Component;
-import de.uniks.beastopia.teaml.controller.LoginController;
 import de.uniks.beastopia.teaml.controller.*;
-import de.uniks.beastopia.teaml.controller.FriendController;
-import de.uniks.beastopia.teaml.controller.FriendListController;
-import de.uniks.beastopia.teaml.controller.RegistrationController;
 import de.uniks.beastopia.teaml.modules.HttpModule;
 import de.uniks.beastopia.teaml.modules.MainModule;
 import de.uniks.beastopia.teaml.modules.PrefModule;
@@ -20,6 +16,7 @@ public interface MainComponent {
     LoginController loginController();
 
     App app();
+
     RegistrationController registrationController();
 
     MenuController menuController();
@@ -27,6 +24,10 @@ public interface MainComponent {
     FriendListController friendListController();
 
     FriendController friendController();
+
+    IngameController ingameController();
+
+    PauseController pauseController();
 
     @Component.Builder
     interface Builder {
