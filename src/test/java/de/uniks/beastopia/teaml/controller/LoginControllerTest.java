@@ -2,7 +2,6 @@ package de.uniks.beastopia.teaml.controller;
 
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.rest.LoginResult;
-import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.AuthService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import io.reactivex.rxjava3.core.Observable;
@@ -22,12 +21,9 @@ import org.testfx.framework.junit5.ApplicationTest;
 import retrofit2.HttpException;
 import retrofit2.Response;
 
-import javax.inject.Inject;
 import javax.inject.Provider;
-
 import java.util.ResourceBundle;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -73,8 +69,10 @@ class LoginControllerTest extends ApplicationTest {
 
     @Test
     void loginFail() {
-        ResponseBody body = ResponseBody.create(MediaType.get("application/json"), "{\"message\":\"Login failed\"}");
-        when(authService.login(anyString(), anyString())).thenReturn(Observable.error(new HttpException(Response.error(401, body))));
+        ResponseBody body = ResponseBody.create(MediaType.get("application/json"),
+                "{\"message\":\"Login failed\"}");
+        when(authService.login(anyString(), anyString())).thenReturn(Observable.error
+                (new HttpException(Response.error(401, body))));
 
         write("string\t\t");
         write("12345678");
