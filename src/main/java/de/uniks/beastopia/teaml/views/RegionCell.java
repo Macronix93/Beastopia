@@ -13,7 +13,7 @@ import java.util.ResourceBundle;
 
 public class RegionCell extends ListCell<Region> {
 
-    private final ResourceBundle ressourcres;
+    private final ResourceBundle resources;
     @Inject
     Provider<IngameController> ingameControllerProvider;
 
@@ -21,8 +21,8 @@ public class RegionCell extends ListCell<Region> {
     App app;
 
     @Inject
-    public RegionCell(ResourceBundle ressources) {
-        this.ressourcres = ressources;
+    public RegionCell(ResourceBundle resources) {
+        this.resources = resources;
     }
 
     @Override
@@ -32,7 +32,7 @@ public class RegionCell extends ListCell<Region> {
             setGraphic(null);
             setText(null);
         } else {
-            final Button join = new Button(item.name() + " "+ ressourcres.getString("join"));
+            final Button join = new Button(item.name() + " "+ resources.getString("join"));
             //ToDo join in languages
             join.setOnAction(event -> {
                 app.show(ingameControllerProvider.get());
