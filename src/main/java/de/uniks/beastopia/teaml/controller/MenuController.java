@@ -10,17 +10,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MenuController extends Controller {
+    private final List<Controller> subControllers = new ArrayList<Controller>();
     @Inject
     Provider<RegionController> regionControllerProvider;
-    private Controller friendListController;
+    @Inject
+    Provider<FriendListController> friendListControllerProvider;
     @FXML
     private VBox friendListContainer;
     @FXML
     private VBox regionContainer;
-
-    private final List<Controller> subControllers = new ArrayList<Controller>();
-    @Inject
-    Provider<FriendListController> friendListControllerProvider;
 
     @Inject
     public MenuController() {
