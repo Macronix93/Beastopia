@@ -10,16 +10,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MenuController extends Controller {
-    private Controller regionController;
-    private Controller friendListController;
+    private final List<Controller> subControllers = new ArrayList<Controller>();
+    @Inject
+    Provider<RegionController> regionControllerProvider;
+    @Inject
+    Provider<FriendListController> friendListControllerProvider;
     @FXML
     private VBox friendListContainer;
     @FXML
     private VBox regionContainer;
-
-    private final List<Controller> subControllers = new ArrayList<Controller>();
-    @Inject
-    Provider<FriendListController> friendListControllerProvider;
 
     @Inject
     public MenuController() {
@@ -29,9 +28,12 @@ public class MenuController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
-        Controller subController = friendListControllerProvider.get();
-        subControllers.add(subController);
-        friendListContainer.getChildren().add(subController.render());
+        Controller friendListController = friendListControllerProvider.get();
+        subControllers.add(friendListController);
+        friendListContainer.getChildren().add(friendListController.render());
+        Controller regionController = regionControllerProvider.get();
+        subControllers.add(regionController);
+        regionContainer.getChildren().add(regionController.render());
         return parent;
     }
 

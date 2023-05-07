@@ -16,7 +16,16 @@ class AppTest extends ApplicationTest {
     }
 
     @Test
-    void testLoading() {
+    void initialScreenIsLogin() {
+        assertEquals("Beastopia - Login", stage.getTitle());
+    }
+
+    @Test
+    void canSwitchBetweenLoginAndRegistration() {
+        assertEquals("Beastopia - Login", stage.getTitle());
+        clickOn("#registerButton");
+        assertEquals("Beastopia - Registration", stage.getTitle());
+        clickOn("#loginButton");
         assertEquals("Beastopia - Login", stage.getTitle());
     }
 }
