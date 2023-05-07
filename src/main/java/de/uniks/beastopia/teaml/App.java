@@ -47,8 +47,7 @@ public class App extends Application {
 
 
         final MainComponent component = DaggerMainComponent.builder().mainApp(this).build();
-        controller = component.loginController();
-        initAndRender(controller);
+        show(component.loginController());
     }
 
     @Override

@@ -1,20 +1,14 @@
 package de.uniks.beastopia.teaml.controller;
 
-import com.google.gson.Gson;
-import dagger.Provides;
-import de.uniks.beastopia.teaml.App;
-import de.uniks.beastopia.teaml.rest.ErrorResponse;
-import de.uniks.beastopia.teaml.service.LoginService;
+import de.uniks.beastopia.teaml.service.AuthService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
-import javafx.application.Platform;
+import de.uniks.beastopia.teaml.utils.Dialog;
 import javafx.beans.binding.BooleanBinding;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import retrofit2.HttpException;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -28,14 +22,11 @@ public class LoginController extends Controller {
     public Button loginButton;
 
     @Inject
-    App app;
-    @Inject
     Provider<RegistrationController> registrationControllerProvider;
-
     @Inject
     Provider<MenuController> menuControllerProvider;
     @Inject
-    LoginService loginService;
+    AuthService authService;
     @Inject
     TokenStorage tokenStorage;
 
@@ -68,29 +59,12 @@ public class LoginController extends Controller {
             return;
         }
 
-        disposables.add(loginService.login(usernameInput.getText(), passwordInput.getText()).subscribe(lr -> {
-            Platform.runLater(() -> {
-                app.show(menuControllerProvider.get());
-            });
-        }, error -> {
-            Platform.runLater(() -> {
-                if (error instanceof HttpException httpError) {
-                    String message;
-                    try {
-                        String json = httpError.response().errorBody().string();
-                        ErrorResponse response = new Gson().fromJson(json, ErrorResponse.class);
-                        message = response.message();
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Error");
-                    alert.setHeaderText("Login failed");
-                    alert.setContentText(message);
-                    alert.showAndWait();
-                }
-            });
-        }));
+        disposables.add(authService.login(usernameInput.getText(), passwordInput.getText())
+                .observeOn(FX_SCHEDULER).subscribe(lr -> {
+                    app.show(menuControllerProvider.get());
+                }, error -> {
+                    Dialog.error(error, "Login failed");
+                }));
     }
 
     @FXML

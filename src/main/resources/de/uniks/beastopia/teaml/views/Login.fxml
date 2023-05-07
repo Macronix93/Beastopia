@@ -35,7 +35,7 @@
          <Font size="20.0" />
       </font>
    </Button>
-   <Button layoutX="526.0" layoutY="374.0" mnemonicParsing="false" onAction="#register"
+   <Button fx:id="registerButton" layoutX="526.0" layoutY="374.0" mnemonicParsing="false" onAction="#register"
            style="-fx-background-color: transparent;" text="%SignUp" textFill="#0430c3" underline="true">
       <font>
          <Font size="15.0"/>

@@ -49,6 +49,9 @@ dependencies {
     // https://mvnrepository.com/artifact/org.fulib/fulibMockups
     testImplementation group: 'org.fulib', name: 'fulibMockups', version: '0.4.0'
 
+    // https://mvnrepository.com/artifact/org.mockito/mockito-junit-jupiter
+    testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '5.2.0'
+
     // https://mvnrepository.com/artifact/org.fulib/fulibYaml
     implementation group: 'org.fulib', name: 'fulibYaml', version: '1.5.0'
 
@@ -108,8 +111,4 @@ test {
                 'prism.text'       : 't2k',
         ]
     }
-}
-
-generateScenarioSource {
-    classDiagramSVG = true
 }

@@ -1,8 +1,12 @@
 package de.uniks.beastopia.teaml.controller;
 
+import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.Main;
+import io.reactivex.rxjava3.core.Scheduler;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 
@@ -12,8 +16,13 @@ import java.util.ResourceBundle;
 
 public abstract class Controller {
 
+    protected static final Scheduler FX_SCHEDULER = Schedulers.from(Platform::runLater);
+
     @Inject
     protected ResourceBundle resources;
+
+    @Inject
+    protected App app;
 
     protected final CompositeDisposable disposables = new CompositeDisposable();
 
@@ -25,7 +34,9 @@ public abstract class Controller {
         disposables.dispose();
     }
 
-    public String getTitle() { return null; }
+    public String getTitle() {
+        return null;
+    }
 
     public void onDestroy(Runnable action) {
         disposables.add(Disposable.fromRunnable(action));
