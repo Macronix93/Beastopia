@@ -14,21 +14,7 @@ import javax.inject.Singleton;
 public interface MainComponent {
 
     LoginController loginController();
- /*
-    App app();
 
-    RegistrationController registrationController();
-
-    MenuController menuController();
-
-    FriendListController friendListController();
-
-    FriendController friendController();
-
-    IngameController ingameController();
-
-    PauseController pauseController();
-*/
     @Component.Builder
     interface Builder {
         @BindsInstance
