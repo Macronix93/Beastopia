@@ -8,7 +8,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
@@ -19,7 +19,7 @@ import java.util.prefs.Preferences;
 
 public class FriendListController extends Controller {
     @FXML
-    public TextArea searchName;
+    public TextField searchName;
     @FXML
     public Button searchBtn;
     @FXML
@@ -84,6 +84,7 @@ public class FriendListController extends Controller {
     }
 
     @FXML
-    public void searchUser(ActionEvent actionEvent) {
+    public void searchUser() {
+        System.out.println(searchName.getText());
     }
 }
