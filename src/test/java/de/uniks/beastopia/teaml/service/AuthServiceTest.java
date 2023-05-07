@@ -56,6 +56,9 @@ class AuthServiceTest {
 
         // check mocks
         verify(authApiService).login(new LoginDto("string", "stringst"));
+        verify(tokenStorage).setAccessToken("123");
+        verify(tokenStorage).setRefreshToken("abc");
+        verify(tokenStorage).setCurrentUser(any(User.class));
     }
 
     @Test
