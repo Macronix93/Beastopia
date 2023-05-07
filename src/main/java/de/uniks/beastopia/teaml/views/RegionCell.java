@@ -32,7 +32,7 @@ public class RegionCell extends ListCell<Region> {
             setGraphic(null);
             setText(null);
         } else {
-            final Button join = new Button(item.name() + " "+ resources.getString("join"));
+            final Button join = new Button(item.name() + " " + resources.getString("join"));
             //ToDo join in languages
             join.setOnAction(event -> {
                 app.show(ingameControllerProvider.get());
