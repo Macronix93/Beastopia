@@ -11,11 +11,10 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 public class IngameController extends Controller {
-
     @FXML
     public HBox ingame;
     @FXML
-    private Button pause;
+    private Button pauseButton;
     @Inject
     App app;
     @Inject
