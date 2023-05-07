@@ -9,9 +9,11 @@ import javafx.scene.control.ListCell;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+import java.util.ResourceBundle;
 
 public class RegionCell extends ListCell<Region> {
 
+    private final ResourceBundle ressourcres;
     @Inject
     Provider<IngameController> ingameControllerProvider;
 
@@ -19,7 +21,8 @@ public class RegionCell extends ListCell<Region> {
     App app;
 
     @Inject
-    public RegionCell() {
+    public RegionCell(ResourceBundle ressources) {
+        this.ressourcres = ressources;
     }
 
     @Override
@@ -29,7 +32,8 @@ public class RegionCell extends ListCell<Region> {
             setGraphic(null);
             setText(null);
         } else {
-            final Button join = new Button(item.name() + " %join");
+            final Button join = new Button(item.name() + " "+ ressourcres.getString("join"));
+            //ToDo join in languages
             join.setOnAction(event -> {
                 app.show(ingameControllerProvider.get());
             });
