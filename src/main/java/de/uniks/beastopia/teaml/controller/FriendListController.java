@@ -51,7 +51,7 @@ public class FriendListController extends Controller {
         disposables.add(friendListService.getUsers().subscribe(users -> {
             allUsers.clear();
             allUsers.addAll(users);
-            searchUser();
+            updateUserList();
         }));
         return parent;
     }
@@ -62,13 +62,20 @@ public class FriendListController extends Controller {
             if (friends != null) {
                 for (User friend : friends) {
                     boolean friendPinned = preferences.getBoolean(friend._id() + "_pinned", true);
-                    Controller subController = friendControllerProvider.get()
-                            .setFriendController(friend, this, friendPinned);
-                    subControllers.add(subController);
+                    FriendController friendController = friendControllerProvider.get()
+                            .setUser(friend, friendPinned);
+                    subControllers.add(friendController);
+                    friendController.setOnFriendChanged(user -> {
+                        searchName.setText("");
+                        updateUserList();
+                    });
+                    friendController.setOnPinChanged(user -> {
+                        updateUserList();
+                    });
                     if (friendPinned) {
-                        friendList.getChildren().add(0, subController.render());
+                        friendList.getChildren().add(0, friendController.render());
                     } else {
-                        friendList.getChildren().add(subController.render());
+                        friendList.getChildren().add(friendController.render());
                     }
                 }
             }
@@ -87,7 +94,7 @@ public class FriendListController extends Controller {
     }
 
     @FXML
-    public void searchUser() {
+    public void updateUserList() {
         if (searchName.getText().isEmpty()) {
             getFriends();
             return;
@@ -96,7 +103,6 @@ public class FriendListController extends Controller {
         clearSubControllers();
 
         List<Parent> filteredParents = getFilteredParents();
-
         friendList.getChildren().addAll(filteredParents);
     }
     private List<Parent> getFilteredParents() {
@@ -120,10 +126,17 @@ public class FriendListController extends Controller {
         });
 
         for (User user : filteredUsers) {
-            FriendController subController = friendControllerProvider.get();
+            FriendController friendController = friendControllerProvider.get();
+            friendController.setOnFriendChanged(user_ -> {
+                searchName.setText("");
+                updateUserList();
+            });
+            friendController.setOnPinChanged(user_ -> {
+                updateUserList();
+            });
             boolean friendPinned = preferences.getBoolean(user._id() + "_pinned", false);
-            subController.setFriendController(user, this, friendPinned);
-            filteredParents.add(subController.render());
+            friendController.setUser(user, friendPinned);
+            filteredParents.add(friendController.render());
         }
         return filteredParents;
     }
