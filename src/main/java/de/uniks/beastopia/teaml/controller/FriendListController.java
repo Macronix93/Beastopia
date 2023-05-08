@@ -54,8 +54,6 @@ public class FriendListController extends Controller {
         disposables.add(friendListService.getFriends().observeOn(FX_SCHEDULER).subscribe(friends -> {
             if (friends != null) {
                 for (User friend : friends) {
-
-
                     boolean friendPinned = preferences.getBoolean(friend._id() + "_pinned", true);
                     Controller subController = friendControllerProvider.get()
                             .setFriendController(friend, friendListController, friendPinned);
