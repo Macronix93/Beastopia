@@ -1,20 +1,22 @@
 package de.uniks.beastopia.teaml.service;
 
-import de.uniks.beastopia.teaml.controller.LoginController;
 import de.uniks.beastopia.teaml.rest.*;
 import io.reactivex.rxjava3.core.Observable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 
+import static de.uniks.beastopia.teaml.rest.UserApiService.STATUS_OFFLINE;
 import static de.uniks.beastopia.teaml.rest.UserApiService.STATUS_ONLINE;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
@@ -63,11 +65,51 @@ class AuthServiceTest {
 
     @Test
     void refresh() {
-        //No usage yet
+        // define mocks:
+        doNothing().when(tokenStorage).setAccessToken("123");
+        doNothing().when(tokenStorage).setRefreshToken("abc");
+        doNothing().when(tokenStorage).setCurrentUser(any());
+        when(tokenStorage.getRefreshToken()).thenReturn("abc");
+        User mocked = mock(User.class);
+        when(userApiService.updateUser(anyString(), any())).thenReturn(Observable.just(mocked));
+        Mockito
+                .when(authApiService.refresh(any()))
+                .thenReturn(Observable.just(
+                        new LoginResult(null, null, "id", "string", STATUS_ONLINE,
+                                "avatar", new ArrayList<>(), "123", "abc")));
+
+        // action:
+        final LoginResult loginResult = authService.refresh().blockingFirst();
+
+        // check values:
+        assertEquals("string", loginResult.name());
+        assertEquals("id", loginResult._id());
+        assertEquals(STATUS_ONLINE, loginResult.status());
+        assertEquals("avatar", loginResult.avatar());
+        assertEquals("123", loginResult.accessToken());
+        assertEquals("abc", loginResult.refreshToken());
+
+        // check mocks
+        verify(authApiService).refresh(new RefreshDto("abc"));
+        verify(tokenStorage).setAccessToken("123");
+        verify(tokenStorage).setRefreshToken("abc");
+        verify(tokenStorage).setCurrentUser(any(User.class));
     }
 
     @Test
     void logout() {
-        //No usage yet
+        // define mocks:
+        when(tokenStorage.getCurrentUser()).thenReturn(new User(null, null, "c", "d",
+                "e", "f", new ArrayList<>()));
+        User mocked = mock(User.class);
+        when(userApiService.updateUser(anyString(), any())).thenReturn(Observable.just(mocked));
+
+        // action:
+        authService.logout();
+
+        //check mocks
+        verify(userApiService).updateUser(any(), any(UpdateUserDto.class));
+        verify(tokenStorage).getCurrentUser();
+        verify(authApiService).logout();
     }
 }

@@ -51,6 +51,7 @@ class LoginControllerTest extends ApplicationTest {
     public void start(Stage stage) throws Exception {
         app.start(stage);
         app.show(loginController);
+        stage.requestFocus();
     }
 
     @Test
@@ -62,13 +63,10 @@ class LoginControllerTest extends ApplicationTest {
         when(menuControllerProvider.get()).thenReturn(mock);
         doNothing().when(app).show(mock);
 
-        if (System.getenv("CI") != null || System.getProperty("headless") != null) {
-            lookup("#usernameInput").queryAs(TextField.class).setText("string");
-            lookup("#passwordInput").queryAs(TextField.class).setText("stringst");
-        } else {
-            write("string\t\t");
-            write("stringst");
-        }
+        clickOn("#usernameInput");
+        write("string");
+        clickOn("#passwordInput");
+        write("stringst");
         clickOn("#loginButton");
 
         verify(app).show(mock);
@@ -80,14 +78,10 @@ class LoginControllerTest extends ApplicationTest {
                 "{\"message\":\"Login failed\"}");
         when(authService.login(anyString(), anyString())).thenReturn(Observable.error
                 (new HttpException(Response.error(401, body))));
-
-        if (System.getenv("CI") != null || System.getProperty("headless") != null) {
-            lookup("#usernameInput").queryAs(TextField.class).setText("string");
-            lookup("#passwordInput").queryAs(TextField.class).setText("12345678");
-        } else {
-            write("string\t\t");
-            write("12345678");
-        }
+        clickOn("#usernameInput");
+        write("string");
+        clickOn("#passwordInput");
+        write("12345678");
         clickOn("#loginButton");
 
         Node dialogPane = lookup(".dialog-pane").query();
