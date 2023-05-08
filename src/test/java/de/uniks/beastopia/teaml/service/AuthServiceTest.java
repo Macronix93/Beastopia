@@ -99,17 +99,18 @@ class AuthServiceTest {
     @Test
     void logout() {
         // define mocks:
-        when(tokenStorage.getCurrentUser()).thenReturn(new User(null, null, "c", "d",
-                "e", "f", new ArrayList<>()));
-        User mocked = mock(User.class);
-        when(userApiService.updateUser(anyString(), any())).thenReturn(Observable.just(mocked));
+        when(tokenStorage.getCurrentUser()).thenReturn(new User(null, null, "c", null, null, null, null));
+        UpdateUserDto dto = new UpdateUserDto(null, UserApiService.STATUS_OFFLINE, null, null, null);
+        User mockedUser = mock(User.class);
+        when(userApiService.updateUser("c", dto)).thenReturn(Observable.just(mockedUser));
+        when(authApiService.logout()).thenReturn(Observable.empty());
 
         // action:
-        authService.logout();
+        authService.logout().subscribe(a -> {}, e -> {}).dispose();
 
         //check mocks
-        verify(userApiService).updateUser(any(), any(UpdateUserDto.class));
         verify(tokenStorage).getCurrentUser();
+        verify(userApiService).updateUser("c", dto);
         verify(authApiService).logout();
     }
 }
