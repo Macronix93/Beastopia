@@ -5,7 +5,6 @@ import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.RegistrationService;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.scene.Node;
-import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import okhttp3.MediaType;
@@ -47,6 +46,7 @@ class RegistrationControllerTest extends ApplicationTest {
     public void start(Stage stage) throws Exception {
         app.start(stage);
         app.show(registrationController);
+        stage.requestFocus();
     }
 
     @Test
@@ -54,18 +54,12 @@ class RegistrationControllerTest extends ApplicationTest {
         User mocked = mock(User.class);
         when(registrationService.createUser(anyString(), anyString(), anyString())).thenReturn(Observable.just(mocked));
 
-        if (System.getenv("CI") != null || System.getProperty("headless") != null) {
-            lookup("#usernameInput").queryAs(TextField.class).setText("Lonartie");
-            lookup("#passwordInput").queryAs(TextField.class).setText("12345678");
-            lookup("#passwordRepeatInput").queryAs(TextField.class).setText("12345678");
-        } else {
-            clickOn("#usernameInput");
-            write("Lonartie");
-            clickOn("#passwordInput");
-            write("12345678");
-            clickOn("#passwordRepeatInput");
-            write("12345678");
-        }
+        clickOn("#usernameInput");
+        write("Lonartie");
+        clickOn("#passwordInput");
+        write("12345678");
+        clickOn("#passwordRepeatInput");
+        write("12345678");
 
         clickOn("#signUpButton");
 
@@ -77,18 +71,12 @@ class RegistrationControllerTest extends ApplicationTest {
 
     @Test
     void signUpWrongPasswords() {
-        if (System.getenv("CI") != null || System.getProperty("headless") != null) {
-            lookup("#usernameInput").queryAs(TextField.class).setText("Lonartie");
-            lookup("#passwordInput").queryAs(TextField.class).setText("1234567");
-            lookup("#passwordRepeatInput").queryAs(TextField.class).setText("12345678");
-        } else {
-            clickOn("#usernameInput");
-            write("Lonartie");
-            clickOn("#passwordInput");
-            write("1234567");
-            clickOn("#passwordRepeatInput");
-            write("12345678");
-        }
+        clickOn("#usernameInput");
+        write("Lonartie");
+        clickOn("#passwordInput");
+        write("1234567");
+        clickOn("#passwordRepeatInput");
+        write("12345678");
 
         clickOn("#signUpButton");
 
@@ -102,18 +90,12 @@ class RegistrationControllerTest extends ApplicationTest {
         ResponseBody body = ResponseBody.create(MediaType.get("application/json"), "{\"message\":\"User already exists\"}");
         when(registrationService.createUser(anyString(), anyString(), anyString())).thenReturn(Observable.error(new HttpException(Response.error(409, body))));
 
-        if (System.getenv("CI") != null || System.getProperty("headless") != null) {
-            lookup("#usernameInput").queryAs(TextField.class).setText("Lonartie");
-            lookup("#passwordInput").queryAs(TextField.class).setText("12345678");
-            lookup("#passwordRepeatInput").queryAs(TextField.class).setText("12345678");
-        } else {
-            clickOn("#usernameInput");
-            write("Lonartie");
-            clickOn("#passwordInput");
-            write("12345678");
-            clickOn("#passwordRepeatInput");
-            write("12345678");
-        }
+        clickOn("#usernameInput");
+        write("Lonartie");
+        clickOn("#passwordInput");
+        write("12345678");
+        clickOn("#passwordRepeatInput");
+        write("12345678");
 
         clickOn("#signUpButton");
 
