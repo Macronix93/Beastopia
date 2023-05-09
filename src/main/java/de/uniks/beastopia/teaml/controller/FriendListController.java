@@ -3,7 +3,6 @@ package de.uniks.beastopia.teaml.controller;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.FriendListService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -18,6 +17,7 @@ import java.util.List;
 import java.util.prefs.Preferences;
 
 public class FriendListController extends Controller {
+    private final List<Controller> subControllers = new ArrayList<Controller>();
     @FXML
     public TextField searchName;
     @FXML
@@ -28,18 +28,14 @@ public class FriendListController extends Controller {
     public VBox friendList;
     @FXML
     public Button showChats;
-
     @Inject
     Provider<FriendController> friendControllerProvider;
     @Inject
     FriendListService friendListService;
     @Inject
     TokenStorage tokenStorage;
-
     @Inject
     Preferences preferences;
-
-    private final List<Controller> subControllers = new ArrayList<Controller>();
 
     @Inject
     public FriendListController() {
@@ -96,11 +92,11 @@ public class FriendListController extends Controller {
         }
         disposables.add(friendListService.getUsers().observeOn(FX_SCHEDULER).subscribe(users -> {
             if (users != null) {
-                for (User user : users) {
-                    if (user.name().toLowerCase().startsWith(searchName.getText().toLowerCase())) {
-                        boolean friendPinned = preferences.getBoolean(user._id() + "_pinned", true);
+                for (int i = users.size() - 1; i > 0; i--) {
+                    if (users.get(i).name().toLowerCase().startsWith(searchName.getText().toLowerCase())) {
+                        boolean friendPinned = preferences.getBoolean(users.get(i)._id() + "_pinned", true);
                         Controller subController = friendControllerProvider.get()
-                                .setFriendController(user, this, friendPinned);
+                                .setFriendController(users.get(i), this, friendPinned);
                         subControllers.add(subController);
                         if (friendPinned) {
                             friendList.getChildren().add(0, subController.render());
