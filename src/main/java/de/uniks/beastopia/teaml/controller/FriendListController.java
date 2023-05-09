@@ -85,24 +85,23 @@ public class FriendListController extends Controller {
 
     @FXML
     public void searchUser() {
+        friendList.getChildren().clear();
         disposables.add(friendListService.getUsers().observeOn(FX_SCHEDULER).subscribe(users -> {
             if (users != null) {
                 for (User user : users) {
-                    if (user.name().equals(searchName.getText())) {
-                        System.out.println(user.name());
+                    if (user.name().toLowerCase().startsWith(searchName.getText().toLowerCase())) {
                         boolean friendPinned = preferences.getBoolean(user._id() + "_pinned", true);
                         Controller subController = friendControllerProvider.get()
                                 .setFriendController(user, this, friendPinned);
                         subControllers.add(subController);
                         if (friendPinned) {
                             friendList.getChildren().add(0, subController.render());
+                            //ToDo pinned friend first
                         } else {
                             friendList.getChildren().add(subController.render());
                         }
                     }
                 }
-            } else {
-                //ToDo show nothing
             }
         }));
     }
