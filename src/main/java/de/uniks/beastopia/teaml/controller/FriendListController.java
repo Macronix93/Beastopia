@@ -50,6 +50,12 @@ public class FriendListController extends Controller {
     public Parent render() {
         Parent parent = super.render();
 
+        getFriends();
+
+        return parent;
+    }
+
+    private void getFriends() {
         FriendListController friendListController = this;
         disposables.add(friendListService.getFriends().observeOn(FX_SCHEDULER).subscribe(friends -> {
             if (friends != null) {
@@ -68,8 +74,6 @@ public class FriendListController extends Controller {
                 }
             }
         }));
-
-        return parent;
     }
 
     @Override
@@ -86,6 +90,10 @@ public class FriendListController extends Controller {
     @FXML
     public void searchUser() {
         friendList.getChildren().clear();
+        if (searchName.getText().isEmpty()) {
+            getFriends();
+            return;
+        }
         disposables.add(friendListService.getUsers().observeOn(FX_SCHEDULER).subscribe(users -> {
             if (users != null) {
                 for (User user : users) {
