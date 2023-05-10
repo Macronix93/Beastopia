@@ -107,13 +107,13 @@ public class FriendListController extends Controller {
             }
         }
 
-        for (User user : filteredUsers.stream().sorted((a, b) -> {
-            boolean pina = preferences.getBoolean(a._id() + "_pinned", false);
-            if (pina) {
+        for (User user : filteredUsers.stream().sorted((firstUser, secondUser) -> {
+            boolean notPinned = preferences.getBoolean(firstUser._id() + "_pinned", false);
+            if (notPinned) {
                 return -1;
             }
             else {
-                return a.name().compareTo(b.name());
+                return firstUser.name().compareTo(secondUser.name());
             }
         }).toList()) {
             FriendController subController = friendControllerProvider.get();
