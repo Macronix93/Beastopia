@@ -1,6 +1,7 @@
 package de.uniks.beastopia.teaml.controller;
 
 import de.uniks.beastopia.teaml.App;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,7 +15,6 @@ import org.testfx.framework.junit5.ApplicationTest;
 import javax.inject.Provider;
 import java.util.ResourceBundle;
 
-import static java.awt.Event.ESCAPE;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -43,7 +43,7 @@ class IngameControllerTest extends ApplicationTest {
         when(pauseControllerProvider.get()).thenReturn(mock);
         doNothing().when(app).show(mock);
 
-        clickOn(String.valueOf(ESCAPE));
+        press(KeyCode.ESCAPE);
 
         verify(app).show(mock);
     }
