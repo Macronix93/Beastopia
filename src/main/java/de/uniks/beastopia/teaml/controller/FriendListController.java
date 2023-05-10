@@ -96,7 +96,6 @@ public class FriendListController extends Controller {
 
         friendList.getChildren().addAll(filteredParents);
     }
-
     private List<Parent> getFilteredParents() {
         List<User> filteredUsers = new ArrayList<>();
         List<Parent> filteredParents = new ArrayList<>();
@@ -107,7 +106,7 @@ public class FriendListController extends Controller {
             }
         }
 
-        for (User user : filteredUsers.stream().sorted((firstUser, secondUser) -> {
+        filteredUsers.stream().sorted((firstUser, secondUser) -> {
             boolean notPinned = preferences.getBoolean(firstUser._id() + "_pinned", false);
             if (notPinned) {
                 return -1;
@@ -115,7 +114,9 @@ public class FriendListController extends Controller {
             else {
                 return firstUser.name().compareTo(secondUser.name());
             }
-        }).toList()) {
+        });
+
+        for (User user : filteredUsers) {
             FriendController subController = friendControllerProvider.get();
             boolean friendPinned = preferences.getBoolean(user._id() + "_pinned", false);
             subController.setFriendController(user, this, friendPinned);
