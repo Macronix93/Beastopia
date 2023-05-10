@@ -18,6 +18,7 @@ public class ChatWindowController extends Controller{
 
     private String namespace;
     private String parentId;
+    private List<Message> messages = new ArrayList<>();
     @FXML
     public ScrollPane scrollMsg;
     @FXML
@@ -50,13 +51,14 @@ public class ChatWindowController extends Controller{
     @Override
     public Parent render() {
         Parent parent = super.render();
-        List<Message> messages = new ArrayList<>();
         if (namespace.equals("global")) {
             disposables.add(messageService.getMessagesFromFriend(parentId).observeOn(FX_SCHEDULER)
                     .subscribe(messages::addAll));
         } else if (namespace.equals("group")) {
             disposables.add(messageService.getMessagesFromGroup(parentId).observeOn(FX_SCHEDULER)
-                    .subscribe(messages::addAll));
+                    .subscribe(messageList -> {
+                messages.addAll(messageList);
+            }));
         }
 
         for (Message msg : messages) {

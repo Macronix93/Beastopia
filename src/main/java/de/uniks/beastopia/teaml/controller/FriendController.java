@@ -100,6 +100,7 @@ public class FriendController extends Controller {
     @FXML
     public void openFriendChat(ActionEvent actionEvent) {
         app.show(chatWindowControllerProvider.get().setupChatWindowController("global", user._id()));
+        //TODO Jonas seinen Controller anzeigen und das übergeben und von da aus in meins übergeben
     }
 
     @FXML

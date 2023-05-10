@@ -49,7 +49,6 @@ public class FriendListController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
-
         FriendListController friendListController = this;
         disposables.add(friendListService.getFriends().observeOn(FX_SCHEDULER).subscribe(friends -> {
             if (friends != null) {
