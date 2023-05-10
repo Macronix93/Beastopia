@@ -3,12 +3,11 @@ package de.uniks.beastopia.teaml.controller;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.FriendListService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
@@ -18,8 +17,10 @@ import java.util.List;
 import java.util.prefs.Preferences;
 
 public class FriendListController extends Controller {
+    private final List<Controller> subControllers = new ArrayList<Controller>();
+    private final List<User> allUsers = new ArrayList<User>();
     @FXML
-    public TextArea searchName;
+    public TextField searchName;
     @FXML
     public Button searchBtn;
     @FXML
@@ -28,18 +29,14 @@ public class FriendListController extends Controller {
     public VBox friendList;
     @FXML
     public Button showChats;
-
     @Inject
     Provider<FriendController> friendControllerProvider;
     @Inject
     FriendListService friendListService;
     @Inject
     TokenStorage tokenStorage;
-
     @Inject
     Preferences preferences;
-
-    private final List<Controller> subControllers = new ArrayList<Controller>();
 
     @Inject
     public FriendListController() {
@@ -49,14 +46,22 @@ public class FriendListController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
+        disposables.add(friendListService.getUsers().subscribe(users -> {
+            allUsers.clear();
+            allUsers.addAll(users);
+            searchUser();
+        }));
+        return parent;
+    }
 
-        FriendListController friendListController = this;
+    private void getFriends() {
         disposables.add(friendListService.getFriends().observeOn(FX_SCHEDULER).subscribe(friends -> {
+            clearSubControllers();
             if (friends != null) {
                 for (User friend : friends) {
                     boolean friendPinned = preferences.getBoolean(friend._id() + "_pinned", true);
                     Controller subController = friendControllerProvider.get()
-                            .setFriendController(friend, friendListController, friendPinned);
+                            .setFriendController(friend, this, friendPinned);
                     subControllers.add(subController);
                     if (friendPinned) {
                         friendList.getChildren().add(0, subController.render());
@@ -66,22 +71,65 @@ public class FriendListController extends Controller {
                 }
             }
         }));
-
-        return parent;
     }
 
     @Override
     public void destroy() {
-        subControllers.forEach(Controller::destroy);
+        clearSubControllers();
         super.destroy();
     }
 
     @FXML
-    public void showChats(ActionEvent actionEvent) {
-
+    public void showChats() {
     }
 
     @FXML
-    public void searchUser(ActionEvent actionEvent) {
+    public void searchUser() {
+        if (searchName.getText().isEmpty()) {
+            getFriends();
+            return;
+        }
+
+        clearSubControllers();
+
+        List<Parent> filteredParents = getFilteredParents();
+
+        friendList.getChildren().addAll(filteredParents);
+    }
+    private List<Parent> getFilteredParents() {
+        List<User> filteredUsers = new ArrayList<>();
+        List<Parent> filteredParents = new ArrayList<>();
+
+        for (User user : allUsers) {
+            if (user.name().toLowerCase().startsWith(searchName.getText().toLowerCase())) {
+                filteredUsers.add(user);
+            }
+        }
+
+        filteredUsers.stream().sorted((firstUser, secondUser) -> {
+            boolean notPinned = preferences.getBoolean(firstUser._id() + "_pinned", false);
+            if (notPinned) {
+                return -1;
+            }
+            else {
+                return firstUser.name().compareTo(secondUser.name());
+            }
+        });
+
+        for (User user : filteredUsers) {
+            FriendController subController = friendControllerProvider.get();
+            boolean friendPinned = preferences.getBoolean(user._id() + "_pinned", false);
+            subController.setFriendController(user, this, friendPinned);
+            filteredParents.add(subController.render());
+        }
+        return filteredParents;
+    }
+
+    private void clearSubControllers() {
+        for (Controller controller : subControllers) {
+            controller.destroy();
+        }
+        subControllers.clear();
+        friendList.getChildren().clear();
     }
 }
