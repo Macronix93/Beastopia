@@ -1,5 +1,6 @@
 package de.uniks.beastopia.teaml.controller;
 
+import de.uniks.beastopia.teaml.rest.Message;
 import de.uniks.beastopia.teaml.service.MessageService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -15,6 +16,8 @@ import java.util.List;
 
 public class ChatWindowController extends Controller{
 
+    private String namespace;
+    private String parentId;
     @FXML
     public ScrollPane scrollMsg;
     @FXML
@@ -37,9 +40,31 @@ public class ChatWindowController extends Controller{
 
     }
 
+    public ChatWindowController setupChatWindowController(String namespace, String parendId) {
+        this.namespace = namespace;
+        this.parentId = parendId;
+        return this;
+    }
+
+
     @Override
     public Parent render() {
         Parent parent = super.render();
+        List<Message> messages = new ArrayList<>();
+        if (namespace.equals("global")) {
+            disposables.add(messageService.getMessagesFromFriend(parentId).observeOn(FX_SCHEDULER)
+                    .subscribe(messages::addAll));
+        } else if (namespace.equals("group")) {
+            disposables.add(messageService.getMessagesFromGroup(parentId).observeOn(FX_SCHEDULER)
+                    .subscribe(messages::addAll));
+        }
+
+        for (Message msg : messages) {
+            //Controller subController = messageControllerProvider.get().setupMessageController(msg);
+            //subControllers.add(subController);
+            //msgList.getChildren().add(subController)
+        }
+
 
         return parent;
     }

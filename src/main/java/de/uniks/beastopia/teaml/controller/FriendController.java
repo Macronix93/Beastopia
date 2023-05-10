@@ -14,6 +14,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import java.util.prefs.Preferences;
 
 public class FriendController extends Controller {
@@ -35,6 +36,9 @@ public class FriendController extends Controller {
 
     private User user;
     private FriendListController friendListController;
+
+    @Inject
+    Provider<ChatWindowController> chatWindowControllerProvider;
 
     private Boolean friendPin;
 
@@ -95,6 +99,7 @@ public class FriendController extends Controller {
 
     @FXML
     public void openFriendChat(ActionEvent actionEvent) {
+        app.show(chatWindowControllerProvider.get().setupChatWindowController("global", user._id()));
     }
 
     @FXML
