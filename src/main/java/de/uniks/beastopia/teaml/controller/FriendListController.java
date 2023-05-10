@@ -90,10 +90,16 @@ public class FriendListController extends Controller {
             return;
         }
 
+        clearSubControllers();
+
+        List<Parent> filteredParents = getFilteredParents();
+
+        friendList.getChildren().addAll(filteredParents);
+    }
+
+    private List<Parent> getFilteredParents() {
         List<User> filteredUsers = new ArrayList<>();
         List<Parent> filteredParents = new ArrayList<>();
-
-        clearSubControllers();
 
         for (User user : allUsers) {
             if (user.name().toLowerCase().startsWith(searchName.getText().toLowerCase())) {
@@ -115,8 +121,7 @@ public class FriendListController extends Controller {
             subController.setFriendController(user, this, friendPinned);
             filteredParents.add(subController.render());
         }
-
-        friendList.getChildren().addAll(filteredParents);
+        return filteredParents;
     }
 
     private void clearSubControllers() {
