@@ -18,6 +18,7 @@ import java.util.prefs.Preferences;
 
 public class FriendListController extends Controller {
     private final List<Controller> subControllers = new ArrayList<Controller>();
+    private final List<User> allUsers = new ArrayList<User>();
     @FXML
     public TextField searchName;
     @FXML
@@ -36,8 +37,6 @@ public class FriendListController extends Controller {
     TokenStorage tokenStorage;
     @Inject
     Preferences preferences;
-
-    private final List<User> allUsers = new ArrayList<User>();
 
     @Inject
     public FriendListController() {
@@ -82,12 +81,10 @@ public class FriendListController extends Controller {
 
     @FXML
     public void showChats() {
-
     }
 
     @FXML
     public void searchUser() {
-
         if (searchName.getText().isEmpty()) {
             getFriends();
             return;
@@ -106,9 +103,12 @@ public class FriendListController extends Controller {
 
         for (User user : filteredUsers.stream().sorted((a, b) -> {
             boolean pina = preferences.getBoolean(a._id() + "_pinned", false);
-            boolean pinb = preferences.getBoolean(b._id() + "_pinned", false);
-            if (pina) return -1;
-            else return a.name().compareTo(b.name());
+            if (pina) {
+                return -1;
+            }
+            else {
+                return a.name().compareTo(b.name());
+            }
         }).toList()) {
             FriendController subController = friendControllerProvider.get();
             boolean friendPinned = preferences.getBoolean(user._id() + "_pinned", false);
@@ -117,8 +117,6 @@ public class FriendListController extends Controller {
         }
 
         friendList.getChildren().addAll(filteredParents);
-
-
     }
 
     private void clearSubControllers() {
