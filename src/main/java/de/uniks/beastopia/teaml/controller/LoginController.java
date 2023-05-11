@@ -8,10 +8,14 @@ import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+import java.util.Locale;
+import java.util.ResourceBundle;
+import java.util.prefs.Preferences;
 
 public class LoginController extends Controller {
     @FXML
@@ -20,7 +24,10 @@ public class LoginController extends Controller {
     public PasswordField passwordInput;
     @FXML
     public Button loginButton;
-
+    @FXML
+    public RadioButton selectEnglishLanguage;
+    @FXML
+    public RadioButton selectGermanLanguage;
     @Inject
     Provider<RegistrationController> registrationControllerProvider;
     @Inject
@@ -29,7 +36,10 @@ public class LoginController extends Controller {
     AuthService authService;
     @Inject
     TokenStorage tokenStorage;
-
+    @Inject
+    Preferences preferences;
+    @Inject
+    Provider<ResourceBundle> resourcesProvider;
     private BooleanBinding isInValid;
 
     @Inject
@@ -71,4 +81,20 @@ public class LoginController extends Controller {
     public void register() {
         app.show(registrationControllerProvider.get());
     }
+
+    public void setDe() {
+        setLanguage(Locale.GERMAN);
+    }
+
+    public void setEn() {
+        setLanguage(Locale.ENGLISH);
+    }
+
+    private void setLanguage(Locale locale) {
+        preferences.put("locale", locale.toLanguageTag());
+        resources = resourcesProvider.get();
+        app.show(this);
+    }
+
+
 }

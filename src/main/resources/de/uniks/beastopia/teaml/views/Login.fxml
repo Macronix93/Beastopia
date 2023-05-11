@@ -32,7 +32,7 @@
    <Button fx:id="loginButton" defaultButton="true" layoutX="299.0" layoutY="340.0" mnemonicParsing="false"
            onAction="#login" prefHeight="68.0" prefWidth="138.0" style="-fx-background-radius: 20;" text="%Login">
       <font>
-         <Font size="20.0" />
+         <Font size="20.0"/>
       </font>
    </Button>
    <Button fx:id="registerButton" layoutX="526.0" layoutY="374.0" mnemonicParsing="false" onAction="#register"
@@ -48,7 +48,8 @@
       <Image url="@../assets/Lumnix_Logo_tr.png"/>
    </ImageView>
    <PasswordField fx:id="passwordInput" layoutX="300.0" layoutY="281.0"/>
-   <RadioButton layoutX="300.0" layoutY="98.0" mnemonicParsing="false" selected="true" text="%English">
+   <RadioButton fx:id="selectEnglishLanguage" layoutX="300.0" layoutY="98.0" mnemonicParsing="false" onAction="#setEn"
+                selected="true" text="%English">
       <font>
          <Font size="20.0"/>
       </font>
@@ -56,7 +57,8 @@
          <ToggleGroup fx:id="language"/>
       </toggleGroup>
    </RadioButton>
-   <RadioButton layoutX="449.0" layoutY="98.0" mnemonicParsing="false" text="%German" toggleGroup="$language">
+   <RadioButton fx:id="selectGermanLanguage" layoutX="449.0" layoutY="98.0" mnemonicParsing="false" onAction="#setDe"
+                text="%German" toggleGroup="$language">
       <font>
          <Font size="20.0"/>
       </font>
