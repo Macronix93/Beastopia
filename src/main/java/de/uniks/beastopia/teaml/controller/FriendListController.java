@@ -32,6 +32,8 @@ public class FriendListController extends Controller {
     @Inject
     Provider<FriendController> friendControllerProvider;
     @Inject
+    Provider<DirectMessageController> directMessageControllerProvider;
+    @Inject
     FriendListService friendListService;
     @Inject
     TokenStorage tokenStorage;
@@ -81,6 +83,7 @@ public class FriendListController extends Controller {
 
     @FXML
     public void showChats() {
+        app.show(directMessageControllerProvider.get());
     }
 
     @FXML
