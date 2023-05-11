@@ -1,7 +1,6 @@
 package de.uniks.beastopia.teaml.controller;
 
 import javafx.fxml.FXML;
-import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.text.Text;
 
@@ -22,21 +21,12 @@ public class MessageBubbleController extends Controller {
 
     }
 
-    @Override
-    public String getTitle() {
-        return "Beastopia";
-    }
-
-    @Override
-    public Parent render() {
-        return null;
-    }
-
     @FXML
     public void editMessage() {
 
     }
 
+    @FXML
     public void deleteMessage() {
 
     }
