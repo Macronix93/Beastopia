@@ -14,7 +14,7 @@ import java.util.List;
 
 public class DirectMessageController extends Controller {
 
-    private final List<Controller> subControllers = new ArrayList<Controller>();
+    private final List<Controller> subControllers = new ArrayList<>();
 
     @Inject
     Provider<MenuController> menuControllerProvider;
