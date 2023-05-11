@@ -41,11 +41,15 @@ public class FriendListService {
     }
 
     public Observable<List<User>> getFriends() {
+        if (tokenStorage.getCurrentUser().friends().isEmpty())
+            return Observable.just(List.of());
         return userApiService
                 .getUsers(tokenStorage.getCurrentUser().friends(), null);
     }
 
     public Observable<List<User>> getFriends(Status status) {
+        if (tokenStorage.getCurrentUser().friends().isEmpty())
+            return Observable.just(List.of());
         return userApiService
                 .getUsers(tokenStorage.getCurrentUser().friends(), switch (status) {
                     case Online -> "online";
