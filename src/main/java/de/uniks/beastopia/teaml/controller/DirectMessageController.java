@@ -1,25 +1,33 @@
 package de.uniks.beastopia.teaml.controller;
 
-import javafx.event.ActionEvent;
+import de.uniks.beastopia.teaml.service.MessageService;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ResourceBundle;
 
-public class DirectMessageController extends Controller{
+public class DirectMessageController extends Controller {
 
     private final List<Controller> subControllers = new ArrayList<Controller>();
+
+    @Inject
+    Provider<MenuController> menuControllerProvider;
+    @Inject
+    MessageService messageService;
     @FXML
     public VBox chatList;
     @FXML
     public VBox messageList;
     @FXML
     public TextField chatInput;
+    @FXML
+    public Label chatName; //this label shows the name of the person/group you are chatting with
 
     @Inject
     public DirectMessageController() {
@@ -29,8 +37,7 @@ public class DirectMessageController extends Controller{
     @Override
     public Parent render() {
         Parent parent = super.render();
-
-
+        //ToDo load Messages
         return parent;
     }
 
@@ -42,15 +49,18 @@ public class DirectMessageController extends Controller{
 
     @Override
     public String getTitle() {
-        return resources.getString("titleDirectMessage");
+        return resources.getString("titleDirectMessages");
     }
 
     public void back() {
+        app.show(menuControllerProvider.get());
     }
 
     public void newGroup() {
+        //ToDo show Group Controller
     }
 
     public void sendMessage() {
+        //ToDo send Message
     }
 }
