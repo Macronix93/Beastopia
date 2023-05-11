@@ -4,6 +4,7 @@ import de.uniks.beastopia.teaml.service.AuthService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.utils.Dialog;
 import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -41,6 +42,8 @@ public class LoginController extends Controller {
     @Inject
     Provider<ResourceBundle> resourcesProvider;
     private BooleanBinding isInValid;
+    private final SimpleStringProperty username = new SimpleStringProperty();
+    private final SimpleStringProperty password = new SimpleStringProperty();
 
     @Inject
     public LoginController() {
@@ -56,8 +59,12 @@ public class LoginController extends Controller {
     public Parent render() {
         final Parent parent = super.render();
 
-        isInValid = usernameInput.textProperty().isEmpty()
-                .or(passwordInput.textProperty().length().lessThan(8));
+        usernameInput.textProperty().bindBidirectional(username);
+        passwordInput.textProperty().bindBidirectional(password);
+
+        isInValid = username
+                .isEmpty()
+                .or(password.length().lessThan(8));
         loginButton.disableProperty().bind(isInValid);
 
         return parent;
@@ -84,10 +91,12 @@ public class LoginController extends Controller {
 
     public void setDe() {
         setLanguage(Locale.GERMAN);
+        selectGermanLanguage.setSelected(true);
     }
 
     public void setEn() {
         setLanguage(Locale.ENGLISH);
+        selectEnglishLanguage.setSelected(true);
     }
 
     private void setLanguage(Locale locale) {
