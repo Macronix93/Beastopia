@@ -41,7 +41,7 @@ public class App extends Application {
         stage.show();
 
         if (controller != null) {
-            initAndRender(controller);
+            initAndRender();
             return;
         }
 
@@ -58,15 +58,12 @@ public class App extends Application {
     public void show(Controller controller) {
         cleanup();
         this.controller = controller;
-        initAndRender(controller);
+        initAndRender();
     }
 
-    private void initAndRender(Controller controller) {
+    private void initAndRender() {
         controller.init();
-        if (controller.getTitle() != null) {
-            stage.setTitle(controller.getTitle());
-        }
-        stage.getScene().setRoot(controller.render());
+        update();
     }
 
     private void cleanup() {
@@ -74,5 +71,12 @@ public class App extends Application {
             controller.destroy();
             controller = null;
         }
+    }
+
+    public void update() {
+        if (controller.getTitle() != null) {
+            stage.setTitle(controller.getTitle());
+        }
+        stage.getScene().setRoot(controller.render());
     }
 }

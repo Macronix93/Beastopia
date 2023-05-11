@@ -41,6 +41,7 @@ public class LoginController extends Controller {
     Preferences preferences;
     @Inject
     Provider<ResourceBundle> resourcesProvider;
+
     private BooleanBinding isInValid;
     private final SimpleStringProperty username = new SimpleStringProperty();
     private final SimpleStringProperty password = new SimpleStringProperty();
@@ -59,6 +60,16 @@ public class LoginController extends Controller {
     public Parent render() {
         final Parent parent = super.render();
 
+        String userLocale = Locale.getDefault().toLanguageTag();
+        if (!userLocale.equals("en-EN") && !userLocale.equals("de-DE")) {
+            userLocale = "en-EN";
+        }
+
+        if (preferences.get("locale", userLocale).contains("de")) {
+            selectGermanLanguage.setSelected(true);
+        } else {
+            selectEnglishLanguage.setSelected(true);
+        }
         usernameInput.textProperty().bindBidirectional(username);
         passwordInput.textProperty().bindBidirectional(password);
 
@@ -91,19 +102,16 @@ public class LoginController extends Controller {
 
     public void setDe() {
         setLanguage(Locale.GERMAN);
-        selectGermanLanguage.setSelected(true);
     }
 
     public void setEn() {
         setLanguage(Locale.ENGLISH);
-        selectEnglishLanguage.setSelected(true);
     }
 
     private void setLanguage(Locale locale) {
         preferences.put("locale", locale.toLanguageTag());
         resources = resourcesProvider.get();
-        app.show(this);
+        app.update();
     }
-
 
 }
