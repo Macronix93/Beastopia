@@ -35,6 +35,7 @@ class IngameControllerTest extends ApplicationTest {
     public void start(Stage stage) throws Exception {
         app.start(stage);
         app.show(ingameController);
+        stage.requestFocus();
     }
 
     @Test
