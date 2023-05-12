@@ -61,7 +61,7 @@
          <Font size="20.0"/>
       </font>
    </RadioButton>
-   <CheckBox fx:id="rememberMeCheckBox" layoutX="299.0" layoutY="341.0" mnemonicParsing="false" text="%rememberMe">
+   <CheckBox fx:id="rememberMe" layoutX="299.0" layoutY="341.0" mnemonicParsing="false" text="%rememberMe">
       <font>
          <Font size="20.0"/>
       </font>
