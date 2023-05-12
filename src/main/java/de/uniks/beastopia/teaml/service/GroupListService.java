@@ -25,6 +25,10 @@ public class GroupListService {
         return groupApiService.getGroups(null);
     }
 
+    public Observable<Group> getGroup(String id) {
+        return groupApiService.getGroup(id);
+    }
+
     public Observable<Group> addGroup(String name, List<String> members) {
         ArrayList<String> membersCopy = new ArrayList<>(members);
         membersCopy.add(tokenStorage.getCurrentUser()._id());

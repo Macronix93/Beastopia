@@ -14,6 +14,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import java.util.function.Consumer;
 import java.util.prefs.Preferences;
 
@@ -36,6 +37,9 @@ public class FriendController extends Controller {
     HBox _rootElement;
 
     private User user;
+
+    @Inject
+    Provider<DirectMessageController> directMessageControllerProvider;
 
     private Boolean friendPin;
 
@@ -139,8 +143,8 @@ public class FriendController extends Controller {
     }
 
     @FXML
-    public void openFriendChat() {
-        // TODO
+    public void openFriendChat(ActionEvent actionEvent) {
+        app.show(directMessageControllerProvider.get().setupDirectMessageController("global", user._id()));
     }
 
     @FXML
