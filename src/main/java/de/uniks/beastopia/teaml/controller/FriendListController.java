@@ -64,6 +64,7 @@ public class FriendListController extends Controller {
                     boolean friendPinned = preferences.getBoolean(friend._id() + "_pinned", true);
                     FriendController friendController = friendControllerProvider.get()
                             .setUser(friend, friendPinned);
+                    friendController.init();
                     subControllers.add(friendController);
                     friendController.setOnFriendChanged(user -> {
                         searchName.setText("");
@@ -105,6 +106,7 @@ public class FriendListController extends Controller {
         List<Parent> filteredParents = getFilteredParents();
         friendList.getChildren().addAll(filteredParents);
     }
+
     private List<Parent> getFilteredParents() {
         List<User> filteredUsers = new ArrayList<>();
         List<Parent> filteredParents = new ArrayList<>();
@@ -119,14 +121,14 @@ public class FriendListController extends Controller {
             boolean notPinned = preferences.getBoolean(firstUser._id() + "_pinned", false);
             if (notPinned) {
                 return -1;
-            }
-            else {
+            } else {
                 return firstUser.name().compareTo(secondUser.name());
             }
         });
 
         for (User user : filteredUsers) {
             FriendController friendController = friendControllerProvider.get();
+            friendController.init();
             friendController.setOnFriendChanged(user_ -> {
                 searchName.setText("");
                 updateUserList();
