@@ -5,6 +5,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
@@ -16,6 +17,8 @@ public class PauseController extends Controller {
 
     @FXML
     private Button editProfileButton;
+    @FXML
+    private ImageView editIcon;
     @FXML
     private Button backToMainButton;
     @FXML

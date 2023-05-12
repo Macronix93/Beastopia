@@ -10,7 +10,7 @@
    <children>
       <Button fx:id="pauseButton" alignment="CENTER" minWidth="180.0" mnemonicParsing="false" onKeyPressed="#pauseMenu"
               style="-fx-background-color: transparent; -fx-border-color: black; -fx-border-radius: 10;"
-              text="ESC = Pause Menu" textAlignment="CENTER">
+              text="%ESCtoPause" textAlignment="CENTER">
          <font>
             <Font size="14.0"/>
          </font>
