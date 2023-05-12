@@ -59,21 +59,23 @@ public class DirectMessageController extends Controller {
     public Parent render() {
         Parent parent = super.render();
 
-        if (this.namespace.equals("group")) {
-            disposables.add(groupListService.getGroup(parentId).observeOn(FX_SCHEDULER).subscribe(s -> {
-                chatName.setText(s.name());
-            }));
-        } else if (this.namespace.equals("global")) {
-            disposables.add(friendListService.getUser(parentId).observeOn(FX_SCHEDULER).subscribe(s -> {
-                chatName.setText(s.name());
-            }));
+        if (this.namespace == null || this.parentId == null) {
+            //TODO show first chat from ChatList
+        } else { //Open Chat from friend
+            if (this.namespace.equals("group")) {
+                disposables.add(groupListService.getGroup(parentId).observeOn(FX_SCHEDULER).subscribe(s -> {
+                    chatName.setText(s.name());
+                }));
+            } else if (this.namespace.equals("global")) {
+                disposables.add(friendListService.getUser(parentId).observeOn(FX_SCHEDULER).subscribe(s -> {
+                    chatName.setText(s.name());
+                }));
+            }
+            Controller subController = chatWindowControllerProvider.get()
+                    .setupChatWindowController(this.namespace, this.parentId);
+            subControllers.add(subController);
+            messageList.getChildren().add(subController.render());
         }
-
-        Controller subController = chatWindowControllerProvider.get()
-                .setupChatWindowController(this.namespace, this.parentId);
-        subControllers.add(subController);
-        messageList.getChildren().add(subController.render());
-
         return parent;
     }
 
