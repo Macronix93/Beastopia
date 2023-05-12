@@ -20,13 +20,7 @@ public class ChatWindowController extends Controller{
     private String parentId;
     private List<Message> messages = new ArrayList<>();
     @FXML
-    public ScrollPane scrollMsg;
-    @FXML
     public VBox msgList;
-    @FXML
-    public TextArea msgText;
-    @FXML
-    public Button sendButton;
 
     //@Inject
     //Provider<MessageController> messageControllerProvider;
@@ -67,7 +61,6 @@ public class ChatWindowController extends Controller{
             //msgList.getChildren().add(subController)
         }
 
-
         return parent;
     }
 
@@ -75,10 +68,5 @@ public class ChatWindowController extends Controller{
     public void destroy() {
         subControllers.forEach(Controller::destroy);
         super.destroy();
-    }
-
-    @FXML
-    public void sendMsg(ActionEvent actionEvent) {
-        //Display text from TextArea "msgTxt" into a Message (subcontroller)
     }
 }

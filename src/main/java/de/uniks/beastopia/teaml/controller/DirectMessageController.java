@@ -1,5 +1,8 @@
 package de.uniks.beastopia.teaml.controller;
 
+import de.uniks.beastopia.teaml.rest.Group;
+import de.uniks.beastopia.teaml.service.FriendListService;
+import de.uniks.beastopia.teaml.service.GroupListService;
 import de.uniks.beastopia.teaml.service.MessageService;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -18,8 +21,18 @@ public class DirectMessageController extends Controller {
 
     @Inject
     Provider<MenuController> menuControllerProvider;
+
+    @Inject
+    Provider<ChatWindowController> chatWindowControllerProvider;
+
     @Inject
     MessageService messageService;
+
+    @Inject
+    GroupListService groupListService;
+
+    @Inject
+    FriendListService friendListService;
     @FXML
     public VBox chatList;
     @FXML
@@ -28,16 +41,39 @@ public class DirectMessageController extends Controller {
     public TextField chatInput;
     @FXML
     public Label chatName; //this label shows the name of the person/group you are chatting with
+    private String namespace;
+    private String parentId;
 
     @Inject
     public DirectMessageController() {
 
     }
 
+    public DirectMessageController setupDirectMessageController(String namespace, String parendId) {
+        this.namespace = namespace;
+        this.parentId = parendId;
+        return this;
+    }
+
     @Override
     public Parent render() {
         Parent parent = super.render();
-        //ToDo load Messages
+
+        if (this.namespace.equals("group")) {
+            disposables.add(groupListService.getGroup(parentId).observeOn(FX_SCHEDULER).subscribe(s -> {
+                chatName.setText(s.name());
+            }));
+        } else if (this.namespace.equals("global")) {
+            disposables.add(friendListService.getUser(parentId).observeOn(FX_SCHEDULER).subscribe(s -> {
+                chatName.setText(s.name());
+            }));
+        }
+
+        Controller subController = chatWindowControllerProvider.get()
+                .setupChatWindowController(this.namespace, this.parentId);
+        subControllers.add(subController);
+        messageList.getChildren().add(subController.render());
+
         return parent;
     }
 

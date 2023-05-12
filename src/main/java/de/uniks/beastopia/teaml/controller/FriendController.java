@@ -38,7 +38,7 @@ public class FriendController extends Controller {
     private FriendListController friendListController;
 
     @Inject
-    Provider<ChatWindowController> chatWindowControllerProvider;
+    Provider<DirectMessageController> directMessageControllerProvider;
 
     private Boolean friendPin;
 
@@ -99,8 +99,7 @@ public class FriendController extends Controller {
 
     @FXML
     public void openFriendChat(ActionEvent actionEvent) {
-        app.show(chatWindowControllerProvider.get().setupChatWindowController("global", user._id()));
-        //TODO Jonas seinen Controller anzeigen und das übergeben und von da aus in meins übergeben
+        app.show(directMessageControllerProvider.get().setupDirectMessageController("global", user._id()));
     }
 
     @FXML
