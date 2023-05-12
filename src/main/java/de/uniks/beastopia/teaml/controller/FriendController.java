@@ -143,7 +143,7 @@ public class FriendController extends Controller {
     }
 
     @FXML
-    public void openFriendChat(ActionEvent actionEvent) {
+    public void openFriendChat() {
         app.show(directMessageControllerProvider.get().setupDirectMessageController("global", user._id()));
     }
 
