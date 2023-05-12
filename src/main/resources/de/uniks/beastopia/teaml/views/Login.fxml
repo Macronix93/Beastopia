@@ -23,19 +23,19 @@
          <Font size="20.0" />
       </font>
    </Text>
-   <Text layoutX="474.0" layoutY="356.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%NoAccount">
+   <Text layoutX="487.0" layoutY="421.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%NoAccount">
       <font>
-         <Font size="15.0" />
+         <Font size="15.0"/>
       </font>
    </Text>
    <TextField fx:id="usernameInput" layoutX="299.0" layoutY="188.0" />
-   <Button fx:id="loginButton" defaultButton="true" layoutX="299.0" layoutY="340.0" mnemonicParsing="false"
+   <Button fx:id="loginButton" defaultButton="true" layoutX="299.0" layoutY="405.0" mnemonicParsing="false"
            onAction="#login" prefHeight="68.0" prefWidth="138.0" style="-fx-background-radius: 20;" text="%Login">
       <font>
-         <Font size="20.0" />
+         <Font size="20.0"/>
       </font>
    </Button>
-   <Button fx:id="registerButton" layoutX="526.0" layoutY="374.0" mnemonicParsing="false" onAction="#register"
+   <Button fx:id="registerButton" layoutX="490.0" layoutY="442.0" mnemonicParsing="false" onAction="#register"
            style="-fx-background-color: transparent;" text="%SignUp" textFill="#0430c3" underline="true">
       <font>
          <Font size="15.0"/>
@@ -61,4 +61,9 @@
          <Font size="20.0"/>
       </font>
    </RadioButton>
+   <CheckBox fx:id="rememberMeCheckBox" layoutX="299.0" layoutY="341.0" mnemonicParsing="false" text="%rememberMe">
+      <font>
+         <Font size="20.0"/>
+      </font>
+   </CheckBox>
 </Pane>
