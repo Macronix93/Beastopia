@@ -80,7 +80,9 @@
                         <Font size="15.0"/>
                     </font>
                 </Text>
-                <Button mnemonicParsing="false" onAction="#register" style="-fx-background-color: transparent;"
+                <!--suppress JavaFxUnresolvedFxIdReference -->
+                <Button fx:id="registerButton" mnemonicParsing="false" onAction="#register"
+                        style="-fx-background-color: transparent;"
                         text="%SignUp" textFill="#0430c3" underline="true">
                     <font>
                         <Font size="15.0"/>
