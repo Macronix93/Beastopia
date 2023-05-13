@@ -3,12 +3,9 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Text?>
-
 <HBox fx:id="_rootElement" alignment="CENTER" prefHeight="60.0" prefWidth="175.0" style="-fx-border-color: black; -fx-border-width: 1;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.uniks.beastopia.teaml.controller.FriendController">
     <children>
         <VBox alignment="CENTER" prefWidth="10000.0">
@@ -30,7 +27,8 @@
                 </VBox>
                 <HBox alignment="CENTER" prefHeight="10000.0" spacing="15.0">
                     <children>
-                        <Button fx:id="editFriend" minHeight="25.0" minWidth="25.0" mnemonicParsing="false" onAction="#editFriendList" />
+                        <Button fx:id="addRemoveFriendButton" minHeight="25.0" minWidth="25.0" mnemonicParsing="false"
+                                onAction="#addRemoveFriend"/>
                         <Button fx:id="chat" minHeight="25.0" minWidth="25.0" mnemonicParsing="false" onAction="#openFriendChat">
                      <graphic>
                         <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">

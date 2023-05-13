@@ -32,6 +32,8 @@ public class FriendListController extends Controller {
     @Inject
     Provider<FriendController> friendControllerProvider;
     @Inject
+    Provider<DirectMessageController> directMessageControllerProvider;
+    @Inject
     FriendListService friendListService;
     @Inject
     TokenStorage tokenStorage;
@@ -49,7 +51,7 @@ public class FriendListController extends Controller {
         disposables.add(friendListService.getUsers().subscribe(users -> {
             allUsers.clear();
             allUsers.addAll(users);
-            searchUser();
+            updateUserList();
         }));
         return parent;
     }
@@ -60,13 +62,21 @@ public class FriendListController extends Controller {
             if (friends != null) {
                 for (User friend : friends) {
                     boolean friendPinned = preferences.getBoolean(friend._id() + "_pinned", true);
-                    Controller subController = friendControllerProvider.get()
-                            .setFriendController(friend, this, friendPinned);
-                    subControllers.add(subController);
+                    FriendController friendController = friendControllerProvider.get()
+                            .setUser(friend, friendPinned);
+                    friendController.init();
+                    subControllers.add(friendController);
+                    friendController.setOnFriendChanged(user -> {
+                        searchName.setText("");
+                        updateUserList();
+                    });
+                    friendController.setOnPinChanged(user -> {
+                        updateUserList();
+                    });
                     if (friendPinned) {
-                        friendList.getChildren().add(0, subController.render());
+                        friendList.getChildren().add(0, friendController.render());
                     } else {
-                        friendList.getChildren().add(subController.render());
+                        friendList.getChildren().add(friendController.render());
                     }
                 }
             }
@@ -81,10 +91,11 @@ public class FriendListController extends Controller {
 
     @FXML
     public void showChats() {
+        app.show(directMessageControllerProvider.get());
     }
 
     @FXML
-    public void searchUser() {
+    public void updateUserList() {
         if (searchName.getText().isEmpty()) {
             getFriends();
             return;
@@ -93,9 +104,9 @@ public class FriendListController extends Controller {
         clearSubControllers();
 
         List<Parent> filteredParents = getFilteredParents();
-
         friendList.getChildren().addAll(filteredParents);
     }
+
     private List<Parent> getFilteredParents() {
         List<User> filteredUsers = new ArrayList<>();
         List<Parent> filteredParents = new ArrayList<>();
@@ -110,17 +121,24 @@ public class FriendListController extends Controller {
             boolean notPinned = preferences.getBoolean(firstUser._id() + "_pinned", false);
             if (notPinned) {
                 return -1;
-            }
-            else {
+            } else {
                 return firstUser.name().compareTo(secondUser.name());
             }
         });
 
         for (User user : filteredUsers) {
-            FriendController subController = friendControllerProvider.get();
+            FriendController friendController = friendControllerProvider.get();
+            friendController.init();
+            friendController.setOnFriendChanged(user_ -> {
+                searchName.setText("");
+                updateUserList();
+            });
+            friendController.setOnPinChanged(user_ -> {
+                updateUserList();
+            });
             boolean friendPinned = preferences.getBoolean(user._id() + "_pinned", false);
-            subController.setFriendController(user, this, friendPinned);
-            filteredParents.add(subController.render());
+            friendController.setUser(user, friendPinned);
+            filteredParents.add(friendController.render());
         }
         return filteredParents;
     }

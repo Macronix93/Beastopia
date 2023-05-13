@@ -2,8 +2,12 @@ package de.uniks.beastopia.teaml.controller;
 
 import de.uniks.beastopia.teaml.service.RegistrationService;
 import de.uniks.beastopia.teaml.utils.Dialog;
+import javafx.beans.binding.BooleanBinding;
 import javafx.fxml.FXML;
+import javafx.scene.Parent;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
 import javax.inject.Inject;
@@ -17,16 +21,20 @@ public class RegistrationController extends Controller {
     private TextField usernameInput;
 
     @FXML
-    private TextField passwordInput;
+    private PasswordField passwordInput;
 
     @FXML
-    private TextField passwordRepeatInput;
+    private PasswordField passwordRepeatInput;
+
+    @FXML
+    private Button signUpButton;
 
     @Inject
     RegistrationService registrationService;
 
     @Inject
     Provider<LoginController> loginControllerProvider;
+    private BooleanBinding isInValid;
 
     @Inject
     public RegistrationController() {
@@ -35,6 +43,19 @@ public class RegistrationController extends Controller {
     @Override
     public String getTitle() {
         return "Beastopia - Registration";
+    }
+
+    @Override
+    public Parent render() {
+        Parent parent = super.render();
+
+        isInValid = usernameInput.textProperty().isEmpty()
+                .or(passwordInput.textProperty().length().lessThan(8))
+                .or(passwordRepeatInput.textProperty().length().lessThan(8))
+                .or(passwordInput.textProperty().isNotEqualTo(passwordRepeatInput.textProperty()));
+        signUpButton.disableProperty().bind(isInValid);
+
+        return parent;
     }
 
     @FXML
@@ -56,6 +77,7 @@ public class RegistrationController extends Controller {
         disposables.add(registrationService.createUser(usernameInput.getText(), LUMNIX_LOGO_URL, passwordInput.getText())
                 .observeOn(FX_SCHEDULER).subscribe(user -> {
                     Dialog.info("Registration successful", "You can now sign in with your new account.");
+                    app.show(loginControllerProvider.get());
                 }, error -> {
                     Dialog.error(error, "Registration failed");
                 }));

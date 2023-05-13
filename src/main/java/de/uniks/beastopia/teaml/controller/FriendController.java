@@ -2,7 +2,7 @@ package de.uniks.beastopia.teaml.controller;
 
 
 import de.uniks.beastopia.teaml.rest.User;
-import javafx.event.ActionEvent;
+import de.uniks.beastopia.teaml.service.FriendListService;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -14,44 +14,70 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
+import java.util.function.Consumer;
 import java.util.prefs.Preferences;
+
+import static de.uniks.beastopia.teaml.rest.UserApiService.STATUS_ONLINE;
 
 public class FriendController extends Controller {
     @FXML
-    public ImageView friendAvatar;
+    ImageView friendAvatar;
     @FXML
-    public Circle statusCircle;
+    Circle statusCircle;
     @FXML
-    public Text name;
+    Text name;
     @FXML
-    public Button action;
+    Button addRemoveFriendButton;
     @FXML
-    public Button chat;
+    Button chat;
     @FXML
-    public Button pin;
-
+    Button pin;
     @FXML
-    public HBox _rootElement;
+    HBox _rootElement;
 
     private User user;
-    private FriendListController friendListController;
+
+    @Inject
+    Provider<DirectMessageController> directMessageControllerProvider;
 
     private Boolean friendPin;
 
-    private final ImageView pinned = createImage("de/uniks/beastopia/teaml/assets/buttons/filled_pin.png");
-
-    private final ImageView notPinned = createImage("de/uniks/beastopia/teaml/assets/buttons/pin.png");
+    private ImageView pinned;
+    private ImageView notPinned;
+    private ImageView addImage;
+    private ImageView removeImage;
     @Inject
     Preferences preferences;
+    @Inject
+    FriendListService friendListService;
+
+    private Consumer<User> onFriendChanged = null;
+    private Consumer<User> onPinChanged = null;
 
     @Inject
     public FriendController() {
 
     }
 
-    public FriendController setFriendController(User user, FriendListController friendListController, boolean friendPin) {
+    @Override
+    public void init() {
+        pinned = createImage("de/uniks/beastopia/teaml/assets/buttons/filled_pin.png");
+        notPinned = createImage("de/uniks/beastopia/teaml/assets/buttons/pin.png");
+        addImage = createImage("de/uniks/beastopia/teaml/assets/buttons/plus.png");
+        removeImage = createImage("de/uniks/beastopia/teaml/assets/buttons/minus.png");
+    }
+
+    public void setOnFriendChanged(Consumer<User> onFriendChanged) {
+        this.onFriendChanged = onFriendChanged;
+    }
+
+    public void setOnPinChanged(Consumer<User> onPinChanged) {
+        this.onPinChanged = onPinChanged;
+    }
+
+    public FriendController setUser(User user, boolean friendPin) {
         this.user = user;
-        this.friendListController = friendListController;
         this.friendPin = friendPin;
         return this;
     }
@@ -67,7 +93,7 @@ public class FriendController extends Controller {
 
         name.setText(user.name());
 
-        if (user.status().equals("online")) {
+        if (user.status().equals(STATUS_ONLINE)) {
             statusCircle.setFill(Paint.valueOf("green"));
         } else {
             statusCircle.setFill(Paint.valueOf("red"));
@@ -77,6 +103,12 @@ public class FriendController extends Controller {
             this.pin.setGraphic(pinned);
         } else {
             this.pin.setGraphic(notPinned);
+        }
+
+        if (friendListService.isFriend(user)) {
+            addRemoveFriendButton.setGraphic(removeImage);
+        } else {
+            addRemoveFriendButton.setGraphic(addImage);
         }
 
         return parent;
@@ -90,23 +122,42 @@ public class FriendController extends Controller {
     }
 
     @FXML
-    public void editFriendList(ActionEvent actionEvent) {
+    public void addRemoveFriend() {
+        if (friendListService.isFriend(user)) {
+            disposables.add(friendListService.removeFriend(user)
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe(user -> {
+                        if (onFriendChanged != null) {
+                            onFriendChanged.accept(user);
+                        }
+                    }));
+        } else {
+            disposables.add(friendListService.addFriend(user)
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe(user -> {
+                        if (onFriendChanged != null) {
+                            onFriendChanged.accept(user);
+                        }
+                    }));
+        }
     }
 
     @FXML
-    public void openFriendChat(ActionEvent actionEvent) {
+    public void openFriendChat() {
+        app.show(directMessageControllerProvider.get().setupDirectMessageController("global", user._id()));
     }
 
     @FXML
-    public void pinFriend(ActionEvent actionEvent) {
+    public void pinFriend() {
         if (pin.getGraphic() == notPinned) {
-            friendListController.friendList.getChildren().remove(_rootElement);
-            friendListController.friendList.getChildren().add(0, this.render());
             pin.setGraphic(pinned);
             preferences.putBoolean(this.user._id() + "_pinned", true);
         } else {
             pin.setGraphic(notPinned);
             preferences.putBoolean(this.user._id() + "_pinned", false);
+        }
+        if (onPinChanged != null) {
+            onPinChanged.accept(user);
         }
     }
 }
