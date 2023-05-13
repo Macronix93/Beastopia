@@ -1,6 +1,7 @@
 package de.uniks.beastopia.teaml.controller.menu.social;
 
 
+import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.FriendListService;
@@ -16,6 +17,12 @@ import javafx.scene.text.Text;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.prefs.Preferences;
 
@@ -63,10 +70,14 @@ public class FriendController extends Controller {
 
     @Override
     public void init() {
-        pinned = createImage("de/uniks/beastopia/teaml/assets/buttons/filled_pin.png");
-        notPinned = createImage("de/uniks/beastopia/teaml/assets/buttons/pin.png");
-        addImage = createImage("de/uniks/beastopia/teaml/assets/buttons/plus.png");
-        removeImage = createImage("de/uniks/beastopia/teaml/assets/buttons/minus.png");
+        try {
+            pinned = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/filled_pin.png")));
+            notPinned = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/pin.png")));
+            addImage = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/plus.png")));
+            removeImage = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/minus.png")));
+        } catch (URISyntaxException | FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void setOnFriendChanged(Consumer<User> onFriendChanged) {
@@ -88,9 +99,13 @@ public class FriendController extends Controller {
         Parent parent = super.render();
 
         //TODO change avatar URL when avatar upload is implemented to individual link
-        Image image = new Image("de/uniks/beastopia/teaml/assets/Lumnix_Logo_tr.png", 40.0,
-                40.0, false, false);
-        friendAvatar.setImage(image);
+        try {
+            Image image = loadImage(Objects.requireNonNull(Main.class.getResource("assets/Lumnix_Logo_tr.png")),
+                    40.0, 40.0, false, false);
+            friendAvatar.setImage(image);
+        } catch (FileNotFoundException | URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
 
         name.setText(user.name());
 
@@ -115,11 +130,20 @@ public class FriendController extends Controller {
         return parent;
     }
 
-    private ImageView createImage(String imageUrl) {
-        ImageView imageView = new ImageView(new Image(imageUrl));
+    private ImageView createImage(URL imageUrl) throws URISyntaxException, FileNotFoundException {
+        ImageView imageView = new ImageView(loadImage(imageUrl));
         imageView.setFitHeight(25.0);
         imageView.setFitWidth(25.0);
         return imageView;
+    }
+
+    private static Image loadImage(URL imageUrl) throws FileNotFoundException, URISyntaxException {
+        return new Image(new FileInputStream(new File(imageUrl.toURI())));
+    }
+
+    @SuppressWarnings("SameParameterValue")
+    private static Image loadImage(URL imageUrl, double width, double height, boolean preserveRatio, boolean smooth) throws FileNotFoundException, URISyntaxException {
+        return new Image(new FileInputStream(new File(imageUrl.toURI())), width, height, preserveRatio, smooth);
     }
 
     @FXML
