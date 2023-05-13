@@ -31,7 +31,7 @@
                 onAction="#updateUserList">
             <graphic>
                 <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                    <Image url="@../assets/buttons/search.png"/>
+                    <Image url="@../../../assets/buttons/search.png"/>
                 </ImageView>
             </graphic>
         </Button>
