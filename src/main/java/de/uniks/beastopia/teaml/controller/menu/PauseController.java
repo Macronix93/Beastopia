@@ -1,6 +1,5 @@
 package de.uniks.beastopia.teaml.controller.menu;
 
-import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.menu.social.FriendListController;
 import javafx.fxml.FXML;
@@ -18,8 +17,6 @@ public class PauseController extends Controller {
     private VBox friendListContainer;
 
     private final List<Controller> subControllers = new ArrayList<>();
-    @Inject
-    App app;
     @Inject
     Provider<FriendListController> friendListControllerProvider;
     @Inject
