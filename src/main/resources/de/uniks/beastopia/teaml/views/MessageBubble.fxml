@@ -10,12 +10,14 @@
       prefWidth="300.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="de.uniks.beastopia.teaml.controller.MessageBubbleController">
    <VBox prefHeight="100.0" prefWidth="231.0">
-      <HBox prefHeight="79.0" prefWidth="229.0">
-         <Text fx:id="senderName" strokeType="OUTSIDE" strokeWidth="0.0"/>
-         <Text fx:id="messageBody" strokeType="OUTSIDE" strokeWidth="0.0"/>
+      <Text fx:id="senderName" strokeType="OUTSIDE" strokeWidth="0.0"/>
+      <Text fx:id="messageBody" strokeType="OUTSIDE" strokeWidth="0.0"/>
+      <HBox prefHeight="29.0" prefWidth="228.0">
+         <children>
+            <Text fx:id="created" strokeType="OUTSIDE" strokeWidth="0.0"/>
+            <Text fx:id="updated" strokeType="OUTSIDE" strokeWidth="0.0"/>
+         </children>
       </HBox>
-      <Text fx:id="created" strokeType="OUTSIDE" strokeWidth="0.0"/>
-      <Text fx:id="updated" strokeType="OUTSIDE" strokeWidth="0.0"/>
    </VBox>
    <Button fx:id="editButton" mnemonicParsing="false" onAction="#editMessage">
       <graphic>
