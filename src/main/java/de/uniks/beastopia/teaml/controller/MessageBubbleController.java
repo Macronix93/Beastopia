@@ -8,9 +8,13 @@ import javax.inject.Inject;
 
 public class MessageBubbleController extends Controller {
     @FXML
-    public Text usernameText;
+    public Text senderName;
     @FXML
-    public Text messageText;
+    public Text messageBody;
+    @FXML
+    public Text created;
+    @FXML
+    public Text updated;
     @FXML
     public Button editButton;
     @FXML
