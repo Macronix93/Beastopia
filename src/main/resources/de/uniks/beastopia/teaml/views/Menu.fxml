@@ -5,13 +5,11 @@
 <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
       prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="de.uniks.beastopia.teaml.controller.menu.MenuController">
-    <children>
-        <VBox fx:id="regionContainer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-              minWidth="-Infinity" prefHeight="350.0" prefWidth="300.0"
-              style="-fx-border-color: black; -fx-border-width: 2; -fx-border-radius: 15;"/>
-        <VBox prefHeight="200.0" prefWidth="100.0"/>
-        <VBox fx:id="friendListContainer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-              minWidth="-Infinity" prefHeight="350.0" prefWidth="200.0"
-              style="-fx-border-color: black; -fx-border-width: 2;"/>
-    </children>
+    <VBox fx:id="regionContainer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+          minWidth="-Infinity" prefHeight="350.0" prefWidth="300.0"
+          style="-fx-border-color: black; -fx-border-width: 2; -fx-border-radius: 15;"/>
+    <VBox prefHeight="200.0" prefWidth="100.0"/>
+    <VBox fx:id="friendListContainer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+          minWidth="-Infinity" prefHeight="350.0" prefWidth="200.0"
+          style="-fx-border-color: black; -fx-border-width: 2;"/>
 </HBox>

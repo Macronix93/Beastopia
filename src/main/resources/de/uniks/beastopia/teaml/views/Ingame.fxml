@@ -7,17 +7,15 @@
 <HBox fx:id="ingame" alignment="BOTTOM_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
       minWidth="-Infinity" prefHeight="600.0" prefWidth="750.0" spacing="20.0" xmlns="http://javafx.com/javafx/19"
       xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.uniks.beastopia.teaml.controller.ingame.IngameController">
-    <children>
-        <Button fx:id="pauseButton" alignment="CENTER" minWidth="180.0" mnemonicParsing="false"
-                onKeyPressed="#pauseMenu"
-                style="-fx-background-color: transparent; -fx-border-color: black; -fx-border-radius: 10;"
-                text="ESC = Pause Menu" textAlignment="CENTER">
-            <font>
-                <Font size="14.0"/>
-            </font>
-        </Button>
-    </children>
     <padding>
-      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
-   </padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+    </padding>
+    <Button alignment="CENTER" minWidth="180.0" mnemonicParsing="false"
+            onKeyPressed="#pauseMenu"
+            style="-fx-background-color: transparent; -fx-border-color: black; -fx-border-radius: 10;"
+            text="ESC = Pause Menu" textAlignment="CENTER">
+        <font>
+            <Font size="14.0"/>
+        </font>
+    </Button>
 </HBox>

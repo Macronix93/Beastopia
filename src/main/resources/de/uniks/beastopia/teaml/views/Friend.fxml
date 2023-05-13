@@ -10,43 +10,32 @@
       style="-fx-border-color: black; -fx-border-width: 1;" xmlns="http://javafx.com/javafx/19"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="de.uniks.beastopia.teaml.controller.menu.social.FriendController">
-    <children>
-        <VBox alignment="CENTER" prefWidth="10000.0">
-            <children>
-                <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity">
-                    <children>
-                        <ImageView fx:id="friendAvatar" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true"
-                                   preserveRatio="true"/>
-                        <Circle fx:id="statusCircle" fill="WHITE" radius="5.0" stroke="WHITE" strokeType="INSIDE"
-                                AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="0.0"
-                                AnchorPane.topAnchor="30.0"/>
-                    </children>
-                </AnchorPane>
-            </children>
+    <VBox alignment="CENTER" prefWidth="10000.0">
+        <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity">
+            <ImageView fx:id="friendAvatar" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true"
+                       preserveRatio="true"/>
+            <Circle fx:id="statusCircle" fill="WHITE" radius="5.0" stroke="WHITE" strokeType="INSIDE"
+                    AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="0.0"
+                    AnchorPane.topAnchor="30.0"/>
+        </AnchorPane>
+    </VBox>
+    <VBox prefHeight="200.0" prefWidth="10075.0">
+        <VBox alignment="CENTER" prefHeight="9985.0">
+            <Text fx:id="name" fontSmoothingType="LCD" strokeType="OUTSIDE" strokeWidth="0.0"
+                  textAlignment="CENTER" wrappingWidth="79.13671875"/>
         </VBox>
-        <VBox prefHeight="200.0" prefWidth="10075.0">
-            <children>
-                <VBox alignment="CENTER" prefHeight="9985.0">
-                    <children>
-                        <Text fx:id="name" fontSmoothingType="LCD" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="79.13671875" />
-                    </children>
-                </VBox>
-                <HBox alignment="CENTER" prefHeight="10000.0" spacing="15.0">
-                    <children>
-                        <Button fx:id="addRemoveFriendButton" minHeight="25.0" minWidth="25.0" mnemonicParsing="false"
-                                onAction="#addRemoveFriend"/>
-                        <Button fx:id="chat" minHeight="25.0" minWidth="25.0" mnemonicParsing="false" onAction="#openFriendChat">
-                     <graphic>
-                        <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../assets/buttons/chat.png" />
-                           </image>
-                        </ImageView>
-                     </graphic></Button>
-                        <Button fx:id="pin" minHeight="25.0" minWidth="25.0" mnemonicParsing="false" onAction="#pinFriend" />
-                    </children>
-                </HBox>
-            </children>
-        </VBox>
-    </children>
+        <HBox alignment="CENTER" prefHeight="10000.0" spacing="15.0">
+            <Button fx:id="addRemoveFriendButton" minHeight="25.0" minWidth="25.0" mnemonicParsing="false"
+                    onAction="#addRemoveFriend"/>
+            <Button fx:id="chat" minHeight="25.0" minWidth="25.0" mnemonicParsing="false"
+                    onAction="#openFriendChat">
+                <graphic>
+                    <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                        <Image url="@../assets/buttons/chat.png"/>
+                    </ImageView>
+                </graphic>
+            </Button>
+            <Button fx:id="pin" minHeight="25.0" minWidth="25.0" mnemonicParsing="false" onAction="#pinFriend"/>
+        </HBox>
+    </VBox>
 </HBox>

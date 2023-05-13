@@ -15,7 +15,7 @@ public class ChatWindowController extends Controller {
 
     private String namespace;
     private String parentId;
-    private List<Message> messages = new ArrayList<>();
+    private final List<Message> messages = new ArrayList<>();
     @FXML
     public VBox msgList;
 
@@ -25,7 +25,8 @@ public class ChatWindowController extends Controller {
     @Inject
     MessageService messageService;
 
-    private final List<Controller> subControllers = new ArrayList<Controller>();
+    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
+    private final List<Controller> subControllers = new ArrayList<>();
 
     @Inject
     public ChatWindowController() {
@@ -47,11 +48,10 @@ public class ChatWindowController extends Controller {
                     .subscribe(messages::addAll));
         } else if (namespace.equals("group")) {
             disposables.add(messageService.getMessagesFromGroup(parentId).observeOn(FX_SCHEDULER)
-                    .subscribe(messageList -> {
-                messages.addAll(messageList);
-            }));
+                    .subscribe(messages::addAll));
         }
 
+        //noinspection unused,StatementWithEmptyBody
         for (Message msg : messages) {
             //Controller subController = messageControllerProvider.get().setupMessageController(msg);
             //subControllers.add(subController);

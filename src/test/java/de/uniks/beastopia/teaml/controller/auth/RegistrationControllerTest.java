@@ -35,6 +35,7 @@ class RegistrationControllerTest extends ApplicationTest {
     Provider<LoginController> loginControllerProvider;
 
     @Spy
+    @SuppressWarnings("unused")
     ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang");
 
     @Spy
@@ -93,7 +94,6 @@ class RegistrationControllerTest extends ApplicationTest {
 
     @Test
     void signUpWrongAlreadyExists() {
-        User mocked = mock(User.class);
         ResponseBody body = ResponseBody.create(MediaType.get("application/json"), "{\"message\":\"User already exists\"}");
         when(registrationService.createUser(anyString(), anyString(), anyString())).thenReturn(Observable.error(new HttpException(Response.error(409, body))));
 

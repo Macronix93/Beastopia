@@ -3,10 +3,8 @@ package de.uniks.beastopia.teaml.controller.menu;
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.menu.social.FriendListController;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
@@ -17,13 +15,9 @@ import java.util.List;
 public class PauseController extends Controller {
 
     @FXML
-    private Button editProfileButton;
-    @FXML
-    private Button backToMainButton;
-    @FXML
     private VBox friendListContainer;
 
-    private final List<Controller> subControllers = new ArrayList<Controller>();
+    private final List<Controller> subControllers = new ArrayList<>();
     @Inject
     App app;
     @Inject
@@ -55,10 +49,10 @@ public class PauseController extends Controller {
         return "Beastopia - Pause Menu";
     }
 
-    public void editProfileButtonPressed(ActionEvent actionEvent) {
+    public void editProfileButtonPressed() {
     }
 
-    public void mainMenuButtonPressed(ActionEvent actionEvent) {
+    public void mainMenuButtonPressed() {
         app.show(menuControllerProvider.get());
     }
 }

@@ -16,52 +16,43 @@
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
         <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
     </rowConstraints>
-    <children>
-      <HBox alignment="TOP_CENTER" GridPane.rowIndex="2">
-         <children>
-            <Button alignment="CENTER" mnemonicParsing="false" onAction="#back" prefHeight="60.0" prefWidth="1000.0" text="%Back" HBox.hgrow="ALWAYS" />
-            <Button mnemonicParsing="false" onAction="#newGroup" prefHeight="60.0" prefWidth="1000.0" text="%NewGroup" HBox.hgrow="ALWAYS" />
-         </children>
-      </HBox>
-      <HBox alignment="CENTER">
-         <children>
-            <Label alignment="CENTER" text="%MyChats">
-               <font>
-                  <Font size="18.0" />
-               </font>
-            </Label>
-         </children>
-      </HBox>
-      <HBox alignment="CENTER" GridPane.columnIndex="1">
-         <children>
-            <Label fx:id="chatName" text="ChatName">
-               <font>
-                  <Font size="18.0" />
-               </font>
-            </Label>
-         </children>
-      </HBox>
-      <ScrollPane prefHeight="600.0" prefWidth="200.0" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
-         <content>
-            <VBox fx:id="chatList" spacing="10.0" />
-         </content>
-      </ScrollPane>
-      <ScrollPane prefHeight="600.0" prefWidth="500.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
-         <content>
-            <VBox fx:id="messageList" spacing="10.0" />
-         </content>
-      </ScrollPane>
-      <HBox alignment="TOP_CENTER" spacing="10.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2">
-         <children>
-            <TextField fx:id="chatInput" onAction="#sendMessage" promptText="%ChatInput" HBox.hgrow="ALWAYS" />
-            <Button alignment="CENTER" mnemonicParsing="false" onAction="#sendMessage" text="%Send" HBox.hgrow="ALWAYS" />
-         </children>
-         <padding>
-            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-         </padding>
-      </HBox>
-   </children>
-   <padding>
-      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-   </padding>
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+    </padding>
+    <HBox alignment="TOP_CENTER" GridPane.rowIndex="2">
+        <Button alignment="CENTER" mnemonicParsing="false" onAction="#back" prefHeight="60.0" prefWidth="1000.0"
+                text="%Back" HBox.hgrow="ALWAYS"/>
+        <Button mnemonicParsing="false" onAction="#newGroup" prefHeight="60.0" prefWidth="1000.0" text="%NewGroup"
+                HBox.hgrow="ALWAYS"/>
+    </HBox>
+    <HBox alignment="CENTER">
+        <Label alignment="CENTER" text="%MyChats">
+            <font>
+                <Font size="18.0"/>
+            </font>
+        </Label>
+    </HBox>
+    <HBox alignment="CENTER" GridPane.columnIndex="1">
+        <Label fx:id="chatName" text="ChatName">
+            <font>
+                <Font size="18.0"/>
+            </font>
+        </Label>
+    </HBox>
+    <ScrollPane prefHeight="600.0" prefWidth="200.0" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
+        <VBox fx:id="chatList" spacing="10.0"/>
+    </ScrollPane>
+    <ScrollPane prefHeight="600.0" prefWidth="500.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS"
+                GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
+        <VBox fx:id="messageList" spacing="10.0"/>
+    </ScrollPane>
+    <HBox alignment="TOP_CENTER" spacing="10.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS"
+          GridPane.rowIndex="2">
+        <padding>
+            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+        </padding>
+        <TextField fx:id="chatInput" onAction="#sendMessage" promptText="%ChatInput" HBox.hgrow="ALWAYS"/>
+        <Button alignment="CENTER" mnemonicParsing="false" onAction="#sendMessage" text="%Send"
+                HBox.hgrow="ALWAYS"/>
+    </HBox>
 </GridPane>

@@ -64,11 +64,9 @@ public class LoginController extends Controller {
         }
 
         disposables.add(authService.login(usernameInput.getText(), passwordInput.getText())
-                .observeOn(FX_SCHEDULER).subscribe(lr -> {
-                    app.show(menuControllerProvider.get());
-                }, error -> {
-                    Dialog.error(error, "Login failed");
-                }));
+                .observeOn(FX_SCHEDULER).subscribe(
+                        lr -> app.show(menuControllerProvider.get()),
+                        error -> Dialog.error(error, "Login failed")));
     }
 
     @FXML
