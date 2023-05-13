@@ -95,7 +95,7 @@ public class FriendListController extends Controller {
 
     @FXML
     public void updateUserList() {
-        if (searchName.getText().isEmpty()) {
+        if (searchName.getText().isBlank()) {
             getFriends();
             return;
         }

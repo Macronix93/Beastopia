@@ -115,7 +115,9 @@ class FriendListControllerTest extends ApplicationTest {
         write("user3");
         for (int i = 0; i < 5; i++) {
             press(BACK_SPACE);
+            release(BACK_SPACE);
         }
+        write(" ");
 
         assertThrows(EmptyNodeQueryException.class, () -> lookup("user1").query());
         assertNotNull(lookup("user2").query());
