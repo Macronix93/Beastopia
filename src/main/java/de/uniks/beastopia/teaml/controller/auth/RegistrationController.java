@@ -6,7 +6,6 @@ import de.uniks.beastopia.teaml.utils.Dialog;
 import javafx.beans.binding.BooleanBinding;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -35,7 +34,6 @@ public class RegistrationController extends Controller {
 
     @Inject
     Provider<LoginController> loginControllerProvider;
-    private BooleanBinding isInValid;
 
     @Inject
     public RegistrationController() {
@@ -50,7 +48,7 @@ public class RegistrationController extends Controller {
     public Parent render() {
         Parent parent = super.render();
 
-        isInValid = usernameInput.textProperty().isEmpty()
+        BooleanBinding isInValid = usernameInput.textProperty().isEmpty()
                 .or(passwordInput.textProperty().length().lessThan(8))
                 .or(passwordRepeatInput.textProperty().length().lessThan(8))
                 .or(passwordInput.textProperty().isNotEqualTo(passwordRepeatInput.textProperty()));
@@ -66,22 +64,11 @@ public class RegistrationController extends Controller {
 
     @FXML
     private void signUp() {
-        if (!passwordInput.getText().equals(passwordRepeatInput.getText())) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Passwords do not match");
-            alert.setContentText("The passwords you entered do not match. Please try again.");
-            alert.showAndWait();
-            return;
-        }
-
         disposables.add(registrationService.createUser(usernameInput.getText(), LUMNIX_LOGO_URL, passwordInput.getText())
                 .observeOn(FX_SCHEDULER).subscribe(user -> {
                     Dialog.info("Registration successful", "You can now sign in with your new account.");
                     app.show(loginControllerProvider.get());
-                }, error -> {
-                    Dialog.error(error, "Registration failed");
-                }));
+                }, error -> Dialog.error(error, "Registration failed")));
     }
 
     @FXML
