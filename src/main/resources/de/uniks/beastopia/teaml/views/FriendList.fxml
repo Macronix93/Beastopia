@@ -22,15 +22,18 @@
       </VBox>
       <HBox alignment="CENTER" prefHeight="800.0" spacing="5.0">
          <children>
-            <TextField fx:id="searchName" onAction="#searchUser" onKeyTyped="#searchUser" promptText="%searchUser"/>
-            <Button fx:id="searchBtn" minHeight="25.0" minWidth="25.0" mnemonicParsing="false" onAction="#searchUser">
+            <TextField fx:id="searchName" onAction="#updateUserList" onKeyTyped="#updateUserList"
+                       promptText="%searchUser"/>
+            <Button fx:id="searchBtn" minHeight="25.0" minWidth="25.0" mnemonicParsing="false"
+                    onAction="#updateUserList">
                <graphic>
                   <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@../assets/buttons/search.png" />
+                        <Image url="@../assets/buttons/search.png"/>
                      </image>
                   </ImageView>
-               </graphic></Button>
+               </graphic>
+            </Button>
          </children>
       </HBox>
       <ScrollPane fx:id="scrollFriends" hbarPolicy="NEVER" prefHeight="3500.0">
