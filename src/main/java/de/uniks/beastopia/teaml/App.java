@@ -1,6 +1,7 @@
 package de.uniks.beastopia.teaml;
 
 import de.uniks.beastopia.teaml.controller.Controller;
+import de.uniks.beastopia.teaml.service.LoginService;
 import fr.brouillard.oss.cssfx.CSSFX;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -47,7 +48,16 @@ public class App extends Application {
 
 
         final MainComponent component = DaggerMainComponent.builder().mainApp(this).build();
-        show(component.loginController());
+        final LoginService loginService = component.loginService();
+        if (loginService.isRememberMe()) {
+            loginService.refresh().subscribe(lr -> {
+                show(component.menuController());
+            }, error -> {
+                show(component.loginController());
+            });
+        } else {
+            show(component.loginController());
+        }
     }
 
     @Override

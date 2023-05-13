@@ -3,6 +3,7 @@ package de.uniks.beastopia.teaml;
 import dagger.BindsInstance;
 import dagger.Component;
 import de.uniks.beastopia.teaml.controller.LoginController;
+import de.uniks.beastopia.teaml.controller.MenuController;
 import de.uniks.beastopia.teaml.modules.HttpModule;
 import de.uniks.beastopia.teaml.modules.MainModule;
 import de.uniks.beastopia.teaml.modules.PrefModule;
@@ -14,6 +15,8 @@ import javax.inject.Singleton;
 @Singleton
 public interface MainComponent {
     LoginService loginService();
+
+    MenuController menuController();
 
     LoginController loginController();
 
