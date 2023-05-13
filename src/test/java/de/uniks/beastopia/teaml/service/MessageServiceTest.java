@@ -144,7 +144,7 @@ class MessageServiceTest {
         Message result = messageService.deleteMessage(group, message).blockingFirst();
         assertEquals("MSG_ID", result._id());
         assertEquals("SENDER", result.sender());
-        assertEquals("World", result.body());
+        assertEquals("Hello", result.body());
         verify(messageApiService).deleteMessage("groups", group._id(), message._id());
     }
 
@@ -157,7 +157,7 @@ class MessageServiceTest {
         Message result = messageService.deleteMessage(friend, message).blockingFirst();
         assertEquals("MSG_ID", result._id());
         assertEquals("SENDER", result.sender());
-        assertEquals("World", result.body());
+        assertEquals("Hello", result.body());
         verify(messageApiService).deleteMessage("global", friend._id(), message._id());
     }
 
@@ -170,7 +170,7 @@ class MessageServiceTest {
         Message result = messageService.deleteMessage(region, message).blockingFirst();
         assertEquals("MSG_ID", result._id());
         assertEquals("SENDER", result.sender());
-        assertEquals("World", result.body());
+        assertEquals("Hello", result.body());
         verify(messageApiService).deleteMessage("regions", region._id(), message._id());
     }
 }
