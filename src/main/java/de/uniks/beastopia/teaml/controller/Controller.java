@@ -12,6 +12,9 @@ import javafx.scene.Parent;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public abstract class Controller {
@@ -38,12 +41,23 @@ public abstract class Controller {
         return null;
     }
 
+    @SuppressWarnings("unused")
     public void onDestroy(Runnable action) {
         disposables.add(Disposable.fromRunnable(action));
     }
 
     public Parent render() {
-        return load(getClass().getSimpleName().replace("Controller", ""));
+        List<String> parts = new ArrayList<>(Arrays.stream(getClass().getPackageName().split("\\.")).toList());
+
+        // de.uniks.beastopia.teaml.controller.menu.social -> controller.menu.social
+        //noinspection OptionalGetWithoutIsPresent
+        while (!parts.stream().findFirst().get().equals("controller")) {
+            parts.remove(0);
+        }
+        // controller.menu.social -> menu.social
+        parts.remove(0);
+        String path = String.join("/", parts);
+        return load(path + "/" + getClass().getSimpleName().replace("Controller", ""));
     }
 
     protected Parent load(String view) {
