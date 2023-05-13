@@ -12,6 +12,7 @@ import javafx.scene.control.TextField;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+import java.util.ResourceBundle;
 
 public class LoginController extends Controller {
     @FXML
@@ -29,12 +30,13 @@ public class LoginController extends Controller {
     AuthService authService;
     @Inject
     TokenStorage tokenStorage;
+    @Inject
+    Provider<ResourceBundle> resourcesProvider;
 
     private BooleanBinding isInValid;
 
     @Inject
     public LoginController() {
-
     }
 
     @Override
