@@ -7,6 +7,7 @@ import javafx.beans.binding.BooleanBinding;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
@@ -21,6 +22,9 @@ public class LoginController extends Controller {
     public PasswordField passwordInput;
     @FXML
     public Button loginButton;
+    @FXML
+    public CheckBox rememberMe;
+
 
     @Inject
     Provider<RegistrationController> registrationControllerProvider;
@@ -61,7 +65,7 @@ public class LoginController extends Controller {
             return;
         }
 
-        disposables.add(authService.login(usernameInput.getText(), passwordInput.getText())
+        disposables.add(authService.login(usernameInput.getText(), passwordInput.getText(), rememberMe.isSelected())
                 .observeOn(FX_SCHEDULER).subscribe(lr -> {
                     app.show(menuControllerProvider.get());
                 }, error -> {
