@@ -17,7 +17,7 @@ public class AuthService {
     public AuthService() {
     }
 
-    public Observable<LoginResult> login(String username, String password) {
+    public Observable<LoginResult> login(String username, String password, boolean rememberMe) {
         return authApiService.login(new LoginDto(username, password)).map(lr -> {
             tokenStorage.setAccessToken(lr.accessToken());
             tokenStorage.setRefreshToken(lr.refreshToken());

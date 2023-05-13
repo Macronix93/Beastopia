@@ -12,7 +12,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 
-import static de.uniks.beastopia.teaml.rest.UserApiService.STATUS_OFFLINE;
 import static de.uniks.beastopia.teaml.rest.UserApiService.STATUS_ONLINE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -46,7 +45,7 @@ class AuthServiceTest {
                                 "avatar", new ArrayList<>(), "123", "abc")));
 
         // action:
-        final LoginResult loginResult = authService.login("string", "stringst").blockingFirst();
+        final LoginResult loginResult = authService.login("string", "stringst", false).blockingFirst();
 
         // check values:
         assertEquals("string", loginResult.name());

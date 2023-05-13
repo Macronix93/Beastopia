@@ -6,8 +6,6 @@ import de.uniks.beastopia.teaml.service.AuthService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import okhttp3.MediaType;
@@ -57,7 +55,7 @@ class LoginControllerTest extends ApplicationTest {
     @Test
     void loginSuccessful() {
         LoginResult mocked = mock(LoginResult.class);
-        when(authService.login(anyString(), anyString())).thenReturn(Observable.just(mocked));
+        when(authService.login(anyString(), anyString(), false)).thenReturn(Observable.just(mocked));
 
         final MenuController mock = Mockito.mock(MenuController.class);
         when(menuControllerProvider.get()).thenReturn(mock);
@@ -76,7 +74,7 @@ class LoginControllerTest extends ApplicationTest {
     void loginFail() {
         ResponseBody body = ResponseBody.create(MediaType.get("application/json"),
                 "{\"message\":\"Login failed\"}");
-        when(authService.login(anyString(), anyString())).thenReturn(Observable.error
+        when(authService.login(anyString(), anyString(), false)).thenReturn(Observable.error
                 (new HttpException(Response.error(401, body))));
         clickOn("#usernameInput");
         write("string");
