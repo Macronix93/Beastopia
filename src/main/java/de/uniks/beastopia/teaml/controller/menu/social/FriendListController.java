@@ -111,7 +111,8 @@ public class FriendListController extends Controller {
         List<Parent> filteredParents = new ArrayList<>();
 
         for (User user : allUsers) {
-            if (user.name().toLowerCase().startsWith(searchName.getText().toLowerCase())) {
+            if (user.name().toLowerCase().startsWith(searchName.getText().toLowerCase())
+                    && !user._id().equals(tokenStorage.getCurrentUser()._id())) {
                 filteredUsers.add(user);
             }
         }
