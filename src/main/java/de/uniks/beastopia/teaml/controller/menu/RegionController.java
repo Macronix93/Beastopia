@@ -1,5 +1,6 @@
-package de.uniks.beastopia.teaml.controller;
+package de.uniks.beastopia.teaml.controller.menu;
 
+import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Region;
 import de.uniks.beastopia.teaml.service.RegionService;
 import de.uniks.beastopia.teaml.views.RegionCell;

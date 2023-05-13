@@ -1,5 +1,6 @@
-package de.uniks.beastopia.teaml.controller;
+package de.uniks.beastopia.teaml.controller.auth;
 
+import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.service.RegistrationService;
 import de.uniks.beastopia.teaml.utils.Dialog;
 import javafx.beans.binding.BooleanBinding;

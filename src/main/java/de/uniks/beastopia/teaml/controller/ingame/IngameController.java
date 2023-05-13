@@ -1,6 +1,8 @@
-package de.uniks.beastopia.teaml.controller;
+package de.uniks.beastopia.teaml.controller.ingame;
 
 import de.uniks.beastopia.teaml.App;
+import de.uniks.beastopia.teaml.controller.Controller;
+import de.uniks.beastopia.teaml.controller.menu.PauseController;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;

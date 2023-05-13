@@ -1,20 +1,17 @@
-package de.uniks.beastopia.teaml.controller;
+package de.uniks.beastopia.teaml.controller.menu.social;
 
+import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Message;
 import de.uniks.beastopia.teaml.service.MessageService;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChatWindowController extends Controller{
+public class ChatWindowController extends Controller {
 
     private String namespace;
     private String parentId;

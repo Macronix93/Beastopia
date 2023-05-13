@@ -6,14 +6,20 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Text?>
-<HBox fx:id="_rootElement" alignment="CENTER" prefHeight="60.0" prefWidth="175.0" style="-fx-border-color: black; -fx-border-width: 1;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.uniks.beastopia.teaml.controller.FriendController">
+<HBox fx:id="_rootElement" alignment="CENTER" prefHeight="60.0" prefWidth="175.0"
+      style="-fx-border-color: black; -fx-border-width: 1;" xmlns="http://javafx.com/javafx/19"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="de.uniks.beastopia.teaml.controller.menu.social.FriendController">
     <children>
         <VBox alignment="CENTER" prefWidth="10000.0">
             <children>
                 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity">
                     <children>
-                        <ImageView fx:id="friendAvatar" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true" />
-                        <Circle fx:id="statusCircle" fill="WHITE" radius="5.0" stroke="WHITE" strokeType="INSIDE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0" />
+                        <ImageView fx:id="friendAvatar" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true"
+                                   preserveRatio="true"/>
+                        <Circle fx:id="statusCircle" fill="WHITE" radius="5.0" stroke="WHITE" strokeType="INSIDE"
+                                AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="0.0"
+                                AnchorPane.topAnchor="30.0"/>
                     </children>
                 </AnchorPane>
             </children>

@@ -1,6 +1,7 @@
-package de.uniks.beastopia.teaml.controller;
+package de.uniks.beastopia.teaml.controller.ingame;
 
 import de.uniks.beastopia.teaml.App;
+import de.uniks.beastopia.teaml.controller.menu.PauseController;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;

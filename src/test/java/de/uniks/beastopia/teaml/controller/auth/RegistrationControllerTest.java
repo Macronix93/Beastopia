@@ -1,4 +1,4 @@
-package de.uniks.beastopia.teaml.controller;
+package de.uniks.beastopia.teaml.controller.auth;
 
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.rest.User;

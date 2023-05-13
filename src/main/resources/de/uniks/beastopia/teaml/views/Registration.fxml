@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 <GridPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
-          fx:controller="de.uniks.beastopia.teaml.controller.RegistrationController">
+          fx:controller="de.uniks.beastopia.teaml.controller.auth.RegistrationController">
     <columnConstraints>
         <ColumnConstraints hgrow="SOMETIMES" maxWidth="446.0" minWidth="10.0" percentWidth="30.0" prefWidth="235.0"/>
         <ColumnConstraints hgrow="SOMETIMES" maxWidth="549.0" minWidth="10.0" percentWidth="50.0" prefWidth="199.0"/>

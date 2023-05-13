@@ -6,17 +6,24 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-<HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.uniks.beastopia.teaml.controller.PauseController">
-   <children>
-      <VBox fx:id="regionContainer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="350.0" prefWidth="300.0">
-         <children>
-            <VBox alignment="TOP_CENTER" maxWidth="200.0" minWidth="200.0" prefHeight="131.0" prefWidth="150.0" spacing="10.0">
-               <children>
-                  <Button fx:id="editProfileButton" alignment="CENTER" minWidth="180.0" mnemonicParsing="false" onAction="#editProfileButtonPressed" style="-fx-background-color: transparent; -fx-border-color: black; -fx-border-radius: 10;" text="Edit Profile" textAlignment="CENTER">
-                     <font>
-                        <Font size="14.0" />
-                     </font>
-                     <graphic>
+<HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+      prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="de.uniks.beastopia.teaml.controller.menu.PauseController">
+    <children>
+        <VBox fx:id="regionContainer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+              minWidth="-Infinity" prefHeight="350.0" prefWidth="300.0">
+            <children>
+                <VBox alignment="TOP_CENTER" maxWidth="200.0" minWidth="200.0" prefHeight="131.0" prefWidth="150.0"
+                      spacing="10.0">
+                    <children>
+                        <Button fx:id="editProfileButton" alignment="CENTER" minWidth="180.0" mnemonicParsing="false"
+                                onAction="#editProfileButtonPressed"
+                                style="-fx-background-color: transparent; -fx-border-color: black; -fx-border-radius: 10;"
+                                text="Edit Profile" textAlignment="CENTER">
+                            <font>
+                                <Font size="14.0"/>
+                            </font>
+                            <graphic>
                         <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" translateX="-32.0">
                            <image>
                               <Image url="@../assets/buttons/edit.png" />

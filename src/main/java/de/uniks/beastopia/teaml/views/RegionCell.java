@@ -1,7 +1,7 @@
 package de.uniks.beastopia.teaml.views;
 
 import de.uniks.beastopia.teaml.App;
-import de.uniks.beastopia.teaml.controller.IngameController;
+import de.uniks.beastopia.teaml.controller.ingame.IngameController;
 import de.uniks.beastopia.teaml.rest.Region;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
