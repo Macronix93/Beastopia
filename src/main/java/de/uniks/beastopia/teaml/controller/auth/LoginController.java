@@ -47,7 +47,7 @@ public class LoginController extends Controller {
 
     @Override
     public String getTitle() {
-        return "Beastopia - Login";
+        return resources.getString("titleLogin");
     }
 
     @Override

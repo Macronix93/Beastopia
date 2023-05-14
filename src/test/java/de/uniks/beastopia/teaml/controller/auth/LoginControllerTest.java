@@ -24,6 +24,7 @@ import retrofit2.Response;
 import javax.inject.Provider;
 import java.util.ResourceBundle;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -94,5 +95,10 @@ class LoginControllerTest extends ApplicationTest {
         clickOn("#registerButton");
 
         verify(app).show(mock);
+    }
+
+    @Test
+    void title() {
+        assertEquals(app.getStage().getTitle(), resources.getString("titleLogin"));
     }
 }

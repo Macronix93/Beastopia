@@ -79,7 +79,7 @@ public class MenuController extends Controller {
 
     @Override
     public String getTitle() {
-        return "Beastopia - Main Menu";
+        return resources.getString("titleMenu");
     }
 
     @FXML
