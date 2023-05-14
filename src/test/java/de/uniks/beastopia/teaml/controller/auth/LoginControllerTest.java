@@ -4,7 +4,6 @@ import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.menu.MenuController;
 import de.uniks.beastopia.teaml.rest.LoginResult;
 import de.uniks.beastopia.teaml.service.AuthService;
-import de.uniks.beastopia.teaml.service.TokenStorage;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.scene.Node;
 import javafx.scene.text.Text;
@@ -36,8 +35,6 @@ class LoginControllerTest extends ApplicationTest {
     Provider<MenuController> menuControllerProvider;
     @Mock
     AuthService authService;
-    @Mock
-    TokenStorage tokenStorage;
     @Spy
     App app = new App(null);
     @Spy
