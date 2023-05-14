@@ -50,4 +50,7 @@ public class MenuController extends Controller {
         return "Beastopia - Main Menu";
     }
 
+    public void logout() {
+
+    }
 }
