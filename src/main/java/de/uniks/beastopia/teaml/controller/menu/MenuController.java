@@ -4,6 +4,7 @@ import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.menu.social.FriendListController;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.TokenStorage;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -69,13 +70,13 @@ public class MenuController extends Controller {
         return "Beastopia - Main Menu";
     }
 
-    @FXML
-    public void editProfileButtonPressed() {
-        //app.show(editProfileControllerProvider.get());
-    }
 
     @FXML
     public void logout() {
+    }
 
+    @FXML
+    public void editProfileButtonPressed() {
+        //app.show(editProfileControllerProvider.get());
     }
 }
