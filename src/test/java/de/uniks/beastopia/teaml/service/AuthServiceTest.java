@@ -11,6 +11,7 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
+import java.util.prefs.Preferences;
 
 import static de.uniks.beastopia.teaml.rest.UserApiService.STATUS_ONLINE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -26,6 +27,8 @@ class AuthServiceTest {
     AuthApiService authApiService;
     @Mock
     UserApiService userApiService;
+    @Mock
+    Preferences preferences;
 
     @InjectMocks
     AuthService authService;
@@ -68,7 +71,7 @@ class AuthServiceTest {
         doNothing().when(tokenStorage).setAccessToken("123");
         doNothing().when(tokenStorage).setRefreshToken("abc");
         doNothing().when(tokenStorage).setCurrentUser(any());
-        when(tokenStorage.getRefreshToken()).thenReturn("abc");
+        when(preferences.get("rememberMe", null)).thenReturn("abc");
         User mocked = mock(User.class);
         when(userApiService.updateUser(anyString(), any())).thenReturn(Observable.just(mocked));
         Mockito
@@ -98,6 +101,7 @@ class AuthServiceTest {
     @Test
     void logout() {
         // define mocks:
+        doNothing().when(preferences).remove("rememberMe");
         when(tokenStorage.getCurrentUser()).thenReturn(new User(null, null, "c", null, null, null, null));
         UpdateUserDto dto = new UpdateUserDto(null, UserApiService.STATUS_OFFLINE, null, null, null);
         User mockedUser = mock(User.class);
@@ -105,12 +109,13 @@ class AuthServiceTest {
         when(authApiService.logout()).thenReturn(Observable.empty());
 
         // action:
-        authService.logout(false).subscribe(a -> {
+        authService.logout().subscribe(a -> {
         }, e -> {
         }).dispose();
 
         //check mocks
-        verify(tokenStorage).getCurrentUser();
+        verify(preferences).remove("rememberMe");
+        verify(tokenStorage, times(2)).getCurrentUser();
         verify(userApiService).updateUser("c", dto);
         verify(authApiService).logout();
     }

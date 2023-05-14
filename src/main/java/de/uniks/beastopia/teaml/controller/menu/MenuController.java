@@ -59,7 +59,7 @@ public class MenuController extends Controller {
 
     @FXML
     public void logout() {
-        disposables.add(authService.logout(authService.isRememberMe()).observeOn(FX_SCHEDULER).subscribe(
+        disposables.add(authService.logout().observeOn(FX_SCHEDULER).subscribe(
                 lr -> app.show(loginControllerProvider.get()),
                 error -> Dialog.error(error, "Logout failed")));
     }
