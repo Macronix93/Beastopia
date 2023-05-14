@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+<VBox alignment="CENTER" prefHeight="350.0" prefWidth="300.0" spacing="5.0" xmlns="http://javafx.com/javafx/19"
+      xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.uniks.beastopia.teaml.controller.menu.RegionController">
+    <padding>
+        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+    </padding>
+    <VBox alignment="CENTER" prefHeight="1000.0">
+        <Text fontSmoothingType="LCD" strokeType="OUTSIDE" strokeWidth="0.0" text="%regions"
+              textAlignment="CENTER" wrappingWidth="202.13671875">
+            <font>
+                <Font size="18.0"/>
+            </font>
+        </Text>
+    </VBox>
+    <ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" prefHeight="5300.0">
+        <VBox fx:id="regionList" alignment="TOP_CENTER" spacing="10.0">
+            <padding>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+            </padding>
+        </VBox>
+    </ScrollPane>
+</VBox>

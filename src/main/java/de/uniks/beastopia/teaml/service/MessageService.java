@@ -7,7 +7,7 @@ import javax.inject.Inject;
 import java.util.List;
 
 public class MessageService {
-    public static enum Namespace {
+    public enum Namespace {
         Groups,
         Regions,
         Global
@@ -43,8 +43,8 @@ public class MessageService {
         return getMessages(Namespace.Global, friendId);
     }
 
-    public Observable<List<Message>> getMessagesFromRegion(Region region) {
-        return getMessages(Namespace.Regions, region._id());
+    public Observable<List<Message>> getMessagesFromRegion(String regionId) {
+        return getMessages(Namespace.Regions, regionId);
     }
 
     public Observable<Message> updateMessage(Group group, Message message, String newContent) {
@@ -92,7 +92,6 @@ public class MessageService {
             case Groups -> "groups";
             case Regions -> "regions";
             case Global -> "global";
-            default -> throw new IllegalArgumentException("Unknown namespace");
         };
     }
 }
