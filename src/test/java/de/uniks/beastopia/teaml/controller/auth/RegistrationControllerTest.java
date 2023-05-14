@@ -22,6 +22,7 @@ import retrofit2.Response;
 import javax.inject.Provider;
 import java.util.ResourceBundle;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
@@ -120,5 +121,10 @@ class RegistrationControllerTest extends ApplicationTest {
         clickOn("#loginButton");
 
         verify(app).show(mocked);
+    }
+
+    @Test
+    void title() {
+        assertEquals(app.getStage().getTitle(), resources.getString("titleRegistration"));
     }
 }
