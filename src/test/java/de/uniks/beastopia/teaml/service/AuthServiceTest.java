@@ -105,7 +105,9 @@ class AuthServiceTest {
         when(authApiService.logout()).thenReturn(Observable.empty());
 
         // action:
-        authService.logout().subscribe(a -> {}, e -> {}).dispose();
+        authService.logout(false).subscribe(a -> {
+        }, e -> {
+        }).dispose();
 
         //check mocks
         verify(tokenStorage).getCurrentUser();

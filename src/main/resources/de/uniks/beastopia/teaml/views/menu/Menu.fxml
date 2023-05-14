@@ -17,7 +17,7 @@
             minWidth="-Infinity" prefHeight="350.0" prefWidth="200.0"
             style="-fx-border-color: black; -fx-border-width: 2;"/>
    </HBox>
-   <Button fx:id="logoutButton" mnemonicParsing="false" onAction="#logout" text="%logout">
+   <Button mnemonicParsing="false" onAction="#logout" text="%logout">
       <VBox.margin>
          <Insets bottom="30.0" left="30.0"/>
       </VBox.margin>

@@ -43,9 +43,12 @@ public class AuthService {
         });
     }
 
-    public Observable<Void> logout() {
+    public Observable<Void> logout(boolean rememberMe) {
         return userApiService.updateUser(tokenStorage.getCurrentUser()._id(), new UpdateUserDto(null,
                 UserApiService.STATUS_OFFLINE, null, null, null)).map(user -> {
+            if (rememberMe) {
+                preferences.remove("rememberMe");
+            }
             return authApiService.logout().blockingFirst();
         });
     }
