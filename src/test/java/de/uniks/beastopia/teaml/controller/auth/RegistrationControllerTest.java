@@ -22,6 +22,7 @@ import retrofit2.Response;
 import javax.inject.Provider;
 import java.util.ResourceBundle;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -52,8 +53,11 @@ class RegistrationControllerTest extends ApplicationTest {
 
     @Test
     void signUpSuccessful() {
-        User mocked = mock(User.class);
-        when(registrationService.createUser(anyString(), anyString(), anyString())).thenReturn(Observable.just(mocked));
+        User mockedUser = mock(User.class);
+        LoginController mockedLoginController = mock(LoginController.class);
+        when(registrationService.createUser(anyString(), anyString(), anyString())).thenReturn(Observable.just(mockedUser));
+        when(mockedLoginController.render()).thenReturn(new javafx.scene.layout.Pane());
+        when(loginControllerProvider.get()).thenReturn(mockedLoginController);
 
         clickOn("#usernameInput");
         write("Lonartie");
@@ -66,8 +70,13 @@ class RegistrationControllerTest extends ApplicationTest {
 
         Node dialogPane = lookup(".dialog-pane").query();
         from(dialogPane).lookup((Text t) -> t.getText().startsWith("Registration successful")).query();
-
         verify(registrationService).createUser(eq("Lonartie"), any(), eq("12345678"));
+
+        // click on dialog ok button
+        clickOn("OK");
+
+        verify(loginControllerProvider).get();
+        verify(mockedLoginController).render();
     }
 
     @Test
@@ -79,10 +88,8 @@ class RegistrationControllerTest extends ApplicationTest {
         clickOn("#passwordRepeatInput");
         write("12345678");
 
-        clickOn("#signUpButton");
-
-        Node dialogPane = lookup(".dialog-pane").query();
-        from(dialogPane).lookup((Text t) -> t.getText().startsWith("Passwords do not match")).query();
+        Node signUpButton = lookup("#signUpButton").query();
+        assertTrue(signUpButton.isDisabled());
     }
 
     @Test

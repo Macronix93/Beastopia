@@ -24,12 +24,15 @@ import retrofit2.Response;
 
 import javax.inject.Provider;
 import java.util.ResourceBundle;
+import java.util.prefs.Preferences;
 
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class LoginControllerTest extends ApplicationTest {
 
+    @Mock
+    Preferences preferences;
     @Mock
     Provider<RegistrationController> registrationControllerProvider;
     @Mock
@@ -48,6 +51,7 @@ class LoginControllerTest extends ApplicationTest {
 
     @Override
     public void start(Stage stage) throws Exception {
+        when(preferences.get(any(), any())).thenReturn("en");
         app.start(stage);
         app.show(loginController);
         stage.requestFocus();

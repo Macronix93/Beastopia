@@ -31,6 +31,10 @@ public class GroupListService {
         return groupApiService.createGroup(new CreateGroupDto(name, membersCopy));
     }
 
+    public Observable<Group> getGroup(String id) {
+        return groupApiService.getGroup(id);
+    }
+
     public Observable<Group> updateGroup(Group updatedGroup) {
         return groupApiService.updateGroup(updatedGroup._id(), new UpdateGroupDto(updatedGroup.name(), updatedGroup.members()));
     }

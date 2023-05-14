@@ -6,8 +6,8 @@
 <?import javafx.scene.text.Font?>
 <HBox fx:id="ingame" alignment="BOTTOM_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
       minWidth="-Infinity" prefHeight="600.0" prefWidth="750.0" spacing="20.0" xmlns="http://javafx.com/javafx/19"
-      xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.uniks.beastopia.teaml.controller.IngameController">
-    <Button fx:id="pauseButton" alignment="CENTER" minWidth="180.0" mnemonicParsing="false" onKeyPressed="#pauseMenu"
+      xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.uniks.beastopia.teaml.controller.ingame.IngameController">
+    <Button alignment="CENTER" minWidth="180.0" mnemonicParsing="false" onKeyPressed="#pauseMenu"
             style="-fx-background-color: transparent; -fx-border-color: black; -fx-border-radius: 10;"
             text="%ESCtoPause" textAlignment="CENTER">
         <font>
