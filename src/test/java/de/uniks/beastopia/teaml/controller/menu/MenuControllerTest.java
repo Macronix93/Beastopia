@@ -6,7 +6,10 @@ import de.uniks.beastopia.teaml.controller.menu.social.FriendListController;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.AuthService;
 import io.reactivex.rxjava3.core.Observable;
+import de.uniks.beastopia.teaml.service.TokenStorage;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,6 +39,8 @@ class MenuControllerTest extends ApplicationTest {
     Provider<LoginController> loginControllerProvider;
     @Mock
     AuthService authService;
+    @Mock
+    TokenStorage tokenStorage;
     @Spy
     @SuppressWarnings("unused")
     App app;
@@ -59,6 +64,9 @@ class MenuControllerTest extends ApplicationTest {
         when(mockedRegionController.render()).thenReturn(new Label("RegionControllerLabelTest"));
         when(mockedFriendListController.render()).thenReturn(new Label("FriendListControllerLabelTest"));
 
+        User mockedUser = mock(User.class);
+        when(tokenStorage.getCurrentUser()).thenReturn(mockedUser);
+
         app.start(stage);
         app.show(menuController);
         stage.requestFocus();
@@ -75,6 +83,10 @@ class MenuControllerTest extends ApplicationTest {
         assertNotNull(regionControllerLabel);
         Label friendListControllerLabel = lookup("FriendListControllerLabelTest").query();
         assertNotNull(friendListControllerLabel);
+        Text userName = lookup("#userName").query();
+        assertNotNull(userName);
+        Button editProfileBtn = lookup("#editProfileBtn").query();
+        assertNotNull(editProfileBtn);
     }
 
     @Test
@@ -86,7 +98,7 @@ class MenuControllerTest extends ApplicationTest {
         when(loginControllerProvider.get()).thenReturn(mock);
         doNothing().when(app).show(mock);
 
-        clickOn("#logoutButton");
+        clickOn("#logoutBtn");
 
         verify(app).show(mock);
     }
