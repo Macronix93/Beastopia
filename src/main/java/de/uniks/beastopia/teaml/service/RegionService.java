@@ -9,11 +9,11 @@ import java.util.List;
 
 public class RegionService {
 
-    private final RegionApiService regionApiService;
+    @Inject
+    RegionApiService regionApiService;
 
     @Inject
-    public RegionService(RegionApiService regionApiService) {
-        this.regionApiService = regionApiService;
+    public RegionService() {
     }
 
     public Observable<List<Region>> getRegions() {

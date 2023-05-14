@@ -1,6 +1,5 @@
 package de.uniks.beastopia.teaml.service;
 
-import de.uniks.beastopia.teaml.rest.AuthApiService;
 import de.uniks.beastopia.teaml.rest.UpdateUserDto;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.rest.UserApiService;
@@ -11,7 +10,7 @@ import java.util.List;
 
 public class FriendListService {
 
-    public static enum Status {
+    public enum Status {
         Online,
         Offline
     }
@@ -21,8 +20,6 @@ public class FriendListService {
 
     @Inject
     UserApiService userApiService;
-    @Inject
-    AuthApiService authApiService;
 
     @Inject
     public FriendListService() {
