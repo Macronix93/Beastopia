@@ -100,7 +100,7 @@ class MenuControllerTest extends ApplicationTest {
         when(loginControllerProvider.get()).thenReturn(mock);
         doNothing().when(app).show(mock);
 
-        clickOn("#logoutButton");
+        clickOn("#logoutBtn");
 
         verify(app).show(mock);
     }
