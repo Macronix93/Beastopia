@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
 
 import javax.inject.Provider;
+import java.util.ResourceBundle;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
@@ -28,6 +29,10 @@ class PauseControllerTest extends ApplicationTest {
     App app;
     @InjectMocks
     PauseController pauseController;
+
+    @Spy
+    @SuppressWarnings("unused")
+    ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang");
 
     FriendListController mockedFriendListController;
     MenuController mockedMenuController;
