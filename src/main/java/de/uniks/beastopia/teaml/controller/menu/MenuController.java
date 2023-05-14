@@ -19,6 +19,10 @@ import java.util.List;
 
 public class MenuController extends Controller {
     private final List<Controller> subControllers = new ArrayList<>();
+    @FXML
+    public Button logoutBtn;
+    @FXML
+    public Button editProfileBtn;
 
     @FXML
     private VBox friendListContainer;
