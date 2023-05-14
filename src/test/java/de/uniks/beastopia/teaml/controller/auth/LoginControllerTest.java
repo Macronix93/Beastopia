@@ -4,7 +4,6 @@ import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.menu.MenuController;
 import de.uniks.beastopia.teaml.rest.LoginResult;
 import de.uniks.beastopia.teaml.service.AuthService;
-import de.uniks.beastopia.teaml.service.TokenStorage;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.scene.Node;
 import javafx.scene.text.Text;
@@ -36,11 +35,10 @@ class LoginControllerTest extends ApplicationTest {
     Provider<MenuController> menuControllerProvider;
     @Mock
     AuthService authService;
-    @Mock
-    TokenStorage tokenStorage;
     @Spy
     App app = new App(null);
     @Spy
+    @SuppressWarnings("unused")
     ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang");
 
     @InjectMocks
@@ -56,7 +54,7 @@ class LoginControllerTest extends ApplicationTest {
     @Test
     void loginSuccessful() {
         LoginResult mocked = mock(LoginResult.class);
-        when(authService.login(anyString(), anyString())).thenReturn(Observable.just(mocked));
+        when(authService.login(anyString(), anyString(), anyBoolean())).thenReturn(Observable.just(mocked));
 
         final MenuController mock = Mockito.mock(MenuController.class);
         when(menuControllerProvider.get()).thenReturn(mock);
@@ -75,7 +73,7 @@ class LoginControllerTest extends ApplicationTest {
     void loginFail() {
         ResponseBody body = ResponseBody.create(MediaType.get("application/json"),
                 "{\"message\":\"Login failed\"}");
-        when(authService.login(anyString(), anyString())).thenReturn(Observable.error
+        when(authService.login(anyString(), anyString(), anyBoolean())).thenReturn(Observable.error
                 (new HttpException(Response.error(401, body))));
         clickOn("#usernameInput");
         write("string");
