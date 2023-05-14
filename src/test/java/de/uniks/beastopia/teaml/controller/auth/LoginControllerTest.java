@@ -38,6 +38,7 @@ class LoginControllerTest extends ApplicationTest {
     @Spy
     App app = new App(null);
     @Spy
+    @SuppressWarnings("unused")
     ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang");
 
     @InjectMocks

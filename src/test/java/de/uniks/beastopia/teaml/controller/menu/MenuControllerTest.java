@@ -41,6 +41,7 @@ class MenuControllerTest extends ApplicationTest {
     @InjectMocks
     MenuController menuController;
     @Spy
+    @SuppressWarnings("unused")
     ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang");
 
     RegionController mockedRegionController;
