@@ -1,5 +1,6 @@
 package de.uniks.beastopia.teaml;
 
+import de.uniks.beastopia.teaml.controller.ChatListController;
 import de.uniks.beastopia.teaml.controller.Controller;
 import fr.brouillard.oss.cssfx.CSSFX;
 import javafx.application.Application;
@@ -9,9 +10,10 @@ import javafx.stage.Stage;
 
 import java.util.Objects;
 
+
 public class App extends Application {
     private Stage stage;
-    private Controller controller;
+    private Controller controller = new ChatListController();
 
     public App() {
 

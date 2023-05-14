@@ -2,7 +2,11 @@ package de.uniks.beastopia.teaml.controller;
 
 import de.uniks.beastopia.teaml.rest.Group;
 import de.uniks.beastopia.teaml.rest.User;
+import de.uniks.beastopia.teaml.service.FriendListService;
+import de.uniks.beastopia.teaml.service.GroupListService;
+import javafx.fxml.FXML;
 import javafx.scene.Parent;
+import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -13,6 +17,12 @@ public class ChatListController extends Controller {
     private final List<User> allUsers = new ArrayList<User>();
     private final List<Group> allGroups = new ArrayList<Group>();
 
+    @FXML
+    private VBox chatList;
+    @Inject
+    FriendListService friendListService;
+    @Inject
+    GroupListService groupListService;
 
     @Inject
     public ChatListController() {
@@ -45,6 +55,7 @@ public class ChatListController extends Controller {
             controller.destroy();
         }
         subControllers.clear();
+        //friendList.getChildren().clear();
     }
 
 }
