@@ -55,7 +55,7 @@ public class RegistrationController extends Controller {
 
     @Override
     public String getTitle() {
-        return "Beastopia - Registration";
+        return isEnglish ? "Beastopia - Registration" : "Beastopia - Registrierung";
     }
 
     @Override
@@ -90,9 +90,9 @@ public class RegistrationController extends Controller {
 
     }
 
+    @SuppressWarnings("UnnecessaryUnicodeEscape")
     @FXML
     private void signUp() {
-
         disposables.add(registrationService.createUser(usernameInput.getText(), LUMNIX_LOGO_URL, passwordInput.getText())
                 .observeOn(FX_SCHEDULER).subscribe(user -> {
                     Dialog.info(isEnglish ? "Registration successful!" : "Registrierung erfolgreich!",
