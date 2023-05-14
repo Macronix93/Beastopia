@@ -6,7 +6,6 @@ import de.uniks.beastopia.teaml.controller.menu.social.FriendListController;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.AuthService;
 import io.reactivex.rxjava3.core.Observable;
-import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -22,8 +21,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
 
 import javax.inject.Provider;
-import java.util.ResourceBundle;
-
 import java.util.ResourceBundle;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;

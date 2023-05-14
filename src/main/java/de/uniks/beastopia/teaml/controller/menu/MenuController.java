@@ -4,10 +4,8 @@ import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.auth.LoginController;
 import de.uniks.beastopia.teaml.controller.menu.social.FriendListController;
 import de.uniks.beastopia.teaml.service.AuthService;
-import de.uniks.beastopia.teaml.utils.Dialog;
-import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.TokenStorage;
-import javafx.event.ActionEvent;
+import de.uniks.beastopia.teaml.utils.Dialog;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -39,8 +37,10 @@ public class MenuController extends Controller {
     private VBox friendListContainer;
     @FXML
     private VBox regionContainer;
+    @SuppressWarnings("unused")
     @FXML
     private ImageView banner;
+    @SuppressWarnings("unused")
     @FXML
     private ImageView userAvatar;
     @FXML
