@@ -7,14 +7,14 @@ import de.uniks.beastopia.teaml.controller.MenuController;
 import de.uniks.beastopia.teaml.modules.HttpModule;
 import de.uniks.beastopia.teaml.modules.MainModule;
 import de.uniks.beastopia.teaml.modules.PrefModule;
-import de.uniks.beastopia.teaml.service.LoginService;
+import de.uniks.beastopia.teaml.service.AuthService;
 
 import javax.inject.Singleton;
 
 @Component(modules = {MainModule.class, HttpModule.class, PrefModule.class})
 @Singleton
 public interface MainComponent {
-    LoginService loginService();
+    AuthService authService();
 
     MenuController menuController();
 

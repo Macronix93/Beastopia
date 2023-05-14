@@ -3,7 +3,6 @@ package de.uniks.beastopia.teaml.service;
 import de.uniks.beastopia.teaml.rest.AuthApiService;
 import de.uniks.beastopia.teaml.rest.LoginDto;
 import de.uniks.beastopia.teaml.rest.LoginResult;
-import de.uniks.beastopia.teaml.rest.RefreshDto;
 import io.reactivex.rxjava3.core.Observable;
 
 import javax.inject.Inject;
@@ -31,14 +30,5 @@ public class LoginService {
         });
     }
 
-    public boolean isRememberMe() {
-        return preferences.get("rememberMe", null) != null;
-    }
 
-    public Observable<LoginResult> refresh() {
-        return authApiService.refresh(new RefreshDto(preferences.get("rememberMe", null))).map(lr -> {
-            tokenStorage.setAccessToken(lr.accessToken());
-            return lr;
-        });
-    }
 }
