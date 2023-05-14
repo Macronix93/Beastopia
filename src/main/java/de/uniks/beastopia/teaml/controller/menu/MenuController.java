@@ -50,6 +50,7 @@ public class MenuController extends Controller {
     public Parent render() {
         Parent parent = super.render();
         //set beastopia banner
+
         //set userAvatar
 
         userName.setText(tokenStorage.getCurrentUser().name());
