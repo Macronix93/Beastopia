@@ -1,6 +1,5 @@
 package de.uniks.beastopia.teaml.service;
 
-import de.uniks.beastopia.teaml.rest.AuthApiService;
 import de.uniks.beastopia.teaml.rest.UpdateUserDto;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.rest.UserApiService;
@@ -20,9 +19,6 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class FriendListServiceTest {
-
-    @Mock
-    AuthApiService authApiService;
     @Mock
     UserApiService userApiService;
     @Mock
@@ -88,6 +84,11 @@ class FriendListServiceTest {
         verify(tokenStorage, times(2)).getCurrentUser();
         verify(userApiService).getUsers(List.of("ID1", "ID2"), "online");
         assertArrayEquals(List.of(users.get(1)).toArray(), friends.toArray());
+
+        when(tokenStorage.getCurrentUser()).thenReturn(users.get(1));
+        friends = friendListService.getFriends(FriendListService.Status.Online).blockingFirst();
+        verify(tokenStorage, times(3)).getCurrentUser();
+        assertArrayEquals(List.of().toArray(), friends.toArray());
     }
 
     @Test

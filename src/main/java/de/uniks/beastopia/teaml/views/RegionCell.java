@@ -1,7 +1,7 @@
 package de.uniks.beastopia.teaml.views;
 
 import de.uniks.beastopia.teaml.App;
-import de.uniks.beastopia.teaml.controller.IngameController;
+import de.uniks.beastopia.teaml.controller.ingame.IngameController;
 import de.uniks.beastopia.teaml.rest.Region;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -33,9 +33,7 @@ public class RegionCell extends ListCell<Region> {
             setText(null);
         } else {
             final Button join = new Button(item.name() + " " + resources.getString("join"));
-            join.setOnAction(event -> {
-                app.show(ingameControllerProvider.get());
-            });
+            join.setOnAction(event -> app.show(ingameControllerProvider.get()));
             setGraphic(join);
         }
         setAlignment(Pos.CENTER);
