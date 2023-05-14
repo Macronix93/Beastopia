@@ -53,11 +53,4 @@ public class AuthService {
     public boolean isRememberMe() {
         return preferences.get("rememberMe", null) != null;
     }
-
-    /*public Observable<LoginResult> refresh() {
-        return authApiService.refresh(new RefreshDto(preferences.get("rememberMe", null))).map(lr -> {
-            tokenStorage.setAccessToken(lr.accessToken());
-            return lr;
-        });
-    }*/
 }
