@@ -1,7 +1,11 @@
 package de.uniks.beastopia.teaml.controller.menu;
 
 import de.uniks.beastopia.teaml.App;
+import de.uniks.beastopia.teaml.controller.auth.LoginController;
 import de.uniks.beastopia.teaml.controller.menu.social.FriendListController;
+import de.uniks.beastopia.teaml.rest.User;
+import de.uniks.beastopia.teaml.service.AuthService;
+import io.reactivex.rxjava3.core.Observable;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import javafx.scene.control.Button;
@@ -12,11 +16,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
 
 import javax.inject.Provider;
+import java.util.ResourceBundle;
 
 import java.util.ResourceBundle;
 
@@ -32,13 +38,20 @@ class MenuControllerTest extends ApplicationTest {
     @Mock
     Provider<FriendListController> friendListControllerProvider;
     @Mock
+    Provider<LoginController> loginControllerProvider;
+    @Mock
+    AuthService authService;
+    @Mock
     TokenStorage tokenStorage;
     @Spy
+    @SuppressWarnings("unused")
     App app;
-    @Spy
-    ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang");
     @InjectMocks
     MenuController menuController;
+    @Spy
+    @SuppressWarnings("unused")
+    ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang");
+
     RegionController mockedRegionController;
     FriendListController mockedFriendListController;
 
@@ -76,5 +89,19 @@ class MenuControllerTest extends ApplicationTest {
         assertNotNull(userName);
         Button editProfileBtn = lookup("#editProfileBtn").query();
         assertNotNull(editProfileBtn);
+    }
+
+    @Test
+    public void logout() {
+        User mocked = mock(User.class);
+        when(authService.logout()).thenReturn(Observable.just(mocked));
+
+        final LoginController mock = Mockito.mock(LoginController.class);
+        when(loginControllerProvider.get()).thenReturn(mock);
+        doNothing().when(app).show(mock);
+
+        clickOn("#logoutButton");
+
+        verify(app).show(mock);
     }
 }

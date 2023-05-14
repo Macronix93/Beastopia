@@ -1,7 +1,10 @@
 package de.uniks.beastopia.teaml.controller.menu;
 
 import de.uniks.beastopia.teaml.controller.Controller;
+import de.uniks.beastopia.teaml.controller.auth.LoginController;
 import de.uniks.beastopia.teaml.controller.menu.social.FriendListController;
+import de.uniks.beastopia.teaml.service.AuthService;
+import de.uniks.beastopia.teaml.utils.Dialog;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import javafx.event.ActionEvent;
@@ -19,6 +22,14 @@ import java.util.List;
 
 public class MenuController extends Controller {
     private final List<Controller> subControllers = new ArrayList<>();
+    @Inject
+    Provider<RegionController> regionControllerProvider;
+    @Inject
+    Provider<FriendListController> friendListControllerProvider;
+    @Inject
+    Provider<LoginController> loginControllerProvider;
+    @Inject
+    AuthService authService;
     @FXML
     public Button logoutBtn;
     @FXML
@@ -35,10 +46,6 @@ public class MenuController extends Controller {
     @FXML
     private Text userName;
 
-    @Inject
-    Provider<RegionController> regionControllerProvider;
-    @Inject
-    Provider<FriendListController> friendListControllerProvider;
     @Inject
     TokenStorage tokenStorage;
     @Inject
@@ -75,9 +82,11 @@ public class MenuController extends Controller {
         return "Beastopia - Main Menu";
     }
 
-
     @FXML
     public void logout() {
+        disposables.add(authService.logout().observeOn(FX_SCHEDULER).subscribe(
+                lr -> app.show(loginControllerProvider.get()),
+                error -> Dialog.error(error, "Logout failed")));
     }
 
     @FXML
