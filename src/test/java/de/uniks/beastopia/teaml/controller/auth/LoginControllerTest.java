@@ -56,7 +56,7 @@ class LoginControllerTest extends ApplicationTest {
     @Test
     void loginSuccessful() {
         LoginResult mocked = mock(LoginResult.class);
-        when(authService.login(anyString(), anyString(), false)).thenReturn(Observable.just(mocked));
+        when(authService.login(anyString(), anyString(), anyBoolean())).thenReturn(Observable.just(mocked));
 
         final MenuController mock = Mockito.mock(MenuController.class);
         when(menuControllerProvider.get()).thenReturn(mock);
@@ -75,7 +75,7 @@ class LoginControllerTest extends ApplicationTest {
     void loginFail() {
         ResponseBody body = ResponseBody.create(MediaType.get("application/json"),
                 "{\"message\":\"Login failed\"}");
-        when(authService.login(anyString(), anyString(), false)).thenReturn(Observable.error
+        when(authService.login(anyString(), anyString(), anyBoolean())).thenReturn(Observable.error
                 (new HttpException(Response.error(401, body))));
         clickOn("#usernameInput");
         write("string");
