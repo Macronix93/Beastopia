@@ -102,10 +102,10 @@
                   <Font size="16.0"/>
                </font>
                <toggleGroup>
-                  <ToggleGroup fx:id="language1"/>
+                  <ToggleGroup fx:id="theme"/>
                </toggleGroup>
             </RadioButton>
-            <RadioButton mnemonicParsing="false" text="%Summer" toggleGroup="$language1">
+            <RadioButton mnemonicParsing="false" text="%Summer" toggleGroup="$theme">
                <font>
                   <Font size="16.0"/>
                </font>

@@ -21,6 +21,8 @@ public class EditProfileController extends Controller {
 
     @Inject
     Provider<MenuController> menuControllerProvider;
+    @Inject
+    Provider<DeleteUserController> deleteUserControllerProvider;
 
     @Inject
     TokenStorage tokenStorage;
@@ -49,6 +51,8 @@ public class EditProfileController extends Controller {
     }
 
     public void deleteUser() {
+        app.show(deleteUserControllerProvider.get());
+        //ToDo popup
     }
 
     public void backToMenu() {
