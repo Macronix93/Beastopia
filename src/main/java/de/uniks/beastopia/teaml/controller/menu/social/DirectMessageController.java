@@ -85,7 +85,7 @@ public class DirectMessageController extends Controller {
 
     @Override
     public String getTitle() {
-        return resources.getString("titleDirectMessages");
+        return resources.getString("titleDirectMessage");
     }
 
     public void back() {

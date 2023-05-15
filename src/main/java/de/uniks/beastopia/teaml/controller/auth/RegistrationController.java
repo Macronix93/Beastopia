@@ -41,7 +41,7 @@ public class RegistrationController extends Controller {
 
     @Override
     public String getTitle() {
-        return "Beastopia - Registration";
+        return resources.getString("titleRegistration");
     }
 
     @Override

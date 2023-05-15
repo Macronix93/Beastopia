@@ -2,8 +2,10 @@ package de.uniks.beastopia.teaml;
 
 import de.uniks.beastopia.teaml.controller.ChatListController;
 import de.uniks.beastopia.teaml.controller.Controller;
+import de.uniks.beastopia.teaml.service.AuthService;
 import fr.brouillard.oss.cssfx.CSSFX;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
@@ -47,9 +49,15 @@ public class App extends Application {
             return;
         }
 
-
         final MainComponent component = DaggerMainComponent.builder().mainApp(this).build();
-        show(component.loginController());
+        final AuthService authService = component.authService();
+        if (authService.isRememberMe()) {
+            authService.refresh().subscribe(
+                    lr -> Platform.runLater(() -> show(component.menuController())),
+                    error -> Platform.runLater(() -> show(component.loginController())));
+        } else {
+            show(component.loginController());
+        }
     }
 
     @Override

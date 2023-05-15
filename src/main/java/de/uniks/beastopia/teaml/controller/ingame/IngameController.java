@@ -32,6 +32,6 @@ public class IngameController extends Controller {
 
     @Override
     public String getTitle() {
-        return "Beastopia";
+        return resources.getString("titleIngame");
     }
 }
