@@ -4,19 +4,22 @@ import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
+import javafx.scene.control.Alert;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+
 
 public class EditProfileController extends Controller {
 
     @FXML
     private TextField usernameField;
     @FXML
-    public TextField newPasswordField;
+    public PasswordField newPasswordField;
     @FXML
-    public TextField retypeNewPasswordField;
+    public PasswordField retypeNewPasswordField;
 
 
     @Inject
@@ -48,6 +51,28 @@ public class EditProfileController extends Controller {
     }
 
     public void editProfile() {
+        if (!newPasswordField.getText().isEmpty()) {
+            setNewPassword();
+        }
+    }
+
+    private void setNewPassword() {
+        if (!newPasswordField.getText().equals(retypeNewPasswordField.getText())) {
+            errorMessage("passwordsNotEqual");
+        } else if (newPasswordField.getText().length() < 8) {
+            errorMessage("passwordTooShort");
+        } else {
+            //ToDo set new password
+            app.show(menuControllerProvider.get());
+        }
+    }
+
+    private void errorMessage(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(resources.getString("error"));
+        alert.setHeaderText(resources.getString("error"));
+        alert.setContentText(resources.getString(message));
+        alert.showAndWait();
     }
 
     public void deleteUser() {

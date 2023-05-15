@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.Image?>
@@ -26,21 +25,21 @@
             <Font size="16.0"/>
          </font>
       </Label>
-      <TextField fx:id="newPasswordField">
+      <PasswordField fx:id="newPasswordField" accessibleRole="PASSWORD_FIELD">
          <font>
             <Font size="16.0"/>
          </font>
-      </TextField>
+      </PasswordField>
       <Label text="%RetypeNewPassword">
          <font>
             <Font size="16.0"/>
          </font>
       </Label>
-      <TextField fx:id="retypeNewPasswordField">
+      <PasswordField fx:id="retypeNewPasswordField" accessibleRole="PASSWORD_FIELD">
          <font>
             <Font size="16.0"/>
          </font>
-      </TextField>
+      </PasswordField>
       <HBox spacing="15.0">
          <children>
             <VBox spacing="10.0">
@@ -102,10 +101,10 @@
                   <Font size="16.0"/>
                </font>
                <toggleGroup>
-                  <ToggleGroup fx:id="theme"/>
+                  <ToggleGroup fx:id="language1"/>
                </toggleGroup>
             </RadioButton>
-            <RadioButton mnemonicParsing="false" text="%Summer" toggleGroup="$theme">
+            <RadioButton mnemonicParsing="false" text="%Summer" toggleGroup="$language1">
                <font>
                   <Font size="16.0"/>
                </font>
