@@ -8,6 +8,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 public class DeleteUserController extends Controller {
 
@@ -17,6 +18,8 @@ public class DeleteUserController extends Controller {
     public PasswordField passwordField;
     @Inject
     TokenStorage tokenStorage;
+    @Inject
+    Provider<EditProfileController> editProfileControllerProvider;
 
     @Inject
     public DeleteUserController() {
@@ -36,9 +39,11 @@ public class DeleteUserController extends Controller {
     }
 
     public void deleteUser() {
+
     }
 
     public void cancel() {
+
     }
 }
 
