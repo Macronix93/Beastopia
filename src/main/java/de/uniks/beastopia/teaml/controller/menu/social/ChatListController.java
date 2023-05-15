@@ -3,12 +3,12 @@ package de.uniks.beastopia.teaml.controller.menu.social;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Group;
 import de.uniks.beastopia.teaml.rest.User;
-import de.uniks.beastopia.teaml.service.GroupListService;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +20,7 @@ public class ChatListController extends Controller {
     @FXML
     private VBox chatList;
     @Inject
-    GroupListService groupListService;
+    Provider<DirectMessageController> directMessageControllerProvider;
 
     @Inject
     public ChatListController() {
@@ -34,11 +34,11 @@ public class ChatListController extends Controller {
         return parent;
     }
 
-    private void getUsers() {
+    private void addUser() {
 
     }
 
-    private void getGroups() {
+    private void createGroup() {
 
     }
 
@@ -48,12 +48,34 @@ public class ChatListController extends Controller {
         super.destroy();
     }
 
+    @FXML
+    public void showChats() {
+        app.show(directMessageControllerProvider.get());
+    }
+
+    @FXML
+    public void updateUserList() {
+
+        clearSubControllers();
+
+        //add user to updated list
+    }
+
+    @FXML
+    public void updateGroupList() {
+
+        clearSubControllers();
+
+        //add group to updated list
+    }
+
     private void clearSubControllers() {
         for (Controller controller : subControllers) {
             controller.destroy();
         }
         subControllers.clear();
         //userList.getChildren().clear();
+        //groupList.getChildren().clear();
     }
 
 }

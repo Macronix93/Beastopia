@@ -42,7 +42,6 @@ public class ChatUserController extends Controller {
     HBox _rootElement;
 
     private User user;
-    //private Group group;
 
     @Inject
     Provider<DirectMessageController> directMessageControllerProvider;
@@ -83,13 +82,6 @@ public class ChatUserController extends Controller {
         this.userPin = userPin;
         return this;
     }
-
-    /*
-    public ChatUserController setGroup(Group group, boolean userPin) {
-        this.group = group;
-        this.userPin = userPin;
-        return this;
-    }*/
 
     public void setOnPinChanged(Consumer<User> onPinChanged) {
         this.onPinChanged = onPinChanged;
