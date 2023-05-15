@@ -8,28 +8,26 @@
 <?import javafx.scene.text.Text?>
 <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0"
       prefWidth="300.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="de.uniks.beastopia.teaml.controller.MessageBubbleController">
+      fx:controller="de.uniks.beastopia.teaml.controller.menu.social.MessageBubbleController">
    <VBox prefHeight="100.0" prefWidth="231.0">
       <Text fx:id="senderName" strokeType="OUTSIDE" strokeWidth="0.0"/>
       <Text fx:id="messageBody" strokeType="OUTSIDE" strokeWidth="0.0"/>
       <HBox prefHeight="29.0" prefWidth="228.0">
-         <children>
-            <Text fx:id="created" strokeType="OUTSIDE" strokeWidth="0.0"/>
-            <Text fx:id="updated" strokeType="OUTSIDE" strokeWidth="0.0"/>
-         </children>
+         <Text fx:id="created" strokeType="OUTSIDE" strokeWidth="0.0"/>
+         <Text fx:id="updated" strokeType="OUTSIDE" strokeWidth="0.0"/>
       </HBox>
    </VBox>
    <Button fx:id="editButton" mnemonicParsing="false" onAction="#editMessage">
       <graphic>
          <ImageView fitHeight="20.0" fitWidth="20.0">
-            <Image url="@../assets/buttons/edit.png"/>
+            <Image url="@../../../assets/buttons/edit.png"/>
          </ImageView>
       </graphic>
    </Button>
    <Button fx:id="deleteButton" mnemonicParsing="false" onAction="#deleteMessage">
       <graphic>
          <ImageView fitHeight="20.0" fitWidth="20.0">
-            <Image url="@../assets/buttons/close.png"/>
+            <Image url="@../../../assets/buttons/close.png"/>
          </ImageView>
       </graphic>
    </Button>

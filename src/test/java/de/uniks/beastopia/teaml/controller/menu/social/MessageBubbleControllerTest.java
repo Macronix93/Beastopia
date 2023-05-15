@@ -1,4 +1,4 @@
-package de.uniks.beastopia.teaml.controller;
+package de.uniks.beastopia.teaml.controller.menu.social;
 
 import de.uniks.beastopia.teaml.App;
 import javafx.stage.Stage;
@@ -17,6 +17,7 @@ public class MessageBubbleControllerTest extends ApplicationTest {
     @Spy
     App app;
     @Spy
+    @SuppressWarnings("unused")
     ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang");
 
     @InjectMocks

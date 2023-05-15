@@ -52,7 +52,7 @@ public class ChatWindowController extends Controller {
                     .subscribe(messages::addAll));
         }
 
-        //noinspection unused,StatementWithEmptyBody
+        // noinspection unused
         for (Message msg : messages) {
             Controller subController = messageBubbleControllerProvider.get().setupMessageBubbleController(msg);
             subControllers.add(subController);
