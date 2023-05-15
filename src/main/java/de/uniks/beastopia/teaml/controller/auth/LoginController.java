@@ -34,8 +34,11 @@ public class LoginController extends Controller {
     Provider<MenuController> menuControllerProvider;
     @Inject
     AuthService authService;
+    @SuppressWarnings("unused")
+
     @Inject
     TokenStorage tokenStorage;
+    @SuppressWarnings("unused")
     @Inject
     Provider<ResourceBundle> resourcesProvider;
 
