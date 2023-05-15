@@ -43,7 +43,7 @@ public class PauseController extends Controller {
 
     @Override
     public String getTitle() {
-        return "Beastopia - Pause Menu";
+        return resources.getString("titlePause");
     }
 
     public void editProfileButtonPressed() {
