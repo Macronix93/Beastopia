@@ -1,7 +1,9 @@
 package de.uniks.beastopia.teaml.controller.menu;
 
 import de.uniks.beastopia.teaml.controller.Controller;
+import de.uniks.beastopia.teaml.service.AuthService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
+import de.uniks.beastopia.teaml.utils.Dialog;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
@@ -26,7 +28,8 @@ public class EditProfileController extends Controller {
     Provider<MenuController> menuControllerProvider;
     @Inject
     Provider<DeleteUserController> deleteUserControllerProvider;
-
+    @Inject
+    AuthService authService;
     @Inject
     TokenStorage tokenStorage;
 
@@ -62,8 +65,10 @@ public class EditProfileController extends Controller {
         } else if (newPasswordField.getText().length() < 8) {
             errorMessage("passwordTooShort");
         } else {
-            //ToDo set new password
-            app.show(menuControllerProvider.get());
+            disposables.add(authService.updatePassword(newPasswordField.getText())
+                    .observeOn(FX_SCHEDULER).subscribe(
+                            lr -> app.show(menuControllerProvider.get()),
+                            error -> Dialog.error(error, resources.getString("passwordChangeFailed"))));
         }
     }
 
