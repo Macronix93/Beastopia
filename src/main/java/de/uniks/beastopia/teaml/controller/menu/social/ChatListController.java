@@ -1,8 +1,8 @@
-package de.uniks.beastopia.teaml.controller;
+package de.uniks.beastopia.teaml.controller.menu.social;
 
+import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Group;
 import de.uniks.beastopia.teaml.rest.User;
-import de.uniks.beastopia.teaml.service.FriendListService;
 import de.uniks.beastopia.teaml.service.GroupListService;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -13,14 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ChatListController extends Controller {
-    private final List<Controller> subControllers = new ArrayList<Controller>();
-    private final List<User> allUsers = new ArrayList<User>();
-    private final List<Group> allGroups = new ArrayList<Group>();
+    private final List<Controller> subControllers = new ArrayList<>();
+    private final List<User> allUsers = new ArrayList<>();
+    private final List<Group> allGroups = new ArrayList<>();
 
     @FXML
     private VBox chatList;
-    @Inject
-    FriendListService friendListService;
     @Inject
     GroupListService groupListService;
 
@@ -36,7 +34,7 @@ public class ChatListController extends Controller {
         return parent;
     }
 
-    private void getFriends() {
+    private void getUsers() {
 
     }
 
@@ -55,7 +53,7 @@ public class ChatListController extends Controller {
             controller.destroy();
         }
         subControllers.clear();
-        //friendList.getChildren().clear();
+        //userList.getChildren().clear();
     }
 
 }
