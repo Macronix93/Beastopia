@@ -4,6 +4,7 @@ import de.uniks.beastopia.teaml.rest.*;
 import io.reactivex.rxjava3.core.Observable;
 
 import javax.inject.Inject;
+import java.util.prefs.Preferences;
 
 public class AuthService {
     @Inject
@@ -12,23 +13,28 @@ public class AuthService {
     AuthApiService authApiService;
     @Inject
     UserApiService userApiService;
+    @Inject
+    Preferences preferences;
 
     @Inject
     public AuthService() {
     }
 
-    public Observable<LoginResult> login(String username, String password) {
+    public Observable<LoginResult> login(String username, String password, boolean rememberMe) {
         return authApiService.login(new LoginDto(username, password)).map(lr -> {
             tokenStorage.setAccessToken(lr.accessToken());
             tokenStorage.setRefreshToken(lr.refreshToken());
             tokenStorage.setCurrentUser(userApiService.updateUser(lr._id(), new UpdateUserDto(null,
                     UserApiService.STATUS_ONLINE, null, null, null)).blockingFirst());
+            if (rememberMe) {
+                preferences.put("rememberMe", lr.refreshToken());
+            }
             return lr;
         });
     }
 
     public Observable<LoginResult> refresh() {
-        return authApiService.refresh(new RefreshDto(tokenStorage.getRefreshToken())).map(lr -> {
+        return authApiService.refresh(new RefreshDto(preferences.get("rememberMe", null))).map(lr -> {
             tokenStorage.setAccessToken(lr.accessToken());
             tokenStorage.setRefreshToken(lr.refreshToken());
             tokenStorage.setCurrentUser(userApiService.updateUser(lr._id(), new UpdateUserDto(null,
@@ -37,10 +43,16 @@ public class AuthService {
         });
     }
 
-    public Observable<Void> logout() {
+    public Observable<User> logout() {
         return userApiService.updateUser(tokenStorage.getCurrentUser()._id(), new UpdateUserDto(null,
                 UserApiService.STATUS_OFFLINE, null, null, null)).map(user -> {
-                    return authApiService.logout().blockingFirst();
+            preferences.remove("rememberMe");
+            authApiService.logout().subscribe();
+            return tokenStorage.getCurrentUser();
         });
+    }
+
+    public boolean isRememberMe() {
+        return preferences.get("rememberMe", null) != null;
     }
 }

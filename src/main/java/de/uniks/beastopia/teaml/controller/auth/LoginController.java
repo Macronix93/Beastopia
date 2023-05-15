@@ -10,6 +10,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
@@ -27,6 +28,10 @@ public class LoginController extends Controller {
     public PasswordField passwordInput;
     @FXML
     public Button loginButton;
+    @FXML
+    public CheckBox rememberMe;
+
+
     @FXML
     public RadioButton selectEnglishLanguage;
     @FXML
@@ -50,12 +55,11 @@ public class LoginController extends Controller {
 
     @Inject
     public LoginController() {
-
     }
 
     @Override
     public String getTitle() {
-        return "Beastopia - Login";
+        return resources.getString("titleLogin");
     }
 
     @Override
@@ -75,9 +79,8 @@ public class LoginController extends Controller {
         usernameInput.textProperty().bindBidirectional(username);
         passwordInput.textProperty().bindBidirectional(password);
 
-        isInValid = username
-                .isEmpty()
-                .or(password.length().lessThan(8));
+        isInValid = usernameInput.textProperty().isEmpty()
+                .or(passwordInput.textProperty().length().lessThan(8));
         loginButton.disableProperty().bind(isInValid);
 
         return parent;
@@ -89,7 +92,7 @@ public class LoginController extends Controller {
             return;
         }
 
-        disposables.add(authService.login(usernameInput.getText(), passwordInput.getText())
+        disposables.add(authService.login(usernameInput.getText(), passwordInput.getText(), rememberMe.isSelected())
                 .observeOn(FX_SCHEDULER).subscribe(
                         lr -> app.show(menuControllerProvider.get()),
                         error -> Dialog.error(error, "Login failed")));

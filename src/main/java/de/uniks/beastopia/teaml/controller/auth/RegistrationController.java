@@ -55,7 +55,7 @@ public class RegistrationController extends Controller {
 
     @Override
     public String getTitle() {
-        return isEnglish ? "Beastopia - Registration" : "Beastopia - Registrierung";
+        return resources.getString("titleRegistration");
     }
 
     @Override
@@ -65,6 +65,7 @@ public class RegistrationController extends Controller {
         String userLocale = Locale.getDefault().toLanguageTag();
         if (!userLocale.equals("en-EN") && !userLocale.equals("de-DE")) {
             userLocale = "en-EN";
+            isEnglish = true;
         }
 
         if (preferences.get("locale", userLocale).contains("de")) {
