@@ -25,6 +25,8 @@ public class DeleteUserController extends Controller {
     TokenStorage tokenStorage;
     @Inject
     Provider<LoginController> loginControllerProvider;
+    @Inject
+    Provider<EditProfileController> editProfileControllerProvider;
 
     @Inject
     public DeleteUserController() {
@@ -44,11 +46,11 @@ public class DeleteUserController extends Controller {
     }
 
     public void deleteUser() {
-        disposables.add(authService.login(tokenStorage.getCurrentUser().name(), passwordField.getText(), false)
+        //ToDo Check for correct password
+        /*disposables.add(authService.login(tokenStorage.getCurrentUser().name(), passwordField.getText(), false)
                 .observeOn(FX_SCHEDULER).subscribe(
                         lr -> deleteConfirmed(),
-                        error -> Dialog.error(error, resources.getString("deleteFailed"))));
-
+                        error -> Dialog.error(error, resources.getString("deleteFailed"))));*/
     }
 
     private void deleteConfirmed() {
@@ -59,7 +61,7 @@ public class DeleteUserController extends Controller {
     }
 
     public void cancel() {
-
+        app.show(editProfileControllerProvider.get());
     }
 }
 

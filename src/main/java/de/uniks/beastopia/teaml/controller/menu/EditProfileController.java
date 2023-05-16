@@ -9,7 +9,6 @@ import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.stage.Popup;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -82,10 +81,7 @@ public class EditProfileController extends Controller {
     }
 
     public void deleteUser() {
-        Popup popup = new Popup();
-        popup.getContent().add(deleteUserControllerProvider.get().render());
-        popup.setAutoHide(true);
-        popup.show(app.getStage());
+        app.show(deleteUserControllerProvider.get());
     }
 
     public void backToMenu() {
