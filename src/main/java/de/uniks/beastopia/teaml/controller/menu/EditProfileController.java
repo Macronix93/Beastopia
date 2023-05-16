@@ -7,10 +7,7 @@ import de.uniks.beastopia.teaml.utils.Dialog;
 import de.uniks.beastopia.teaml.utils.ThemeSettings;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
-import javafx.scene.control.Alert;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -20,8 +17,6 @@ import java.util.prefs.Preferences;
 public class EditProfileController extends Controller {
 
     @FXML
-    private TextField usernameField;
-    @FXML
     public PasswordField newPasswordField;
     @FXML
     public PasswordField retypeNewPasswordField;
@@ -29,11 +24,12 @@ public class EditProfileController extends Controller {
     public RadioButton darkRadioButton;
     @FXML
     public RadioButton summerRadioButton;
-
+    @FXML
+    public ToggleGroup language;
+    @FXML
+    public ToggleGroup theme;
     @Inject
     Preferences preferences;
-
-
     @Inject
     Provider<MenuController> menuControllerProvider;
     @Inject
@@ -44,6 +40,8 @@ public class EditProfileController extends Controller {
     TokenStorage tokenStorage;
     @Inject
     ThemeSettings themeSettings;
+    @FXML
+    private TextField usernameField;
 
     @Inject
     public EditProfileController() {

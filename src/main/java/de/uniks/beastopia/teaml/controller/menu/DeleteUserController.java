@@ -46,11 +46,12 @@ public class DeleteUserController extends Controller {
     }
 
     public void deleteUser() {
-        //ToDo Check for correct password
-        disposables.add(authService.login(tokenStorage.getCurrentUser().name(), passwordField.getText(), false)
-                .observeOn(FX_SCHEDULER).subscribe(
-                        lr -> deleteConfirmed(),
-                        error -> Dialog.error(error, resources.getString("deleteFailed"))));
+        if (!passwordField.getText().isEmpty()) {
+            disposables.add(authService.login(tokenStorage.getCurrentUser().name(), passwordField.getText(), false)
+                    .observeOn(FX_SCHEDULER).subscribe(
+                            lr -> deleteConfirmed(),
+                            error -> Dialog.error(error, resources.getString("deleteFailed"))));
+        }
     }
 
     private void deleteConfirmed() {
