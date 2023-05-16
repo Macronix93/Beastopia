@@ -30,7 +30,7 @@
             <Font size="16.0" />
          </font>
       </Label>
-      <PasswordField fx:id="passwordField">
+      <PasswordField fx:id="passwordField" onAction="#deleteUser">
           <font>
               <Font size="16.0" />
           </font>
