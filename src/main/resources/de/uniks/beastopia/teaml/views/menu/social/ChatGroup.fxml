@@ -5,8 +5,9 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
-<HBox fx:id="_rootElement" prefHeight="60.0" prefWidth="265.0" style="-fx-border-color: black; -fx-border-width: 1;"
-      xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
+<HBox fx:id="_rootElement" onMouseClicked="#mouseClicked" prefHeight="60.0" prefWidth="265.0"
+      style="-fx-border-color: black; -fx-border-width: 1;" xmlns="http://javafx.com/javafx/19"
+      xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="de.uniks.beastopia.teaml.controller.menu.social.ChatGroupController">
     <VBox prefHeight="200.0" prefWidth="10075.0">
         <VBox prefHeight="9985.0">

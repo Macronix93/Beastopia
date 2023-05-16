@@ -4,6 +4,7 @@ import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Group;
 import javafx.fxml.FXML;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -16,7 +17,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.prefs.Preferences;
@@ -44,6 +44,8 @@ public class ChatGroupController extends Controller {
 
     private Consumer<Group> onPinChanged = null;
 
+    private Consumer<Group> onGroupClicked = null;
+
     @Inject
     public ChatGroupController() {
 
@@ -51,13 +53,6 @@ public class ChatGroupController extends Controller {
 
     @Override
     public void init() {
-        ArrayList<String> groupList = new ArrayList<>();
-        groupList.add("user1");
-        groupList.add("user2");
-        Group group = new Group(null, null, "null", null, groupList);
-        this.group = group;
-        this.groupPin = true;
-
         try {
             pinned = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/filled_pin.png")));
             notPinned = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/pin.png")));
@@ -67,15 +62,30 @@ public class ChatGroupController extends Controller {
         }
     }
 
+    public void setOnGroupClicked(Consumer<Group> onGroupClicked) {
+        this.onGroupClicked = onGroupClicked;
+    }
+
     public ChatGroupController setGroup(Group group, boolean groupPin) {
         this.group = group;
         this.groupPin = groupPin;
         return this;
     }
 
+    @Override
+    public Parent render() {
+        Parent parent = super.render();
+        name.setText(group.name());
+        return parent;
+    }
+
     @FXML
     public void showEditGroup() {
         //app.show(editGroupControllerProvider.get());
+    }
+
+    public void mouseClicked() {
+        onGroupClicked.accept(group);
     }
 
     private ImageView createImage(URL imageUrl) throws URISyntaxException, FileNotFoundException {
