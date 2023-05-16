@@ -4,14 +4,17 @@ import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.service.AuthService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.utils.Dialog;
+import de.uniks.beastopia.teaml.utils.ThemeSettings;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+import java.util.prefs.Preferences;
 
 
 public class EditProfileController extends Controller {
@@ -22,6 +25,13 @@ public class EditProfileController extends Controller {
     public PasswordField newPasswordField;
     @FXML
     public PasswordField retypeNewPasswordField;
+    @FXML
+    public RadioButton darkRadioButton;
+    @FXML
+    public RadioButton summerRadioButton;
+
+    @Inject
+    Preferences preferences;
 
 
     @Inject
@@ -32,6 +42,8 @@ public class EditProfileController extends Controller {
     AuthService authService;
     @Inject
     TokenStorage tokenStorage;
+    @Inject
+    ThemeSettings themeSettings;
 
     @Inject
     public EditProfileController() {
@@ -42,6 +54,8 @@ public class EditProfileController extends Controller {
     public Parent render() {
         Parent parent = super.render();
         usernameField.setText(tokenStorage.getCurrentUser().name());
+        darkRadioButton.setSelected(preferences.getBoolean("DarkTheme", false));
+        summerRadioButton.setSelected(!preferences.getBoolean("DarkTheme", false));
         return parent;
     }
 
@@ -51,6 +65,16 @@ public class EditProfileController extends Controller {
     }
 
     public void uploadAvatar() {
+    }
+
+    public void setDarkTheme() {
+        preferences.putBoolean("DarkTheme", true);
+        themeSettings.updateSceneTheme.accept("dark");
+    }
+
+    public void setSummerTheme() {
+        preferences.putBoolean("DarkTheme", false);
+        themeSettings.updateSceneTheme.accept("summer");
     }
 
     public void editProfile() {
