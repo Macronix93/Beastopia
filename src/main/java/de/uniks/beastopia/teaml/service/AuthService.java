@@ -64,7 +64,10 @@ public class AuthService {
         return userApiService.updateUser(tokenStorage.getCurrentUser()._id(), new UpdateUserDto(null, null, avatar, null, null));
     }
 
-    public Observable<Void> deleteUser() {
-        return userApiService.deleteUser(tokenStorage.getCurrentUser()._id());
+    public Observable<User> deleteUser() {
+        return Observable.create(source -> {
+            userApiService.deleteUser(tokenStorage.getCurrentUser()._id()).subscribe();
+            source.onNext(tokenStorage.getCurrentUser());
+        });
     }
 }
