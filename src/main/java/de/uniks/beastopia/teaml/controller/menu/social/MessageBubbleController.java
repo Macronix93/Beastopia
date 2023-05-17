@@ -2,6 +2,7 @@ package de.uniks.beastopia.teaml.controller.menu.social;
 
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Message;
+import de.uniks.beastopia.teaml.service.FriendListService;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -26,6 +27,9 @@ public class MessageBubbleController extends Controller {
     @FXML
     public Button deleteButton;
 
+    @Inject
+    FriendListService friendListService;
+
     Message message;
 
     private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm");
@@ -44,10 +48,10 @@ public class MessageBubbleController extends Controller {
     public Parent render() {
         Parent parent = super.render();
 
-        senderName.setText(message.sender());
+        disposables.add(friendListService.getUser(this.message.sender()).observeOn(FX_SCHEDULER).subscribe(user -> this.senderName.setText(user.name())));
         messageBody.setText(message.body());
-        LocalDateTime localDateTimeCreated = LocalDateTime.ofInstant(message.createdAt(), ZoneId.systemDefault());
-        LocalDateTime localDateTimeUpdated = LocalDateTime.ofInstant(message.createdAt(), ZoneId.systemDefault());
+        LocalDateTime localDateTimeCreated = LocalDateTime.ofInstant(message.createdAt().toInstant(), ZoneId.systemDefault());
+        LocalDateTime localDateTimeUpdated = LocalDateTime.ofInstant(message.createdAt().toInstant(), ZoneId.systemDefault());
         DateTimeFormatter dateTimeFormatter = TIME_FORMAT;
         String createdAt = localDateTimeCreated.format(dateTimeFormatter);
         String updatedAt = localDateTimeUpdated.format(dateTimeFormatter);
