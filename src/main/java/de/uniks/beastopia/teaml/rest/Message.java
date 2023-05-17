@@ -1,10 +1,10 @@
 package de.uniks.beastopia.teaml.rest;
 
-import java.util.Date;
+import java.time.Instant;
 
 public record Message(
-        Date createdAt,
-        Date updatedAt,
+        Instant createdAt,
+        Instant updatedAt,
         String _id,
         String sender,
         String body
