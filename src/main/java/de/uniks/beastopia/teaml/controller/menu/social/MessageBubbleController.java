@@ -3,36 +3,58 @@ package de.uniks.beastopia.teaml.controller.menu.social;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Message;
 import javafx.fxml.FXML;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.text.Text;
 
 import javax.inject.Inject;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 
 public class MessageBubbleController extends Controller {
     @FXML
-    public String senderName;
+    public Text senderName;
     @FXML
-    public String messageBody;
+    public Text messageBody;
     @FXML
-    public Date created;
+    public Text created;
     @FXML
-    public Date updated;
+    public Text updated;
     @FXML
     public Button editButton;
     @FXML
     public Button deleteButton;
+
+    Message message;
+
+    private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm");
 
     @Inject
     public MessageBubbleController() {
 
     }
 
-    public MessageBubbleController setupMessageBubbleController(Message message) {
-        this.senderName = message.sender();
-        this.messageBody = message.body();
-        this.created = message.createdAt();
-        this.updated = message.updatedAt();
+    public MessageBubbleController setMessage(Message message) {
+        this.message = message;
         return this;
+    }
+
+    @Override
+    public Parent render() {
+        Parent parent = super.render();
+
+        senderName.setText(message.sender());
+        messageBody.setText(message.body());
+        LocalDateTime localDateTimeCreated = LocalDateTime.ofInstant(message.createdAt(), ZoneId.systemDefault());
+        LocalDateTime localDateTimeUpdated = LocalDateTime.ofInstant(message.createdAt(), ZoneId.systemDefault());
+        DateTimeFormatter dateTimeFormatter = TIME_FORMAT;
+        String createdAt = localDateTimeCreated.format(dateTimeFormatter);
+        String updatedAt = localDateTimeUpdated.format(dateTimeFormatter);
+        created.setText(createdAt);
+        updated.setText(updatedAt);
+
+        return parent;
     }
 
     @FXML
