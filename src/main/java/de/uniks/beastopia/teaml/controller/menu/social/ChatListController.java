@@ -82,9 +82,9 @@ public class ChatListController extends Controller {
             if (group.members().size() == 2 && (
                     group.name().equals(group.members().get(0) + "_" + group.members().get(1)))
                     || group.name().equals(group.members().get(1) + "_" + group.members().get(0))) {
-//                ChatUserController chatUserController = chatUserControllerProvider.get();
-//                subControllers.add(chatUserController);
-//                chatList.getChildren().add(chatUserController.render());
+              /*  ChatUserController chatUserController = chatUserControllerProvider.get();
+                subControllers.add(chatUserController);
+                chatList.getChildren().add(chatUserController.render());*/
             } else {
                 ChatGroupController chatGroupController = chatGroupControllerProvider.get();
                 subControllers.add(chatGroupController);

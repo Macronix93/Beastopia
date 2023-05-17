@@ -27,7 +27,11 @@ public class ChatGroupController extends Controller {
     HBox _rootElement;
 
     @FXML
-    Button pin;
+    Button pinGroup;
+    @FXML
+    Button deleteGroup;
+    @FXML
+    Button editGroup;
 
     @FXML
     Text name;
@@ -79,11 +83,6 @@ public class ChatGroupController extends Controller {
         return parent;
     }
 
-    @FXML
-    public void showEditGroup() {
-        //app.show(editGroupControllerProvider.get());
-    }
-
     public void mouseClicked() {
         onGroupClicked.accept(group);
     }
@@ -104,13 +103,21 @@ public class ChatGroupController extends Controller {
         return new Image(new FileInputStream(new File(imageUrl.toURI())), width, height, preserveRatio, smooth);
     }
 
-    @FXML
+
+    public void editGroup() {
+        //app.show(editGroupControllerProvider.get());
+    }
+
+    public void deleteGroup() {
+        //todo: delete group
+    }
+
     public void pinGroup() {
-        if (pin.getGraphic() == notPinned) {
-            pin.setGraphic(pinned);
+        if (pinGroup.getGraphic() == notPinned) {
+            pinGroup.setGraphic(pinned);
             preferences.putBoolean(this.group._id() + "_pinned", true);
         } else {
-            pin.setGraphic(notPinned);
+            pinGroup.setGraphic(notPinned);
             preferences.putBoolean(this.group._id() + "_pinned", false);
         }
         if (onPinChanged != null) {
