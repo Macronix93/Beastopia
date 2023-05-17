@@ -31,6 +31,7 @@ public class App extends Application {
     @SuppressWarnings("RedundantThrows")
     @Override
     public void start(Stage primaryStage) throws Exception {
+
         stage = primaryStage;
         stage.setWidth(800);
         stage.setHeight(600);
@@ -39,7 +40,6 @@ public class App extends Application {
         scene = new Scene(new Label("Loading..."));
         stage.setScene(scene);
 
-        scene.getStylesheets().add(Objects.requireNonNull(Main.class.getResource("views/summer.css")).toString());
         CSSFX.start(scene);
 
         stage.show();
@@ -59,6 +59,20 @@ public class App extends Application {
         } else {
             show(component.loginController());
         }
+
+        component.themeSettings().updateSceneTheme = theme -> {
+            if (theme.equals("dark")) {
+                scene.getStylesheets().removeIf(style -> style.endsWith("views/summer.css"));
+                scene.getStylesheets().add(Objects.requireNonNull(Main.class.getResource("views/dark.css")).toString());
+            } else {
+                scene.getStylesheets().removeIf(style -> style.endsWith("views/dark.css"));
+                scene.getStylesheets().add(Objects.requireNonNull(Main.class.getResource("views/summer.css")).toString());
+            }
+        };
+
+        component.themeSettings().updateSceneTheme.accept(
+                component.preferences().getBoolean("DarkTheme", false) ? "dark" : "summer"
+        );
     }
 
     @Override
