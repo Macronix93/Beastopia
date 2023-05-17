@@ -46,18 +46,32 @@ public class ChatWindowController extends Controller {
         Parent parent = super.render();
         if (namespace.equals("global")) {
             disposables.add(messageService.getMessagesFromFriend(parentId).observeOn(FX_SCHEDULER)
-                    .subscribe(messages::addAll));
+                    .subscribe(msgs -> {
+                        messages.clear();
+                        messages.addAll(msgs);
+
+                        // noinspection unused
+                        for (Message msg : messages) {
+                            Controller subController = messageBubbleControllerProvider.get().setMessage(msg);
+                            subControllers.add(subController);
+                            msgList.getChildren().add(subController.render());
+                        }
+                    }));
         } else if (namespace.equals("group")) {
             disposables.add(messageService.getMessagesFromGroup(parentId).observeOn(FX_SCHEDULER)
-                    .subscribe(messages::addAll));
+                    .subscribe(msgs -> {
+                        messages.clear();
+                        messages.addAll(msgs);
+
+                        // noinspection unused
+                        for (Message msg : messages) {
+                            Controller subController = messageBubbleControllerProvider.get().setMessage(msg);
+                            subControllers.add(subController);
+                            msgList.getChildren().add(subController.render());
+                        }
+                    }));
         }
 
-        // noinspection unused
-        for (Message msg : messages) {
-            Controller subController = messageBubbleControllerProvider.get().setupMessageBubbleController(msg);
-            subControllers.add(subController);
-            msgList.getChildren().add(subController.render());
-        }
 
         return parent;
     }
