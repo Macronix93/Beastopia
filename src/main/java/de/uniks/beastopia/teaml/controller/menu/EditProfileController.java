@@ -75,7 +75,7 @@ public class EditProfileController extends Controller {
         themeSettings.updateSceneTheme.accept("summer");
     }
 
-    public void editProfile() {
+    public void changePassword() {
         if (!newPasswordField.getText().isEmpty()) {
             setNewPassword();
         }

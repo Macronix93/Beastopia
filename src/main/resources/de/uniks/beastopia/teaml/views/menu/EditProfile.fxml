@@ -83,15 +83,15 @@
          </font>
       </Label>
       <HBox spacing="15.0">
-            <RadioButton fx:id="darkRadioButton" mnemonicParsing="false" onAction="#setDarkTheme" selected="true"
-                         text="%Dark">
-                <font>
-                    <Font size="16.0"/>
-                </font>
-                <toggleGroup>
-                    <ToggleGroup fx:id="theme"/>
-                </toggleGroup>
-            </RadioButton>
+          <RadioButton fx:id="darkRadioButton" mnemonicParsing="false" onAction="#setDarkTheme" selected="true"
+                       text="%Dark">
+              <font>
+                  <Font size="16.0"/>
+              </font>
+              <toggleGroup>
+                  <ToggleGroup fx:id="theme"/>
+              </toggleGroup>
+          </RadioButton>
           <RadioButton fx:id="summerRadioButton" mnemonicParsing="false" onAction="#setSummerTheme" text="%Summer"
                        toggleGroup="$theme">
               <font>
@@ -100,11 +100,12 @@
           </RadioButton>
       </HBox>
       <HBox spacing="15.0">
-            <Button mnemonicParsing="false" onAction="#editProfile" style="-fx-background-radius: 20;" text="%EditProfile">
-               <font>
-                  <Font size="16.0" />
-               </font>
-            </Button>
+          <Button mnemonicParsing="false" onAction="#changePassword" style="-fx-background-radius: 20;"
+                  text="%ChangePassword">
+              <font>
+                  <Font size="16.0"/>
+              </font>
+          </Button>
             <Button mnemonicParsing="false" onAction="#deleteUser" style="-fx-background-radius: 20;" text="%DeleteUser">
                <font>
                   <Font size="16.0" />
