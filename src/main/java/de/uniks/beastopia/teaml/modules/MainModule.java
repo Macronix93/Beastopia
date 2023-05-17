@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dagger.Module;
 import dagger.Provides;
+import de.uniks.beastopia.teaml.utils.ThemeSettings;
 
 import javax.inject.Singleton;
 import java.util.Locale;
@@ -27,5 +28,11 @@ public class MainModule {
                 .enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
                 .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
                 .setSerializationInclusion(JsonInclude.Include.NON_ABSENT);
+    }
+
+    @Provides
+    @Singleton
+    ThemeSettings themeSettings() {
+        return new ThemeSettings();
     }
 }
