@@ -37,9 +37,11 @@ class LoginControllerTest extends ApplicationTest {
     @Mock
     AuthService authService;
     @Spy
+    final
     App app = new App(null);
     @Spy
     @SuppressWarnings("unused")
+    final
     ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang");
 
     @InjectMocks

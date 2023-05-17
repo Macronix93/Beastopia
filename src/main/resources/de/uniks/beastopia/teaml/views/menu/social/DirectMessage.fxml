@@ -41,7 +41,7 @@
     </HBox>
     <ScrollPane fx:id="chatScrollPane" prefHeight="600.0" prefWidth="500.0" style="-fx-border-color: green;"
                 GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
-        <VBox fx:id="messageList" spacing="10.0"/>
+        <VBox spacing="10.0"/>
     </ScrollPane>
     <HBox alignment="TOP_CENTER" spacing="10.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2">
         <padding>

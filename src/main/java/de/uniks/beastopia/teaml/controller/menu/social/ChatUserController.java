@@ -64,8 +64,7 @@ public class ChatUserController extends Controller {
 
     @Override
     public void init() {
-        User user = new User(null, null, null, "name", "status", null, null);
-        this.user = user;
+        this.user = new User(null, null, null, "name", "status", null, null);
         this.userPin = true;
 
         try {

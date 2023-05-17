@@ -30,7 +30,7 @@ public class App extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
 
         stage = primaryStage;
         stage.setWidth(800);
@@ -52,6 +52,7 @@ public class App extends Application {
         final MainComponent component = DaggerMainComponent.builder().mainApp(this).build();
         final AuthService authService = component.authService();
         if (authService.isRememberMe()) {
+            //noinspection ResultOfMethodCallIgnored
             authService.refresh().subscribe(
                     lr -> Platform.runLater(() -> show(component.menuController())),
                     error -> Platform.runLater(() -> show(component.loginController())));

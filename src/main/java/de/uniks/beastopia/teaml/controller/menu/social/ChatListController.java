@@ -79,6 +79,7 @@ public class ChatListController extends Controller {
 
         // <ida>_<idb> is the name of a group with two members
         for (Group group : groups) {
+            //noinspection StatementWithEmptyBody
             if (group.members().size() == 2 && (
                     group.name().equals(group.members().get(0) + "_" + group.members().get(1)))
                     || group.name().equals(group.members().get(1) + "_" + group.members().get(0))) {

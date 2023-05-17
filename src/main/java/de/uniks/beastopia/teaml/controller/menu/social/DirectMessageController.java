@@ -20,6 +20,7 @@ import java.util.List;
 
 public class DirectMessageController extends Controller {
 
+    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     private final List<Controller> subControllers = new ArrayList<>();
 
     @Inject
@@ -48,8 +49,6 @@ public class DirectMessageController extends Controller {
     public TextField chatInput;
     @FXML
     public Label chatName; //this label shows the name of the person/group you are chatting with
-    private String namespace;
-    private String parentId;
     private Node rightSide;
 
     @Inject
@@ -58,8 +57,6 @@ public class DirectMessageController extends Controller {
     }
 
     public DirectMessageController setupDirectMessageController(String namespace, String parendId) {
-        this.namespace = namespace;
-        this.parentId = parendId;
         return this;
     }
 
@@ -79,8 +76,7 @@ public class DirectMessageController extends Controller {
         rightSide = chatScrollPane;
         grid.add(chatListController.render(), 0, 1);
 
-        //noinspection StatementWithEmptyBody
-//        if (this.namespace == null || this.parentId == null) {
+        //        if (this.namespace == null || this.parentId == null) {
 //            //TODO show first chat from ChatList
 //        } else { //Open Chat from friend
 //            if (this.namespace.equals("group")) {

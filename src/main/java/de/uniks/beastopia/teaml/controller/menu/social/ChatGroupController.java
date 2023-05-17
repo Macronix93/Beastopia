@@ -38,15 +38,13 @@ public class ChatGroupController extends Controller {
 
     private Group group;
 
-    private Boolean groupPin;
     private ImageView pinned;
     private ImageView notPinned;
-    private ImageView abort;
 
     @Inject
     Preferences preferences;
 
-    private Consumer<Group> onPinChanged = null;
+    private final Consumer<Group> onPinChanged = null;
 
     private Consumer<Group> onGroupClicked = null;
 
@@ -60,7 +58,7 @@ public class ChatGroupController extends Controller {
         try {
             pinned = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/filled_pin.png")));
             notPinned = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/pin.png")));
-            abort = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/abort.png")));
+            ImageView abort = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/abort.png")));
         } catch (URISyntaxException | FileNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -72,7 +70,7 @@ public class ChatGroupController extends Controller {
 
     public ChatGroupController setGroup(Group group, boolean groupPin) {
         this.group = group;
-        this.groupPin = groupPin;
+        Boolean groupPin1 = groupPin;
         return this;
     }
 
