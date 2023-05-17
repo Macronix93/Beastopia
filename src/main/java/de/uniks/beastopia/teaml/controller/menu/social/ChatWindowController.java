@@ -46,32 +46,11 @@ public class ChatWindowController extends Controller {
         Parent parent = super.render();
         if (namespace.equals("global")) {
             disposables.add(messageService.getMessagesFromFriend(parentId).observeOn(FX_SCHEDULER)
-                    .subscribe(msgs -> {
-                        messages.clear();
-                        messages.addAll(msgs);
-
-                        // noinspection unused
-                        for (Message msg : messages) {
-                            Controller subController = messageBubbleControllerProvider.get().setMessage(msg);
-                            subControllers.add(subController);
-                            msgList.getChildren().add(subController.render());
-                        }
-                    }));
+                    .subscribe(this::fillInMessages));
         } else if (namespace.equals("group")) {
             disposables.add(messageService.getMessagesFromGroup(parentId).observeOn(FX_SCHEDULER)
-                    .subscribe(msgs -> {
-                        messages.clear();
-                        messages.addAll(msgs);
-
-                        // noinspection unused
-                        for (Message msg : messages) {
-                            Controller subController = messageBubbleControllerProvider.get().setMessage(msg);
-                            subControllers.add(subController);
-                            msgList.getChildren().add(subController.render());
-                        }
-                    }));
+                    .subscribe(this::fillInMessages));
         }
-
 
         return parent;
     }
@@ -80,5 +59,16 @@ public class ChatWindowController extends Controller {
     public void destroy() {
         subControllers.forEach(Controller::destroy);
         super.destroy();
+    }
+
+    private void fillInMessages(List<Message> msgs) {
+        messages.clear();
+        messages.addAll(msgs);
+
+        for (Message msg : messages) {
+            Controller subController = messageBubbleControllerProvider.get().setMessage(msg);
+            subControllers.add(subController);
+            msgList.getChildren().add(subController.render());
+        }
     }
 }
