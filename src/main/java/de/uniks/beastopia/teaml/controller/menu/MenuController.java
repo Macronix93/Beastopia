@@ -27,6 +27,8 @@ public class MenuController extends Controller {
     @Inject
     Provider<LoginController> loginControllerProvider;
     @Inject
+    Provider<EditProfileController> editProfileControllerProvider;
+    @Inject
     AuthService authService;
     @FXML
     public Button logoutBtn;
@@ -91,6 +93,6 @@ public class MenuController extends Controller {
 
     @FXML
     public void editProfileButtonPressed() {
-        //app.show(editProfileControllerProvider.get());
+        app.show(editProfileControllerProvider.get());
     }
 }
