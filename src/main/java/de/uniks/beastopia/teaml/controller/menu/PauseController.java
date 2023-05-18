@@ -60,7 +60,7 @@ public class PauseController extends Controller {
 
     @FXML
     public void editProfileButtonPressed() {
-        app.show(editProfileControllerProvider.get());
+        app.show(editProfileControllerProvider.get().backController("pause"));
     }
 
     @FXML
