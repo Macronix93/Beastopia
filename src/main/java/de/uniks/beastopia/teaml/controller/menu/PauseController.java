@@ -32,6 +32,9 @@ public class PauseController extends Controller {
     Provider<IngameController> ingameControllerProvider;
 
     @Inject
+    Provider<EditProfileController> editProfileControllerProvider;
+
+    @Inject
     public PauseController() {
 
     }
@@ -39,7 +42,6 @@ public class PauseController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
-        pauseButton.setVisible(false);
         Controller subController = friendListControllerProvider.get();
         subControllers.add(subController);
         friendListContainer.getChildren().add(subController.render());
@@ -58,6 +60,7 @@ public class PauseController extends Controller {
 
     @FXML
     public void editProfileButtonPressed() {
+        app.show(editProfileControllerProvider.get());
     }
 
     @FXML

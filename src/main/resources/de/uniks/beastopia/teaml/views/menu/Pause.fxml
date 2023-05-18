@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.uniks.beastopia.teaml.controller.menu.PauseController">
+<HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#pauseMenu" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.uniks.beastopia.teaml.controller.menu.PauseController">
     <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="350.0" prefWidth="300.0">
         <VBox alignment="TOP_CENTER" maxWidth="200.0" minWidth="200.0" prefHeight="131.0" prefWidth="150.0" spacing="10.0">
             <padding>
@@ -37,12 +37,6 @@
             </Button>
         </VBox>
     </VBox>
-    <VBox prefHeight="200.0" prefWidth="25.0">
-        <Button fx:id="pauseButton" alignment="CENTER" minWidth="10.0" mnemonicParsing="false" onKeyPressed="#pauseMenu" style="-fx-background-color: transparent; -fx-border-color: black; -fx-border-radius: 10;" textAlignment="CENTER">
-           <font>
-               <Font size="14.0" />
-           </font>
-        </Button>
-    </VBox>
+    <VBox prefHeight="200.0" prefWidth="25.0" />
     <VBox fx:id="friendListContainer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="285.0" style="-fx-border-color: black; -fx-border-width: 2;" />
 </HBox>
