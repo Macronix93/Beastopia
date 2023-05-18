@@ -60,11 +60,6 @@ public class AuthService {
         return userApiService.updateUser(tokenStorage.getCurrentUser()._id(), new UpdateUserDto(null, UserApiService.STATUS_OFFLINE, null, null, null)).map(user -> tokenStorage.getCurrentUser());
     }
 
-    public boolean isRememberMe() {
-        String token = preferences.get("rememberMe", null);
-        return token != null;
-    }
-
     public Observable<User> updatePassword(String password) {
         return userApiService.updateUser(tokenStorage.getCurrentUser()._id(), new UpdateUserDto(null, null, null, null, password));
     }

@@ -129,7 +129,7 @@ public class FriendListController extends Controller {
 
         for (User user : filteredUsers) {
             FriendController friendController = friendControllerProvider.get();
-            boolean friendPinned = preferences.getBoolean(user._id() + "_pinned", false);
+            boolean friendPinned = prefs.isPinned(user);
             friendController.setUser(user, friendPinned);
             friendController.init();
             friendController.setOnFriendChanged(user_ -> {
@@ -137,8 +137,6 @@ public class FriendListController extends Controller {
                 updateUserList();
             });
             friendController.setOnPinChanged(user_ -> updateUserList());
-            boolean friendPinned = prefs.isPinned(user);
-            friendController.setUser(user, friendPinned);
             filteredParents.add(friendController.render());
         }
         return filteredParents;
