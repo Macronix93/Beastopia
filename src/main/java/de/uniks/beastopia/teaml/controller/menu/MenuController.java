@@ -59,7 +59,7 @@ public class MenuController extends Controller {
     @Override
     public void init() {
         super.init();
-        app.addCleanupTask(() -> authService.logout().subscribe());
+        app.addCleanupTask(() -> authService.goOffline().subscribe());
     }
 
     @Override

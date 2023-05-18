@@ -52,6 +52,14 @@ public class AuthService {
         });
     }
 
+    public Observable<User> goOffline() {
+        return userApiService.updateUser(tokenStorage.getCurrentUser()._id(), new UpdateUserDto(null,
+                UserApiService.STATUS_OFFLINE, null, null, null)).map(user -> {
+            authApiService.logout().subscribe();
+            return tokenStorage.getCurrentUser();
+        });
+    }
+
     public boolean isRememberMe() {
         return preferences.get("rememberMe", null) != null;
     }
@@ -60,6 +68,7 @@ public class AuthService {
         return userApiService.updateUser(tokenStorage.getCurrentUser()._id(), new UpdateUserDto(null, null, null, null, password));
     }
 
+    @SuppressWarnings("unused")
     public Observable<User> updateAvatar(String avatar) {
         return userApiService.updateUser(tokenStorage.getCurrentUser()._id(), new UpdateUserDto(null, null, avatar, null, null));
     }
