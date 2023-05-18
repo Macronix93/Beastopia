@@ -10,6 +10,7 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,8 +24,8 @@ public class ChatWindowController extends Controller {
     @FXML
     public Button btn;
 
-    //@Inject
-    //Provider<MessageController> messageControllerProvider;
+    @Inject
+    Provider<MessageBubbleController> messageBubbleControllerProvider;
 
     @Inject
     MessageService messageService;
@@ -55,17 +56,10 @@ public class ChatWindowController extends Controller {
 
         if (namespace.equals("global")) {
             disposables.add(messageService.getMessagesFromFriend(parentId).observeOn(FX_SCHEDULER)
-                    .subscribe(messages::addAll));
+                    .subscribe(this::fillInMessages));
         } else if (namespace.equals("group")) {
             disposables.add(messageService.getMessagesFromGroup(parentId).observeOn(FX_SCHEDULER)
-                    .subscribe(messages::addAll));
-        }
-
-        //noinspection unused,StatementWithEmptyBody
-        for (Message msg : messages) {
-            //Controller subController = messageControllerProvider.get().setupMessageController(msg);
-            //subControllers.add(subController);
-            //msgList.getChildren().add(subController)
+                    .subscribe(this::fillInMessages));
         }
 
         return parent;
@@ -75,5 +69,16 @@ public class ChatWindowController extends Controller {
     public void destroy() {
         subControllers.forEach(Controller::destroy);
         super.destroy();
+    }
+
+    private void fillInMessages(List<Message> msgs) {
+        messages.clear();
+        messages.addAll(msgs);
+
+        for (Message msg : messages) {
+            Controller subController = messageBubbleControllerProvider.get().setMessage(msg);
+            subControllers.add(subController);
+            msgList.getChildren().add(subController.render());
+        }
     }
 }
