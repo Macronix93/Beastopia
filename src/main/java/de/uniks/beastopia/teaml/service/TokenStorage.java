@@ -1,5 +1,6 @@
 package de.uniks.beastopia.teaml.service;
 
+import de.uniks.beastopia.teaml.rest.Region;
 import de.uniks.beastopia.teaml.rest.User;
 
 import javax.inject.Inject;
