@@ -1,6 +1,7 @@
 package de.uniks.beastopia.teaml.controller.menu.social;
 
 import de.uniks.beastopia.teaml.App;
+import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.FriendListService;
 import io.reactivex.rxjava3.core.Observable;
@@ -31,10 +32,12 @@ class FriendControllerTest extends ApplicationTest {
     @InjectMocks
     FriendController friendController;
 
-    User testUser = new User(null, null, null, "Test", STATUS_OFFLINE, null, null);
+    final User testUser = new User(null, null, null, "Test", STATUS_OFFLINE, null, null);
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
+        AppPreparer.prepare(app);
+
         when(friendListService.isFriend(testUser)).thenReturn(true);
         friendController.setUser(testUser, false);
 

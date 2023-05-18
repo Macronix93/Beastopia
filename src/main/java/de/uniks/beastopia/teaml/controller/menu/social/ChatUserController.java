@@ -1,11 +1,8 @@
 package de.uniks.beastopia.teaml.controller.menu.social;
 
-
 import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.User;
-import de.uniks.beastopia.teaml.service.FriendListService;
-import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -25,20 +22,20 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.prefs.Preferences;
 
 import static de.uniks.beastopia.teaml.rest.UserApiService.STATUS_ONLINE;
 
-public class FriendController extends Controller {
+public class ChatUserController extends Controller {
+
     @FXML
-    ImageView friendAvatar;
+    ImageView userAvatar;
     @FXML
     Circle statusCircle;
     @FXML
     Text name;
     @FXML
-    Button addRemoveFriendButton;
-    @FXML
-    Button chat;
+    Button removeChatButton;
     @FXML
     Button pin;
     @FXML
@@ -49,50 +46,46 @@ public class FriendController extends Controller {
     @Inject
     Provider<DirectMessageController> directMessageControllerProvider;
 
-    private Boolean friendPin;
-
+    private Boolean userPin;
     private ImageView pinned;
     private ImageView notPinned;
-    private ImageView addImage;
-    private ImageView removeImage;
-    @Inject
-    FriendListService friendListService;
-    @Inject
-    Prefs prefs;
+    private ImageView abort;
 
-    private Consumer<User> onFriendChanged = null;
+    @Inject
+    Preferences preferences;
+
     private Consumer<User> onPinChanged = null;
 
     @Inject
-    public FriendController() {
+    public ChatUserController() {
 
     }
 
+
     @Override
     public void init() {
+        this.user = new User(null, null, null, "name", "status", null, null);
+        this.userPin = true;
+
         try {
             pinned = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/filled_pin.png")));
             notPinned = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/pin.png")));
-            addImage = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/plus.png")));
-            removeImage = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/minus.png")));
+            abort = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/abort.png")));
         } catch (URISyntaxException | FileNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void setOnFriendChanged(Consumer<User> onFriendChanged) {
-        this.onFriendChanged = onFriendChanged;
+    public ChatUserController setUser(User user, boolean userPin) {
+        this.user = user;
+        this.userPin = userPin;
+        return this;
     }
 
     public void setOnPinChanged(Consumer<User> onPinChanged) {
         this.onPinChanged = onPinChanged;
     }
 
-    public FriendController setUser(User user, boolean friendPin) {
-        this.user = user;
-        this.friendPin = friendPin;
-        return this;
-    }
 
     @Override
     public Parent render() {
@@ -102,12 +95,13 @@ public class FriendController extends Controller {
         try {
             Image image = loadImage(Objects.requireNonNull(Main.class.getResource("assets/Lumnix_Logo_tr.png")),
                     40.0, 40.0, false, false);
-            friendAvatar.setImage(image);
+            userAvatar.setImage(image);
         } catch (FileNotFoundException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
 
         name.setText(user.name());
+        removeChatButton.setGraphic(abort);
 
         if (user.status().equals(STATUS_ONLINE)) {
             statusCircle.setFill(Paint.valueOf("green"));
@@ -115,16 +109,10 @@ public class FriendController extends Controller {
             statusCircle.setFill(Paint.valueOf("red"));
         }
 
-        if (this.friendPin) {
+        if (this.userPin) {
             this.pin.setGraphic(pinned);
         } else {
             this.pin.setGraphic(notPinned);
-        }
-
-        if (friendListService.isFriend(user)) {
-            addRemoveFriendButton.setGraphic(removeImage);
-        } else {
-            addRemoveFriendButton.setGraphic(addImage);
         }
 
         return parent;
@@ -147,42 +135,17 @@ public class FriendController extends Controller {
     }
 
     @FXML
-    public void addRemoveFriend() {
-        if (friendListService.isFriend(user)) {
-            disposables.add(friendListService.removeFriend(user)
-                    .observeOn(FX_SCHEDULER)
-                    .subscribe(user -> {
-                        if (onFriendChanged != null) {
-                            onFriendChanged.accept(user);
-                        }
-                    }));
-        } else {
-            disposables.add(friendListService.addFriend(user)
-                    .observeOn(FX_SCHEDULER)
-                    .subscribe(user -> {
-                        if (onFriendChanged != null) {
-                            onFriendChanged.accept(user);
-                        }
-                    }));
-        }
-    }
-
-    @FXML
-    public void openFriendChat() {
-        app.show(directMessageControllerProvider.get().setupDirectMessageController("global", user._id()));
-    }
-
-    @FXML
-    public void pinFriend() {
+    public void pinUser() {
         if (pin.getGraphic() == notPinned) {
             pin.setGraphic(pinned);
-            prefs.setPinned(user, true);
+            preferences.putBoolean(this.user._id() + "_pinned", true);
         } else {
             pin.setGraphic(notPinned);
-            prefs.setPinned(user, false);
+            preferences.putBoolean(this.user._id() + "_pinned", false);
         }
         if (onPinChanged != null) {
             onPinChanged.accept(user);
         }
     }
+
 }

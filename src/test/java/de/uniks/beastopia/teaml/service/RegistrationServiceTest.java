@@ -32,7 +32,7 @@ class RegistrationServiceTest {
         Mockito
                 .when(userApiService.createUser(ArgumentMatchers.any()))
                 .thenReturn(Observable.just(
-                        new User(null, null, "id", "name", STATUS_ONLINE, "avatar", new ArrayList<String>())));
+                        new User(null, null, "id", "name", STATUS_ONLINE, "avatar", new ArrayList<>())));
 
         final User user = registrationService.createUser("name", "avatar", "password").blockingFirst();
 

@@ -8,8 +8,11 @@ import de.uniks.beastopia.teaml.modules.HttpModule;
 import de.uniks.beastopia.teaml.modules.MainModule;
 import de.uniks.beastopia.teaml.modules.PrefModule;
 import de.uniks.beastopia.teaml.service.AuthService;
+import de.uniks.beastopia.teaml.utils.Prefs;
+import de.uniks.beastopia.teaml.utils.ThemeSettings;
 
 import javax.inject.Singleton;
+import java.util.prefs.Preferences;
 
 @Component(modules = {MainModule.class, HttpModule.class, PrefModule.class})
 @Singleton
@@ -19,6 +22,10 @@ public interface MainComponent {
     MenuController menuController();
 
     LoginController loginController();
+
+    Prefs prefs();
+
+    ThemeSettings themeSettings();
 
     @Component.Builder
     interface Builder {

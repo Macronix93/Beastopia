@@ -1,6 +1,7 @@
 package de.uniks.beastopia.teaml.controller.menu;
 
 import de.uniks.beastopia.teaml.App;
+import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.controller.menu.social.FriendListController;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
@@ -13,7 +14,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
 
 import javax.inject.Provider;
+import java.util.ResourceBundle;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
@@ -29,11 +32,18 @@ class PauseControllerTest extends ApplicationTest {
     @InjectMocks
     PauseController pauseController;
 
+    @Spy
+    @SuppressWarnings("unused")
+    final
+    ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang");
+
     FriendListController mockedFriendListController;
     MenuController mockedMenuController;
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
+        AppPreparer.prepare(app);
+
         mockedFriendListController = mock();
         mockedMenuController = mock();
 
@@ -61,4 +71,8 @@ class PauseControllerTest extends ApplicationTest {
         verify(mockedMenuController).render();
     }
 
+    @Test
+    void title() {
+        assertEquals(app.getStage().getTitle(), resources.getString("titlePause"));
+    }
 }

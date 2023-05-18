@@ -34,8 +34,11 @@ public class LoginController extends Controller {
     Provider<MenuController> menuControllerProvider;
     @Inject
     AuthService authService;
+    @SuppressWarnings("unused")
+
     @Inject
     TokenStorage tokenStorage;
+    @SuppressWarnings("unused")
     @Inject
     Provider<ResourceBundle> resourcesProvider;
 
@@ -47,7 +50,7 @@ public class LoginController extends Controller {
 
     @Override
     public String getTitle() {
-        return "Beastopia - Login";
+        return resources.getString("titleLogin");
     }
 
     @Override

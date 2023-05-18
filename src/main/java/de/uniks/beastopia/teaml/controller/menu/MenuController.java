@@ -4,10 +4,14 @@ import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.auth.LoginController;
 import de.uniks.beastopia.teaml.controller.menu.social.FriendListController;
 import de.uniks.beastopia.teaml.service.AuthService;
+import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.utils.Dialog;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -23,12 +27,29 @@ public class MenuController extends Controller {
     @Inject
     Provider<LoginController> loginControllerProvider;
     @Inject
+    Provider<EditProfileController> editProfileControllerProvider;
+    @Inject
     AuthService authService;
+    @FXML
+    public Button logoutBtn;
+    @FXML
+    public Button editProfileBtn;
+
     @FXML
     private VBox friendListContainer;
     @FXML
     private VBox regionContainer;
+    @SuppressWarnings("unused")
+    @FXML
+    private ImageView banner;
+    @SuppressWarnings("unused")
+    @FXML
+    private ImageView userAvatar;
+    @FXML
+    private Text userName;
 
+    @Inject
+    TokenStorage tokenStorage;
     @Inject
     public MenuController() {
 
@@ -37,6 +58,12 @@ public class MenuController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
+        //set beastopia banner
+
+        //set userAvatar
+
+        userName.setText(tokenStorage.getCurrentUser().name());
+
         Controller friendListController = friendListControllerProvider.get();
         subControllers.add(friendListController);
         friendListContainer.getChildren().add(friendListController.render());
@@ -54,7 +81,7 @@ public class MenuController extends Controller {
 
     @Override
     public String getTitle() {
-        return "Beastopia - Main Menu";
+        return resources.getString("titleMenu");
     }
 
     @FXML
@@ -62,5 +89,10 @@ public class MenuController extends Controller {
         disposables.add(authService.logout().observeOn(FX_SCHEDULER).subscribe(
                 lr -> app.show(loginControllerProvider.get()),
                 error -> Dialog.error(error, "Logout failed")));
+    }
+
+    @FXML
+    public void editProfileButtonPressed() {
+        app.show(editProfileControllerProvider.get());
     }
 }
