@@ -60,6 +60,20 @@ public class App extends Application {
         } else {
             show(mainComponent.loginController());
         }
+
+        mainComponent.themeSettings().updateSceneTheme = theme -> {
+            if (theme.equals("dark")) {
+                scene.getStylesheets().removeIf(style -> style.endsWith("views/summer.css"));
+                scene.getStylesheets().add(Objects.requireNonNull(Main.class.getResource("views/dark.css")).toString());
+            } else {
+                scene.getStylesheets().removeIf(style -> style.endsWith("views/dark.css"));
+                scene.getStylesheets().add(Objects.requireNonNull(Main.class.getResource("views/summer.css")).toString());
+            }
+        };
+
+        mainComponent.themeSettings().updateSceneTheme.accept(
+                mainComponent.preferences().getBoolean("DarkTheme", false) ? "dark" : "summer"
+        );
     }
 
     @Override

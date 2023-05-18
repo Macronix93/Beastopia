@@ -107,6 +107,7 @@ public class FriendListController extends Controller {
     }
 
     private List<Parent> getFilteredParents() {
+        @SuppressWarnings("ReassignedVariable")
         List<User> filteredUsers = new ArrayList<>();
         List<Parent> filteredParents = new ArrayList<>();
 

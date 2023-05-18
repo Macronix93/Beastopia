@@ -32,6 +32,7 @@ class IngameControllerTest extends ApplicationTest {
     @Spy
     App app;
     @Spy
+    final
     ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang");
 
     @InjectMocks

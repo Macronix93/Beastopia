@@ -15,7 +15,6 @@ import java.util.ArrayList;
 
 import static de.uniks.beastopia.teaml.rest.UserApiService.STATUS_ONLINE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)

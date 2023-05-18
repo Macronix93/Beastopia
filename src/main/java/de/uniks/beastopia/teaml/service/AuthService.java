@@ -55,4 +55,19 @@ public class AuthService {
             return tokenStorage.getCurrentUser();
         });
     }
+
+    public Observable<User> updatePassword(String password) {
+        return userApiService.updateUser(tokenStorage.getCurrentUser()._id(), new UpdateUserDto(null, null, null, null, password));
+    }
+
+    public Observable<User> updateAvatar(String avatar) {
+        return userApiService.updateUser(tokenStorage.getCurrentUser()._id(), new UpdateUserDto(null, null, avatar, null, null));
+    }
+
+    public Observable<User> deleteUser() {
+        return Observable.create(source -> {
+            userApiService.deleteUser(tokenStorage.getCurrentUser()._id()).subscribe();
+            source.onNext(tokenStorage.getCurrentUser());
+        });
+    }
 }

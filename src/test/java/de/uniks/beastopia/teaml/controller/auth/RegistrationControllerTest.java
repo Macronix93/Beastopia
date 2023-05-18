@@ -43,6 +43,7 @@ class RegistrationControllerTest extends ApplicationTest {
 
     @Spy
     @SuppressWarnings("unused")
+    final
     ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang");
 
     @Spy
