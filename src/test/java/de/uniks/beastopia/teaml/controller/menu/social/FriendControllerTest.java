@@ -1,9 +1,13 @@
 package de.uniks.beastopia.teaml.controller.menu.social;
 
 import de.uniks.beastopia.teaml.App;
+import de.uniks.beastopia.teaml.MainComponent;
+import de.uniks.beastopia.teaml.controller.auth.LoginController;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.FriendListService;
+import de.uniks.beastopia.teaml.utils.Prefs;
 import io.reactivex.rxjava3.core.Observable;
+import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,7 +38,16 @@ class FriendControllerTest extends ApplicationTest {
     User testUser = new User(null, null, null, "Test", STATUS_OFFLINE, null, null);
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
+        MainComponent mockedMainComponent = mock();
+        LoginController mockedLoginController = mock();
+        when(mockedLoginController.render()).thenReturn(new Label());
+        Prefs mockedPrefs = mock(Prefs.class);
+        when(mockedPrefs.isRememberMe()).thenReturn(false);
+        when(mockedMainComponent.loginController()).thenReturn(mockedLoginController);
+        when(mockedMainComponent.prefs()).thenReturn(mockedPrefs);
+        app.setMainComponent(mockedMainComponent);
+
         when(friendListService.isFriend(testUser)).thenReturn(true);
         friendController.setUser(testUser, false);
 

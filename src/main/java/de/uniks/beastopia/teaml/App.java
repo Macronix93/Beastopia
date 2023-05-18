@@ -12,7 +12,7 @@ import javafx.stage.Stage;
 import java.util.Objects;
 
 public class App extends Application {
-    private final MainComponent mainComponent;
+    private MainComponent mainComponent;
     private Stage stage;
     private Controller controller;
 
@@ -21,6 +21,10 @@ public class App extends Application {
     }
 
     public App(MainComponent mainComponent) {
+        this.mainComponent = mainComponent;
+    }
+
+    public void setMainComponent(MainComponent mainComponent) {
         this.mainComponent = mainComponent;
     }
 
@@ -70,6 +74,10 @@ public class App extends Application {
     }
 
     private void initAndRender(Controller controller) {
+        if (controller == null) {
+            return;
+        }
+
         controller.init();
         if (controller.getTitle() != null) {
             stage.setTitle(controller.getTitle());
