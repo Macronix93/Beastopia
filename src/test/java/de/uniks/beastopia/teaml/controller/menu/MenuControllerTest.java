@@ -1,6 +1,7 @@
 package de.uniks.beastopia.teaml.controller.menu;
 
 import de.uniks.beastopia.teaml.App;
+import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.controller.auth.LoginController;
 import de.uniks.beastopia.teaml.controller.menu.social.FriendListController;
 import de.uniks.beastopia.teaml.rest.User;
@@ -48,14 +49,15 @@ class MenuControllerTest extends ApplicationTest {
     MenuController menuController;
     @Spy
     @SuppressWarnings("unused")
-    final
     ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang");
 
     RegionController mockedRegionController;
     FriendListController mockedFriendListController;
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
+        AppPreparer.prepare(app);
+
         mockedRegionController = mock(RegionController.class);
         mockedFriendListController = mock(FriendListController.class);
 

@@ -1,6 +1,7 @@
 package de.uniks.beastopia.teaml.controller.menu.social;
 
 import de.uniks.beastopia.teaml.App;
+import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.FriendListService;
 import de.uniks.beastopia.teaml.sockets.EventListener;
@@ -39,6 +40,8 @@ class FriendControllerTest extends ApplicationTest {
 
     @Override
     public void start(Stage stage) {
+        AppPreparer.prepare(app);
+
         when(friendListService.isFriend(testUser)).thenReturn(true);
         when(eventListener.listen(anyString(), any())).thenReturn(Observable.empty());
         friendController.setUser(testUser, false);
