@@ -11,6 +11,7 @@ import javafx.stage.Stage;
 
 import java.util.Objects;
 
+
 public class App extends Application {
     private Stage stage;
     private Controller controller;
@@ -30,7 +31,7 @@ public class App extends Application {
 
     @SuppressWarnings("RedundantThrows")
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
 
         stage = primaryStage;
         stage.setWidth(800);

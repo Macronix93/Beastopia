@@ -5,8 +5,8 @@ import de.uniks.beastopia.teaml.controller.auth.LoginController;
 import de.uniks.beastopia.teaml.controller.menu.social.FriendListController;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.AuthService;
-import io.reactivex.rxjava3.core.Observable;
 import de.uniks.beastopia.teaml.service.TokenStorage;
+import io.reactivex.rxjava3.core.Observable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.text.Text;
@@ -48,6 +48,7 @@ class MenuControllerTest extends ApplicationTest {
     MenuController menuController;
     @Spy
     @SuppressWarnings("unused")
+    final
     ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang");
 
     RegionController mockedRegionController;

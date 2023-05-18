@@ -31,7 +31,7 @@ class FriendControllerTest extends ApplicationTest {
     @InjectMocks
     FriendController friendController;
 
-    User testUser = new User(null, null, null, "Test", STATUS_OFFLINE, null, null);
+    final User testUser = new User(null, null, null, "Test", STATUS_OFFLINE, null, null);
 
     @Override
     public void start(Stage stage) throws Exception {
