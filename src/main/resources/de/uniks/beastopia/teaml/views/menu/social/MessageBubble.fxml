@@ -8,7 +8,8 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.*?>
 <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0"
-      prefWidth="300.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
+      prefWidth="300.0" style="-fx-border-color: black;" xmlns="http://javafx.com/javafx/19"
+      xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="de.uniks.beastopia.teaml.controller.menu.social.MessageBubbleController">
    <VBox prefHeight="100.0" prefWidth="231.0">
       <Text fx:id="senderName" strokeType="OUTSIDE" strokeWidth="0.0"/>
