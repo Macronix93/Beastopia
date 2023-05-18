@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+
 public class App extends Application {
     private Stage stage;
     private Controller controller;
