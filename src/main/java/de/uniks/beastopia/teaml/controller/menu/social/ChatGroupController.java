@@ -3,6 +3,8 @@ package de.uniks.beastopia.teaml.controller.menu.social;
 import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Group;
+import de.uniks.beastopia.teaml.service.GroupListService;
+import de.uniks.beastopia.teaml.utils.Dialog;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -12,6 +14,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -44,6 +47,10 @@ public class ChatGroupController extends Controller {
 
     @Inject
     Preferences preferences;
+    @Inject
+    GroupListService groupListService;
+    @Inject
+    Provider<DirectMessageController> directMessageControllerProvider;
 
     private final Consumer<Group> onPinChanged = null;
 
@@ -108,8 +115,12 @@ public class ChatGroupController extends Controller {
         //TODO: show edit group dialog
     }
 
+    @FXML
     public void deleteGroup() {
-        //TODO: delete group
+        disposables.add(groupListService.deleteGroup(group).observeOn(FX_SCHEDULER).subscribe(
+                lr -> app.show(directMessageControllerProvider.get()),
+                error -> Dialog.error(error, resources.getString("deleteFailed")
+                )));
     }
 
     //TODO: implement pinning feature
