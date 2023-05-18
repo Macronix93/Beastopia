@@ -4,6 +4,7 @@ import javafx.application.Application;
 
 public class Main {
     public static final String API_URL = "https://stpmon.uniks.de/api/v1";
+    public static final String WS_URL = "wss://stpmon.uniks.de/ws/v1";
     public static void main(String[] args) {
         Application.launch(App.class, args);
     }
