@@ -56,7 +56,7 @@ public class DirectMessageController extends Controller {
 
     }
 
-    public DirectMessageController setupDirectMessageController(String namespace, String parendId) {
+    public DirectMessageController setupDirectMessageController(@SuppressWarnings("unused") String namespace, @SuppressWarnings("unused") String parendId) {
         return this;
     }
 
@@ -76,19 +76,7 @@ public class DirectMessageController extends Controller {
         rightSide = chatScrollPane;
         grid.add(chatListController.render(), 0, 1);
 
-        //        if (this.namespace == null || this.parentId == null) {
-//            //TODO show first chat from ChatList
-//        } else { //Open Chat from friend
-//            if (this.namespace.equals("group")) {
-//                disposables.add(groupListService.getGroup(parentId).observeOn(FX_SCHEDULER).subscribe(s -> chatName.setText(s.name())));
-//            } else if (this.namespace.equals("global")) {
-//                disposables.add(friendListService.getUser(parentId).observeOn(FX_SCHEDULER).subscribe(s -> chatName.setText(s.name())));
-//            }
-//            Controller subController = chatWindowControllerProvider.get()
-//                    .setupChatWindowController(this.namespace, this.parentId);
-//            subControllers.add(subController);
-//
-//        }
+        //TODO: show chatBox label
         return parent;
     }
 
