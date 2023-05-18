@@ -36,4 +36,12 @@ public class Prefs {
     public void clearRememberMe() {
         preferences.remove("rememberMe");
     }
+
+    public String getTheme() {
+        return preferences.getBoolean("DarkTheme", false) ? "dark" : "light";
+    }
+
+    public void setTheme(String theme) {
+        preferences.putBoolean("DarkTheme", theme.equals("dark"));
+    }
 }

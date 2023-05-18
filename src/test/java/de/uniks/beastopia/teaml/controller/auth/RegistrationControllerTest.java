@@ -1,7 +1,7 @@
 package de.uniks.beastopia.teaml.controller.auth;
 
 import de.uniks.beastopia.teaml.App;
-import de.uniks.beastopia.teaml.MainComponent;
+import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.RegistrationService;
 import de.uniks.beastopia.teaml.utils.Prefs;
@@ -54,14 +54,7 @@ class RegistrationControllerTest extends ApplicationTest {
 
     @Override
     public void start(Stage stage) {
-        MainComponent mockedMainComponent = mock();
-        LoginController mockedLoginController = mock();
-        when(mockedLoginController.render()).thenReturn(new Label());
-        Prefs mockedPrefs = mock(Prefs.class);
-        when(mockedPrefs.isRememberMe()).thenReturn(false);
-        when(mockedMainComponent.loginController()).thenReturn(mockedLoginController);
-        when(mockedMainComponent.prefs()).thenReturn(mockedPrefs);
-        app.setMainComponent(mockedMainComponent);
+        AppPreparer.prepare(app);
 
         app.start(stage);
         app.show(registrationController);

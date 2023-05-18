@@ -72,7 +72,7 @@ public class App extends Application {
         };
 
         mainComponent.themeSettings().updateSceneTheme.accept(
-                mainComponent.preferences().getBoolean("DarkTheme", false) ? "dark" : "summer"
+                mainComponent.prefs().getTheme()
         );
     }
 

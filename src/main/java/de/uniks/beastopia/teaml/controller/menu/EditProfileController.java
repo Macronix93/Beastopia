@@ -4,6 +4,7 @@ import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.service.AuthService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.utils.Dialog;
+import de.uniks.beastopia.teaml.utils.Prefs;
 import de.uniks.beastopia.teaml.utils.ThemeSettings;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -11,7 +12,6 @@ import javafx.scene.control.*;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import java.util.prefs.Preferences;
 
 
 public class EditProfileController extends Controller {
@@ -29,7 +29,7 @@ public class EditProfileController extends Controller {
     @FXML
     public ToggleGroup theme;
     @Inject
-    Preferences preferences;
+    Prefs prefs;
     @Inject
     Provider<MenuController> menuControllerProvider;
     @Inject
@@ -52,8 +52,8 @@ public class EditProfileController extends Controller {
     public Parent render() {
         Parent parent = super.render();
         usernameField.setText(tokenStorage.getCurrentUser().name());
-        darkRadioButton.setSelected(preferences.getBoolean("DarkTheme", false));
-        summerRadioButton.setSelected(!preferences.getBoolean("DarkTheme", false));
+        darkRadioButton.setSelected(prefs.getTheme().equals("dark"));
+        summerRadioButton.setSelected(!prefs.getTheme().equals("dark"));
         return parent;
     }
 
@@ -66,12 +66,12 @@ public class EditProfileController extends Controller {
     }
 
     public void setDarkTheme() {
-        preferences.putBoolean("DarkTheme", true);
+        prefs.setTheme("dark");
         themeSettings.updateSceneTheme.accept("dark");
     }
 
     public void setSummerTheme() {
-        preferences.putBoolean("DarkTheme", false);
+        prefs.setTheme("dark");
         themeSettings.updateSceneTheme.accept("summer");
     }
 

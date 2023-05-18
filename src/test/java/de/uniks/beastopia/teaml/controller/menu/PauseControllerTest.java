@@ -1,10 +1,8 @@
 package de.uniks.beastopia.teaml.controller.menu;
 
 import de.uniks.beastopia.teaml.App;
-import de.uniks.beastopia.teaml.MainComponent;
-import de.uniks.beastopia.teaml.controller.auth.LoginController;
+import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.controller.menu.social.FriendListController;
-import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
@@ -44,14 +42,7 @@ class PauseControllerTest extends ApplicationTest {
 
     @Override
     public void start(Stage stage) {
-        MainComponent mockedMainComponent = mock();
-        LoginController mockedLoginController = mock();
-        when(mockedLoginController.render()).thenReturn(new Label());
-        Prefs mockedPrefs = mock(Prefs.class);
-        when(mockedPrefs.isRememberMe()).thenReturn(false);
-        when(mockedMainComponent.loginController()).thenReturn(mockedLoginController);
-        when(mockedMainComponent.prefs()).thenReturn(mockedPrefs);
-        app.setMainComponent(mockedMainComponent);
+        AppPreparer.prepare(app);
 
         mockedFriendListController = mock();
         mockedMenuController = mock();

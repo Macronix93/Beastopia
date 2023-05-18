@@ -26,7 +26,9 @@ class AppTest extends ApplicationTest {
         MainComponent realMainComponent = DaggerMainComponent.builder().mainApp(app).build();
         Prefs mockedPrefs = mock();
         when(mockedPrefs.isRememberMe()).thenReturn(false);
+        when(mockedPrefs.getTheme()).thenReturn("dark");
         when(mainComponent.loginController()).thenAnswer(i -> realMainComponent.loginController());
+        when(mainComponent.themeSettings()).thenAnswer(i -> realMainComponent.themeSettings());
         when(mainComponent.prefs()).thenReturn(mockedPrefs);
 
         app.start(stage);

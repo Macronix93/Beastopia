@@ -1,8 +1,7 @@
 package de.uniks.beastopia.teaml.controller.menu.social;
 
 import de.uniks.beastopia.teaml.App;
-import de.uniks.beastopia.teaml.MainComponent;
-import de.uniks.beastopia.teaml.controller.auth.LoginController;
+import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.FriendListService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
@@ -65,14 +64,7 @@ class FriendListControllerTest extends ApplicationTest {
 
     @Override
     public void start(Stage stage) {
-        MainComponent mockedMainComponent = mock();
-        LoginController mockedLoginController = mock();
-        when(mockedLoginController.render()).thenReturn(new Label());
-        Prefs mockedPrefs = mock(Prefs.class);
-        when(mockedPrefs.isRememberMe()).thenReturn(false);
-        when(mockedMainComponent.loginController()).thenReturn(mockedLoginController);
-        when(mockedMainComponent.prefs()).thenReturn(mockedPrefs);
-        app.setMainComponent(mockedMainComponent);
+        AppPreparer.prepare(app);
 
         mockedFriendController = mock();
         mockedDirectMessageController = mock();

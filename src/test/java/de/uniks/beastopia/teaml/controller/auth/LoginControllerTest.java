@@ -1,14 +1,13 @@
 package de.uniks.beastopia.teaml.controller.auth;
 
 import de.uniks.beastopia.teaml.App;
-import de.uniks.beastopia.teaml.MainComponent;
+import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.controller.menu.MenuController;
 import de.uniks.beastopia.teaml.rest.LoginResult;
 import de.uniks.beastopia.teaml.service.AuthService;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import okhttp3.MediaType;
@@ -52,15 +51,7 @@ class LoginControllerTest extends ApplicationTest {
 
     @Override
     public void start(Stage stage) {
-        MainComponent mockedMainComponent = mock();
-        LoginController mockedLoginController = mock();
-        when(mockedLoginController.render()).thenReturn(new Label());
-        Prefs mockedPrefs = mock(Prefs.class);
-        when(mockedPrefs.isRememberMe()).thenReturn(false);
-        when(mockedMainComponent.loginController()).thenReturn(mockedLoginController);
-        when(mockedMainComponent.prefs()).thenReturn(mockedPrefs);
-        app.setMainComponent(mockedMainComponent);
-
+        AppPreparer.prepare(app);
         app.start(stage);
         app.show(loginController);
         stage.requestFocus();

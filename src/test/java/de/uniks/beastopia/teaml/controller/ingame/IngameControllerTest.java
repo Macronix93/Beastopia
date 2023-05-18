@@ -1,11 +1,8 @@
 package de.uniks.beastopia.teaml.controller.ingame;
 
 import de.uniks.beastopia.teaml.App;
-import de.uniks.beastopia.teaml.MainComponent;
-import de.uniks.beastopia.teaml.controller.auth.LoginController;
+import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
-import de.uniks.beastopia.teaml.utils.Prefs;
-import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
@@ -40,14 +37,7 @@ class IngameControllerTest extends ApplicationTest {
 
     @Override
     public void start(Stage stage) {
-        MainComponent mockedMainComponent = mock();
-        LoginController mockedLoginController = mock();
-        when(mockedLoginController.render()).thenReturn(new Label());
-        Prefs mockedPrefs = mock(Prefs.class);
-        when(mockedPrefs.isRememberMe()).thenReturn(false);
-        when(mockedMainComponent.loginController()).thenReturn(mockedLoginController);
-        when(mockedMainComponent.prefs()).thenReturn(mockedPrefs);
-        app.setMainComponent(mockedMainComponent);
+        AppPreparer.prepare(app);
 
         app.start(stage);
         app.show(ingameController);
