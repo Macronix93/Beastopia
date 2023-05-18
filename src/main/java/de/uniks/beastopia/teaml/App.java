@@ -12,15 +12,16 @@ import javafx.stage.Stage;
 import java.util.Objects;
 
 public class App extends Application {
+    private final MainComponent mainComponent;
     private Stage stage;
     private Controller controller;
 
     public App() {
-
+        this.mainComponent = DaggerMainComponent.builder().mainApp(this).build();
     }
 
-    public App(Controller controller) {
-        this.controller = controller;
+    public App(MainComponent mainComponent) {
+        this.mainComponent = mainComponent;
     }
 
     public Stage getStage() {
@@ -42,20 +43,18 @@ public class App extends Application {
 
         stage.show();
 
-        if (controller != null) {
-            initAndRender(controller);
+        if (mainComponent == null) {
             return;
         }
 
-        final MainComponent component = DaggerMainComponent.builder().mainApp(this).build();
-        final AuthService authService = component.authService();
-        if (component.prefs().isRememberMe()) {
+        final AuthService authService = mainComponent.authService();
+        if (mainComponent.prefs().isRememberMe()) {
             //noinspection ResultOfMethodCallIgnored
             authService.refresh().subscribe(
-                    lr -> Platform.runLater(() -> show(component.menuController())),
-                    error -> Platform.runLater(() -> show(component.loginController())));
+                    lr -> Platform.runLater(() -> show(mainComponent.menuController())),
+                    error -> Platform.runLater(() -> show(mainComponent.loginController())));
         } else {
-            show(component.loginController());
+            show(mainComponent.loginController());
         }
     }
 
