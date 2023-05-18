@@ -4,6 +4,7 @@ import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.FriendListService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
+import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -15,7 +16,6 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.prefs.Preferences;
 
 public class FriendListController extends Controller {
     private final List<Controller> subControllers = new ArrayList<>();
@@ -39,7 +39,7 @@ public class FriendListController extends Controller {
     @Inject
     TokenStorage tokenStorage;
     @Inject
-    Preferences preferences;
+    Prefs prefs;
 
     @Inject
     public FriendListController() {
@@ -62,7 +62,7 @@ public class FriendListController extends Controller {
             clearSubControllers();
             if (friends != null) {
                 for (User friend : friends) {
-                    boolean friendPinned = preferences.getBoolean(friend._id() + "_pinned", true);
+                    boolean friendPinned = prefs.isPinned(friend);
                     FriendController friendController = friendControllerProvider.get()
                             .setUser(friend, friendPinned);
                     friendController.init();
@@ -118,7 +118,7 @@ public class FriendListController extends Controller {
         }
 
         filteredUsers = filteredUsers.stream().sorted((firstUser, secondUser) -> {
-            boolean notPinned = preferences.getBoolean(firstUser._id() + "_pinned", false);
+            boolean notPinned = prefs.isPinned(firstUser);
             if (notPinned) {
                 return -1;
             } else {
@@ -134,7 +134,7 @@ public class FriendListController extends Controller {
                 updateUserList();
             });
             friendController.setOnPinChanged(user_ -> updateUserList());
-            boolean friendPinned = preferences.getBoolean(user._id() + "_pinned", false);
+            boolean friendPinned = prefs.isPinned(user);
             friendController.setUser(user, friendPinned);
             filteredParents.add(friendController.render());
         }

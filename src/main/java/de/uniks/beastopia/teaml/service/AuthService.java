@@ -1,10 +1,10 @@
 package de.uniks.beastopia.teaml.service;
 
 import de.uniks.beastopia.teaml.rest.*;
+import de.uniks.beastopia.teaml.utils.Prefs;
 import io.reactivex.rxjava3.core.Observable;
 
 import javax.inject.Inject;
-import java.util.prefs.Preferences;
 
 public class AuthService {
     @Inject
@@ -14,7 +14,7 @@ public class AuthService {
     @Inject
     UserApiService userApiService;
     @Inject
-    Preferences preferences;
+    Prefs prefs;
 
     @Inject
     public AuthService() {
@@ -27,14 +27,18 @@ public class AuthService {
             tokenStorage.setCurrentUser(userApiService.updateUser(lr._id(), new UpdateUserDto(null,
                     UserApiService.STATUS_ONLINE, null, null, null)).blockingFirst());
             if (rememberMe) {
-                preferences.put("rememberMe", lr.refreshToken());
+                prefs.setRememberMe(lr.refreshToken());
             }
             return lr;
         });
     }
 
     public Observable<LoginResult> refresh() {
-        return authApiService.refresh(new RefreshDto(preferences.get("rememberMe", null))).map(lr -> {
+        if (!prefs.isRememberMe()) {
+            return Observable.error(new RuntimeException("No refresh token"));
+        }
+
+        return authApiService.refresh(new RefreshDto(prefs.getRememberMeToken())).map(lr -> {
             tokenStorage.setAccessToken(lr.accessToken());
             tokenStorage.setRefreshToken(lr.refreshToken());
             tokenStorage.setCurrentUser(userApiService.updateUser(lr._id(), new UpdateUserDto(null,
@@ -46,13 +50,9 @@ public class AuthService {
     public Observable<User> logout() {
         return userApiService.updateUser(tokenStorage.getCurrentUser()._id(), new UpdateUserDto(null,
                 UserApiService.STATUS_OFFLINE, null, null, null)).map(user -> {
-            preferences.remove("rememberMe");
+            prefs.clearRememberMe();
             authApiService.logout().subscribe();
             return tokenStorage.getCurrentUser();
         });
-    }
-
-    public boolean isRememberMe() {
-        return preferences.get("rememberMe", null) != null;
     }
 }

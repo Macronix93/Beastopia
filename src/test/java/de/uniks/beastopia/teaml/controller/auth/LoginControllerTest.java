@@ -4,6 +4,7 @@ import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.menu.MenuController;
 import de.uniks.beastopia.teaml.rest.LoginResult;
 import de.uniks.beastopia.teaml.service.AuthService;
+import de.uniks.beastopia.teaml.utils.Prefs;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.scene.Node;
 import javafx.scene.text.Text;
@@ -36,6 +37,8 @@ class LoginControllerTest extends ApplicationTest {
     Provider<MenuController> menuControllerProvider;
     @Mock
     AuthService authService;
+    @Mock
+    Prefs prefs;
     @Spy
     App app = new App(null);
     @Spy
@@ -46,7 +49,8 @@ class LoginControllerTest extends ApplicationTest {
     LoginController loginController;
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
+        when(prefs.isRememberMe()).thenReturn(false);
         app.start(stage);
         app.show(loginController);
         stage.requestFocus();

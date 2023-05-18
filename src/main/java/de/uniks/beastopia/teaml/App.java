@@ -9,13 +9,11 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
-import java.util.List;
 import java.util.Objects;
 
 public class App extends Application {
     private Stage stage;
     private Controller controller;
-    private Scene scene;
 
     public App() {
 
@@ -30,13 +28,13 @@ public class App extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
         stage = primaryStage;
         stage.setWidth(800);
         stage.setHeight(600);
         stage.setTitle("Beastopia");
 
-        scene = new Scene(new Label("Loading..."));
+        Scene scene = new Scene(new Label("Loading..."));
         stage.setScene(scene);
 
         scene.getStylesheets().add(Objects.requireNonNull(Main.class.getResource("views/summer.css")).toString());
@@ -51,7 +49,8 @@ public class App extends Application {
 
         final MainComponent component = DaggerMainComponent.builder().mainApp(this).build();
         final AuthService authService = component.authService();
-        if (authService.isRememberMe()) {
+        if (component.prefs().isRememberMe()) {
+            //noinspection ResultOfMethodCallIgnored
             authService.refresh().subscribe(
                     lr -> Platform.runLater(() -> show(component.menuController())),
                     error -> Platform.runLater(() -> show(component.loginController())));
@@ -69,16 +68,6 @@ public class App extends Application {
         cleanup();
         this.controller = controller;
         initAndRender(controller);
-    }
-
-    public void toggleTheme() {
-        if (scene.getStylesheets().stream().anyMatch(style -> style.endsWith("views/summer.css"))) {
-            scene.getStylesheets().removeIf(style -> style.endsWith("views/summer.css"));
-            scene.getStylesheets().add(Objects.requireNonNull(Main.class.getResource("views/dark.css")).toString());
-        } else {
-            scene.getStylesheets().removeIf(style -> style.endsWith("views/dark.css"));
-            scene.getStylesheets().add(Objects.requireNonNull(Main.class.getResource("views/summer.css")).toString());
-        }
     }
 
     private void initAndRender(Controller controller) {

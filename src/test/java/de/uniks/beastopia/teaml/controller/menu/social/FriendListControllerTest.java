@@ -4,6 +4,7 @@ import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.FriendListService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
+import de.uniks.beastopia.teaml.utils.Prefs;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
@@ -22,7 +23,6 @@ import javax.inject.Provider;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.prefs.Preferences;
 
 import static javafx.scene.input.KeyCode.BACK_SPACE;
 import static org.junit.jupiter.api.Assertions.*;
@@ -43,7 +43,7 @@ class FriendListControllerTest extends ApplicationTest {
     @Mock
     TokenStorage tokenStorage;
     @Mock
-    Preferences preferences;
+    Prefs prefs;
     @Spy
     App app;
     @Spy
@@ -62,7 +62,7 @@ class FriendListControllerTest extends ApplicationTest {
     DirectMessageController mockedDirectMessageController;
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
         mockedFriendController = mock();
         mockedDirectMessageController = mock();
 
@@ -77,8 +77,8 @@ class FriendListControllerTest extends ApplicationTest {
 
         when(friendListService.getUsers()).thenReturn(Observable.just(users));
         when(friendListService.getFriends()).thenReturn(Observable.just(List.of(users.get(1), users.get(2))));
-        when(preferences.getBoolean("ID1_pinned", true)).thenReturn(true);
-        when(preferences.getBoolean("ID2_pinned", true)).thenReturn(false);
+        when(prefs.isPinned(users.get(1))).thenReturn(true);
+        when(prefs.isPinned(users.get(2))).thenReturn(false);
 
         app.start(stage);
         app.show(friendListController);
