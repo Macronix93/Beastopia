@@ -1,6 +1,7 @@
 package de.uniks.beastopia.teaml.service;
 
 import de.uniks.beastopia.teaml.rest.*;
+import de.uniks.beastopia.teaml.utils.Prefs;
 import io.reactivex.rxjava3.core.Observable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,7 +12,6 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
-import java.util.prefs.Preferences;
 
 import static de.uniks.beastopia.teaml.rest.UserApiService.STATUS_ONLINE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -27,7 +27,7 @@ class AuthServiceTest {
     @Mock
     UserApiService userApiService;
     @Mock
-    Preferences preferences;
+    Prefs prefs;
 
     @InjectMocks
     AuthService authService;
@@ -70,7 +70,8 @@ class AuthServiceTest {
         doNothing().when(tokenStorage).setAccessToken("123");
         doNothing().when(tokenStorage).setRefreshToken("abc");
         doNothing().when(tokenStorage).setCurrentUser(any());
-        when(preferences.get("rememberMe", null)).thenReturn("abc");
+        when(prefs.isRememberMe()).thenReturn(true);
+        when(prefs.getRememberMeToken()).thenReturn("abc");
         User mocked = mock(User.class);
         when(userApiService.updateUser(anyString(), any())).thenReturn(Observable.just(mocked));
         Mockito
@@ -100,7 +101,7 @@ class AuthServiceTest {
     @Test
     void logout() {
         // define mocks:
-        doNothing().when(preferences).remove("rememberMe");
+        doNothing().when(prefs).clearRememberMe();
         when(tokenStorage.getCurrentUser()).thenReturn(new User(null, null, "c", null, null, null, null));
         UpdateUserDto dto = new UpdateUserDto(null, UserApiService.STATUS_OFFLINE, null, null, null);
         User mockedUser = mock(User.class);
@@ -113,7 +114,7 @@ class AuthServiceTest {
         }).dispose();
 
         //check mocks
-        verify(preferences).remove("rememberMe");
+        verify(prefs).clearRememberMe();
         verify(tokenStorage, times(2)).getCurrentUser();
         verify(userApiService).updateUser("c", dto);
         verify(authApiService).logout();

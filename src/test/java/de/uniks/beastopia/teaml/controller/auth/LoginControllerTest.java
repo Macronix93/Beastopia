@@ -1,9 +1,11 @@
 package de.uniks.beastopia.teaml.controller.auth;
 
 import de.uniks.beastopia.teaml.App;
+import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.controller.menu.MenuController;
 import de.uniks.beastopia.teaml.rest.LoginResult;
 import de.uniks.beastopia.teaml.service.AuthService;
+import de.uniks.beastopia.teaml.utils.Prefs;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.scene.Node;
 import javafx.scene.text.Text;
@@ -36,19 +38,20 @@ class LoginControllerTest extends ApplicationTest {
     Provider<MenuController> menuControllerProvider;
     @Mock
     AuthService authService;
+    @Mock
+    @SuppressWarnings("unused")
+    Prefs prefs;
     @Spy
-    final
-    App app = new App(null);
+    App app;
     @Spy
     @SuppressWarnings("unused")
-    final
     ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang");
-
     @InjectMocks
     LoginController loginController;
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
+        AppPreparer.prepare(app);
         app.start(stage);
         app.show(loginController);
         stage.requestFocus();

@@ -5,6 +5,7 @@ import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.FriendListService;
+import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -24,7 +25,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Objects;
 import java.util.function.Consumer;
-import java.util.prefs.Preferences;
 
 import static de.uniks.beastopia.teaml.rest.UserApiService.STATUS_ONLINE;
 
@@ -56,9 +56,9 @@ public class FriendController extends Controller {
     private ImageView addImage;
     private ImageView removeImage;
     @Inject
-    Preferences preferences;
-    @Inject
     FriendListService friendListService;
+    @Inject
+    Prefs prefs;
 
     private Consumer<User> onFriendChanged = null;
     private Consumer<User> onPinChanged = null;
@@ -176,10 +176,10 @@ public class FriendController extends Controller {
     public void pinFriend() {
         if (pin.getGraphic() == notPinned) {
             pin.setGraphic(pinned);
-            preferences.putBoolean(this.user._id() + "_pinned", true);
+            prefs.setPinned(user, true);
         } else {
             pin.setGraphic(notPinned);
-            preferences.putBoolean(this.user._id() + "_pinned", false);
+            prefs.setPinned(user, false);
         }
         if (onPinChanged != null) {
             onPinChanged.accept(user);

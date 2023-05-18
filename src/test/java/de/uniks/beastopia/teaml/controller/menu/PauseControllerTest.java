@@ -1,6 +1,7 @@
 package de.uniks.beastopia.teaml.controller.menu;
 
 import de.uniks.beastopia.teaml.App;
+import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.controller.menu.social.FriendListController;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
@@ -40,7 +41,9 @@ class PauseControllerTest extends ApplicationTest {
     MenuController mockedMenuController;
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
+        AppPreparer.prepare(app);
+
         mockedFriendListController = mock();
         mockedMenuController = mock();
 
