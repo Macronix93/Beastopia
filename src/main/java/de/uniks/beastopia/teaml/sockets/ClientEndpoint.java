@@ -1,4 +1,4 @@
-package de.uniks.beastopia.teaml.ws;
+package de.uniks.beastopia.teaml.sockets;
 
 import javax.websocket.*;
 import java.net.URI;
