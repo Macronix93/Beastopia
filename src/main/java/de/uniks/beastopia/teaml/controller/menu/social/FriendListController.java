@@ -65,6 +65,7 @@ public class FriendListController extends Controller {
                     boolean friendPinned = prefs.isPinned(friend);
                     FriendController friendController = friendControllerProvider.get()
                             .setUser(friend, friendPinned);
+                    friendController.checkFriend(true);
                     friendController.init();
                     subControllers.add(friendController);
                     friendController.setOnFriendChanged(user -> {
@@ -128,7 +129,9 @@ public class FriendListController extends Controller {
         }).toList();
 
         for (User user : filteredUsers) {
+            boolean friend = tokenStorage.getCurrentUser().friends().contains(user._id());
             FriendController friendController = friendControllerProvider.get();
+            friendController.checkFriend(friend);
             friendController.init();
             friendController.setOnFriendChanged(user_ -> {
                 searchName.setText("");
