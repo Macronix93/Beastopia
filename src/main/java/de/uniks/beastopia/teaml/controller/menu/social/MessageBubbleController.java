@@ -53,7 +53,7 @@ public class MessageBubbleController extends Controller {
 
     @Override
     public void init() {
-        disposables.add(eventListener.listen("gruops." + group._id() + ".messages." + message._id() + ".updated", Message.class)
+        disposables.add(eventListener.listen("groups." + group._id() + ".messages." + message._id() + ".updated", Message.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(this::updateMessage));
     }
