@@ -1,10 +1,11 @@
 package de.uniks.beastopia.teaml.controller.menu.social;
 
 import de.uniks.beastopia.teaml.App;
+import de.uniks.beastopia.teaml.service.FriendListService;
 import javafx.stage.Stage;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
@@ -20,6 +21,9 @@ public class MessageBubbleControllerTest extends ApplicationTest {
     @SuppressWarnings("unused")
     ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang");
 
+    @Mock
+    FriendListService friendListService;
+
     @InjectMocks
     MessageBubbleController messageBubbleController;
 
@@ -30,11 +34,12 @@ public class MessageBubbleControllerTest extends ApplicationTest {
         stage.requestFocus();
     }
 
-    @Test
+    // TODO when editMessage and deleteMessage methods are implemented
+    /*@Test
     void editMessage() {
     }
 
     @Test
     void deleteMessage() {
-    }
+    }*/
 }
