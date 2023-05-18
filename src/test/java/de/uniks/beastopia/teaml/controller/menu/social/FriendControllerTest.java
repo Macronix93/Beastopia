@@ -2,6 +2,7 @@ package de.uniks.beastopia.teaml.controller.menu.social;
 
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.AppPreparer;
+import de.uniks.beastopia.teaml.controller.ingame.IngameController;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.FriendListService;
 import io.reactivex.rxjava3.core.Observable;
@@ -14,6 +15,8 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
 
+import javax.inject.Provider;
+import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static de.uniks.beastopia.teaml.rest.UserApiService.STATUS_OFFLINE;
@@ -31,6 +34,13 @@ class FriendControllerTest extends ApplicationTest {
 
     @InjectMocks
     FriendController friendController;
+
+    @Spy
+    Provider<DirectMessageController> directMessageControllerProvider;
+
+    @Spy
+    final
+    ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang");
 
     final User testUser = new User(null, null, null, "Test", STATUS_OFFLINE, null, null);
 
@@ -76,6 +86,12 @@ class FriendControllerTest extends ApplicationTest {
 
     @Test
     void openFriendChat() {
-        // TODO
+        DirectMessageController mock = mock(DirectMessageController.class);
+
+        when(directMessageControllerProvider.get()).thenReturn(mock);
+
+        friendController.openFriendChat();
+
+        verify(mock).setupDirectMessageController("global", testUser._id());
     }
 }
