@@ -9,11 +9,7 @@ import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -30,8 +26,6 @@ public class LoginController extends Controller {
     public Button loginButton;
     @FXML
     public CheckBox rememberMe;
-
-
     @FXML
     public RadioButton selectEnglishLanguage;
     @FXML

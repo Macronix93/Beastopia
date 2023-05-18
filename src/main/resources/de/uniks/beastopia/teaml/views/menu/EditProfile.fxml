@@ -6,87 +6,92 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-<VBox alignment="CENTER_LEFT" prefHeight="403.0" prefWidth="449.0" spacing="10.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.uniks.beastopia.teaml.controller.menu.EditProfileController">
-      <Label text="%Username">
-         <font>
-            <Font size="16.0" />
-         </font>
-      </Label>
-      <TextField fx:id="usernameField" editable="false">
-         <font>
-            <Font size="16.0" />
-         </font>
-      </TextField>
-      <Label text="%NewPassword">
-         <font>
-            <Font size="16.0" />
-         </font>
-      </Label>
-      <PasswordField fx:id="newPasswordField">
-         <font>
-            <Font size="16.0" />
-         </font>
-      </PasswordField>
-      <Label text="%RetypeNewPassword">
-         <font>
-            <Font size="16.0" />
-         </font>
-      </Label>
-   <PasswordField fx:id="retypeNewPasswordField">
-      <font>
-         <Font size="16.0" />
-      </font>
-   </PasswordField>
-      <HBox spacing="15.0">
-            <VBox spacing="10.0">
-                  <Label text="%Avatar">
-                     <font>
-                        <Font size="16.0" />
-                     </font>
-                  </Label>
-                  <Button alignment="CENTER" mnemonicParsing="false" onAction="#uploadAvatar" style="-fx-background-radius: 20;" text="%UploadAvatar">
-                     <font>
-                        <Font size="16.0" />
-                     </font>
-                  </Button>
-               <HBox.margin>
-                  <Insets />
-               </HBox.margin>
-            </VBox>
-            <ImageView fitHeight="96.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true">
-                  <Image url="@../../assets/Lumnix_Logo_tr.png" />
-            </ImageView>
-      </HBox>
-      <Label text="%Language">
-         <font>
-            <Font size="16.0" />
-         </font>
-      </Label>
-      <HBox spacing="15.0">
-            <RadioButton mnemonicParsing="false" selected="true" text="%English">
-               <font>
-                  <Font size="16.0" />
-               </font>
-               <toggleGroup>
-                  <ToggleGroup fx:id="language" />
-               </toggleGroup>
-            </RadioButton>
-            <RadioButton mnemonicParsing="false" text="%German" toggleGroup="$language">
-               <font>
-                  <Font size="16.0" />
-               </font>
-            </RadioButton>
-      </HBox>
-      <Label text="%ChangeTheme">
-         <font>
-            <Font size="16.0" />
-         </font>
-      </Label>
-      <HBox spacing="15.0">
-          <RadioButton fx:id="darkRadioButton" mnemonicParsing="false" onAction="#setDarkTheme" selected="true"
-                       text="%Dark">
-              <font>
-                  <Font size="16.0"/>
+<VBox alignment="CENTER_LEFT" prefHeight="403.0" prefWidth="449.0" spacing="10.0" xmlns="http://javafx.com/javafx/19"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="de.uniks.beastopia.teaml.controller.menu.EditProfileController">
+    <Label text="%Username">
+        <font>
+            <Font size="16.0"/>
+        </font>
+    </Label>
+    <TextField fx:id="usernameInput" editable="false">
+        <font>
+            <Font size="16.0"/>
+        </font>
+    </TextField>
+    <Label text="%NewPassword">
+        <font>
+            <Font size="16.0"/>
+        </font>
+    </Label>
+    <PasswordField fx:id="passwordInput">
+        <font>
+            <Font size="16.0"/>
+        </font>
+    </PasswordField>
+    <Label text="%RetypeNewPassword">
+        <font>
+            <Font size="16.0"/>
+        </font>
+    </Label>
+    <PasswordField fx:id="passwordRepeatInput">
+        <font>
+            <Font size="16.0"/>
+        </font>
+    </PasswordField>
+    <HBox spacing="15.0">
+        <VBox spacing="10.0">
+            <Label text="%Avatar">
+                <font>
+                    <Font size="16.0"/>
+                </font>
+            </Label>
+            <Button alignment="CENTER" mnemonicParsing="false" onAction="#uploadAvatar"
+                    style="-fx-background-radius: 20;" text="%UploadAvatar">
+                <font>
+                    <Font size="16.0"/>
+                </font>
+            </Button>
+            <HBox.margin>
+                <Insets/>
+            </HBox.margin>
+        </VBox>
+        <ImageView fitHeight="96.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true">
+            <Image url="@../../assets/Lumnix_Logo_tr.png"/>
+        </ImageView>
+    </HBox>
+    <Label text="%Language">
+        <font>
+            <Font size="16.0"/>
+        </font>
+    </Label>
+    <HBox spacing="15.0">
+        <RadioButton fx:id="selectEnglishLanguage" mnemonicParsing="false" onAction="#setEn" selected="true"
+                     text="%English">
+            <font>
+                <Font size="16.0"/>
+            </font>
+            <toggleGroup>
+                <ToggleGroup fx:id="language"/>
+            </toggleGroup>
+        </RadioButton>
+        <RadioButton fx:id="selectGermanLanguage" mnemonicParsing="false" onAction="#setDe" text="%German"
+                     toggleGroup="$language">
+            <font>
+                <Font size="16.0"/>
+            </font>
+        </RadioButton>
+    </HBox>
+    <Label text="%ChangeTheme">
+        <font>
+            <Font size="16.0"/>
+        </font>
+    </Label>
+    <HBox spacing="15.0">
+        <RadioButton fx:id="darkRadioButton" mnemonicParsing="false" onAction="#setDarkTheme" selected="true"
+                     text="%Dark">
+            <font>
+                <Font size="16.0"/>
               </font>
               <toggleGroup>
                   <ToggleGroup fx:id="theme"/>
