@@ -27,19 +27,20 @@ public class ChatGroupController extends Controller {
     HBox _rootElement;
 
     @FXML
-    Button pinGroup;
+    Button pinGroupBtn;
     @FXML
-    Button deleteGroup;
+    Button deleteGroupBtn;
     @FXML
-    Button editGroup;
+    Button editGroupBtn;
 
     @FXML
     Text name;
 
     private Group group;
-
-    private ImageView pinned;
-    private ImageView notPinned;
+    private Boolean pinned;
+    private ImageView pinnedImg;
+    private ImageView notPinnedImg;
+    //private ImageView abort;
 
     @Inject
     Preferences preferences;
@@ -56,9 +57,8 @@ public class ChatGroupController extends Controller {
     @Override
     public void init() {
         try {
-            pinned = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/filled_pin.png")));
-            notPinned = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/pin.png")));
-            ImageView abort = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/abort.png")));
+            pinnedImg = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/filled_pin.png")));
+            notPinnedImg = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/pin.png")));
         } catch (URISyntaxException | FileNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -68,9 +68,10 @@ public class ChatGroupController extends Controller {
         this.onGroupClicked = onGroupClicked;
     }
 
-    public ChatGroupController setGroup(Group group, boolean groupPin) {
+    @SuppressWarnings("UnusedReturnValue")
+    public ChatGroupController setGroup(Group group, boolean pinned) {
         this.group = group;
-        Boolean groupPin1 = groupPin;
+        this.pinned = pinned;
         return this;
     }
 
@@ -78,6 +79,13 @@ public class ChatGroupController extends Controller {
     public Parent render() {
         Parent parent = super.render();
         name.setText(group.name());
+
+        if (this.pinned) {
+            this.pinGroupBtn.setGraphic(pinnedImg);
+        } else {
+            this.pinGroupBtn.setGraphic(notPinnedImg);
+        }
+
         return parent;
     }
 
@@ -96,28 +104,24 @@ public class ChatGroupController extends Controller {
         return new Image(new FileInputStream(new File(imageUrl.toURI())));
     }
 
-    @SuppressWarnings("SameParameterValue")
-    private static Image loadImage(URL imageUrl, double width, double height, boolean preserveRatio, boolean smooth) throws FileNotFoundException, URISyntaxException {
-        return new Image(new FileInputStream(new File(imageUrl.toURI())), width, height, preserveRatio, smooth);
-    }
-
-
     public void editGroup() {
-        //app.show(editGroupControllerProvider.get());
+        //TODO: show edit group dialog
     }
 
     public void deleteGroup() {
-        //todo: delete group
+        //TODO: delete group
     }
 
+    //TODO: implement pinning feature
     public void pinGroup() {
-        if (pinGroup.getGraphic() == notPinned) {
-            pinGroup.setGraphic(pinned);
+        if (pinGroupBtn.getGraphic() == notPinnedImg) {
+            pinGroupBtn.setGraphic(pinnedImg);
             preferences.putBoolean(this.group._id() + "_pinned", true);
         } else {
-            pinGroup.setGraphic(notPinned);
+            pinGroupBtn.setGraphic(notPinnedImg);
             preferences.putBoolean(this.group._id() + "_pinned", false);
         }
+        //noinspection ConstantValue
         if (onPinChanged != null) {
             onPinChanged.accept(group);
         }

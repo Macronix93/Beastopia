@@ -22,14 +22,14 @@
             </Text>
         </VBox>
         <HBox alignment="CENTER_LEFT" prefHeight="10000.0" spacing="15.0">
-            <Button fx:id="editGroup" minHeight="25.0" minWidth="25.0" mnemonicParsing="false" onAction="#editGroup">
+            <Button fx:id="editGroupBtn" minHeight="25.0" minWidth="25.0" mnemonicParsing="false" onAction="#editGroup">
                 <graphic>
                     <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
                         <Image url="@../../../assets/buttons/edit.png"/>
                     </ImageView>
                 </graphic>
             </Button>
-            <Button fx:id="deleteGroup" minHeight="25.0" minWidth="25.0" mnemonicParsing="false"
+            <Button fx:id="deleteGroupBtn" minHeight="25.0" minWidth="25.0" mnemonicParsing="false"
                     onAction="#deleteGroup">
                 <graphic>
                     <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
@@ -37,7 +37,7 @@
                     </ImageView>
                 </graphic>
             </Button>
-            <Button fx:id="pinGroup" minHeight="25.0" minWidth="25.0" mnemonicParsing="false" onAction="#pinGroup"/>
+            <Button fx:id="pinGroupBtn" minHeight="25.0" minWidth="25.0" mnemonicParsing="false" onAction="#pinGroup"/>
             <padding>
                 <Insets bottom="15.0" left="15.0" right="15.0" top="15.0"/>
             </padding>
