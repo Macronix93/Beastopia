@@ -3,6 +3,7 @@ package de.uniks.beastopia.teaml.controller.menu.social;
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.FriendListService;
+import de.uniks.beastopia.teaml.ws.EventListener;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
@@ -28,14 +29,18 @@ class FriendControllerTest extends ApplicationTest {
     @Mock
     FriendListService friendListService;
 
+    @Mock
+    EventListener eventListener;
+
     @InjectMocks
     FriendController friendController;
 
     User testUser = new User(null, null, null, "Test", STATUS_OFFLINE, null, null);
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
         when(friendListService.isFriend(testUser)).thenReturn(true);
+        when(eventListener.listen(anyString(), any())).thenReturn(Observable.empty());
         friendController.setUser(testUser, false);
 
         app.start(stage);
