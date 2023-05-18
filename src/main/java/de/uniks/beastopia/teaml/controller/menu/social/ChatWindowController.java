@@ -6,7 +6,6 @@ import de.uniks.beastopia.teaml.rest.Message;
 import de.uniks.beastopia.teaml.service.MessageService;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
@@ -21,8 +20,6 @@ public class ChatWindowController extends Controller {
     private final List<Message> messages = new ArrayList<>();
     @FXML
     public VBox msgList;
-    @FXML
-    public Button btn;
 
     @Inject
     Provider<MessageBubbleController> messageBubbleControllerProvider;
@@ -33,8 +30,6 @@ public class ChatWindowController extends Controller {
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     private final List<Controller> subControllers = new ArrayList<>();
 
-    private String name;
-
     @Inject
     public ChatWindowController() {
 
@@ -43,7 +38,6 @@ public class ChatWindowController extends Controller {
     public ChatWindowController setupChatWindowController(String namespace, Group group) {
         this.namespace = namespace;
         this.parentId = group._id();
-        this.name = group.name();
         return this;
     }
 
@@ -51,8 +45,6 @@ public class ChatWindowController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
-
-        btn.setText(name);
 
         if (namespace.equals("global")) {
             disposables.add(messageService.getMessagesFromFriend(parentId).observeOn(FX_SCHEDULER)

@@ -53,15 +53,12 @@ public class AuthService {
     }
 
     public Observable<User> goOffline() {
-        return userApiService.updateUser(tokenStorage.getCurrentUser()._id(), new UpdateUserDto(null,
-                UserApiService.STATUS_OFFLINE, null, null, null)).map(user -> {
-            authApiService.logout().subscribe();
-            return tokenStorage.getCurrentUser();
-        });
+        return userApiService.updateUser(tokenStorage.getCurrentUser()._id(), new UpdateUserDto(null, UserApiService.STATUS_OFFLINE, null, null, null)).map(user -> tokenStorage.getCurrentUser());
     }
 
     public boolean isRememberMe() {
-        return preferences.get("rememberMe", null) != null;
+        String token = preferences.get("rememberMe", null);
+        return token != null;
     }
 
     public Observable<User> updatePassword(String password) {
