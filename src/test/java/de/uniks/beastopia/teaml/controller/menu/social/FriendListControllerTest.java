@@ -52,7 +52,7 @@ class FriendListControllerTest extends ApplicationTest {
     @InjectMocks
     FriendListController friendListController;
 
-    List<User> users = new ArrayList<>(List.of(
+    final List<User> users = new ArrayList<>(List.of(
             new User(null, null, "ID0", "user1", "online", null, List.of("ID1", "ID2")),
             new User(null, null, "ID1", "user2", "online", null, List.of()),
             new User(null, null, "ID2", "user3", "offline", null, List.of())
