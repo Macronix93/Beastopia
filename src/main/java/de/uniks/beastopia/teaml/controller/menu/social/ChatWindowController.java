@@ -1,9 +1,11 @@
 package de.uniks.beastopia.teaml.controller.menu.social;
 
 import de.uniks.beastopia.teaml.controller.Controller;
+import de.uniks.beastopia.teaml.rest.Event;
 import de.uniks.beastopia.teaml.rest.Group;
 import de.uniks.beastopia.teaml.rest.Message;
 import de.uniks.beastopia.teaml.service.MessageService;
+import de.uniks.beastopia.teaml.sockets.EventListener;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.layout.VBox;
@@ -16,8 +18,9 @@ import java.util.List;
 public class ChatWindowController extends Controller {
 
     private String namespace;
-    private String parentId;
     private final List<Message> messages = new ArrayList<>();
+    @Inject
+    EventListener eventListener;
     @FXML
     public VBox msgList;
 
@@ -28,7 +31,8 @@ public class ChatWindowController extends Controller {
     MessageService messageService;
 
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
-    private final List<Controller> subControllers = new ArrayList<>();
+    private final List<MessageBubbleController> subControllers = new ArrayList<>();
+    private Group group;
 
     @Inject
     public ChatWindowController() {
@@ -37,20 +41,27 @@ public class ChatWindowController extends Controller {
 
     public ChatWindowController setupChatWindowController(String namespace, Group group) {
         this.namespace = namespace;
-        this.parentId = group._id();
+        this.group = group;
         return this;
     }
 
+    @Override
+    public void init() {
+        super.init();
+        disposables.add(eventListener.listen("groups." + group._id() + ".messages.*.created", Message.class)
+                .observeOn(FX_SCHEDULER)
+                .subscribe(this::addMessage));
+    }
 
     @Override
     public Parent render() {
         Parent parent = super.render();
 
         if (namespace.equals("global")) {
-            disposables.add(messageService.getMessagesFromFriend(parentId).observeOn(FX_SCHEDULER)
+            disposables.add(messageService.getMessagesFromFriend(group._id()).observeOn(FX_SCHEDULER)
                     .subscribe(this::fillInMessages));
         } else if (namespace.equals("group")) {
-            disposables.add(messageService.getMessagesFromGroup(parentId).observeOn(FX_SCHEDULER)
+            disposables.add(messageService.getMessagesFromGroup(group._id()).observeOn(FX_SCHEDULER)
                     .subscribe(this::fillInMessages));
         }
 
@@ -63,14 +74,21 @@ public class ChatWindowController extends Controller {
         super.destroy();
     }
 
+    private void addMessage(Event<Message> event) {
+        addMessage(event.data());
+    }
+
+    private void addMessage(Message message) {
+        MessageBubbleController subController = messageBubbleControllerProvider.get()
+                .setMessage(group, message);
+        subController.init();
+        subControllers.add(subController);
+        msgList.getChildren().add(subController.render());
+    }
+
     private void fillInMessages(List<Message> msgs) {
         messages.clear();
         messages.addAll(msgs);
-
-        for (Message msg : messages) {
-            Controller subController = messageBubbleControllerProvider.get().setMessage(msg);
-            subControllers.add(subController);
-            msgList.getChildren().add(subController.render());
-        }
+        messages.forEach(this::addMessage);
     }
 }
