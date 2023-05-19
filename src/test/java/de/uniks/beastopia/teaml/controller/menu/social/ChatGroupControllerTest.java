@@ -25,10 +25,6 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ChatGroupControllerTest extends ApplicationTest {
-
-    @Spy
-    App app = new App(null);
-
     @InjectMocks
     ChatGroupController chatGroupController;
 
@@ -39,6 +35,8 @@ public class ChatGroupControllerTest extends ApplicationTest {
     @Mock
     TokenStorage tokenStorage;
 
+    @Spy
+    App app = new App(null);
     @Spy
     @SuppressWarnings("unused")
     ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang");
