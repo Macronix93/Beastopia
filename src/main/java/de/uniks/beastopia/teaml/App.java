@@ -21,7 +21,7 @@ public class App extends Application {
     private final List<Runnable> cleanupTasks = new ArrayList<>();
 
     public App() {
-        this.mainComponent = DaggerMainComponent.builder().mainApp(this).build();
+        this.mainComponent = de.uniks.beastopia.teaml.DaggerMainComponent.builder().mainApp(this).build();
     }
 
     public App(MainComponent mainComponent) {
