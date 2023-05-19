@@ -3,7 +3,6 @@ package de.uniks.beastopia.teaml.views;
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.ingame.IngameController;
 import de.uniks.beastopia.teaml.rest.Region;
-import de.uniks.beastopia.teaml.service.TokenStorage;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListCell;
@@ -38,5 +37,6 @@ public class RegionCell extends ListCell<Region> {
             setGraphic(join);
         }
         setAlignment(Pos.CENTER);
+        getStyleClass().add("region-cell");
     }
 }

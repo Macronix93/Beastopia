@@ -127,7 +127,7 @@ class RegistrationControllerTest extends ApplicationTest {
         when(loginControllerProvider.get()).thenReturn(mocked);
         doNothing().when(app).show(mocked);
 
-        clickOn("#loginButton");
+        clickOn("#login");
 
         verify(app).show(mocked);
     }

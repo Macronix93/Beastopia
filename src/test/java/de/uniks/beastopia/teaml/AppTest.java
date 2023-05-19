@@ -47,7 +47,7 @@ class AppTest extends ApplicationTest {
         assertEquals("Beastopia - Login", stage.getTitle());
         clickOn("#registerButton");
         assertEquals("Beastopia - Registration", stage.getTitle());
-        clickOn("#loginButton");
+        clickOn("#login");
         assertEquals("Beastopia - Login", stage.getTitle());
     }
 }
