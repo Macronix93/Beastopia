@@ -13,7 +13,6 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
-
 import javax.inject.Singleton;
 
 @Module
@@ -37,17 +36,15 @@ public class HttpModule {
             if (response.isSuccessful() || response.code() != 429)
                 return response;
 
-            int tryCount = 1;
-            while (!response.isSuccessful() && tryCount < 10) {
-                tryCount++;
-                response.close();
+            while (!response.isSuccessful() && response.code() == 429) {
                 try {
+                    response.close();
                     //noinspection BusyWait
                     Thread.sleep(1000);
+                    response = chain.proceed(newRequest);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
-                response = chain.proceed(newRequest);
             }
 
             return response;

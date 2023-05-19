@@ -4,6 +4,7 @@ import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.service.AuthService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.utils.Dialog;
+import de.uniks.beastopia.teaml.utils.Prefs;
 import de.uniks.beastopia.teaml.utils.ThemeSettings;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -11,7 +12,6 @@ import javafx.scene.control.*;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import java.util.prefs.Preferences;
 
 
 public class EditProfileController extends Controller {
@@ -29,11 +29,14 @@ public class EditProfileController extends Controller {
     @FXML
     public ToggleGroup theme;
     @Inject
-    Preferences preferences;
+    Prefs prefs;
     @Inject
     Provider<MenuController> menuControllerProvider;
     @Inject
     Provider<DeleteUserController> deleteUserControllerProvider;
+
+    @Inject
+    Provider<PauseController> pauseControllerProvider;
     @Inject
     AuthService authService;
     @Inject
@@ -42,18 +45,25 @@ public class EditProfileController extends Controller {
     ThemeSettings themeSettings;
     @FXML
     private TextField usernameField;
+    private String backController;
+
 
     @Inject
     public EditProfileController() {
 
     }
 
+    public EditProfileController backController(String controller) {
+        this.backController = controller;
+        return this;
+    }
+
     @Override
     public Parent render() {
         Parent parent = super.render();
         usernameField.setText(tokenStorage.getCurrentUser().name());
-        darkRadioButton.setSelected(preferences.getBoolean("DarkTheme", false));
-        summerRadioButton.setSelected(!preferences.getBoolean("DarkTheme", false));
+        darkRadioButton.setSelected(prefs.getTheme().equals("dark"));
+        summerRadioButton.setSelected(!prefs.getTheme().equals("dark"));
         return parent;
     }
 
@@ -66,12 +76,12 @@ public class EditProfileController extends Controller {
     }
 
     public void setDarkTheme() {
-        preferences.putBoolean("DarkTheme", true);
+        prefs.setTheme("dark");
         themeSettings.updateSceneTheme.accept("dark");
     }
 
     public void setSummerTheme() {
-        preferences.putBoolean("DarkTheme", false);
+        prefs.setTheme("summer");
         themeSettings.updateSceneTheme.accept("summer");
     }
 
@@ -106,7 +116,12 @@ public class EditProfileController extends Controller {
         app.show(deleteUserControllerProvider.get());
     }
 
-    public void backToMenu() {
-        app.show(menuControllerProvider.get());
+    public void back() {
+        if (this.backController.equals("menu")) {
+            app.show(menuControllerProvider.get());
+        } else {
+            app.show(pauseControllerProvider.get());
+        }
+
     }
 }

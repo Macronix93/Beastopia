@@ -4,6 +4,7 @@ import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.FriendListService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
+import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -15,11 +16,10 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.prefs.Preferences;
 
 public class FriendListController extends Controller {
     private final List<Controller> subControllers = new ArrayList<>();
-    private final List<User> allUsers = new ArrayList<>();
+    public static final List<User> ALL_USERS = new ArrayList<>();
     @FXML
     public TextField searchName;
     @FXML
@@ -39,7 +39,7 @@ public class FriendListController extends Controller {
     @Inject
     TokenStorage tokenStorage;
     @Inject
-    Preferences preferences;
+    Prefs prefs;
 
     @Inject
     public FriendListController() {
@@ -50,8 +50,8 @@ public class FriendListController extends Controller {
     public Parent render() {
         Parent parent = super.render();
         disposables.add(friendListService.getUsers().subscribe(users -> {
-            allUsers.clear();
-            allUsers.addAll(users);
+            ALL_USERS.clear();
+            ALL_USERS.addAll(users);
             updateUserList();
         }));
         return parent;
@@ -62,9 +62,10 @@ public class FriendListController extends Controller {
             clearSubControllers();
             if (friends != null) {
                 for (User friend : friends) {
-                    boolean friendPinned = preferences.getBoolean(friend._id() + "_pinned", true);
+                    boolean friendPinned = prefs.isPinned(friend);
                     FriendController friendController = friendControllerProvider.get()
                             .setUser(friend, friendPinned);
+                    friendController.checkFriend(true);
                     friendController.init();
                     subControllers.add(friendController);
                     friendController.setOnFriendChanged(user -> {
@@ -111,7 +112,7 @@ public class FriendListController extends Controller {
         List<User> filteredUsers = new ArrayList<>();
         List<Parent> filteredParents = new ArrayList<>();
 
-        for (User user : allUsers) {
+        for (User user : ALL_USERS) {
             if (user.name().toLowerCase().startsWith(searchName.getText().toLowerCase())
                     && !user._id().equals(tokenStorage.getCurrentUser()._id())) {
                 filteredUsers.add(user);
@@ -119,7 +120,7 @@ public class FriendListController extends Controller {
         }
 
         filteredUsers = filteredUsers.stream().sorted((firstUser, secondUser) -> {
-            boolean notPinned = preferences.getBoolean(firstUser._id() + "_pinned", false);
+            boolean notPinned = prefs.isPinned(firstUser);
             if (notPinned) {
                 return -1;
             } else {
@@ -128,15 +129,17 @@ public class FriendListController extends Controller {
         }).toList();
 
         for (User user : filteredUsers) {
+            boolean friend = tokenStorage.getCurrentUser().friends().contains(user._id());
             FriendController friendController = friendControllerProvider.get();
+            boolean friendPinned = prefs.isPinned(user);
+            friendController.setUser(user, friendPinned);
+            friendController.checkFriend(friend);
             friendController.init();
             friendController.setOnFriendChanged(user_ -> {
                 searchName.setText("");
                 updateUserList();
             });
             friendController.setOnPinChanged(user_ -> updateUserList());
-            boolean friendPinned = preferences.getBoolean(user._id() + "_pinned", false);
-            friendController.setUser(user, friendPinned);
             filteredParents.add(friendController.render());
         }
         return filteredParents;

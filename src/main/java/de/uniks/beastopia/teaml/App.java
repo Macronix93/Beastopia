@@ -9,58 +9,67 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
-
 public class App extends Application {
+    private MainComponent mainComponent;
     private Stage stage;
     private Controller controller;
     private Scene scene;
+    private final List<Runnable> cleanupTasks = new ArrayList<>();
 
     public App() {
-
+        this.mainComponent = de.uniks.beastopia.teaml.DaggerMainComponent.builder().mainApp(this).build();
     }
 
-    public App(Controller controller) {
-        this.controller = controller;
+    public App(MainComponent mainComponent) {
+        this.mainComponent = mainComponent;
+    }
+
+    public void setMainComponent(MainComponent mainComponent) {
+        this.mainComponent = mainComponent;
     }
 
     public Stage getStage() {
         return stage;
     }
 
+    public void addCleanupTask(Runnable task) {
+        cleanupTasks.add(task);
+    }
+
     @Override
     public void start(Stage primaryStage) {
-
         stage = primaryStage;
         stage.setWidth(800);
         stage.setHeight(600);
         stage.setTitle("Beastopia");
 
-        scene = new Scene(new Label("Loading..."));
+        Scene scene = new Scene(new Label("Loading..."));
         stage.setScene(scene);
 
+        scene.getStylesheets().add(Objects.requireNonNull(Main.class.getResource("views/summer.css")).toString());
         CSSFX.start(scene);
 
         stage.show();
 
-        if (controller != null) {
-            initAndRender(controller);
+        if (mainComponent == null) {
             return;
         }
 
-        final MainComponent component = DaggerMainComponent.builder().mainApp(this).build();
-        final AuthService authService = component.authService();
-        if (authService.isRememberMe()) {
+        final AuthService authService = mainComponent.authService();
+        if (mainComponent.prefs().isRememberMe()) {
             //noinspection ResultOfMethodCallIgnored
             authService.refresh().subscribe(
-                    lr -> Platform.runLater(() -> show(component.menuController())),
-                    error -> Platform.runLater(() -> show(component.loginController())));
+                    lr -> Platform.runLater(() -> show(mainComponent.menuController())),
+                    error -> Platform.runLater(() -> show(mainComponent.loginController())));
         } else {
-            show(component.loginController());
+            show(mainComponent.loginController());
         }
 
-        component.themeSettings().updateSceneTheme = theme -> {
+        mainComponent.themeSettings().updateSceneTheme = theme -> {
             if (theme.equals("dark")) {
                 scene.getStylesheets().removeIf(style -> style.endsWith("views/summer.css"));
                 scene.getStylesheets().add(Objects.requireNonNull(Main.class.getResource("views/dark.css")).toString());
@@ -70,13 +79,14 @@ public class App extends Application {
             }
         };
 
-        component.themeSettings().updateSceneTheme.accept(
-                component.preferences().getBoolean("DarkTheme", false) ? "dark" : "summer"
+        mainComponent.themeSettings().updateSceneTheme.accept(
+                mainComponent.prefs().getTheme()
         );
     }
 
     @Override
     public void stop() {
+        cleanupTasks.forEach(Runnable::run);
         cleanup();
     }
 
@@ -86,17 +96,11 @@ public class App extends Application {
         initAndRender(controller);
     }
 
-    public void toggleTheme() {
-        if (scene.getStylesheets().stream().anyMatch(style -> style.endsWith("views/summer.css"))) {
-            scene.getStylesheets().removeIf(style -> style.endsWith("views/summer.css"));
-            scene.getStylesheets().add(Objects.requireNonNull(Main.class.getResource("views/dark.css")).toString());
-        } else {
-            scene.getStylesheets().removeIf(style -> style.endsWith("views/dark.css"));
-            scene.getStylesheets().add(Objects.requireNonNull(Main.class.getResource("views/summer.css")).toString());
-        }
-    }
-
     private void initAndRender(Controller controller) {
+        if (controller == null) {
+            return;
+        }
+
         controller.init();
         if (controller.getTitle() != null) {
             stage.setTitle(controller.getTitle());
