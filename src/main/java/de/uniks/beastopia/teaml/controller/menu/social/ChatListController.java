@@ -80,6 +80,9 @@ public class ChatListController extends Controller {
     }
 
     public void updateGroupList() {
+        if (groups.size() == 0) {
+            return;
+        }
 
         clearSubControllers();
 
