@@ -93,6 +93,6 @@ public class MenuController extends Controller {
 
     @FXML
     public void editProfileButtonPressed() {
-        app.show(editProfileControllerProvider.get());
+        app.show(editProfileControllerProvider.get().backController("menu"));
     }
 }

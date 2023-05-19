@@ -34,6 +34,9 @@ public class EditProfileController extends Controller {
     Provider<MenuController> menuControllerProvider;
     @Inject
     Provider<DeleteUserController> deleteUserControllerProvider;
+
+    @Inject
+    Provider<PauseController> pauseControllerProvider;
     @Inject
     AuthService authService;
     @Inject
@@ -42,10 +45,17 @@ public class EditProfileController extends Controller {
     ThemeSettings themeSettings;
     @FXML
     private TextField usernameField;
+    private String backController;
+
 
     @Inject
     public EditProfileController() {
 
+    }
+
+    public EditProfileController backController(String controller) {
+        this.backController = controller;
+        return this;
     }
 
     @Override
@@ -106,7 +116,12 @@ public class EditProfileController extends Controller {
         app.show(deleteUserControllerProvider.get());
     }
 
-    public void backToMenu() {
-        app.show(menuControllerProvider.get());
+    public void back() {
+        if (this.backController.equals("menu")) {
+            app.show(menuControllerProvider.get());
+        } else {
+            app.show(pauseControllerProvider.get());
+        }
+
     }
 }
