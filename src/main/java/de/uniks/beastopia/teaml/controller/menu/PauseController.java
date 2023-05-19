@@ -18,6 +18,8 @@ import java.util.List;
 public class PauseController extends Controller {
 
     @FXML
+    public Button editProfileButton;
+    @FXML
     private VBox friendListContainer;
 
     private final List<Controller> subControllers = new ArrayList<>();

@@ -9,6 +9,7 @@ import de.uniks.beastopia.teaml.service.MessageService;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
@@ -23,6 +24,9 @@ public class DirectMessageController extends Controller {
 
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     private final List<Controller> subControllers = new ArrayList<>();
+
+    @FXML
+    public Button backButton;
 
     @Inject
     Provider<MenuController> menuControllerProvider;
