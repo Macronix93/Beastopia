@@ -34,7 +34,6 @@ public class EditProfileController extends Controller {
     Provider<MenuController> menuControllerProvider;
     @Inject
     Provider<DeleteUserController> deleteUserControllerProvider;
-
     @Inject
     Provider<PauseController> pauseControllerProvider;
     @Inject
