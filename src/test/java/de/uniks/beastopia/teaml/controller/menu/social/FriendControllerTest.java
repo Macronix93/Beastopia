@@ -2,7 +2,6 @@ package de.uniks.beastopia.teaml.controller.menu.social;
 
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.AppPreparer;
-import de.uniks.beastopia.teaml.controller.ingame.IngameController;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.FriendListService;
 import de.uniks.beastopia.teaml.sockets.EventListener;
@@ -43,6 +42,7 @@ class FriendControllerTest extends ApplicationTest {
     Provider<DirectMessageController> directMessageControllerProvider;
 
     @Spy
+    @SuppressWarnings("unused")
     final
     ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang");
 
@@ -97,6 +97,6 @@ class FriendControllerTest extends ApplicationTest {
 
         friendController.openFriendChat();
 
-        verify(mock).setupDirectMessageController("global", testUser._id());
+        verify(mock).setupDirectMessageController(testUser);
     }
 }
