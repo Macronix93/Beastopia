@@ -3,6 +3,7 @@ package de.uniks.beastopia.teaml.controller.menu.social;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Group;
 import de.uniks.beastopia.teaml.service.GroupListService;
+import de.uniks.beastopia.teaml.service.TokenStorage;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.layout.VBox;
@@ -29,6 +30,8 @@ public class ChatListController extends Controller {
     Provider<ChatUserController> chatUserControllerProvider;
     @Inject
     Provider<ChatGroupController> chatGroupControllerProvider;
+    @Inject
+    TokenStorage tokenStorage;
 
     private Consumer<Group> onGroupClicked;
 
@@ -40,14 +43,17 @@ public class ChatListController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
+        reload();
+        return parent;
+    }
 
+    public void reload() {
         disposables.add(groupListService.getGroups().observeOn(FX_SCHEDULER).subscribe(groups -> {
             this.groups.clear();
             this.groups.addAll(groups);
+            chatList.getChildren().clear();
             updateGroupList();
         }));
-
-        return parent;
     }
 
     public void setOnGroupClicked(Consumer<Group> onGroupClicked) {
@@ -79,13 +85,14 @@ public class ChatListController extends Controller {
 
         // <ida>_<idb> is the name of a group with two members
         for (Group group : groups) {
-            //noinspection StatementWithEmptyBody
-            if (group.members().size() == 2 && (
-                    group.name().equals(group.members().get(0) + "_" + group.members().get(1)))
-                    || group.name().equals(group.members().get(1) + "_" + group.members().get(0))) {
-              /*  ChatUserController chatUserController = chatUserControllerProvider.get();
+            if (group.members().size() == 2 &&
+                    groupListService.isSingleChat(group) &&
+                    group.members().contains(tokenStorage.getCurrentUser()._id())) {
+                ChatUserController chatUserController = chatUserControllerProvider.get();
                 subControllers.add(chatUserController);
-                chatList.getChildren().add(chatUserController.render());*/
+                chatUserController.setOnGroupClicked(onGroupClicked);
+                chatUserController.setGroup(group, false);
+                chatList.getChildren().add(chatUserController.render());
             } else {
                 ChatGroupController chatGroupController = chatGroupControllerProvider.get();
                 subControllers.add(chatGroupController);
@@ -101,8 +108,6 @@ public class ChatListController extends Controller {
             controller.destroy();
         }
         subControllers.clear();
-        //userList.getChildren().clear();
-        //groupList.getChildren().clear();
     }
 
 }

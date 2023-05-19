@@ -30,9 +30,7 @@ public class GroupListService {
     }
 
     public Observable<Group> addGroup(String name, List<String> members) {
-        ArrayList<String> membersCopy = new ArrayList<>(members);
-        membersCopy.add(tokenStorage.getCurrentUser()._id());
-        return groupApiService.createGroup(new CreateGroupDto(name, membersCopy));
+        return groupApiService.createGroup(new CreateGroupDto(name, members));
     }
 
     public Observable<Group> updateGroup(Group updatedGroup) {
@@ -53,5 +51,25 @@ public class GroupListService {
 
     public Observable<Group> deleteGroup(Group group) {
         return groupApiService.deleteGroup(group._id());
+    }
+
+    public String getGroupName(String idA, String idB) {
+        String first = idA.substring(0, 5) + idA.substring(idA.length() - 5);
+        String last = idB.substring(0, 5) + idB.substring(idB.length() - 5);
+
+        return first + "_" + last;
+    }
+
+    public boolean isSingleChat(Group group) {
+        if (group.members().size() != 2) {
+            return false;
+        }
+        if (group.name().equals(getGroupName(group.members().get(0), group.members().get(1)))) {
+            return true;
+        }
+        if (group.name().equals(getGroupName(group.members().get(1), group.members().get(0)))) {
+            return true;
+        }
+        return false;
     }
 }
