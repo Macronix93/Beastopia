@@ -6,6 +6,7 @@ import de.uniks.beastopia.teaml.rest.Group;
 import de.uniks.beastopia.teaml.rest.Message;
 import de.uniks.beastopia.teaml.service.MessageService;
 import de.uniks.beastopia.teaml.sockets.EventListener;
+import io.reactivex.rxjava3.core.Observable;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.layout.VBox;
@@ -17,7 +18,6 @@ import java.util.List;
 
 public class ChatWindowController extends Controller {
 
-    private String namespace;
     private final List<Message> messages = new ArrayList<>();
     @Inject
     EventListener eventListener;
@@ -40,7 +40,6 @@ public class ChatWindowController extends Controller {
     }
 
     public ChatWindowController setupChatWindowController(String namespace, Group group) {
-        this.namespace = namespace;
         this.group = group;
         return this;
     }
@@ -57,11 +56,10 @@ public class ChatWindowController extends Controller {
     public Parent render() {
         Parent parent = super.render();
 
-        if (namespace.equals("global")) {
-            disposables.add(messageService.getMessagesFromFriend(group._id()).observeOn(FX_SCHEDULER)
-                    .subscribe(this::fillInMessages));
-        } else if (namespace.equals("group")) {
-            disposables.add(messageService.getMessagesFromGroup(group._id()).observeOn(FX_SCHEDULER)
+        Observable<List<Message>> messagesFromGroup = messageService.getMessagesFromGroup(parentId);
+        if (messagesFromGroup != null) {
+            disposables.add(messagesFromGroup
+                    .observeOn(FX_SCHEDULER)
                     .subscribe(this::fillInMessages));
         }
 

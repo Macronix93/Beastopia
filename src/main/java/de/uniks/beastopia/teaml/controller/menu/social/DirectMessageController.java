@@ -68,7 +68,7 @@ public class DirectMessageController extends Controller {
         chatListController.setOnGroupClicked(group -> {
             currentGroup = group;
             grid.getChildren().remove(rightSide);
-            ChatWindowController controller = chatWindowControllerProvider.get().setupChatWindowController("group", group);
+            ChatWindowController controller = chatWindowControllerProvider.get().setupChatWindowController(group);
             controller.init();
             rightSide = controller.render();
             grid.add(rightSide, 1, 1);
