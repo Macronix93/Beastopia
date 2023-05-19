@@ -2,13 +2,16 @@ package de.uniks.beastopia.teaml.controller.menu;
 
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.AppPreparer;
+import de.uniks.beastopia.teaml.controller.ingame.IngameController;
 import de.uniks.beastopia.teaml.controller.menu.social.FriendListController;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
@@ -25,6 +28,9 @@ class PauseControllerTest extends ApplicationTest {
 
     @Mock
     Provider<FriendListController> friendListControllerProvider;
+
+    @Mock
+    Provider<IngameController> ingameControllerProvider;
     @Mock
     Provider<MenuController> menuControllerProvider;
     @Spy
@@ -62,6 +68,7 @@ class PauseControllerTest extends ApplicationTest {
         verify(mockedFriendListController).render();
     }
 
+
     @Test
     void openMenu() {
         when(mockedMenuController.render()).thenReturn(new Label("MenuController"));
@@ -74,5 +81,16 @@ class PauseControllerTest extends ApplicationTest {
     @Test
     void title() {
         assertEquals(app.getStage().getTitle(), resources.getString("titlePause"));
+    }
+
+    @Test
+    void pauseMenu() {
+        final IngameController mock = Mockito.mock(IngameController.class);
+        when(ingameControllerProvider.get()).thenReturn(mock);
+        doNothing().when(app).show(mock);
+
+        press(KeyCode.ESCAPE);
+
+        verify(app).show(mock);
     }
 }
