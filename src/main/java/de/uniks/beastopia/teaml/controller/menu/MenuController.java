@@ -20,6 +20,8 @@ import java.util.List;
 
 public class MenuController extends Controller {
     private final List<Controller> subControllers = new ArrayList<>();
+    @FXML
+    public VBox left;
     @Inject
     Provider<RegionController> regionControllerProvider;
     @Inject
