@@ -50,9 +50,16 @@ public class MenuController extends Controller {
 
     @Inject
     TokenStorage tokenStorage;
+
     @Inject
     public MenuController() {
 
+    }
+
+    @Override
+    public void init() {
+        super.init();
+        app.addCleanupTask(() -> authService.goOffline().subscribe());
     }
 
     @Override

@@ -5,6 +5,7 @@ import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.controller.ingame.IngameController;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.FriendListService;
+import de.uniks.beastopia.teaml.sockets.EventListener;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
@@ -32,6 +33,9 @@ class FriendControllerTest extends ApplicationTest {
     @Mock
     FriendListService friendListService;
 
+    @Mock
+    EventListener eventListener;
+
     @InjectMocks
     FriendController friendController;
 
@@ -49,6 +53,7 @@ class FriendControllerTest extends ApplicationTest {
         AppPreparer.prepare(app);
 
         when(friendListService.isFriend(testUser)).thenReturn(true);
+        when(eventListener.listen(anyString(), any())).thenReturn(Observable.empty());
         friendController.setUser(testUser, false);
 
         app.start(stage);
