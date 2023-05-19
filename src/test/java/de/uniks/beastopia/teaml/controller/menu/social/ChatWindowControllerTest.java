@@ -5,6 +5,7 @@ import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.rest.Group;
 import de.uniks.beastopia.teaml.rest.Message;
 import de.uniks.beastopia.teaml.service.MessageService;
+import de.uniks.beastopia.teaml.sockets.EventListener;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
@@ -47,6 +48,8 @@ class ChatWindowControllerTest extends ApplicationTest {
 
     @Mock
     MessageBubbleController messageBubbleController2;
+    @Mock
+    EventListener eventListener;
 
     @Spy
     App app;
@@ -60,7 +63,7 @@ class ChatWindowControllerTest extends ApplicationTest {
 
     @Override
     public void start(Stage stage) {
-        AppPreparer.prepare(app);
+        AppPreparer.prepare(app, eventListener);
 
         group = new Group(null, null, "id", "name", null);
         chatWindowController.setupChatWindowController(group);
@@ -77,10 +80,10 @@ class ChatWindowControllerTest extends ApplicationTest {
             }
         });
 
-        when(messageBubbleController1.setMessage(group, any())).thenReturn(messageBubbleController1);
+        when(messageBubbleController1.setMessage(eq(group), any())).thenReturn(messageBubbleController1);
         when(messageBubbleController1.render()).thenReturn(new Label("hey"));
 
-        when(messageBubbleController2.setMessage(group, any())).thenReturn(messageBubbleController2);
+        when(messageBubbleController2.setMessage(eq(group), any())).thenReturn(messageBubbleController2);
         when(messageBubbleController2.render()).thenReturn(new Label("du"));
 
         app.start(stage);
