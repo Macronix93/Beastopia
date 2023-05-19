@@ -51,7 +51,7 @@ class LoginControllerTest extends ApplicationTest {
 
     @Override
     public void start(Stage stage) {
-        AppPreparer.prepare(app);
+        AppPreparer.prepare(app, prefs);
         app.start(stage);
         app.show(loginController);
         stage.requestFocus();

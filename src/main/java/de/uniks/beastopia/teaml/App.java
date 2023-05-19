@@ -47,7 +47,7 @@ public class App extends Application {
         stage.setHeight(600);
         stage.setTitle("Beastopia");
 
-        Scene scene = new Scene(new Label("Loading..."));
+        scene = new Scene(new Label("Loading..."));
         stage.setScene(scene);
 
         scene.getStylesheets().add(Objects.requireNonNull(Main.class.getResource("views/summer.css")).toString());
@@ -93,19 +93,16 @@ public class App extends Application {
     public void show(Controller controller) {
         cleanup();
         this.controller = controller;
-        initAndRender(controller);
+        initAndRender();
     }
 
-    private void initAndRender(Controller controller) {
+    private void initAndRender() {
         if (controller == null) {
             return;
         }
 
         controller.init();
-        if (controller.getTitle() != null) {
-            stage.setTitle(controller.getTitle());
-        }
-        stage.getScene().setRoot(controller.render());
+        update();
     }
 
     private void cleanup() {
@@ -113,5 +110,12 @@ public class App extends Application {
             controller.destroy();
             controller = null;
         }
+    }
+
+    public void update() {
+        if (controller.getTitle() != null) {
+            stage.setTitle(controller.getTitle());
+        }
+        stage.getScene().setRoot(controller.render());
     }
 }
