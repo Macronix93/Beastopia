@@ -1,6 +1,9 @@
 package de.uniks.beastopia.teaml.service;
 
-import de.uniks.beastopia.teaml.rest.*;
+import de.uniks.beastopia.teaml.rest.CreateGroupDto;
+import de.uniks.beastopia.teaml.rest.Group;
+import de.uniks.beastopia.teaml.rest.GroupApiService;
+import de.uniks.beastopia.teaml.rest.UpdateGroupDto;
 import io.reactivex.rxjava3.core.Observable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,6 +23,7 @@ import static org.mockito.Mockito.when;
 class GroupListServiceTest {
 
     @Mock
+    @SuppressWarnings("unused")
     TokenStorage tokenStorage;
     @Mock
     GroupApiService groupApiService;
@@ -46,13 +50,11 @@ class GroupListServiceTest {
 
     @Test
     void addGroup() {
-        when(tokenStorage.getCurrentUser()).thenReturn(new User(null, null, "ME", "ME", null, null, null));
         Group group = new Group(null, null, "id", "GROUP0", List.of("ME"));
         CreateGroupDto createGroupDto = new CreateGroupDto("GROUP0", List.of("ME"));
         when(groupApiService.createGroup(createGroupDto)).thenReturn(Observable.just(group));
-        Group result = groupListService.addGroup("GROUP0", List.of()).blockingFirst();
+        Group result = groupListService.addGroup("GROUP0", List.of("ME")).blockingFirst();
         assertEquals(List.of("ME"), result.members());
-        verify(tokenStorage).getCurrentUser();
         verify(groupApiService).createGroup(createGroupDto);
     }
 
