@@ -14,6 +14,9 @@ We used several .png files for our buttons, such as listed below:
 Flaticon</a>
 
 <a href="https://www.flaticon.com/de/kostenlose-icons/schreiben" title="schreiben Icons">Schreiben Icons erstellt von
+
+
+
 Irfansusanto20 - Flaticon</a>
 
 <a href="https://www.flaticon.com/de/kostenlose-icons/ui" title="ui Icons">Ui Icons erstellt von See Icons - Flaticon</a>
@@ -35,3 +38,4 @@ Catalin Fertu - Flaticon</a>
 
 <a href="https://www.flaticon.com/de/suche?word=kreuz" title="schließen Icons">Schließen Icons erstellt von Catalin
 Fertu - Flaticon</a>
+
