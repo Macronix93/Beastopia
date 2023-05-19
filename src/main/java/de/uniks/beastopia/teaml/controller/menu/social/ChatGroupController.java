@@ -4,6 +4,7 @@ import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Group;
 import de.uniks.beastopia.teaml.service.GroupListService;
+import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.utils.Dialog;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -28,14 +29,12 @@ public class ChatGroupController extends Controller {
 
     @FXML
     HBox _rootElement;
-
     @FXML
     Button pinGroupBtn;
     @FXML
     Button deleteGroupBtn;
     @FXML
     Button editGroupBtn;
-
     @FXML
     Text name;
 
@@ -51,9 +50,9 @@ public class ChatGroupController extends Controller {
     GroupListService groupListService;
     @Inject
     Provider<DirectMessageController> directMessageControllerProvider;
-
+    @Inject
+    TokenStorage tokenStorage;
     private final Consumer<Group> onPinChanged = null;
-
     private Consumer<Group> onGroupClicked = null;
 
     @Inject
@@ -117,10 +116,17 @@ public class ChatGroupController extends Controller {
 
     @FXML
     public void deleteGroup() {
-        disposables.add(groupListService.deleteGroup(group).observeOn(FX_SCHEDULER).subscribe(
-                lr -> app.show(directMessageControllerProvider.get()),
-                error -> Dialog.error(error, resources.getString("deleteFailed")
-                )));
+        if (group.members().size() < 2) {
+            disposables.add(groupListService.deleteGroup(group).observeOn(FX_SCHEDULER).subscribe(
+                    lr -> app.show(directMessageControllerProvider.get()),
+                    error -> Dialog.error(error, resources.getString("deleteFailed")
+                    )));
+        } else {
+            disposables.add(groupListService.removeMember(group, tokenStorage.getCurrentUser()._id()).observeOn(FX_SCHEDULER).subscribe(
+                    lr -> app.show(directMessageControllerProvider.get()),
+                    error -> Dialog.error(error, resources.getString("deleteFailed")
+                    )));
+        }
     }
 
     //TODO: implement pinning feature
