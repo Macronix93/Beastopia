@@ -21,10 +21,12 @@ class AppTest extends ApplicationTest {
     @Override
     public void start(Stage stage) {
         this.stage = stage;
-
         App app = new App(mainComponent);
         MainComponent realMainComponent = DaggerMainComponent.builder().mainApp(app).build();
+        realMainComponent.prefs().setLocale("en");
+
         Prefs mockedPrefs = mock();
+        when(mockedPrefs.getLocale()).thenReturn("en");
         when(mockedPrefs.isRememberMe()).thenReturn(false);
         when(mockedPrefs.getTheme()).thenReturn("dark");
         when(mainComponent.loginController()).thenAnswer(i -> realMainComponent.loginController());
