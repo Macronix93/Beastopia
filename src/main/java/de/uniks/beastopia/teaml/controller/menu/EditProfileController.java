@@ -4,6 +4,7 @@ import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.service.AuthService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.utils.Dialog;
+import de.uniks.beastopia.teaml.utils.Prefs;
 import de.uniks.beastopia.teaml.utils.ThemeSettings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
@@ -41,11 +42,14 @@ public class EditProfileController extends Controller {
     @Inject
     Provider<ResourceBundle> resourcesProvider;
     @Inject
-    Preferences preferences;
+    Prefs prefs;
     @Inject
     Provider<MenuController> menuControllerProvider;
     @Inject
     Provider<DeleteUserController> deleteUserControllerProvider;
+
+    @Inject
+    Provider<PauseController> pauseControllerProvider;
     @Inject
     AuthService authService;
     @Inject
@@ -53,6 +57,9 @@ public class EditProfileController extends Controller {
     @Inject
     ThemeSettings themeSettings;
 
+    @FXML
+    private TextField usernameField;
+    private String backController;
 
     private final SimpleStringProperty username = new SimpleStringProperty();
     private final SimpleStringProperty password = new SimpleStringProperty();
@@ -61,6 +68,11 @@ public class EditProfileController extends Controller {
     @Inject
     public EditProfileController() {
 
+    }
+
+    public EditProfileController backController(String controller) {
+        this.backController = controller;
+        return this;
     }
 
     @Override
@@ -72,7 +84,7 @@ public class EditProfileController extends Controller {
             userLocale = "en-EN";
         }
 
-        if (preferences.get("locale", userLocale).contains("de")) {
+        if (prefs.get("locale", userLocale).contains("de")) {
             selectGermanLanguage.setSelected(true);
         } else {
             selectEnglishLanguage.setSelected(true);
@@ -82,8 +94,8 @@ public class EditProfileController extends Controller {
         passwordRepeatInput.textProperty().bindBidirectional(passwordRepeat);
 
         usernameInput.setText(tokenStorage.getCurrentUser().name());
-        darkRadioButton.setSelected(preferences.getBoolean("DarkTheme", false));
-        summerRadioButton.setSelected(!preferences.getBoolean("DarkTheme", false));
+        darkRadioButton.setSelected(prefs.getBoolean("DarkTheme", false));
+        summerRadioButton.setSelected(!prefs.getBoolean("DarkTheme", false));
         return parent;
     }
 
@@ -96,12 +108,12 @@ public class EditProfileController extends Controller {
     }
 
     public void setDarkTheme() {
-        preferences.putBoolean("DarkTheme", true);
+        prefs.setTheme("dark");
         themeSettings.updateSceneTheme.accept("dark");
     }
 
     public void setSummerTheme() {
-        preferences.putBoolean("DarkTheme", false);
+        prefs.setTheme("dark");
         themeSettings.updateSceneTheme.accept("summer");
     }
 
@@ -136,8 +148,13 @@ public class EditProfileController extends Controller {
         app.show(deleteUserControllerProvider.get());
     }
 
-    public void backToMenu() {
-        app.show(menuControllerProvider.get());
+    public void back() {
+        if (this.backController.equals("menu")) {
+            app.show(menuControllerProvider.get());
+        } else {
+            app.show(pauseControllerProvider.get());
+        }
+
     }
 
     public void setDe() {
@@ -149,7 +166,7 @@ public class EditProfileController extends Controller {
     }
 
     private void setLanguage(Locale locale) {
-        preferences.put("locale", locale.toLanguageTag());
+        prefs.put("locale", locale.toLanguageTag());
         resources = resourcesProvider.get();
         app.update();
     }

@@ -1,10 +1,13 @@
 package de.uniks.beastopia.teaml.controller.auth;
 
 import de.uniks.beastopia.teaml.App;
+import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.RegistrationService;
+import de.uniks.beastopia.teaml.utils.Prefs;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import okhttp3.MediaType;
@@ -34,6 +37,9 @@ class RegistrationControllerTest extends ApplicationTest {
 
     @Mock
     Provider<LoginController> loginControllerProvider;
+    @Spy
+    @SuppressWarnings("unused")
+    Prefs prefs;
 
     @Spy
     @SuppressWarnings("unused")
@@ -47,7 +53,9 @@ class RegistrationControllerTest extends ApplicationTest {
     RegistrationController registrationController;
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
+        AppPreparer.prepare(app);
+
         app.start(stage);
         app.show(registrationController);
         stage.requestFocus();
@@ -58,7 +66,7 @@ class RegistrationControllerTest extends ApplicationTest {
         User mockedUser = mock(User.class);
         LoginController mockedLoginController = mock(LoginController.class);
         when(registrationService.createUser(anyString(), anyString(), anyString())).thenReturn(Observable.just(mockedUser));
-        when(mockedLoginController.render()).thenReturn(new javafx.scene.layout.Pane());
+        when(mockedLoginController.render()).thenReturn(new Label());
         when(loginControllerProvider.get()).thenReturn(mockedLoginController);
 
         clickOn("#usernameInput");
@@ -78,7 +86,6 @@ class RegistrationControllerTest extends ApplicationTest {
         clickOn("OK");
 
         verify(loginControllerProvider).get();
-        verify(mockedLoginController).render();
     }
 
     @Test

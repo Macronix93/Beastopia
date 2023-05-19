@@ -1,6 +1,7 @@
 package de.uniks.beastopia.teaml.controller.ingame;
 
 import de.uniks.beastopia.teaml.App;
+import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
@@ -35,7 +36,9 @@ class IngameControllerTest extends ApplicationTest {
     IngameController ingameController;
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
+        AppPreparer.prepare(app);
+
         app.start(stage);
         app.show(ingameController);
         stage.requestFocus();
