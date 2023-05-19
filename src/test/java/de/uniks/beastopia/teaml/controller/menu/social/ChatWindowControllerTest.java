@@ -8,8 +8,8 @@ import de.uniks.beastopia.teaml.service.MessageService;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Label;
 import javafx.stage.Stage;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,12 +22,11 @@ import org.testfx.framework.junit5.ApplicationTest;
 import javax.inject.Provider;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.atomic.AtomicReference;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ChatWindowControllerTest extends ApplicationTest {
@@ -46,7 +45,10 @@ class ChatWindowControllerTest extends ApplicationTest {
     Provider<MessageBubbleController> messageBubbleControllerProvider;
 
     @Mock
-    MessageBubbleController messageBubbleController;
+    MessageBubbleController messageBubbleController1;
+
+    @Mock
+    MessageBubbleController messageBubbleController2;
 
     @Spy
     App app;
@@ -61,10 +63,25 @@ class ChatWindowControllerTest extends ApplicationTest {
         AppPreparer.prepare(app);
 
         Group group = new Group(null, null, "id", "name", null);
-        chatWindowController.setupChatWindowController("group", group);
+        chatWindowController.setupChatWindowController(group);
 
         Mockito.when(messageService.getMessagesFromGroup(any())).thenReturn(Observable.just(messages));
-        when(messageBubbleControllerProvider.get()).thenReturn(messageBubbleController);
+
+        AtomicReference<Integer> call = new AtomicReference<>(0);
+        when(messageBubbleControllerProvider.get()).thenAnswer(i -> {
+            if (call.get() == 0) {
+                call.set(1);
+                return messageBubbleController1;
+            } else {
+                return messageBubbleController2;
+            }
+        });
+
+        when(messageBubbleController1.setMessage(any())).thenReturn(messageBubbleController1);
+        when(messageBubbleController1.render()).thenReturn(new Label("hey"));
+
+        when(messageBubbleController2.setMessage(any())).thenReturn(messageBubbleController2);
+        when(messageBubbleController2.render()).thenReturn(new Label("du"));
 
         app.start(stage);
         app.show(chatWindowController);
@@ -73,21 +90,22 @@ class ChatWindowControllerTest extends ApplicationTest {
 
     @Test
     void fillInMessages() {
-        chatWindowController.fillInMessages(messages);
-
         for (Message message : messages) {
-            boolean messageFound = false;
-            for (Node node : chatWindowController.msgList.getChildren()) {
-                if (node instanceof Parent parent) {
-                    String text = parent.toString();
-
-                    if (text.contains(message.body())) {
-                        messageFound = true;
-                        break;
-                    }
-                }
-            }
-            assertTrue(messageFound);
+            assertTrue(showsMessage(message));
         }
+
+        app.stop();
+
+        verify(messageBubbleControllerProvider, times(2)).get();
+
+        verify(messageBubbleController1).setMessage(messages.get(0));
+        verify(messageBubbleController2).setMessage(messages.get(1));
+
+        verify(messageBubbleController1).render();
+        verify(messageBubbleController2).render();
+    }
+
+    boolean showsMessage(Message message) {
+        return lookup(message.body()).query() != null;
     }
 }

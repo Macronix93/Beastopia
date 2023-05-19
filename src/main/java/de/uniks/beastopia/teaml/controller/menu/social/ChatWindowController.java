@@ -16,8 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ChatWindowController extends Controller {
-
-    private String namespace;
     private String parentId;
     private final List<Message> messages = new ArrayList<>();
     @FXML
@@ -41,8 +39,7 @@ public class ChatWindowController extends Controller {
 
     }
 
-    public ChatWindowController setupChatWindowController(String namespace, Group group) {
-        this.namespace = namespace;
+    public ChatWindowController setupChatWindowController(Group group) {
         this.parentId = group._id();
         this.name = group.name();
         return this;
@@ -55,16 +52,11 @@ public class ChatWindowController extends Controller {
 
         btn.setText(name);
 
-        if (namespace.equals("global")) {
-            disposables.add(messageService.getMessagesFromFriend(parentId).observeOn(FX_SCHEDULER)
+        Observable<List<Message>> messagesFromGroup = messageService.getMessagesFromGroup(parentId);
+        if (messagesFromGroup != null) {
+            disposables.add(messagesFromGroup
+                    .observeOn(FX_SCHEDULER)
                     .subscribe(this::fillInMessages));
-        } else if (namespace.equals("group")) {
-            Observable<List<Message>> messagesFromGroup = messageService.getMessagesFromGroup(parentId);
-            if (messagesFromGroup != null) {
-                disposables.add(messagesFromGroup
-                        .observeOn(FX_SCHEDULER)
-                        .subscribe(this::fillInMessages));
-            }
         }
 
         return parent;
@@ -76,7 +68,7 @@ public class ChatWindowController extends Controller {
         super.destroy();
     }
 
-    public void fillInMessages(List<Message> msgs) {
+    private void fillInMessages(List<Message> msgs) {
         messages.clear();
         messages.addAll(msgs);
 
