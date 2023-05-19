@@ -2,19 +2,18 @@ package de.uniks.beastopia.teaml.controller.menu.social;
 
 import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
-import de.uniks.beastopia.teaml.rest.User;
+import de.uniks.beastopia.teaml.rest.Group;
+import de.uniks.beastopia.teaml.service.FriendListService;
+import de.uniks.beastopia.teaml.service.TokenStorage;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
-import javafx.scene.paint.Paint;
-import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -24,98 +23,82 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.prefs.Preferences;
 
-import static de.uniks.beastopia.teaml.rest.UserApiService.STATUS_ONLINE;
-
 public class ChatUserController extends Controller {
 
     @FXML
-    ImageView userAvatar;
+    HBox _rootElement;
     @FXML
-    Circle statusCircle;
+    Button pinGroupBtn;
+    @FXML
+    Button deleteGroupBtn;
+    @FXML
+    Button editGroupBtn;
     @FXML
     Text name;
-    @FXML
-    Button removeChatButton;
-    @FXML
-    Button pin;
-    @FXML
-    HBox _rootElement;
 
-    private User user;
+    private Group group;
+    private Boolean pinned;
+    private ImageView pinnedImg;
+    private ImageView notPinnedImg;
+    //private ImageView abort;
 
     @Inject
-    Provider<DirectMessageController> directMessageControllerProvider;
-
-    private Boolean userPin;
-    private ImageView pinned;
-    private ImageView notPinned;
-    private ImageView abort;
+    TokenStorage tokenStorage;
+    @Inject
+    FriendListService friendListService;
 
     @Inject
     Preferences preferences;
 
-    private Consumer<User> onPinChanged = null;
+    private final Consumer<Group> onPinChanged = null;
+
+    private Consumer<Group> onGroupClicked = null;
 
     @Inject
     public ChatUserController() {
 
     }
 
-
     @Override
     public void init() {
-        this.user = new User(null, null, null, "name", "status", null, null);
-        this.userPin = true;
-
         try {
-            pinned = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/filled_pin.png")));
-            notPinned = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/pin.png")));
-            abort = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/abort.png")));
+            pinnedImg = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/filled_pin.png")));
+            notPinnedImg = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/pin.png")));
         } catch (URISyntaxException | FileNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public ChatUserController setUser(User user, boolean userPin) {
-        this.user = user;
-        this.userPin = userPin;
+    public void setOnGroupClicked(Consumer<Group> onGroupClicked) {
+        this.onGroupClicked = onGroupClicked;
+    }
+
+    @SuppressWarnings("UnusedReturnValue")
+    public ChatUserController setGroup(Group group, boolean pinned) {
+        this.group = group;
+        this.pinned = pinned;
         return this;
     }
-
-    public void setOnPinChanged(Consumer<User> onPinChanged) {
-        this.onPinChanged = onPinChanged;
-    }
-
 
     @Override
     public Parent render() {
         Parent parent = super.render();
+        String otherID = group.members().get(0).equals(tokenStorage.getCurrentUser()._id())
+                ? group.members().get(1)
+                : group.members().get(0);
+        disposables.add(friendListService.getUser(otherID).subscribe(user -> name.setText(user.name())));
 
-        //TODO change avatar URL when avatar upload is implemented to individual link
-        try {
-            Image image = loadImage(Objects.requireNonNull(Main.class.getResource("assets/Lumnix_Logo_tr.png")),
-                    40.0, 40.0, false, false);
-            userAvatar.setImage(image);
-        } catch (FileNotFoundException | URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-
-        name.setText(user.name());
-        removeChatButton.setGraphic(abort);
-
-        if (user.status().equals(STATUS_ONLINE)) {
-            statusCircle.setFill(Paint.valueOf("green"));
+        if (this.pinned) {
+            this.pinGroupBtn.setGraphic(pinnedImg);
         } else {
-            statusCircle.setFill(Paint.valueOf("red"));
-        }
-
-        if (this.userPin) {
-            this.pin.setGraphic(pinned);
-        } else {
-            this.pin.setGraphic(notPinned);
+            this.pinGroupBtn.setGraphic(notPinnedImg);
         }
 
         return parent;
+    }
+
+    public void mouseClicked() {
+        onGroupClicked.accept(group);
     }
 
     private ImageView createImage(URL imageUrl) throws URISyntaxException, FileNotFoundException {
@@ -129,23 +112,26 @@ public class ChatUserController extends Controller {
         return new Image(new FileInputStream(new File(imageUrl.toURI())));
     }
 
-    @SuppressWarnings("SameParameterValue")
-    private static Image loadImage(URL imageUrl, double width, double height, boolean preserveRatio, boolean smooth) throws FileNotFoundException, URISyntaxException {
-        return new Image(new FileInputStream(new File(imageUrl.toURI())), width, height, preserveRatio, smooth);
+    public void editGroup() {
+        //TODO: show edit group dialog
     }
 
-    @FXML
-    public void pinUser() {
-        if (pin.getGraphic() == notPinned) {
-            pin.setGraphic(pinned);
-            preferences.putBoolean(this.user._id() + "_pinned", true);
+    public void deleteGroup() {
+        //TODO: delete group
+    }
+
+    //TODO: implement pinning feature
+    public void pinGroup() {
+        if (pinGroupBtn.getGraphic() == notPinnedImg) {
+            pinGroupBtn.setGraphic(pinnedImg);
+            preferences.putBoolean(this.group._id() + "_pinned", true);
         } else {
-            pin.setGraphic(notPinned);
-            preferences.putBoolean(this.user._id() + "_pinned", false);
+            pinGroupBtn.setGraphic(notPinnedImg);
+            preferences.putBoolean(this.group._id() + "_pinned", false);
         }
+        //noinspection ConstantValue
         if (onPinChanged != null) {
-            onPinChanged.accept(user);
+            onPinChanged.accept(group);
         }
     }
-
 }

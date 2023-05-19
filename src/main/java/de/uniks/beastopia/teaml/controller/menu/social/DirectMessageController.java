@@ -3,9 +3,11 @@ package de.uniks.beastopia.teaml.controller.menu.social;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.menu.MenuController;
 import de.uniks.beastopia.teaml.rest.Group;
+import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.FriendListService;
 import de.uniks.beastopia.teaml.service.GroupListService;
 import de.uniks.beastopia.teaml.service.MessageService;
+import de.uniks.beastopia.teaml.service.TokenStorage;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -45,6 +47,8 @@ public class DirectMessageController extends Controller {
 
     @Inject
     ChatListController chatListController;
+    @Inject
+    TokenStorage tokenStorage;
 
     @FXML
     public GridPane grid;
@@ -62,21 +66,43 @@ public class DirectMessageController extends Controller {
 
     }
 
-    public DirectMessageController setupDirectMessageController(@SuppressWarnings("unused") String namespace, @SuppressWarnings("unused") String parendId) {
+    public DirectMessageController setupDirectMessageController(User user) {
+        // check if group already exists
+        disposables.add(groupListService.getGroups()
+                .observeOn(FX_SCHEDULER)
+                .subscribe(groups -> {
+                    //noinspection ReassignedVariable
+                    Group existing = null;
+                    for (Group group : groups) {
+                        if (group.members().size() == 2 &&
+                                group.members().contains(user._id()) &&
+                                group.members().contains(tokenStorage.getCurrentUser()._id())) {
+                            existing = group;
+                            break;
+                        }
+                    }
+
+                    if (existing != null) {
+                        loadGroup(existing);
+                    } else {
+                        // create new group
+                        String groupName = groupListService.getGroupName(tokenStorage.getCurrentUser()._id(), user._id());
+                        disposables.add(groupListService.addGroup(groupName, List.of(tokenStorage.getCurrentUser()._id(), user._id()))
+                                .observeOn(FX_SCHEDULER)
+                                .subscribe(group -> {
+                                    chatListController.reload();
+                                    loadGroup(group);
+                                }));
+                    }
+                }));
+
         return this;
     }
 
     @Override
     public void init() {
         super.init();
-        chatListController.setOnGroupClicked(group -> {
-            currentGroup = group;
-            grid.getChildren().remove(rightSide);
-            ChatWindowController controller = chatWindowControllerProvider.get().setupChatWindowController(group);
-            controller.init();
-            rightSide = controller.render();
-            grid.add(rightSide, 1, 1);
-        });
+        chatListController.setOnGroupClicked(this::loadGroup);
     }
 
     @Override
@@ -115,5 +141,14 @@ public class DirectMessageController extends Controller {
 
         String message = chatInput.getText();
         disposables.add(messageService.sendMessageToGroup(currentGroup, message).subscribe(r -> chatInput.setText("")));
+    }
+
+    private void loadGroup(Group group) {
+        currentGroup = group;
+        grid.getChildren().remove(rightSide);
+        ChatWindowController controller = chatWindowControllerProvider.get().setupChatWindowController(group);
+        controller.init();
+        rightSide = controller.render();
+        grid.add(rightSide, 1, 1);
     }
 }
