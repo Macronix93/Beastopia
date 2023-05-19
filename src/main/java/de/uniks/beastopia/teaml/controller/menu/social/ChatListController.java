@@ -74,6 +74,9 @@ public class ChatListController extends Controller {
     }
 
     public void updateGroupList() {
+        if (groups.size() == 0) {
+            return;
+        }
 
         clearSubControllers();
 
@@ -82,7 +85,7 @@ public class ChatListController extends Controller {
             //noinspection StatementWithEmptyBody
             if (group.members().size() == 2 && (
                     group.name().equals(group.members().get(0) + "_" + group.members().get(1)))
-                    || group.name().equals(group.members().get(1) + "_" + group.members().get(0))) {
+                    || group.name().equals(group.members().get(0) + "_" + group.members().get(0))) {
               /*  ChatUserController chatUserController = chatUserControllerProvider.get();
                 subControllers.add(chatUserController);
                 chatList.getChildren().add(chatUserController.render());*/
