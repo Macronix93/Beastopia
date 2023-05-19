@@ -81,7 +81,7 @@ public class EditProfileController extends Controller {
     }
 
     public void setSummerTheme() {
-        prefs.setTheme("dark");
+        prefs.setTheme("summer");
         themeSettings.updateSceneTheme.accept("summer");
     }
 
