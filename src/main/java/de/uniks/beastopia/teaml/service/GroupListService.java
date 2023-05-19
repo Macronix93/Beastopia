@@ -25,12 +25,12 @@ public class GroupListService {
         return groupApiService.getGroups(null);
     }
 
-    public Observable<Group> getGroup(String id) {
-        return groupApiService.getGroup(id);
-    }
-
     public Observable<Group> addGroup(String name, List<String> members) {
         return groupApiService.createGroup(new CreateGroupDto(name, members));
+    }
+
+    public Observable<Group> getGroup(String id) {
+        return groupApiService.getGroup(id);
     }
 
     public Observable<Group> updateGroup(Group updatedGroup) {

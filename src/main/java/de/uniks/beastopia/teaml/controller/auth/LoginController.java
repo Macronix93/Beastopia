@@ -5,16 +5,16 @@ import de.uniks.beastopia.teaml.controller.menu.MenuController;
 import de.uniks.beastopia.teaml.service.AuthService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.utils.Dialog;
+import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 public class LoginController extends Controller {
@@ -26,8 +26,10 @@ public class LoginController extends Controller {
     public Button loginButton;
     @FXML
     public CheckBox rememberMe;
-
-
+    @FXML
+    public RadioButton selectEnglishLanguage;
+    @FXML
+    public RadioButton selectGermanLanguage;
     @Inject
     Provider<RegistrationController> registrationControllerProvider;
     @Inject
@@ -40,9 +42,13 @@ public class LoginController extends Controller {
     TokenStorage tokenStorage;
     @SuppressWarnings("unused")
     @Inject
+    Prefs prefs;
+    @Inject
     Provider<ResourceBundle> resourcesProvider;
 
     private BooleanBinding isInValid;
+    private final SimpleStringProperty username = new SimpleStringProperty();
+    private final SimpleStringProperty password = new SimpleStringProperty();
 
     @Inject
     public LoginController() {
@@ -56,6 +62,14 @@ public class LoginController extends Controller {
     @Override
     public Parent render() {
         final Parent parent = super.render();
+
+        if (prefs.getLocale().contains("de")) {
+            selectGermanLanguage.setSelected(true);
+        } else {
+            selectEnglishLanguage.setSelected(true);
+        }
+        usernameInput.textProperty().bindBidirectional(username);
+        passwordInput.textProperty().bindBidirectional(password);
 
         isInValid = usernameInput.textProperty().isEmpty()
                 .or(passwordInput.textProperty().length().lessThan(8));
@@ -80,4 +94,19 @@ public class LoginController extends Controller {
     public void register() {
         app.show(registrationControllerProvider.get());
     }
+
+    public void setDe() {
+        setLanguage(Locale.GERMAN);
+    }
+
+    public void setEn() {
+        setLanguage(Locale.ENGLISH);
+    }
+
+    private void setLanguage(Locale locale) {
+        prefs.setLocale(locale.toLanguageTag());
+        resources = resourcesProvider.get();
+        app.update();
+    }
+
 }
