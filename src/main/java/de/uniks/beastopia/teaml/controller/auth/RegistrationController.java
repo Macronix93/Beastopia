@@ -3,6 +3,7 @@ package de.uniks.beastopia.teaml.controller.auth;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.service.RegistrationService;
 import de.uniks.beastopia.teaml.utils.Dialog;
+import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
@@ -16,7 +17,6 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.prefs.Preferences;
 
 public class RegistrationController extends Controller {
 
@@ -40,7 +40,7 @@ public class RegistrationController extends Controller {
     @Inject
     RegistrationService registrationService;
     @Inject
-    Preferences preferences;
+    Prefs prefs;
     @Inject
     Provider<LoginController> loginControllerProvider;
 
@@ -62,16 +62,12 @@ public class RegistrationController extends Controller {
     public Parent render() {
         Parent parent = super.render();
 
-        String userLocale = Locale.getDefault().toLanguageTag();
-        if (!userLocale.equals("en-EN") && !userLocale.equals("de-DE")) {
-            userLocale = "en-EN";
-            isEnglish = true;
-        }
-
-        if (preferences.get("locale", userLocale).contains("de")) {
+        if (prefs.getLocale().contains("de")) {
             selectGermanLanguage.setSelected(true);
+            isEnglish = false;
         } else {
             selectEnglishLanguage.setSelected(true);
+            isEnglish = true;
         }
         usernameInput.textProperty().bindBidirectional(username);
         passwordInput.textProperty().bindBidirectional(password);
@@ -118,7 +114,7 @@ public class RegistrationController extends Controller {
     }
 
     private void setLanguage(Locale locale) {
-        preferences.put("locale", locale.toLanguageTag());
+        prefs.setLocale(locale.toLanguageTag());
         resources = resourcesProvider.get();
         app.update();
     }

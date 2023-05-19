@@ -5,6 +5,7 @@ import de.uniks.beastopia.teaml.controller.menu.MenuController;
 import de.uniks.beastopia.teaml.service.AuthService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.utils.Dialog;
+import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
@@ -15,7 +16,6 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.prefs.Preferences;
 
 public class LoginController extends Controller {
     @FXML
@@ -42,7 +42,7 @@ public class LoginController extends Controller {
     TokenStorage tokenStorage;
     @SuppressWarnings("unused")
     @Inject
-    Preferences preferences;
+    Prefs prefs;
     @Inject
     Provider<ResourceBundle> resourcesProvider;
 
@@ -63,12 +63,7 @@ public class LoginController extends Controller {
     public Parent render() {
         final Parent parent = super.render();
 
-        String userLocale = Locale.getDefault().toLanguageTag();
-        if (!userLocale.equals("en-EN") && !userLocale.equals("de-DE")) {
-            userLocale = "en-EN";
-        }
-
-        if (preferences.get("locale", userLocale).contains("de")) {
+        if (prefs.getLocale().contains("de")) {
             selectGermanLanguage.setSelected(true);
         } else {
             selectEnglishLanguage.setSelected(true);
@@ -109,7 +104,7 @@ public class LoginController extends Controller {
     }
 
     private void setLanguage(Locale locale) {
-        preferences.put("locale", locale.toLanguageTag());
+        prefs.setLocale(locale.toLanguageTag());
         resources = resourcesProvider.get();
         app.update();
     }

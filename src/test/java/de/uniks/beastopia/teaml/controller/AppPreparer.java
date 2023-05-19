@@ -28,6 +28,21 @@ public class AppPreparer {
         app.setMainComponent(mockedMainComponent);
     }
 
+    public static void prepare(App app, Prefs prefs) {
+        when(prefs.getLocale()).thenReturn("en");
+        MainComponent mockedMainComponent = mock();
+        MainComponent realMainComponent = DaggerMainComponent.builder().mainApp(app).build();
+        LoginController mockedLoginController = mock();
+        when(mockedLoginController.render()).thenReturn(new Label());
+        Prefs mockedPrefs = mock(Prefs.class);
+        when(mockedPrefs.isRememberMe()).thenReturn(false);
+        when(mockedPrefs.getTheme()).thenReturn("dark");
+        when(mockedMainComponent.loginController()).thenReturn(mockedLoginController);
+        when(mockedMainComponent.prefs()).thenReturn(mockedPrefs);
+        when(mockedMainComponent.themeSettings()).thenAnswer(i -> realMainComponent.themeSettings());
+        app.setMainComponent(mockedMainComponent);
+    }
+
     public static void prepare(App app, EventListener eventListener) {
         when(eventListener.listen(any(), any())).thenReturn(Observable.empty());
         MainComponent mockedMainComponent = mock();

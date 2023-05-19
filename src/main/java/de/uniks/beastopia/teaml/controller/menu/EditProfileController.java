@@ -15,7 +15,6 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.prefs.Preferences;
 
 
 public class EditProfileController extends Controller {
@@ -57,8 +56,6 @@ public class EditProfileController extends Controller {
     @Inject
     ThemeSettings themeSettings;
 
-    @FXML
-    private TextField usernameField;
     private String backController;
 
     private final SimpleStringProperty username = new SimpleStringProperty();
@@ -79,12 +76,8 @@ public class EditProfileController extends Controller {
     public Parent render() {
         Parent parent = super.render();
 
-        String userLocale = Locale.getDefault().toLanguageTag();
-        if (!userLocale.equals("en-EN") && !userLocale.equals("de-DE")) {
-            userLocale = "en-EN";
-        }
 
-        if (prefs.get("locale", userLocale).contains("de")) {
+        if (prefs.getLocale().contains("de")) {
             selectGermanLanguage.setSelected(true);
         } else {
             selectEnglishLanguage.setSelected(true);
@@ -94,8 +87,8 @@ public class EditProfileController extends Controller {
         passwordRepeatInput.textProperty().bindBidirectional(passwordRepeat);
 
         usernameInput.setText(tokenStorage.getCurrentUser().name());
-        darkRadioButton.setSelected(prefs.getBoolean("DarkTheme", false));
-        summerRadioButton.setSelected(!prefs.getBoolean("DarkTheme", false));
+        darkRadioButton.setSelected(prefs.getTheme().equals("dark"));
+        summerRadioButton.setSelected(!prefs.getTheme().equals("dark"));
         return parent;
     }
 
@@ -166,7 +159,7 @@ public class EditProfileController extends Controller {
     }
 
     private void setLanguage(Locale locale) {
-        prefs.put("locale", locale.toLanguageTag());
+        prefs.setLocale(locale.toLanguageTag());
         resources = resourcesProvider.get();
         app.update();
     }
