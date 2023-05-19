@@ -1,8 +1,10 @@
 package de.uniks.beastopia.teaml.controller.menu.social;
 
 import de.uniks.beastopia.teaml.App;
+import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.controller.auth.LoginController;
 import de.uniks.beastopia.teaml.controller.menu.MenuController;
+import de.uniks.beastopia.teaml.sockets.EventListener;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
@@ -33,12 +35,22 @@ class DirectMessageControllerTest extends ApplicationTest {
     @InjectMocks
     DirectMessageController directMessageController;
 
+    @Mock
+    ChatListController chatListController;
+
+    @Mock
+    EventListener eventListener;
+
     @Spy
     @SuppressWarnings("unused")
     ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang");
 
     @Override
     public void start(Stage stage) throws Exception {
+        AppPreparer.prepare(app);
+
+        when(chatListController.render()).thenReturn(new Label("chatList"));
+
         app.start(stage);
         app.show(directMessageController);
         stage.requestFocus();
@@ -61,6 +73,11 @@ class DirectMessageControllerTest extends ApplicationTest {
 
     @Test
     void sendMessage() {
+    }
+
+    @Test
+    void title() {
+        assertEquals(app.getStage().getTitle(), resources.getString("titleDirectMessage"));
     }
 
 }
