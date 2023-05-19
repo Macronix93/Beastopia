@@ -39,7 +39,7 @@ public class ChatWindowController extends Controller {
 
     }
 
-    public ChatWindowController setupChatWindowController(String namespace, Group group) {
+    public ChatWindowController setupChatWindowController(Group group) {
         this.group = group;
         return this;
     }
@@ -56,7 +56,7 @@ public class ChatWindowController extends Controller {
     public Parent render() {
         Parent parent = super.render();
 
-        Observable<List<Message>> messagesFromGroup = messageService.getMessagesFromGroup(parentId);
+        Observable<List<Message>> messagesFromGroup = messageService.getMessagesFromGroup(group._id());
         if (messagesFromGroup != null) {
             disposables.add(messagesFromGroup
                     .observeOn(FX_SCHEDULER)
