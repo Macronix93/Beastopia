@@ -38,10 +38,6 @@ public class FriendListService {
         return userApiService.getUser(id);
     }
 
-    public boolean isFriend(User user) {
-        return tokenStorage.getCurrentUser().friends().contains(user._id());
-    }
-
     public Observable<List<User>> getFriends() {
         if (tokenStorage.getCurrentUser().friends().isEmpty())
             return Observable.just(List.of());
@@ -57,6 +53,10 @@ public class FriendListService {
                     case Online -> "online";
                     case Offline -> "offline";
                 });
+    }
+
+    public boolean isFriend(User user) {
+        return tokenStorage.getCurrentUser().friends().contains(user._id());
     }
 
     public Observable<User> addFriend(User friend) {
