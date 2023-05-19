@@ -6,8 +6,6 @@ import de.uniks.beastopia.teaml.rest.Group;
 import de.uniks.beastopia.teaml.rest.Message;
 import de.uniks.beastopia.teaml.service.MessageService;
 import io.reactivex.rxjava3.core.Observable;
-import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
