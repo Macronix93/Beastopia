@@ -19,7 +19,7 @@ import java.util.List;
 
 public class FriendListController extends Controller {
     private final List<Controller> subControllers = new ArrayList<>();
-    private final List<User> allUsers = new ArrayList<>();
+    public static final List<User> ALL_USERS = new ArrayList<>();
     @FXML
     public TextField searchName;
     @FXML
@@ -50,8 +50,8 @@ public class FriendListController extends Controller {
     public Parent render() {
         Parent parent = super.render();
         disposables.add(friendListService.getUsers().subscribe(users -> {
-            allUsers.clear();
-            allUsers.addAll(users);
+            ALL_USERS.clear();
+            ALL_USERS.addAll(users);
             updateUserList();
         }));
         return parent;
@@ -112,7 +112,7 @@ public class FriendListController extends Controller {
         List<User> filteredUsers = new ArrayList<>();
         List<Parent> filteredParents = new ArrayList<>();
 
-        for (User user : allUsers) {
+        for (User user : ALL_USERS) {
             if (user.name().toLowerCase().startsWith(searchName.getText().toLowerCase())
                     && !user._id().equals(tokenStorage.getCurrentUser()._id())) {
                 filteredUsers.add(user);
@@ -131,6 +131,8 @@ public class FriendListController extends Controller {
         for (User user : filteredUsers) {
             boolean friend = tokenStorage.getCurrentUser().friends().contains(user._id());
             FriendController friendController = friendControllerProvider.get();
+            boolean friendPinned = prefs.isPinned(user);
+            friendController.setUser(user, friendPinned);
             friendController.checkFriend(friend);
             friendController.init();
             friendController.setOnFriendChanged(user_ -> {
@@ -138,8 +140,6 @@ public class FriendListController extends Controller {
                 updateUserList();
             });
             friendController.setOnPinChanged(user_ -> updateUserList());
-            boolean friendPinned = prefs.isPinned(user);
-            friendController.setUser(user, friendPinned);
             filteredParents.add(friendController.render());
         }
         return filteredParents;

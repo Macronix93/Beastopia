@@ -56,10 +56,15 @@ public class AuthService {
         });
     }
 
+    public Observable<User> goOffline() {
+        return userApiService.updateUser(tokenStorage.getCurrentUser()._id(), new UpdateUserDto(null, UserApiService.STATUS_OFFLINE, null, null, null)).map(user -> tokenStorage.getCurrentUser());
+    }
+
     public Observable<User> updatePassword(String password) {
         return userApiService.updateUser(tokenStorage.getCurrentUser()._id(), new UpdateUserDto(null, null, null, null, password));
     }
 
+    @SuppressWarnings("unused")
     public Observable<User> updateAvatar(String avatar) {
         return userApiService.updateUser(tokenStorage.getCurrentUser()._id(), new UpdateUserDto(null, null, avatar, null, null));
     }

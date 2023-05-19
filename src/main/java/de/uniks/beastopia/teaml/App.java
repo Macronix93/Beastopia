@@ -9,12 +9,16 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class App extends Application {
     private MainComponent mainComponent;
     private Stage stage;
     private Controller controller;
+    private Scene scene;
+    private final List<Runnable> cleanupTasks = new ArrayList<>();
 
     public App() {
         this.mainComponent = DaggerMainComponent.builder().mainApp(this).build();
@@ -30,6 +34,10 @@ public class App extends Application {
 
     public Stage getStage() {
         return stage;
+    }
+
+    public void addCleanupTask(Runnable task) {
+        cleanupTasks.add(task);
     }
 
     @Override
@@ -78,6 +86,7 @@ public class App extends Application {
 
     @Override
     public void stop() {
+        cleanupTasks.forEach(Runnable::run);
         cleanup();
     }
 

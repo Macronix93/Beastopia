@@ -5,6 +5,7 @@ import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.rest.Group;
 import de.uniks.beastopia.teaml.rest.Message;
 import de.uniks.beastopia.teaml.service.MessageService;
+import de.uniks.beastopia.teaml.sockets.EventListener;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
@@ -47,9 +48,13 @@ class ChatWindowControllerTest extends ApplicationTest {
 
     @Mock
     MessageBubbleController messageBubbleController2;
+    @Mock
+    EventListener eventListener;
 
     @Spy
     App app;
+
+    private Group group;
 
     List<Message> messages = List.of(
             new Message(null, null, "0", null, "hey"),
@@ -58,9 +63,9 @@ class ChatWindowControllerTest extends ApplicationTest {
 
     @Override
     public void start(Stage stage) {
-        AppPreparer.prepare(app);
+        AppPreparer.prepare(app, eventListener);
 
-        Group group = new Group(null, null, "id", "name", null);
+        group = new Group(null, null, "id", "name", null);
         chatWindowController.setupChatWindowController(group);
 
         Mockito.when(messageService.getMessagesFromGroup(any())).thenReturn(Observable.just(messages));
@@ -75,10 +80,10 @@ class ChatWindowControllerTest extends ApplicationTest {
             }
         });
 
-        when(messageBubbleController1.setMessage(any())).thenReturn(messageBubbleController1);
+        when(messageBubbleController1.setMessage(eq(group), any())).thenReturn(messageBubbleController1);
         when(messageBubbleController1.render()).thenReturn(new Label("hey"));
 
-        when(messageBubbleController2.setMessage(any())).thenReturn(messageBubbleController2);
+        when(messageBubbleController2.setMessage(eq(group), any())).thenReturn(messageBubbleController2);
         when(messageBubbleController2.render()).thenReturn(new Label("du"));
 
         app.start(stage);
@@ -96,8 +101,8 @@ class ChatWindowControllerTest extends ApplicationTest {
 
         verify(messageBubbleControllerProvider, times(2)).get();
 
-        verify(messageBubbleController1).setMessage(messages.get(0));
-        verify(messageBubbleController2).setMessage(messages.get(1));
+        verify(messageBubbleController1).setMessage(group, messages.get(0));
+        verify(messageBubbleController2).setMessage(group, messages.get(1));
 
         verify(messageBubbleController1).render();
         verify(messageBubbleController2).render();

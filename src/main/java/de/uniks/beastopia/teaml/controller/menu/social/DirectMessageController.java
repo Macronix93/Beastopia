@@ -2,6 +2,7 @@ package de.uniks.beastopia.teaml.controller.menu.social;
 
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.menu.MenuController;
+import de.uniks.beastopia.teaml.rest.Group;
 import de.uniks.beastopia.teaml.service.FriendListService;
 import de.uniks.beastopia.teaml.service.GroupListService;
 import de.uniks.beastopia.teaml.service.MessageService;
@@ -50,6 +51,7 @@ public class DirectMessageController extends Controller {
     @FXML
     public Label chatName; //this label shows the name of the person/group you are chatting with
     private Node rightSide;
+    private Group currentGroup;
 
     @Inject
     public DirectMessageController() {
@@ -64,8 +66,11 @@ public class DirectMessageController extends Controller {
     public void init() {
         super.init();
         chatListController.setOnGroupClicked(group -> {
+            currentGroup = group;
             grid.getChildren().remove(rightSide);
-            rightSide = chatWindowControllerProvider.get().setupChatWindowController(group).render();
+            ChatWindowController controller = chatWindowControllerProvider.get().setupChatWindowController(group);
+            controller.init();
+            rightSide = controller.render();
             grid.add(rightSide, 1, 1);
         });
     }
@@ -100,6 +105,11 @@ public class DirectMessageController extends Controller {
     }
 
     public void sendMessage() {
-        //ToDo send Message
+        if (currentGroup == null) {
+            return;
+        }
+
+        String message = chatInput.getText();
+        disposables.add(messageService.sendMessageToGroup(currentGroup, message).subscribe(r -> chatInput.setText("")));
     }
 }

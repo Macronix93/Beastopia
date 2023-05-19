@@ -6,6 +6,7 @@ import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.FriendListService;
 import de.uniks.beastopia.teaml.utils.Prefs;
+import de.uniks.beastopia.teaml.sockets.EventListener;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -59,6 +60,8 @@ public class FriendController extends Controller {
     FriendListService friendListService;
     @Inject
     Prefs prefs;
+    @Inject
+    EventListener eventListener;
 
     private Consumer<User> onFriendChanged = null;
     private Consumer<User> onPinChanged = null;
@@ -71,6 +74,13 @@ public class FriendController extends Controller {
 
     @Override
     public void init() {
+        disposables.add(eventListener.listen("users." + user._id() + ".updated", User.class)
+                .observeOn(FX_SCHEDULER)
+                .subscribe(event -> {
+                    final User user = event.data();
+                    updateOnlineStatus(user);
+                }));
+
         try {
             pinned = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/filled_pin.png")));
             notPinned = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/pin.png")));
@@ -113,12 +123,7 @@ public class FriendController extends Controller {
         }
 
         name.setText(user.name());
-
-        if (user.status().equals(STATUS_ONLINE)) {
-            statusCircle.setFill(Paint.valueOf("green"));
-        } else {
-            statusCircle.setFill(Paint.valueOf("red"));
-        }
+        updateOnlineStatus(user);
 
         if (friend) {
             if (this.friendPin) {
@@ -139,6 +144,14 @@ public class FriendController extends Controller {
         }
 
         return parent;
+    }
+
+    private void updateOnlineStatus(User user) {
+        if (user.status().equals(STATUS_ONLINE)) {
+            statusCircle.setFill(Paint.valueOf("green"));
+        } else {
+            statusCircle.setFill(Paint.valueOf("red"));
+        }
     }
 
     private ImageView createImage(URL imageUrl) throws URISyntaxException, FileNotFoundException {
