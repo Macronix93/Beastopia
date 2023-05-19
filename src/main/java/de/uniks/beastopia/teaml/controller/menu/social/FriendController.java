@@ -5,8 +5,8 @@ import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.FriendListService;
-import de.uniks.beastopia.teaml.utils.Prefs;
 import de.uniks.beastopia.teaml.sockets.EventListener;
+import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -19,11 +19,8 @@ import javafx.scene.text.Text;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -82,10 +79,10 @@ public class FriendController extends Controller {
                 }));
 
         try {
-            pinned = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/filled_pin.png")));
-            notPinned = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/pin.png")));
-            addImage = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/plus.png")));
-            removeImage = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/minus.png")));
+            pinned = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/filled_pin.png")).toString());
+            notPinned = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/pin.png")).toString());
+            addImage = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/plus.png")).toString());
+            removeImage = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/minus.png")).toString());
         } catch (URISyntaxException | FileNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -115,7 +112,7 @@ public class FriendController extends Controller {
 
         //TODO change avatar URL when avatar upload is implemented to individual link
         try {
-            Image image = loadImage(Objects.requireNonNull(Main.class.getResource("assets/Lumnix_Logo_tr.png")),
+            Image image = loadImage(Objects.requireNonNull(Main.class.getResource("assets/Lumnix_Logo_tr.png")).toString(),
                     40.0, 40.0, false, false);
             friendAvatar.setImage(image);
         } catch (FileNotFoundException | URISyntaxException e) {
@@ -154,20 +151,16 @@ public class FriendController extends Controller {
         }
     }
 
-    private ImageView createImage(URL imageUrl) throws URISyntaxException, FileNotFoundException {
-        ImageView imageView = new ImageView(loadImage(imageUrl));
+    private ImageView createImage(String imageUrl) throws URISyntaxException, FileNotFoundException {
+        ImageView imageView = new ImageView(imageUrl);
         imageView.setFitHeight(25.0);
         imageView.setFitWidth(25.0);
         return imageView;
     }
 
-    private static Image loadImage(URL imageUrl) throws FileNotFoundException, URISyntaxException {
-        return new Image(new FileInputStream(new File(imageUrl.toURI())));
-    }
-
     @SuppressWarnings("SameParameterValue")
-    private static Image loadImage(URL imageUrl, double width, double height, boolean preserveRatio, boolean smooth) throws FileNotFoundException, URISyntaxException {
-        return new Image(new FileInputStream(new File(imageUrl.toURI())), width, height, preserveRatio, smooth);
+    private static Image loadImage(String imageUrl, double width, double height, boolean preserveRatio, boolean smooth) throws FileNotFoundException, URISyntaxException {
+        return new Image(imageUrl, width, height, preserveRatio, smooth);
     }
 
     @FXML
