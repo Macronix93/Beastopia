@@ -65,6 +65,7 @@ public class FriendController extends Controller {
 
     private Consumer<User> onFriendChanged = null;
     private Consumer<User> onPinChanged = null;
+    private boolean friend;
 
     @Inject
     public FriendController() {
@@ -94,6 +95,10 @@ public class FriendController extends Controller {
         this.onFriendChanged = onFriendChanged;
     }
 
+    public void checkFriend(boolean friend) {
+        this.friend = friend;
+    }
+
     public void setOnPinChanged(Consumer<User> onPinChanged) {
         this.onPinChanged = onPinChanged;
     }
@@ -120,10 +125,16 @@ public class FriendController extends Controller {
         name.setText(user.name());
         updateOnlineStatus(user);
 
-        if (this.friendPin) {
-            this.pin.setGraphic(pinned);
+        if (friend) {
+            if (this.friendPin) {
+                this.pin.setGraphic(pinned);
+            } else {
+                this.pin.setGraphic(notPinned);
+            }
         } else {
-            this.pin.setGraphic(notPinned);
+            this.pin.setGraphic(notPinned); //that buttons align
+            this.pin.setVisible(false);
+            this.pin.setDisable(true);
         }
 
         if (friendListService.isFriend(user)) {
