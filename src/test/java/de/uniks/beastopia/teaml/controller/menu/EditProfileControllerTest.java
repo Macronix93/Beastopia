@@ -18,11 +18,12 @@ import org.testfx.framework.junit5.ApplicationTest;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -40,25 +41,25 @@ class EditProfileControllerTest extends ApplicationTest {
     AuthService authService;
     @Mock
     TokenStorage tokenStorage;
-    @Mock
+    @Spy
     ThemeSettings themeSettings;
     @Spy
-    App app = new App(null);
+    App app;
     @Spy
-    ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang");
+    ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang", Locale.forLanguageTag("en"));
 
     @InjectMocks
     EditProfileController editProfileController;
 
 
-
-
     @Override
     public void start(Stage stage) {
-        /*AppPreparer.prepare(app);
+        AppPreparer.prepare(app, prefs);
+        when(prefs.getTheme()).thenReturn("dark");
 
         User mockedUser = mock(User.class);
-        when(tokenStorage.getCurrentUser()).thenReturn(mockedUser);*/
+        when(tokenStorage.getCurrentUser()).thenReturn(mockedUser);
+        when(mockedUser.name()).thenReturn("Alice");
 
         app.start(stage);
         app.show(editProfileController);
@@ -66,8 +67,35 @@ class EditProfileControllerTest extends ApplicationTest {
     }
 
     @Test
+    public void setDarkTheme() {
+        doNothing().when(prefs).setTheme(any());
+        Consumer<String> mocked = mock();
+        doNothing().when(mocked).accept(any());
+        themeSettings.updateSceneTheme = mocked;
+
+        clickOn("#summerRadioButton");
+        clickOn("#darkRadioButton");
+
+        verify(prefs, times(1)).setTheme("dark");
+        verify(mocked, times(1)).accept("dark");
+    }
+
+    @Test
+    public void setSummerTheme() {
+        doNothing().when(prefs).setTheme(any());
+        Consumer<String> mocked = mock();
+        doNothing().when(mocked).accept(any());
+        themeSettings.updateSceneTheme = mocked;
+
+        clickOn("#summerRadioButton");
+
+        verify(prefs, times(1)).setTheme("summer");
+        verify(mocked, times(1)).accept("summer");
+    }
+
+    @Test
     void title() {
-        assertEquals(app.getStage().getTitle(), resources.getString("titleEditProfile"));
+        assertEquals(resources.getString("titleEditProfile"), app.getStage().getTitle());
     }
 
 
