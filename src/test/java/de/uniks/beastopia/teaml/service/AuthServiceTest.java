@@ -126,6 +126,7 @@ class AuthServiceTest {
         String newPassword = "newPassword";
         User mockedUser = mock(User.class);
         when(tokenStorage.getCurrentUser()).thenReturn(mockedUser);
+        when(mockedUser._id()).thenReturn("Testid");
         when(userApiService.updateUser(anyString(), any(UpdateUserDto.class))).thenReturn(Observable.just(mockedUser));
 
         // action:
@@ -134,22 +135,22 @@ class AuthServiceTest {
         //check mocks
         assertEquals(mockedUser, updateUserObservable.blockingFirst());
         verify(tokenStorage).getCurrentUser();
-        verify(userApiService).updateUser(mockedUser._id(), new UpdateUserDto(null, null, null, null, newPassword));
+        verify(userApiService).updateUser("Testid", new UpdateUserDto(null, null, null, null, newPassword));
     }
 
     @Test
     void deleteUser() {
         // define mocks:
-        User currentUser = new User(null, null, null, null, null, null, null);
+        User currentUser = new User(null, null, "Testid", null, null, null, null);
         when(tokenStorage.getCurrentUser()).thenReturn(currentUser);
-        doNothing().when(userApiService).deleteUser(currentUser._id());
+        when(userApiService.deleteUser("Testid")).thenReturn(Observable.empty());
 
         // action:
         Observable<User> deleteUserObservable = authService.deleteUser();
 
         //check mocks
         assertEquals(currentUser, deleteUserObservable.blockingFirst());
-        verify(tokenStorage).getCurrentUser();
-        verify(userApiService).deleteUser(currentUser._id());
+        verify(tokenStorage, times(2)).getCurrentUser();
+        verify(userApiService).deleteUser("Testid");
     }
 }
