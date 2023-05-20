@@ -6,8 +6,8 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-<GridPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/17.0.2-ea"
-          xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.uniks.beastopia.teaml.controller.auth.LoginController">
+<GridPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="de.uniks.beastopia.teaml.controller.auth.LoginController">
     <columnConstraints>
         <ColumnConstraints hgrow="SOMETIMES" maxWidth="508.0" minWidth="10.0" percentWidth="30.0" prefWidth="292.0"/>
         <ColumnConstraints hgrow="SOMETIMES" maxWidth="635.0" minWidth="10.0" percentWidth="50.0" prefWidth="452.0"/>
@@ -35,7 +35,8 @@
                 </font>
             </Text>
             <HBox spacing="15.0">
-                <RadioButton mnemonicParsing="false" selected="true" text="%English">
+                <RadioButton fx:id="selectEnglishLanguage" mnemonicParsing="false" onAction="#setEn" selected="true"
+                             text="%English">
                     <font>
                         <Font size="20.0"/>
                     </font>
@@ -44,7 +45,8 @@
                         <ToggleGroup fx:id="language"/>
                     </toggleGroup>
                 </RadioButton>
-                <RadioButton mnemonicParsing="false" text="%German" toggleGroup="$language">
+                <RadioButton fx:id="selectGermanLanguage" mnemonicParsing="false" onAction="#setDe" text="%German"
+                             toggleGroup="$language">
                     <font>
                         <Font size="20.0"/>
                     </font>
@@ -89,8 +91,7 @@
                 </Text>
                 <!--suppress JavaFxUnresolvedFxIdReference -->
                 <Button fx:id="registerButton" mnemonicParsing="false" onAction="#register"
-                        style="-fx-background-color: transparent;"
-                        text="%SignUp" textFill="#0430c3" underline="true">
+                        style="-fx-background-color: transparent;" text="%SignUp" textFill="#0430c3" underline="true">
                     <font>
                         <Font size="15.0"/>
                     </font>

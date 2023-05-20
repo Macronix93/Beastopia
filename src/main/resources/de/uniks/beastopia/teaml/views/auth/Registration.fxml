@@ -35,7 +35,8 @@
                 </font>
             </Text>
             <HBox spacing="15.0">
-                <RadioButton mnemonicParsing="false" selected="true" text="%English">
+                <RadioButton fx:id="selectEnglishLanguage" mnemonicParsing="false" onAction="#setEn" selected="true"
+                             text="%English">
                     <font>
                         <Font size="20.0"/>
                     </font>
@@ -44,7 +45,8 @@
                         <ToggleGroup fx:id="language"/>
                     </toggleGroup>
                 </RadioButton>
-                <RadioButton mnemonicParsing="false" text="%German" toggleGroup="$language">
+                <RadioButton fx:id="selectGermanLanguage" mnemonicParsing="false" onAction="#setDe" text="%German"
+                             toggleGroup="$language">
                     <font>
                         <Font size="20.0"/>
                     </font>
@@ -102,9 +104,8 @@
                     </font>
                 </Text>
                 <!--suppress JavaFxUnresolvedFxIdReference -->
-                <Button fx:id="loginButton" mnemonicParsing="false" onAction="#switchToSignIn"
-                        style="-fx-background-color: transparent;" text="%SignIn" textFill="#0430c3"
-                        underline="true">
+                <Button fx:id="login" mnemonicParsing="false" onAction="#switchToSignIn"
+                        style="-fx-background-color: transparent;" text="%SignIn" textFill="#0430c3" underline="true">
                     <font>
                         <Font size="15.0"/>
                     </font>

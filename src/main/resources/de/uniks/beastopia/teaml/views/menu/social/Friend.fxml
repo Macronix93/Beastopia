@@ -9,7 +9,7 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Text?>
 
-<HBox fx:id="_rootElement" alignment="CENTER" prefHeight="60.0" prefWidth="265.0" style="-fx-border-color: black; -fx-border-width: 1;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.uniks.beastopia.teaml.controller.menu.social.FriendController">
+<HBox fx:id="_rootElement" alignment="CENTER" prefHeight="60.0" prefWidth="265.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.uniks.beastopia.teaml.controller.menu.social.FriendController">
     <VBox alignment="CENTER" prefWidth="10000.0">
         <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity">
             <ImageView fx:id="friendAvatar" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true" />

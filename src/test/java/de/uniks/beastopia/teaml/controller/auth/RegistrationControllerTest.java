@@ -23,6 +23,7 @@ import retrofit2.HttpException;
 import retrofit2.Response;
 
 import javax.inject.Provider;
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -37,14 +38,14 @@ class RegistrationControllerTest extends ApplicationTest {
 
     @Mock
     Provider<LoginController> loginControllerProvider;
-    @Spy
+    @Mock
     @SuppressWarnings("unused")
     Prefs prefs;
 
     @Spy
     @SuppressWarnings("unused")
     final
-    ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang");
+    ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang", Locale.forLanguageTag("en"));
 
     @Spy
     App app;
@@ -54,7 +55,7 @@ class RegistrationControllerTest extends ApplicationTest {
 
     @Override
     public void start(Stage stage) {
-        AppPreparer.prepare(app);
+        AppPreparer.prepare(app, prefs);
 
         app.start(stage);
         app.show(registrationController);
@@ -79,7 +80,7 @@ class RegistrationControllerTest extends ApplicationTest {
         clickOn("#signUpButton");
 
         Node dialogPane = lookup(".dialog-pane").query();
-        from(dialogPane).lookup((Text t) -> t.getText().startsWith("Registration successful")).query();
+        from(dialogPane).lookup((Text t) -> t.getText().startsWith("Registration successful!")).query();
         verify(registrationService).createUser(eq("Lonartie"), any(), eq("12345678"));
 
         // click on dialog ok button
@@ -126,7 +127,7 @@ class RegistrationControllerTest extends ApplicationTest {
         when(loginControllerProvider.get()).thenReturn(mocked);
         doNothing().when(app).show(mocked);
 
-        clickOn("#loginButton");
+        clickOn("#login");
 
         verify(app).show(mocked);
     }

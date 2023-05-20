@@ -3,6 +3,7 @@ package de.uniks.beastopia.teaml.utils;
 import de.uniks.beastopia.teaml.rest.User;
 
 import javax.inject.Inject;
+import java.util.Locale;
 import java.util.prefs.Preferences;
 
 public class Prefs {
@@ -43,5 +44,18 @@ public class Prefs {
 
     public void setTheme(String theme) {
         preferences.putBoolean("DarkTheme", theme.equals("dark"));
+    }
+
+    public String getLocale() {
+        String userLocale = Locale.getDefault().toLanguageTag();
+        if (!userLocale.equals("en-EN") && !userLocale.equals("de-DE")) {
+            userLocale = "en-EN";
+        }
+
+        return preferences.get("locale", userLocale);
+    }
+
+    public void setLocale(String locale) {
+        preferences.put("locale", locale);
     }
 }

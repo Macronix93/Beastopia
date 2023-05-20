@@ -8,55 +8,50 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0"
-      prefWidth="800.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="de.uniks.beastopia.teaml.controller.menu.MenuController">
+<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.uniks.beastopia.teaml.controller.menu.MenuController">
    <VBox alignment="BOTTOM_CENTER" prefHeight="600.0" prefWidth="9800.0">
       <Button fx:id="logoutBtn" mnemonicParsing="false" onAction="#logout" text="%logout">
          <VBox.margin>
-            <Insets bottom="5.0"/>
+            <Insets bottom="5.0" />
          </VBox.margin>
       </Button>
    </VBox>
-   <VBox prefHeight="500.0" prefWidth="10000.0" spacing="15.0"
-         style="-fx-border-color: black; -fx-border-width: 2; -fx-border-radius: 15;">
+   <VBox fx:id="left" prefHeight="500.0" prefWidth="10000.0" spacing="15.0">
       <HBox.margin>
-         <Insets bottom="50.0" top="50.0"/>
+         <Insets bottom="50.0" top="50.0" />
       </HBox.margin>
       <VBox alignment="CENTER" prefHeight="9000.0" prefWidth="10000.0">
-         <ImageView fx:id="banner" fitHeight="50.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true"/>
+         <ImageView fx:id="banner" fitHeight="50.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
       </VBox>
       <HBox prefHeight="10000.0" prefWidth="10000.0">
          <VBox alignment="CENTER" prefHeight="200.0" prefWidth="9500.0">
-            <ImageView fx:id="userAvatar" fitHeight="75.0" fitWidth="75.0" pickOnBounds="true"
-                       preserveRatio="true"/>
+            <ImageView fx:id="userAvatar" fitHeight="75.0" fitWidth="75.0" pickOnBounds="true" preserveRatio="true" />
          </VBox>
          <VBox prefHeight="200.0" prefWidth="9600.0">
             <Text fx:id="userName" strokeType="OUTSIDE" strokeWidth="0.0">
                <VBox.margin>
-                  <Insets left="25.0" top="15.0"/>
+                  <Insets left="25.0" top="15.0" />
                </VBox.margin>
             </Text>
             <Button fx:id="editProfileBtn" mnemonicParsing="false" onAction="#editProfileButtonPressed">
                <VBox.margin>
-                  <Insets left="25.0" top="5.0"/>
+                  <Insets left="25.0" top="5.0" />
                </VBox.margin>
                <graphic>
                   <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                     <Image url="@../../assets/buttons/edit.png"/>
+                     <Image url="@../../assets/buttons/edit.png" />
                   </ImageView>
                </graphic>
             </Button>
          </VBox>
       </HBox>
-      <VBox fx:id="regionContainer" prefHeight="10200.0" prefWidth="10000.0"/>
+      <VBox fx:id="regionContainer" prefHeight="10200.0" prefWidth="10000.0" />
    </VBox>
-   <VBox prefHeight="600.0" prefWidth="9800.0"/>
-   <VBox fx:id="friendListContainer" prefHeight="500.0" prefWidth="10000.0" spacing="15.0"
-         style="-fx-border-color: black; -fx-border-width: 2; -fx-border-radius: 15;">
+   <VBox prefHeight="600.0" prefWidth="9800.0" />
+   <VBox fx:id="friendListContainer" prefHeight="500.0" prefWidth="10000.0" spacing="15.0">
       <HBox.margin>
-         <Insets bottom="50.0" top="50.0"/>
+         <Insets bottom="50.0" top="50.0" />
       </HBox.margin>
    </VBox>
-   <VBox prefHeight="600.0" prefWidth="9800.0"/>
+   <VBox prefHeight="600.0" prefWidth="9800.0" />
 </HBox>
