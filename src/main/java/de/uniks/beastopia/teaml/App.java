@@ -1,10 +1,8 @@
 package de.uniks.beastopia.teaml;
 
 import de.uniks.beastopia.teaml.controller.Controller;
-import de.uniks.beastopia.teaml.service.AuthService;
 import fr.brouillard.oss.cssfx.CSSFX;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
@@ -59,16 +57,6 @@ public class App extends Application {
             return;
         }
 
-        final AuthService authService = mainComponent.authService();
-        if (mainComponent.prefs().isRememberMe()) {
-            //noinspection ResultOfMethodCallIgnored
-            authService.refresh().subscribe(
-                    lr -> Platform.runLater(() -> show(mainComponent.menuController())),
-                    error -> Platform.runLater(() -> show(mainComponent.loginController())));
-        } else {
-            show(mainComponent.loginController());
-        }
-
         mainComponent.themeSettings().updateSceneTheme = theme -> {
             if (theme.equals("dark")) {
                 scene.getStylesheets().removeIf(style -> style.endsWith("views/summer.css"));
@@ -82,6 +70,8 @@ public class App extends Application {
         mainComponent.themeSettings().updateSceneTheme.accept(
                 mainComponent.prefs().getTheme()
         );
+
+        show(mainComponent.loginController());
     }
 
     @Override
