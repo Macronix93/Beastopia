@@ -27,7 +27,7 @@
     </padding>
     <HBox alignment="TOP_CENTER" GridPane.rowIndex="2">
         <Button fx:id="backButton" alignment="CENTER" mnemonicParsing="false" onAction="#back" prefHeight="60.0" prefWidth="1000.0" text="%Back" HBox.hgrow="ALWAYS" />
-        <Button mnemonicParsing="false" onAction="#newGroup" prefHeight="60.0" prefWidth="1000.0" text="%NewGroup" HBox.hgrow="ALWAYS" />
+        <Button mnemonicParsing="false" onAction="#createGroup" prefHeight="60.0" prefWidth="1000.0" text="%NewGroup" HBox.hgrow="ALWAYS" />
     </HBox>
     <HBox alignment="CENTER">
         <Label alignment="CENTER" text="%MyChats">

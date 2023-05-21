@@ -31,6 +31,8 @@ public class ChatListController extends Controller {
     @Inject
     Provider<ChatGroupController> chatGroupControllerProvider;
     @Inject
+    Provider<EditGroupController> editGroupControllerProvider;
+    @Inject
     TokenStorage tokenStorage;
 
     private Consumer<Group> onGroupClicked;
@@ -64,8 +66,10 @@ public class ChatListController extends Controller {
 
     }
 
+    @FXML
     private void createGroup() {
-
+        //for Testing
+        app.show(editGroupControllerProvider.get());
     }
 
     @Override

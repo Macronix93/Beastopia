@@ -35,7 +35,8 @@ public class DirectMessageController extends Controller {
 
     @Inject
     Provider<ChatWindowController> chatWindowControllerProvider;
-
+    @Inject
+    Provider<EditGroupController> editGroupControllerProvider;
     @Inject
     MessageService messageService;
 
@@ -130,8 +131,10 @@ public class DirectMessageController extends Controller {
         app.show(menuControllerProvider.get());
     }
 
-    public void newGroup() {
+    @FXML
+    public void createGroup() {
         //ToDo show Group Controller
+        app.show(editGroupControllerProvider.get());
     }
 
     public void sendMessage() {
