@@ -1,114 +1,113 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
-<VBox alignment="CENTER_LEFT" prefHeight="403.0" prefWidth="449.0" spacing="10.0" xmlns="http://javafx.com/javafx/19"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="de.uniks.beastopia.teaml.controller.menu.EditProfileController">
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="CENTER_LEFT" prefHeight="403.0" prefWidth="449.0" spacing="10.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.uniks.beastopia.teaml.controller.menu.EditProfileController">
     <Label text="%Username">
         <font>
-            <Font size="16.0"/>
+            <Font size="16.0" />
         </font>
     </Label>
     <TextField fx:id="usernameInput" editable="false">
         <font>
-            <Font size="16.0"/>
+            <Font size="16.0" />
         </font>
     </TextField>
     <Label text="%NewPassword">
         <font>
-            <Font size="16.0"/>
+            <Font size="16.0" />
         </font>
     </Label>
     <PasswordField fx:id="passwordInput">
         <font>
-            <Font size="16.0"/>
+            <Font size="16.0" />
         </font>
     </PasswordField>
     <Label text="%RetypeNewPassword">
         <font>
-            <Font size="16.0"/>
+            <Font size="16.0" />
         </font>
     </Label>
     <PasswordField fx:id="passwordRepeatInput">
         <font>
-            <Font size="16.0"/>
+            <Font size="16.0" />
         </font>
     </PasswordField>
     <HBox spacing="15.0">
         <VBox spacing="10.0">
             <Label text="%Avatar">
                 <font>
-                    <Font size="16.0"/>
+                    <Font size="16.0" />
                 </font>
             </Label>
-            <Button alignment="CENTER" mnemonicParsing="false" onAction="#uploadAvatar"
-                    style="-fx-background-radius: 20;" text="%UploadAvatar">
+            <Button alignment="CENTER" mnemonicParsing="false" onAction="#uploadAvatar" style="-fx-background-radius: 20;" text="%UploadAvatar">
                 <font>
-                    <Font size="16.0"/>
+                    <Font size="16.0" />
                 </font>
             </Button>
             <HBox.margin>
-                <Insets/>
+                <Insets />
             </HBox.margin>
         </VBox>
         <ImageView fitHeight="96.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true">
-            <Image url="@../../assets/Lumnix_Logo_tr.png"/>
+            <Image url="@../../assets/Lumnix_Logo_tr.png" />
         </ImageView>
     </HBox>
     <Label text="%Language">
         <font>
-            <Font size="16.0"/>
+            <Font size="16.0" />
         </font>
     </Label>
     <HBox spacing="15.0">
-        <RadioButton fx:id="selectEnglishLanguage" mnemonicParsing="false" onAction="#setEn" selected="true"
-                     text="%English">
+        <RadioButton fx:id="selectEnglishLanguage" mnemonicParsing="false" onAction="#setEn" selected="true" text="%English">
             <font>
-                <Font size="16.0"/>
+                <Font size="16.0" />
             </font>
             <toggleGroup>
-                <ToggleGroup fx:id="language"/>
+                <ToggleGroup fx:id="language" />
             </toggleGroup>
         </RadioButton>
-        <RadioButton fx:id="selectGermanLanguage" mnemonicParsing="false" onAction="#setDe" text="%German"
-                     toggleGroup="$language">
+        <RadioButton fx:id="selectGermanLanguage" mnemonicParsing="false" onAction="#setDe" text="%German" toggleGroup="$language">
             <font>
-                <Font size="16.0"/>
+                <Font size="16.0" />
             </font>
         </RadioButton>
     </HBox>
     <Label text="%ChangeTheme">
         <font>
-            <Font size="16.0"/>
+            <Font size="16.0" />
         </font>
     </Label>
     <HBox spacing="15.0">
-        <RadioButton fx:id="darkRadioButton" mnemonicParsing="false" onAction="#setDarkTheme" selected="true"
-                     text="%Dark">
+        <RadioButton fx:id="darkRadioButton" mnemonicParsing="false" onAction="#setDarkTheme" selected="true" text="%Dark">
             <font>
-                <Font size="16.0"/>
+                <Font size="16.0" />
               </font>
               <toggleGroup>
-                  <ToggleGroup fx:id="theme"/>
+                  <ToggleGroup fx:id="theme" />
               </toggleGroup>
           </RadioButton>
-          <RadioButton fx:id="summerRadioButton" mnemonicParsing="false" onAction="#setSummerTheme" text="%Summer"
-                       toggleGroup="$theme">
+          <RadioButton fx:id="summerRadioButton" mnemonicParsing="false" onAction="#setSummerTheme" text="%Summer" toggleGroup="$theme">
               <font>
-                  <Font size="16.0"/>
+                  <Font size="16.0" />
               </font>
           </RadioButton>
       </HBox>
       <HBox spacing="15.0">
-          <Button mnemonicParsing="false" onAction="#changePassword" style="-fx-background-radius: 20;"
-                  text="%ChangePassword">
+          <Button fx:id="changePasswordButton" mnemonicParsing="false" onAction="#changePassword" style="-fx-background-radius: 20;" text="%ChangePassword">
               <font>
-                  <Font size="16.0"/>
+                  <Font size="16.0" />
               </font>
           </Button>
             <Button mnemonicParsing="false" onAction="#deleteUser" style="-fx-background-radius: 20;" text="%DeleteUser">

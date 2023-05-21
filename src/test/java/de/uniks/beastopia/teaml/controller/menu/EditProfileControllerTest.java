@@ -94,6 +94,12 @@ class EditProfileControllerTest extends ApplicationTest {
     }
 
     @Test
+    public void changePassword() {
+        clickOn("#changePasswordButton");
+
+    }
+
+    @Test
     void title() {
         assertEquals(resources.getString("titleEditProfile"), app.getStage().getTitle());
     }
