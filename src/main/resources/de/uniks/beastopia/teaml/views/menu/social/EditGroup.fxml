@@ -13,7 +13,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<GridPane alignment="CENTER" hgap="20.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/19" fx:controller="de.uniks.beastopia.teaml.controller.menu.social.EditGroupController">
+<GridPane alignment="CENTER" hgap="20.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.uniks.beastopia.teaml.controller.menu.social.EditGroupController">
   <columnConstraints>
     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -41,10 +41,10 @@
                   </Label>
                </children>
             </HBox>
-            <TextField promptText="%searchUser" GridPane.rowIndex="1" />
+            <TextField fx:id="username" onKeyTyped="#updateUserList" promptText="%searchUser" GridPane.rowIndex="1" />
             <ScrollPane GridPane.rowIndex="2">
                <content>
-                  <VBox />
+                  <VBox fx:id="users" />
                </content>
             </ScrollPane>
          </children>
@@ -63,14 +63,14 @@
          <children>
             <HBox alignment="CENTER_LEFT">
                <children>
-                  <Label fx:id="groupName" alignment="CENTER" text="groupName">
+                  <Label alignment="CENTER" text="%newGroupName">
                      <font>
-                        <Font name="System Bold" size="18.0" />
+                        <Font size="18.0" />
                      </font>
                   </Label>
                </children>
             </HBox>
-            <TextField editable="false" promptText="Placeholder" GridPane.rowIndex="1" />
+            <TextField fx:id="newGroupName" editable="false" GridPane.rowIndex="1" />
             <HBox alignment="CENTER" GridPane.rowIndex="2">
                <children>
                   <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%addedUsers">
@@ -87,8 +87,8 @@
             </ScrollPane>
             <HBox prefHeight="100.0" prefWidth="200.0" spacing="20.0" GridPane.rowIndex="4">
                <children>
-                  <Button mnemonicParsing="false" prefHeight="500.0" prefWidth="1000.0" text="%Back" />
-                  <Button maxWidth="1000.0" mnemonicParsing="false" prefHeight="500.0" prefWidth="1000.0" text="%editGroup" />
+                  <Button mnemonicParsing="false" onAction="#back" prefHeight="500.0" prefWidth="1000.0" text="%Back" />
+                  <Button maxWidth="1000.0" mnemonicParsing="false" onAction="#editGroup" prefHeight="500.0" prefWidth="1000.0" text="%editGroup" />
                </children>
                <padding>
                   <Insets left="20.0" right="20.0" />

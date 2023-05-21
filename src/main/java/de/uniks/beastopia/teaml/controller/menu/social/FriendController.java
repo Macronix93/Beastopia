@@ -48,7 +48,6 @@ public class FriendController extends Controller {
     Provider<DirectMessageController> directMessageControllerProvider;
 
     private Boolean friendPin;
-
     private ImageView pinned;
     private ImageView notPinned;
     private ImageView addImage;
