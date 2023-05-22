@@ -138,11 +138,11 @@ public class EditProfileController extends Controller {
     }
 
     public void deleteUser() {
-        app.show(deleteUserControllerProvider.get());
+        app.show(deleteUserControllerProvider.get().backController(backController));
     }
 
     public void back() {
-        if (this.backController != null && this.backController.equals("menu")) {
+        if (this.backController.equals("menu")) {
             app.show(menuControllerProvider.get());
         } else {
             app.show(pauseControllerProvider.get());
