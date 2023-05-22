@@ -61,6 +61,9 @@ public class EditGroupController extends Controller {
     @FXML
     public void updateUserList() {
         clearSubControllers();
+        if (username.getText().isEmpty()) {
+            return;
+        }
         List<Parent> filteredParents = getFilteredParents();
         users.getChildren().addAll(filteredParents);
     }
