@@ -45,12 +45,13 @@ public class EditGroupController extends Controller {
 
     }
 
+    @Override
     public Parent render() {
         Parent parent = super.render();
 
-        disposables.add(friendListService.getUsers().subscribe(users -> {
+        disposables.add(friendListService.getUsers().subscribe(userList -> {
             ALL_USERS.clear();
-            ALL_USERS.addAll(users);
+            ALL_USERS.addAll(userList);
         }));
 
         return parent;
@@ -64,7 +65,8 @@ public class EditGroupController extends Controller {
     @FXML
     public void updateUserList() {
         clearSubControllers();
-
+        List<Parent> filteredParents = getFilteredParents();
+        users.getChildren().addAll(filteredParents);
     }
 
     @FXML
