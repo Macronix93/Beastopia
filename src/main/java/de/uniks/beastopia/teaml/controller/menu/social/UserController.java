@@ -3,11 +3,10 @@ package de.uniks.beastopia.teaml.controller.menu.social;
 import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.User;
-import de.uniks.beastopia.teaml.sockets.EventListener;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 import javax.inject.Inject;
@@ -22,12 +21,16 @@ public class UserController extends Controller {
     public ImageView avatar;
     @FXML
     public Label username;
+    @FXML
+    public Button addRemoveButton;
+    @FXML
+    public Button pinButton;
     private boolean pin;
     private User user;
     private ImageView pinned;
     private ImageView notPinned;
-    private ImageView addImage;
-    private ImageView removeImage;
+    private ImageView add;
+    private ImageView remove;
 
     @Inject
     public UserController() {
@@ -40,9 +43,16 @@ public class UserController extends Controller {
         username.setText(user.name());
 
         if (pin) {
-            this.pinned.setImage(pinned.getImage());
+            this.pinButton.setGraphic(pinned);
         } else {
-            this.pinned.setImage(notPinned.getImage());
+            this.pinButton.setGraphic(notPinned);
+        }
+
+        //ToDo add check if in Group
+        if (true) {
+            this.addRemoveButton.setGraphic(remove);
+        } else {
+            this.addRemoveButton.setGraphic(add);
         }
 
 
@@ -54,8 +64,8 @@ public class UserController extends Controller {
         try {
             pinned = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/filled_pin.png")).toString());
             notPinned = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/pin.png")).toString());
-            addImage = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/plus.png")).toString());
-            removeImage = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/minus.png")).toString());
+            add = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/plus.png")).toString());
+            remove = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/minus.png")).toString());
         } catch (URISyntaxException | FileNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -69,10 +79,12 @@ public class UserController extends Controller {
 
     @FXML
     public void addRemove() {
+
     }
 
     @FXML
     public void pin() {
+
     }
 
     private ImageView createImage(String imageUrl) throws URISyntaxException, FileNotFoundException {

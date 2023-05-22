@@ -5,7 +5,6 @@ import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.FriendListService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.utils.Prefs;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.TextField;
@@ -18,6 +17,14 @@ import java.util.List;
 
 public class EditGroupController extends Controller {
 
+    public static final List<User> ALL_USERS = new ArrayList<>();
+    private final List<Controller> subControllers = new ArrayList<>();
+    @FXML
+    public TextField username;
+    @FXML
+    public VBox users;
+    @FXML
+    public TextField newGroupName;
     @Inject
     Provider<DirectMessageController> directMessageControllerProvider;
     @Inject
@@ -28,17 +35,6 @@ public class EditGroupController extends Controller {
     TokenStorage tokenStorage;
     @Inject
     Prefs prefs;
-
-    @FXML
-    public TextField username;
-    @FXML
-    public VBox users;
-    @FXML
-    public TextField newGroupName;
-
-    private final List<Controller> subControllers = new ArrayList<>();
-
-    public static final List<User> ALL_USERS = new ArrayList<>();
 
     @Inject
     public EditGroupController() {
