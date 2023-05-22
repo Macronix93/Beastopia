@@ -142,7 +142,7 @@ public class EditProfileController extends Controller {
     }
 
     public void back() {
-        if (this.backController.equals("menu")) {
+        if (this.backController != null && this.backController.equals("menu")) {
             app.show(menuControllerProvider.get());
         } else {
             app.show(pauseControllerProvider.get());
