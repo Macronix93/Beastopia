@@ -44,7 +44,7 @@
             <TextField fx:id="username" onKeyTyped="#updateUserList" promptText="%searchUser" GridPane.rowIndex="1" />
             <ScrollPane GridPane.rowIndex="2">
                <content>
-                  <VBox fx:id="users" />
+                  <VBox fx:id="users" alignment="TOP_CENTER" />
                </content>
             </ScrollPane>
          </children>
