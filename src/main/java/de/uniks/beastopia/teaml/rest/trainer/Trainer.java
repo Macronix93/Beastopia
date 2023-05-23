@@ -1,4 +1,4 @@
-package de.uniks.beastopia.teaml.rest;
+package de.uniks.beastopia.teaml.rest.trainer;
 
 import java.util.Date;
 
@@ -15,9 +15,7 @@ public record Trainer(
         int x_pos,
         int y_pos,
         int direction,
-
         boolean npc,
-
         boolean walkRandom
 ) {
 }
