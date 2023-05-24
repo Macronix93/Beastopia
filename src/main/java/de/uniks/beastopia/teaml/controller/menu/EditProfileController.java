@@ -3,7 +3,6 @@ package de.uniks.beastopia.teaml.controller.menu;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.service.AuthService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
-import de.uniks.beastopia.teaml.utils.Dialog;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import de.uniks.beastopia.teaml.utils.ThemeSettings;
 import javafx.beans.property.SimpleStringProperty;
@@ -74,8 +73,6 @@ public class EditProfileController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
-
-
         if (prefs.getLocale().contains("de")) {
             selectGermanLanguage.setSelected(true);
         } else {
@@ -118,13 +115,11 @@ public class EditProfileController extends Controller {
     private void setNewPassword() {
         if (!passwordInput.getText().equals(passwordRepeatInput.getText())) {
             errorMessage("passwordsNotEqual");
-        } else if (passwordInput.getText().length() < 8) {
-            errorMessage("passwordTooShort");
         } else {
             disposables.add(authService.updatePassword(passwordInput.getText())
                     .observeOn(FX_SCHEDULER).subscribe(
                             lr -> app.show(menuControllerProvider.get()),
-                            error -> Dialog.error(error, resources.getString("passwordChangeFailed"))));
+                            error -> errorMessage(resources.getString("passwordChangeFailed"))));
         }
     }
 

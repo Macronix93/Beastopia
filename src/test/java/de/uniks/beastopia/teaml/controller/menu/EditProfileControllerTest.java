@@ -7,6 +7,10 @@ import de.uniks.beastopia.teaml.service.AuthService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import de.uniks.beastopia.teaml.utils.ThemeSettings;
+import io.reactivex.rxjava3.core.Observable;
+import javafx.scene.Node;
+import javafx.scene.control.Label;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,26 +20,27 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
 
-import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
-
 class EditProfileControllerTest extends ApplicationTest {
     @Mock
     Prefs prefs;
     @Mock
     Provider<MenuController> menuControllerProvider;
     @Mock
+    @SuppressWarnings("unused")
     Provider<DeleteUserController> deleteUserControllerProvider;
     @Mock
+    @SuppressWarnings("unused")
     Provider<PauseController> pauseControllerProvider;
     @Mock
     AuthService authService;
@@ -51,15 +56,16 @@ class EditProfileControllerTest extends ApplicationTest {
     @InjectMocks
     EditProfileController editProfileController;
 
+    User user;
+
 
     @Override
     public void start(Stage stage) {
         AppPreparer.prepare(app, prefs);
         when(prefs.getTheme()).thenReturn("dark");
 
-        User mockedUser = mock(User.class);
-        when(tokenStorage.getCurrentUser()).thenReturn(mockedUser);
-        when(mockedUser.name()).thenReturn("Alice");
+        user = new User(null, null, null, "Alice", null, null, null);
+        when(tokenStorage.getCurrentUser()).thenReturn(user);
 
         app.start(stage);
         app.show(editProfileController);
@@ -94,8 +100,38 @@ class EditProfileControllerTest extends ApplicationTest {
     }
 
     @Test
-    public void changePassword() {
+    public void changePasswordSuccessfully() {
+        when(authService.updatePassword("12345678")).thenReturn(Observable.just(user));
+        MenuController mocked = mock();
+        when(menuControllerProvider.get()).thenReturn(mocked);
+        when(mocked.render()).thenReturn(new Label());
+
+        clickOn("#passwordInput");
+        write("12345678");
+        clickOn("#passwordRepeatInput");
+        write("12345678");
         clickOn("#changePasswordButton");
+
+        verify(authService).updatePassword("12345678");
+        verify(menuControllerProvider).get();
+        verify(mocked).render();
+    }
+
+    @Test
+    public void changePasswordNotMatching() {
+        clickOn("#passwordInput");
+        write("123456789");
+        clickOn("#passwordRepeatInput");
+        write("12345678");
+        clickOn("#changePasswordButton");
+
+        Node dialogPane = lookup(".dialog-pane").query();
+        Node result = from(dialogPane).lookup((Text t) -> t.getText().contains("not equal")).query();
+        assertNotNull(result);
+    }
+
+    @Test
+    public void changePasswordInvalid() {
 
     }
 
@@ -103,6 +139,4 @@ class EditProfileControllerTest extends ApplicationTest {
     void title() {
         assertEquals(resources.getString("titleEditProfile"), app.getStage().getTitle());
     }
-
-
 }
