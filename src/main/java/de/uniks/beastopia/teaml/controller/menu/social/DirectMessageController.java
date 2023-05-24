@@ -38,6 +38,8 @@ public class DirectMessageController extends Controller {
     @Inject
     Provider<EditGroupController> editGroupControllerProvider;
     @Inject
+    Provider<CreateGroupController> createGroupControllerProvider;
+    @Inject
     MessageService messageService;
 
     @Inject
@@ -133,8 +135,7 @@ public class DirectMessageController extends Controller {
 
     @FXML
     public void createGroup() {
-        //ToDo show Group Controller
-        app.show(editGroupControllerProvider.get());
+        app.show(createGroupControllerProvider.get());
     }
 
     public void sendMessage() {

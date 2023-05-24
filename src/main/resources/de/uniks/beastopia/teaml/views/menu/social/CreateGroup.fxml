@@ -8,7 +8,7 @@
 <GridPane alignment="CENTER" hgap="20.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
           minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19"
           xmlns:fx="http://javafx.com/fxml/1"
-          fx:controller="de.uniks.beastopia.teaml.controller.menu.social.EditGroupController">
+          fx:controller="de.uniks.beastopia.teaml.controller.menu.social.CreateGroupController">
     <columnConstraints>
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
@@ -37,7 +37,8 @@
                 </font>
             </Label>
         </HBox>
-        <TextField fx:id="username" onKeyTyped="#updateUserList" promptText="%searchUser" GridPane.rowIndex="1"/>
+        <TextField fx:id="username" onKeyTyped="#updateUserList" promptText="%searchUser"
+                   GridPane.rowIndex="1"/>
         <ScrollPane fitToHeight="true" fitToWidth="true" GridPane.rowIndex="2">
             <VBox fx:id="users" alignment="TOP_CENTER"/>
         </ScrollPane>
@@ -54,13 +55,13 @@
             <RowConstraints minHeight="10.0" percentHeight="10.0" vgrow="SOMETIMES"/>
         </rowConstraints>
         <HBox alignment="CENTER_LEFT">
-            <Label alignment="CENTER" text="%newGroupName">
+            <Label alignment="CENTER" text="%GroupName">
                 <font>
                     <Font size="18.0"/>
                 </font>
             </Label>
         </HBox>
-        <TextField fx:id="newGroupName" editable="false" GridPane.rowIndex="1"/>
+        <TextField fx:id="groupName" editable="false" GridPane.rowIndex="1"/>
         <HBox alignment="CENTER" GridPane.rowIndex="2">
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%addedUsers">
                 <font>
@@ -77,8 +78,8 @@
             </padding>
             <Button mnemonicParsing="false" onAction="#back" prefHeight="500.0" prefWidth="1000.0"
                     text="%Back"/>
-            <Button maxWidth="1000.0" mnemonicParsing="false" onAction="#editGroup" prefHeight="500.0"
-                    prefWidth="1000.0" text="%editGroup"/>
+            <Button maxWidth="1000.0" mnemonicParsing="false" onAction="#createGroup" prefHeight="500.0"
+                    prefWidth="1000.0" text="%createGroup"/>
         </HBox>
     </GridPane>
 </GridPane>
