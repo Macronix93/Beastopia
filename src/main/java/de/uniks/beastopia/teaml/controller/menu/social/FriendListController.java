@@ -58,6 +58,8 @@ public class FriendListController extends Controller {
                         cache.setAllUsers(users);
                         updateUserList();
                     }));
+        } else {
+            updateUserList();
         }
 
         return parent;
