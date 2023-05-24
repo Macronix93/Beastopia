@@ -18,13 +18,15 @@ import java.util.List;
 public class CreateGroupController extends Controller {
 
     public static final List<User> ALL_USERS = new ArrayList<>();
+    @SuppressWarnings("unused")
+    private final List<User> addedUsers = new ArrayList<>();
     private final List<Controller> subControllers = new ArrayList<>();
     @FXML
-    public TextField username;
+    public TextField usernameField;
     @FXML
     public VBox users;
     @FXML
-    public TextField groupName;
+    public TextField groupnameField;
     @Inject
     Provider<DirectMessageController> directMessageControllerProvider;
     @Inject
@@ -61,7 +63,7 @@ public class CreateGroupController extends Controller {
     @FXML
     public void updateUserList() {
         clearSubControllers();
-        if (username.getText().isEmpty()) {
+        if (usernameField.getText().isEmpty()) {
             return;
         }
         List<Parent> filteredParents = getFilteredParents();
@@ -75,6 +77,16 @@ public class CreateGroupController extends Controller {
 
     public void createGroup() {
 
+
+        /*
+        // create new group
+                      String groupName = groupListService.getGroupName(tokenStorage.getCurrentUser()._id(), user._id());
+                        disposables.add(groupListService.addGroup(groupName, List.of(tokenStorage.getCurrentUser()._id(), user._id()))
+                                .observeOn(FX_SCHEDULER)
+                                .subscribe(group -> {
+                                    chatListController.reload();
+                                    loadGroup(group);
+                                }));*/
     }
 
     @Override
@@ -95,7 +107,7 @@ public class CreateGroupController extends Controller {
         List<Parent> filteredParents = new ArrayList<>();
 
         for (User user : ALL_USERS) {
-            if (user.name().toLowerCase().startsWith(username.getText().toLowerCase())
+            if (user.name().toLowerCase().startsWith(usernameField.getText().toLowerCase())
                     && !user._id().equals(tokenStorage.getCurrentUser()._id())) {
                 filteredUsers.add(user);
             }
