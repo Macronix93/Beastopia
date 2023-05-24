@@ -2,6 +2,7 @@ package de.uniks.beastopia.teaml.controller.menu.social;
 
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.User;
+import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.FriendListService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.utils.Prefs;
@@ -19,7 +20,8 @@ import java.util.List;
 
 public class FriendListController extends Controller {
     private final List<Controller> subControllers = new ArrayList<>();
-    public static final List<User> ALL_USERS = new ArrayList<>();
+    @Inject
+    DataCache cache;
     @FXML
     public TextField searchName;
     @FXML
@@ -43,17 +45,21 @@ public class FriendListController extends Controller {
 
     @Inject
     public FriendListController() {
-
     }
 
     @Override
     public Parent render() {
         Parent parent = super.render();
-        disposables.add(friendListService.getUsers().subscribe(users -> {
-            ALL_USERS.clear();
-            ALL_USERS.addAll(users);
-            updateUserList();
-        }));
+
+        if (cache.getAllUsers().isEmpty()) {
+            disposables.add(friendListService.getUsers()
+                    .subscribeOn(FX_SCHEDULER)
+                    .subscribe(users -> {
+                        cache.setAllUsers(users);
+                        updateUserList();
+                    }));
+        }
+
         return parent;
     }
 
@@ -112,7 +118,7 @@ public class FriendListController extends Controller {
         List<User> filteredUsers = new ArrayList<>();
         List<Parent> filteredParents = new ArrayList<>();
 
-        for (User user : ALL_USERS) {
+        for (User user : cache.getAllUsers()) {
             if (user.name().toLowerCase().startsWith(searchName.getText().toLowerCase())
                     && !user._id().equals(tokenStorage.getCurrentUser()._id())) {
                 filteredUsers.add(user);

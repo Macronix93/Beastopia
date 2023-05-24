@@ -4,6 +4,7 @@ import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Event;
 import de.uniks.beastopia.teaml.rest.Group;
 import de.uniks.beastopia.teaml.rest.Message;
+import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.FriendListService;
 import de.uniks.beastopia.teaml.service.MessageService;
 import de.uniks.beastopia.teaml.sockets.EventListener;
@@ -47,6 +48,8 @@ public class MessageBubbleController extends Controller {
     FriendListService friendListService;
     @Inject
     MessageService messageService;
+    @Inject
+    DataCache cache;
     Consumer<Pair<Parent, MessageBubbleController>> onDelete;
 
     Message message;
@@ -89,7 +92,7 @@ public class MessageBubbleController extends Controller {
             deleteButton.setVisible(false);
         }
 
-        FriendListController.ALL_USERS.stream().filter(user -> user._id().equals(message.sender())).findFirst().ifPresent(user -> senderName.setText(user.name()));
+        cache.getAllUsers().stream().filter(user -> user._id().equals(message.sender())).findFirst().ifPresent(user -> senderName.setText(user.name()));
         messageBody.setText(message.body());
         LocalDateTime localDateTimeCreated = LocalDateTime.ofInstant(message.createdAt().toInstant(), ZoneId.systemDefault());
         LocalDateTime localDateTimeUpdated = LocalDateTime.ofInstant(message.createdAt().toInstant(), ZoneId.systemDefault());
@@ -137,7 +140,11 @@ public class MessageBubbleController extends Controller {
 
     @FXML
     public void deleteMessage() {
-        disposables.add(messageService.deleteMessage(group, message).observeOn(FX_SCHEDULER).subscribe(msg -> onDelete.accept(new Pair<>(parent, this)), throwable -> Dialog.error(throwable, "Problem while deleting message")));
+        disposables.add(messageService.deleteMessage(group, message)
+                .observeOn(FX_SCHEDULER)
+                .subscribe(
+                        msg -> onDelete.accept(new Pair<>(parent, this)),
+                        error -> Dialog.error(error, "Problem while deleting message")));
     }
 
     public Message getMessage() {
