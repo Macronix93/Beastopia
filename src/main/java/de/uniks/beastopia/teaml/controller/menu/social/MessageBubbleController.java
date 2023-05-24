@@ -5,22 +5,34 @@ import de.uniks.beastopia.teaml.rest.Event;
 import de.uniks.beastopia.teaml.rest.Group;
 import de.uniks.beastopia.teaml.rest.Message;
 import de.uniks.beastopia.teaml.service.FriendListService;
+import de.uniks.beastopia.teaml.service.MessageService;
 import de.uniks.beastopia.teaml.sockets.EventListener;
+import de.uniks.beastopia.teaml.utils.Dialog;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.util.Pair;
 
 import javax.inject.Inject;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.function.Consumer;
 
 public class MessageBubbleController extends Controller {
     @FXML
     public Text senderName;
     @FXML
     public Text messageBody;
+    @FXML
+    public TextField editMessageBody;
+    @FXML
+    public VBox elementsBox;
     @FXML
     public Text created;
     @FXML
@@ -31,18 +43,26 @@ public class MessageBubbleController extends Controller {
     public Button deleteButton;
     @Inject
     EventListener eventListener;
-
     @Inject
     FriendListService friendListService;
+    @Inject
+    MessageService messageService;
+    Consumer<Pair<Parent, MessageBubbleController>> onDelete;
 
     Message message;
 
     private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm");
     private Group group;
+    Parent parent;
 
     @Inject
     public MessageBubbleController() {
 
+    }
+
+    public MessageBubbleController setOnDelete(Consumer<Pair<Parent, MessageBubbleController>> onDelete) {
+        this.onDelete = onDelete;
+        return this;
     }
 
     public MessageBubbleController setMessage(Group group, Message message) {
@@ -60,14 +80,16 @@ public class MessageBubbleController extends Controller {
 
     @Override
     public Parent render() {
-        Parent parent = super.render();
+        parent = super.render();
 
-        FriendListController.ALL_USERS.stream()
-                .filter(user -> user._id().equals(message.sender()))
-                .findFirst()
-                .ifPresent(user ->
-                        senderName.setText(user.name())
-                );
+        elementsBox.getChildren().remove(editMessageBody);
+
+        if (!messageService.isSentByMe(message)) {
+            editButton.setVisible(false);
+            deleteButton.setVisible(false);
+        }
+
+        FriendListController.ALL_USERS.stream().filter(user -> user._id().equals(message.sender())).findFirst().ifPresent(user -> senderName.setText(user.name()));
         messageBody.setText(message.body());
         LocalDateTime localDateTimeCreated = LocalDateTime.ofInstant(message.createdAt().toInstant(), ZoneId.systemDefault());
         LocalDateTime localDateTimeUpdated = LocalDateTime.ofInstant(message.createdAt().toInstant(), ZoneId.systemDefault());
@@ -90,11 +112,32 @@ public class MessageBubbleController extends Controller {
 
     @FXML
     public void editMessage() {
+        elementsBox.getChildren().add(1, editMessageBody);
+        elementsBox.getChildren().remove(messageBody);
+        editMessageBody.setText(message.body());
+    }
+
+    @FXML
+    public void keyEvent(KeyEvent event) {
+        if (event.getCode().equals(KeyCode.ESCAPE)) {
+            elementsBox.getChildren().add(1, messageBody);
+            elementsBox.getChildren().remove(editMessageBody);
+            event.consume();
+        } else if (event.getCode().equals(KeyCode.ENTER)) {
+            disposables.add(messageService.updateMessage(group, message, editMessageBody.getText()).observeOn(FX_SCHEDULER).subscribe(message -> {
+                this.message = message;
+                messageBody.setText(message.body());
+                elementsBox.getChildren().add(1, messageBody);
+                elementsBox.getChildren().remove(editMessageBody);
+            }, throwable -> Dialog.error(throwable, "Problem while updating message")));
+
+            event.consume();
+        }
     }
 
     @FXML
     public void deleteMessage() {
-
+        disposables.add(messageService.deleteMessage(group, message).observeOn(FX_SCHEDULER).subscribe(msg -> onDelete.accept(new Pair<>(parent, this)), throwable -> Dialog.error(throwable, "Problem while deleting message")));
     }
 
     public Message getMessage() {

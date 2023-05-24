@@ -78,7 +78,13 @@ public class ChatWindowController extends Controller {
 
     private void addMessage(Message message) {
         MessageBubbleController subController = messageBubbleControllerProvider.get()
-                .setMessage(group, message);
+                .setMessage(group, message)
+                .setOnDelete(pair -> {
+                    Parent parent = pair.getKey();
+                    MessageBubbleController controller = pair.getValue();
+                    msgList.getChildren().remove(parent);
+                    subControllers.remove(controller);
+                });
         subController.init();
         subControllers.add(subController);
         msgList.getChildren().add(subController.render());
