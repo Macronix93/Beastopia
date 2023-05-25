@@ -37,8 +37,7 @@
                 </font>
             </Label>
         </HBox>
-        <TextField fx:id="usernameField" onKeyTyped="#updateUserList" promptText="%searchUser"
-                   GridPane.rowIndex="1"/>
+        <TextField fx:id="usernameField" onKeyTyped="#updateUserList" promptText="%searchUser" GridPane.rowIndex="1"/>
         <ScrollPane fitToHeight="true" fitToWidth="true" GridPane.rowIndex="2">
             <VBox fx:id="users" alignment="TOP_CENTER"/>
         </ScrollPane>
@@ -70,14 +69,13 @@
             </Text>
         </HBox>
         <ScrollPane GridPane.rowIndex="3">
-            <VBox/>
+            <VBox fx:id="addedUsers"/>
         </ScrollPane>
         <HBox prefHeight="100.0" prefWidth="200.0" spacing="20.0" GridPane.rowIndex="4">
             <padding>
                 <Insets left="20.0" right="20.0"/>
             </padding>
-            <Button mnemonicParsing="false" onAction="#back" prefHeight="500.0" prefWidth="1000.0"
-                    text="%Back"/>
+            <Button mnemonicParsing="false" onAction="#back" prefHeight="500.0" prefWidth="1000.0" text="%Back"/>
             <Button maxWidth="1000.0" mnemonicParsing="false" onAction="#createGroup" prefHeight="500.0"
                     prefWidth="1000.0" text="%createGroup"/>
         </HBox>

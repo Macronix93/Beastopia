@@ -18,13 +18,15 @@ import java.util.List;
 public class CreateGroupController extends Controller {
 
     public static final List<User> ALL_USERS = new ArrayList<>();
-    @SuppressWarnings("unused")
-    private final List<User> addedUsers = new ArrayList<>();
+    public List<User> addedUsersList = new ArrayList<>();
     private final List<Controller> subControllers = new ArrayList<>();
+
     @FXML
     public TextField usernameField;
     @FXML
     public VBox users;
+    @FXML
+    public VBox addedUsers;
     @FXML
     public TextField groupnameField;
     @Inject
@@ -68,6 +70,7 @@ public class CreateGroupController extends Controller {
         }
         List<Parent> filteredParents = getFilteredParents();
         users.getChildren().addAll(filteredParents);
+        //addedUsers.getChildren().addAll();
     }
 
     @FXML
@@ -76,17 +79,7 @@ public class CreateGroupController extends Controller {
     }
 
     public void createGroup() {
-
-
-        /*
-        // create new group
-                      String groupName = groupListService.getGroupName(tokenStorage.getCurrentUser()._id(), user._id());
-                        disposables.add(groupListService.addGroup(groupName, List.of(tokenStorage.getCurrentUser()._id(), user._id()))
-                                .observeOn(FX_SCHEDULER)
-                                .subscribe(group -> {
-                                    chatListController.reload();
-                                    loadGroup(group);
-                                }));*/
+        //shown in DirectMessageController setupDirectMessageController(User user) method
     }
 
     @Override
@@ -132,5 +125,17 @@ public class CreateGroupController extends Controller {
         }
 
         return filteredParents;
+    }
+
+    public List<User> getAddedUsersList() {
+        return addedUsersList;
+    }
+
+    public void addUser(User user) {
+        this.addedUsersList.add(user);
+    }
+
+    public void removeUser(User user) {
+        this.addedUsersList.remove(user);
     }
 }

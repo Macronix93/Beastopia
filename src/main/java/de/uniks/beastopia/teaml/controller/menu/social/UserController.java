@@ -10,6 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
 import java.util.Objects;
@@ -25,6 +26,10 @@ public class UserController extends Controller {
     public Button addRemoveButton;
     @FXML
     public Button pinButton;
+
+    @Inject
+    Provider<CreateGroupController> createGroupControllerProvider;
+
     private boolean pin;
     private User user;
     private ImageView pinned;
@@ -48,8 +53,7 @@ public class UserController extends Controller {
             this.pinButton.setGraphic(notPinned);
         }
 
-        //ToDo add check if in Group
-        if (true) {
+        if (createGroupControllerProvider.get().getAddedUsersList().contains(user)) {
             this.addRemoveButton.setGraphic(remove);
         } else {
             this.addRemoveButton.setGraphic(add);
@@ -79,7 +83,11 @@ public class UserController extends Controller {
 
     @FXML
     public void addRemove() {
-
+        if (createGroupControllerProvider.get().getAddedUsersList().contains(user)) {
+            createGroupControllerProvider.get().addUser(this.user);
+        } else {
+            createGroupControllerProvider.get().removeUser(this.user);
+        }
     }
 
     @FXML
