@@ -3,6 +3,7 @@ package de.uniks.beastopia.teaml.controller.menu.social;
 import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.User;
+import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -14,6 +15,7 @@ import javax.inject.Provider;
 import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 
 public class UserController extends Controller {
@@ -29,17 +31,38 @@ public class UserController extends Controller {
 
     @Inject
     Provider<CreateGroupController> createGroupControllerProvider;
+    @Inject
+    Prefs prefs;
 
-    private boolean pin;
     private User user;
     private ImageView pinned;
     private ImageView notPinned;
     private ImageView add;
     private ImageView remove;
+    private Consumer<User> onUserToggled;
+    private Consumer<User> onUserPinToggled;
+    private boolean isAdded;
 
     @Inject
     public UserController() {
 
+    }
+
+    @SuppressWarnings("UnusedReturnValue")
+    public UserController setOnUserToggled(Consumer<User> onUserToggled) {
+        this.onUserToggled = onUserToggled;
+        return this;
+    }
+
+    @SuppressWarnings("UnusedReturnValue")
+    public UserController setOnUserPinToggled(Consumer<User> onUserPinToggled) {
+        this.onUserPinToggled = onUserPinToggled;
+        return this;
+    }
+
+    public UserController setIsAdded(boolean isAdded) {
+        this.isAdded = isAdded;
+        return this;
     }
 
     @Override
@@ -47,18 +70,17 @@ public class UserController extends Controller {
         Parent parent = super.render();
         username.setText(user.name());
 
-        if (pin) {
+        if (prefs.isPinned(user)) {
             this.pinButton.setGraphic(pinned);
         } else {
             this.pinButton.setGraphic(notPinned);
         }
 
-        if (createGroupControllerProvider.get().getAddedUsersList().contains(user)) {
+        if (isAdded) {
             this.addRemoveButton.setGraphic(remove);
         } else {
             this.addRemoveButton.setGraphic(add);
         }
-
 
         return parent;
     }
@@ -75,24 +97,18 @@ public class UserController extends Controller {
         }
     }
 
-    public void setUser(User user, boolean pin) {
+    public void setUser(User user) {
         this.user = user;
-        this.pin = pin;
     }
-
 
     @FXML
     public void addRemove() {
-        if (createGroupControllerProvider.get().getAddedUsersList().contains(user)) {
-            createGroupControllerProvider.get().addUser(this.user);
-        } else {
-            createGroupControllerProvider.get().removeUser(this.user);
-        }
+        onUserToggled.accept(user);
     }
 
     @FXML
     public void pin() {
-
+        onUserPinToggled.accept(user);
     }
 
     private ImageView createImage(String imageUrl) throws URISyntaxException, FileNotFoundException {

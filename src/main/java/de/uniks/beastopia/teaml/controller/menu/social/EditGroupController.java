@@ -2,6 +2,7 @@ package de.uniks.beastopia.teaml.controller.menu.social;
 
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.User;
+import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.FriendListService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.utils.Prefs;
@@ -17,7 +18,6 @@ import java.util.List;
 
 public class EditGroupController extends Controller {
 
-    public static final List<User> ALL_USERS = new ArrayList<>();
     private final List<Controller> subControllers = new ArrayList<>();
     @FXML
     public TextField username;
@@ -35,22 +35,12 @@ public class EditGroupController extends Controller {
     TokenStorage tokenStorage;
     @Inject
     Prefs prefs;
+    @Inject
+    DataCache cache;
 
     @Inject
     public EditGroupController() {
 
-    }
-
-    @Override
-    public Parent render() {
-        Parent parent = super.render();
-
-        disposables.add(friendListService.getUsers().subscribe(userList -> {
-            ALL_USERS.clear();
-            ALL_USERS.addAll(userList);
-        }));
-
-        return parent;
     }
 
     @Override
@@ -94,7 +84,7 @@ public class EditGroupController extends Controller {
         List<User> filteredUsers = new ArrayList<>();
         List<Parent> filteredParents = new ArrayList<>();
 
-        for (User user : ALL_USERS) {
+        for (User user : cache.getAllUsers()) {
             if (user.name().toLowerCase().startsWith(username.getText().toLowerCase())
                     && !user._id().equals(tokenStorage.getCurrentUser()._id())) {
                 filteredUsers.add(user);
@@ -113,8 +103,7 @@ public class EditGroupController extends Controller {
 
         for (User user : filteredUsers) {
             UserController userController = userControllerProvider.get();
-            boolean pinned = prefs.isPinned(user);
-            userController.setUser(user, pinned);
+            userController.setUser(user);
             userController.init();
             filteredParents.add(userController.render());
         }

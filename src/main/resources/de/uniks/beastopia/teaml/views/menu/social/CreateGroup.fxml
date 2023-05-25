@@ -68,7 +68,7 @@
                 </font>
             </Text>
         </HBox>
-        <ScrollPane GridPane.rowIndex="3">
+        <ScrollPane fitToHeight="true" fitToWidth="true" GridPane.rowIndex="3">
             <VBox fx:id="addedUsers"/>
         </ScrollPane>
         <HBox prefHeight="100.0" prefWidth="200.0" spacing="20.0" GridPane.rowIndex="4">
