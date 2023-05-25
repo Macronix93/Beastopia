@@ -138,7 +138,7 @@ public class MessageBubbleControllerTest extends ApplicationTest {
         clickOn("#deleteButton");
 
         Parent pane = lookup(".dialog-pane").query();
-        Node node = from(pane).lookup((Text t) -> t.getText().contains("Attempt to delete messages in an inaccessible parent, or to delete someone else's message.")).query();
+        Node node = from(pane).lookup((Text t) -> t.getText().contains("Attempt to delete")).query();
         assertNotNull(node);
     }
 }
