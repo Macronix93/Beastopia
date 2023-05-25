@@ -110,8 +110,11 @@ public class ChatListController extends Controller {
                 ChatGroupController chatGroupController = chatGroupControllerProvider.get();
                 subControllers.add(chatGroupController);
                 chatGroupController.setOnGroupClicked(onGroupClicked);
-                chatGroupController.setGroup(group, false);
+                chatGroupController.setGroup(group);
                 chatGroupController.init();
+                chatGroupController.setOnPinChanged(e -> {
+                    updateGroupList();
+                });
                 if (groupPinned) {
                     chatList.getChildren().add(0, chatGroupController.render());
                 } else {
