@@ -15,7 +15,7 @@ public record Trainer(
         int x_pos,
         int y_pos,
         int direction,
-        boolean npc,
-        boolean walkRandom
+        NPCInfo npc
+
 ) {
 }

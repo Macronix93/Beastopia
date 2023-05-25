@@ -17,5 +17,4 @@ public interface TrainerApiService {
 
     @DELETE("regions/{regionId}/trainers/{id}")
     Observable<Trainer> deleteTrainer(@Path("regionId") String regionId, @Path("id") String trainerId);
-
 }
