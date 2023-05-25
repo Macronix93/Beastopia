@@ -1,17 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-
 <GridPane fx:id="grid" alignment="CENTER" hgap="20.0" prefHeight="647.0" prefWidth="1021.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.uniks.beastopia.teaml.controller.menu.social.DirectMessageController">
     <columnConstraints>
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="30.0" />
@@ -48,9 +40,11 @@
     </ScrollPane>
     <HBox alignment="TOP_CENTER" spacing="10.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2">
         <padding>
-            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
         </padding>
-        <TextField fx:id="chatInput" onAction="#sendMessage" promptText="%ChatInput" HBox.hgrow="ALWAYS" />
-        <Button alignment="CENTER" mnemonicParsing="false" onAction="#sendMessage" text="%Send" HBox.hgrow="ALWAYS" />
+        <TextField fx:id="chatInput" onAction="#sendMessage" promptText="%ChatInput" HBox.hgrow="ALWAYS"/>
+        <!--suppress JavaFxUnresolvedFxIdReference -->
+        <Button fx:id="sendButton" alignment="CENTER" mnemonicParsing="false" onAction="#sendMessage" text="%Send"
+                HBox.hgrow="ALWAYS"/>
     </HBox>
 </GridPane>
