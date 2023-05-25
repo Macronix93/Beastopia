@@ -3,6 +3,7 @@ package de.uniks.beastopia.teaml.controller.menu.social;
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.rest.User;
+import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.FriendListService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.utils.Prefs;
@@ -43,6 +44,9 @@ class FriendListControllerTest extends ApplicationTest {
     FriendListService friendListService;
     @Mock
     TokenStorage tokenStorage;
+    @Spy
+    @SuppressWarnings("unused")
+    DataCache cache;
     @Mock
     Prefs prefs;
     @Spy
