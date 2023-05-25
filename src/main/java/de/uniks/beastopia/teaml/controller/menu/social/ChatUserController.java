@@ -3,7 +3,7 @@ package de.uniks.beastopia.teaml.controller.menu.social;
 import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Group;
-import de.uniks.beastopia.teaml.rest.User;
+import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.FriendListService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.utils.Prefs;
@@ -23,7 +23,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Objects;
 import java.util.function.Consumer;
-import java.util.prefs.Preferences;
 
 public class ChatUserController extends Controller {
 
@@ -38,27 +37,28 @@ public class ChatUserController extends Controller {
     @FXML
     Text name;
 
-    private Group group;
-    //private Boolean pinned;
-    private ImageView pinnedImg;
-    private ImageView notPinnedImg;
-    //private ImageView abort;
-
     @Inject
     TokenStorage tokenStorage;
     @Inject
     FriendListService friendListService;
-
     @Inject
     Prefs prefs;
+    @Inject
+    DataCache cache;
 
-    private final Consumer<Group> onPinChanged = null;
-
+    private Group group;
+    private ImageView pinnedImg;
+    private ImageView notPinnedImg;
+    private Consumer<Group> onPinChanged = null;
     private Consumer<Group> onGroupClicked = null;
 
     @Inject
     public ChatUserController() {
 
+    }
+
+    private static Image loadImage(URL imageUrl) throws FileNotFoundException, URISyntaxException {
+        return new Image(new FileInputStream(new File(imageUrl.toURI())));
     }
 
     @Override
@@ -75,10 +75,13 @@ public class ChatUserController extends Controller {
         this.onGroupClicked = onGroupClicked;
     }
 
+    public void setOnPinChanged(Consumer<Group> onPinChanged) {
+        this.onPinChanged = onPinChanged;
+    }
+
     @SuppressWarnings("UnusedReturnValue")
-    public ChatUserController setGroup(Group group, boolean pinned) {
+    public ChatUserController setGroup(Group group) {
         this.group = group;
-        //this.pinned = pinned;
         return this;
     }
 
@@ -88,14 +91,16 @@ public class ChatUserController extends Controller {
         String otherID = group.members().get(0).equals(tokenStorage.getCurrentUser()._id())
                 ? group.members().get(1)
                 : group.members().get(0);
-        disposables.add(friendListService.getUser(otherID).subscribe(user -> name.setText(user.name())));
+
+        cache.getAllUsers().stream()
+                .filter(user -> user._id().equals(otherID))
+                .findFirst()
+                .ifPresent(user -> name.setText(user.name()));
 
         if (prefs.isPinned(this.group)) {
             this.pinGroupBtn.setGraphic(pinnedImg);
-            System.out.println("pinned");
         } else {
             this.pinGroupBtn.setGraphic(notPinnedImg);
-            System.out.println("not pinned");
         }
 
         return parent;
@@ -112,10 +117,6 @@ public class ChatUserController extends Controller {
         return imageView;
     }
 
-    private static Image loadImage(URL imageUrl) throws FileNotFoundException, URISyntaxException {
-        return new Image(new FileInputStream(new File(imageUrl.toURI())));
-    }
-
     public void editGroup() {
         //TODO: show edit group dialog
     }
@@ -124,21 +125,15 @@ public class ChatUserController extends Controller {
         //TODO: delete group
     }
 
-    //TODO: implement pinning feature
     @FXML
     public void pinGroup() {
         if (!prefs.isPinned(this.group)) {
             pinGroupBtn.setGraphic(pinnedImg);
             prefs.setPinned(this.group, true);
-            System.out.println(group.name() + " pinned");
         } else {
             pinGroupBtn.setGraphic(notPinnedImg);
             prefs.setPinned(this.group, false);
-            System.out.println(group.name() + " unpinned");
         }
-
-
-        //noinspection ConstantValue
         if (onPinChanged != null) {
             onPinChanged.accept(group);
         }

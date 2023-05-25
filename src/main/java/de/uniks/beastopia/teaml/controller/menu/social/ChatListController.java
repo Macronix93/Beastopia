@@ -16,9 +16,9 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class ChatListController extends Controller {
+
     private final List<Controller> subControllers = new ArrayList<>();
     private final List<Group> groups = new ArrayList<>();
-
     @Inject
     GroupListService groupListService;
     @Inject
@@ -85,6 +85,7 @@ public class ChatListController extends Controller {
         }
 
         clearSubControllers();
+        chatList.getChildren().clear();
 
         // <ida>_<idb> is the name of a group with two members
         for (Group group : groups) {
@@ -95,7 +96,11 @@ public class ChatListController extends Controller {
                 ChatUserController chatUserController = chatUserControllerProvider.get();
                 subControllers.add(chatUserController);
                 chatUserController.setOnGroupClicked(onGroupClicked);
-                chatUserController.setGroup(group, false);
+                chatUserController.setGroup(group);
+                chatUserController.init();
+                chatUserController.setOnPinChanged(e -> {
+                    updateGroupList();
+                });
                 if (groupPinned) {
                     chatList.getChildren().add(0, chatUserController.render());
                 } else {
@@ -106,6 +111,7 @@ public class ChatListController extends Controller {
                 subControllers.add(chatGroupController);
                 chatGroupController.setOnGroupClicked(onGroupClicked);
                 chatGroupController.setGroup(group, false);
+                chatGroupController.init();
                 if (groupPinned) {
                     chatList.getChildren().add(0, chatGroupController.render());
                 } else {
