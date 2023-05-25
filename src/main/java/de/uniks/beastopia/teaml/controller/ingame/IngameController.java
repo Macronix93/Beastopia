@@ -4,7 +4,7 @@ import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
+import javafx.scene.Parent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
@@ -15,15 +15,22 @@ import javax.inject.Provider;
 public class IngameController extends Controller {
     @FXML
     public HBox ingame;
-    @FXML
-    public Button pauseButton;
     @Inject
     App app;
     @Inject
     Provider<PauseController> pauseControllerProvider;
 
     @Inject
+    Provider<TrainerController> trainerControllerProvider;
+
+    @Inject
     public IngameController() {
+    }
+
+    @Override
+    public Parent render() {
+
+        return super.render();
     }
 
     @FXML
