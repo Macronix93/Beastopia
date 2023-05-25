@@ -29,7 +29,6 @@ public class IngameController extends Controller {
 
     @Override
     public Parent render() {
-
         return super.render();
     }
 

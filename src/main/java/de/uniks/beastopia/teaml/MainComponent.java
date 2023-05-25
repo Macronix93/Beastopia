@@ -12,14 +12,11 @@ import de.uniks.beastopia.teaml.utils.Prefs;
 import de.uniks.beastopia.teaml.utils.ThemeSettings;
 
 import javax.inject.Singleton;
-import java.util.prefs.Preferences;
 
 @Component(modules = {MainModule.class, HttpModule.class, PrefModule.class})
 @Singleton
 public interface MainComponent {
     AuthService authService();
-
-    MenuController menuController();
 
     LoginController loginController();
 

@@ -5,6 +5,7 @@ import dagger.Module;
 import dagger.Provides;
 import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.rest.*;
+import de.uniks.beastopia.teaml.rest.trainer.TrainerApiService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -90,5 +91,11 @@ public class HttpModule {
     @Singleton
     RegionApiService region(Retrofit retrofit) {
         return retrofit.create(RegionApiService.class);
+    }
+
+    @Provides
+    @Singleton
+    TrainerApiService trainer(Retrofit retrofit) {
+        return retrofit.create(TrainerApiService.class);
     }
 }
