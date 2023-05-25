@@ -23,6 +23,10 @@ public class MessageService {
     public MessageService() {
     }
 
+    public boolean isSentByMe(Message message) {
+        return message.sender().equals(tokenStorage.getCurrentUser()._id());
+    }
+
     public Observable<Message> sendMessageToGroup(Group group, String content) {
         return sendMessage(Namespace.Groups, group._id(), content);
     }
