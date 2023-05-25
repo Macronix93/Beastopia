@@ -6,6 +6,7 @@ import de.uniks.beastopia.teaml.rest.Group;
 import de.uniks.beastopia.teaml.service.GroupListService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.utils.Dialog;
+import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -38,12 +39,6 @@ public class ChatGroupController extends Controller {
     @FXML
     Text name;
 
-    private Group group;
-    private Boolean pinned;
-    private ImageView pinnedImg;
-    private ImageView notPinnedImg;
-    //private ImageView abort;
-
     @Inject
     Preferences preferences;
     @Inject
@@ -52,7 +47,13 @@ public class ChatGroupController extends Controller {
     Provider<DirectMessageController> directMessageControllerProvider;
     @Inject
     TokenStorage tokenStorage;
-    private final Consumer<Group> onPinChanged = null;
+    @Inject
+    Prefs prefs;
+
+    private Group group;
+    private ImageView pinnedImg;
+    private ImageView notPinnedImg;
+    private Consumer<Group> onPinChanged = null;
     private Consumer<Group> onGroupClicked = null;
 
     @Inject
@@ -60,11 +61,15 @@ public class ChatGroupController extends Controller {
 
     }
 
+    private static Image loadImage(URL imageUrl) throws FileNotFoundException, URISyntaxException {
+        return new Image(new FileInputStream(new File(imageUrl.toURI())));
+    }
+
     @Override
     public void init() {
         try {
-            pinnedImg = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/filled_pin.png")));
-            notPinnedImg = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/pin.png")));
+            pinnedImg = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/filled_pin.png")).toString());
+            notPinnedImg = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/pin.png")).toString());
         } catch (URISyntaxException | FileNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -74,10 +79,13 @@ public class ChatGroupController extends Controller {
         this.onGroupClicked = onGroupClicked;
     }
 
+    public void setOnPinChanged(Consumer<Group> onPinChanged) {
+        this.onPinChanged = onPinChanged;
+    }
+
     @SuppressWarnings("UnusedReturnValue")
-    public ChatGroupController setGroup(Group group, boolean pinned) {
+    public ChatGroupController setGroup(Group group) {
         this.group = group;
-        this.pinned = pinned;
         return this;
     }
 
@@ -86,7 +94,7 @@ public class ChatGroupController extends Controller {
         Parent parent = super.render();
         name.setText(group.name());
 
-        if (this.pinned) {
+        if (prefs.isPinned(this.group)) {
             this.pinGroupBtn.setGraphic(pinnedImg);
         } else {
             this.pinGroupBtn.setGraphic(notPinnedImg);
@@ -99,15 +107,11 @@ public class ChatGroupController extends Controller {
         onGroupClicked.accept(group);
     }
 
-    private ImageView createImage(URL imageUrl) throws URISyntaxException, FileNotFoundException {
-        ImageView imageView = new ImageView(loadImage(imageUrl));
+    private ImageView createImage(String imageUrl) throws URISyntaxException, FileNotFoundException {
+        ImageView imageView = new ImageView(imageUrl);
         imageView.setFitHeight(25.0);
         imageView.setFitWidth(25.0);
         return imageView;
-    }
-
-    private static Image loadImage(URL imageUrl) throws FileNotFoundException, URISyntaxException {
-        return new Image(new FileInputStream(new File(imageUrl.toURI())));
     }
 
     public void editGroup() {
@@ -129,16 +133,15 @@ public class ChatGroupController extends Controller {
         }
     }
 
-    //TODO: implement pinning feature
+    @FXML
     public void pinGroup() {
-        if (pinGroupBtn.getGraphic() == notPinnedImg) {
+        if (!prefs.isPinned(this.group)) {
             pinGroupBtn.setGraphic(pinnedImg);
-            preferences.putBoolean(this.group._id() + "_pinned", true);
+            prefs.setPinned(this.group, true);
         } else {
             pinGroupBtn.setGraphic(notPinnedImg);
-            preferences.putBoolean(this.group._id() + "_pinned", false);
+            prefs.setPinned(this.group, false);
         }
-        //noinspection ConstantValue
         if (onPinChanged != null) {
             onPinChanged.accept(group);
         }

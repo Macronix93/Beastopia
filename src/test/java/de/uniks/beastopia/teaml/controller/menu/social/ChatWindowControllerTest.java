@@ -81,9 +81,11 @@ class ChatWindowControllerTest extends ApplicationTest {
         });
 
         when(messageBubbleController1.setMessage(eq(group), any())).thenReturn(messageBubbleController1);
+        when(messageBubbleController1.setOnDelete(any())).thenReturn(messageBubbleController1);
         when(messageBubbleController1.render()).thenReturn(new Label("hey"));
 
         when(messageBubbleController2.setMessage(eq(group), any())).thenReturn(messageBubbleController2);
+        when(messageBubbleController2.setOnDelete(any())).thenReturn(messageBubbleController2);
         when(messageBubbleController2.render()).thenReturn(new Label("du"));
 
         app.start(stage);
