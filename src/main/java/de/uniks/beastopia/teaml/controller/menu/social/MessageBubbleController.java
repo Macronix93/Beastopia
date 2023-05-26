@@ -5,7 +5,6 @@ import de.uniks.beastopia.teaml.rest.Event;
 import de.uniks.beastopia.teaml.rest.Group;
 import de.uniks.beastopia.teaml.rest.Message;
 import de.uniks.beastopia.teaml.service.DataCache;
-import de.uniks.beastopia.teaml.service.FriendListService;
 import de.uniks.beastopia.teaml.service.MessageService;
 import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.utils.Dialog;
@@ -45,13 +44,10 @@ public class MessageBubbleController extends Controller {
     @Inject
     EventListener eventListener;
     @Inject
-    FriendListService friendListService;
-    @Inject
     MessageService messageService;
     @Inject
     DataCache cache;
     Consumer<Pair<Parent, MessageBubbleController>> onDelete;
-
     Message message;
 
     private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm");

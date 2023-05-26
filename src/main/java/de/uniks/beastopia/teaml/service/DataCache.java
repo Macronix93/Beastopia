@@ -37,4 +37,11 @@ public class DataCache {
     public List<User> getAllUsers() {
         return allUsers;
     }
+
+    public User getUser(String id) {
+        return allUsers.stream()
+                .filter(user -> user._id().equals(id))
+                .findFirst()
+                .orElse(null);
+    }
 }

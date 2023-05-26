@@ -17,6 +17,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class FriendListController extends Controller {
     private final List<Controller> subControllers = new ArrayList<>();
@@ -53,7 +54,7 @@ public class FriendListController extends Controller {
 
         if (cache.getAllUsers().isEmpty()) {
             disposables.add(friendListService.getUsers()
-                    .subscribeOn(FX_SCHEDULER)
+                    .observeOn(FX_SCHEDULER)
                     .subscribe(users -> {
                         cache.setAllUsers(users);
                         updateUserList();
@@ -66,29 +67,30 @@ public class FriendListController extends Controller {
     }
 
     private void getFriends() {
-        disposables.add(friendListService.getFriends().observeOn(FX_SCHEDULER).subscribe(friends -> {
-            clearSubControllers();
-            if (friends != null) {
-                for (User friend : friends) {
-                    boolean friendPinned = prefs.isPinned(friend);
-                    FriendController friendController = friendControllerProvider.get()
-                            .setUser(friend, friendPinned);
-                    friendController.checkFriend(true);
-                    friendController.init();
-                    subControllers.add(friendController);
-                    friendController.setOnFriendChanged(user -> {
-                        searchName.setText("");
-                        updateUserList();
-                    });
-                    friendController.setOnPinChanged(user -> updateUserList());
-                    if (friendPinned) {
-                        friendList.getChildren().add(0, friendController.render());
-                    } else {
-                        friendList.getChildren().add(friendController.render());
-                    }
-                }
+        List<User> friends = tokenStorage.getCurrentUser()
+                .friends().stream()
+                .map(id -> cache.getUser(id))
+                .filter(Objects::nonNull)
+                .toList();
+        clearSubControllers();
+        for (User friend : friends) {
+            boolean friendPinned = prefs.isPinned(friend);
+            FriendController friendController = friendControllerProvider.get()
+                    .setUser(friend, friendPinned);
+            friendController.checkFriend(true);
+            friendController.init();
+            subControllers.add(friendController);
+            friendController.setOnFriendChanged(user -> {
+                searchName.setText("");
+                updateUserList();
+            });
+            friendController.setOnPinChanged(user -> updateUserList());
+            if (friendPinned) {
+                friendList.getChildren().add(0, friendController.render());
+            } else {
+                friendList.getChildren().add(friendController.render());
             }
-        }));
+        }
     }
 
     @Override
