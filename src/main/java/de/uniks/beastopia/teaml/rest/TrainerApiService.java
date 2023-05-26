@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface TrainerApiService {
     @POST("regions/{regionId}/trainers")
-    Observable<Trainer> createTrainer(@Body CreateTrainerDto createTrainerDto);
+    Observable<Trainer> createTrainer(@Path("regionId") String regionId, @Body CreateTrainerDto createTrainerDto);
 
     @GET("regions/{regionId}/trainers")
     Observable<List<Trainer>> getAllTrainer(@Path("regionId") String regionId);

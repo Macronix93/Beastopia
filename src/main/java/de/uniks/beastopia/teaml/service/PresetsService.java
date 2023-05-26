@@ -9,9 +9,6 @@ import java.util.List;
 
 public class PresetsService {
     @Inject
-    TokenStorage tokenStorage;
-
-    @Inject
     PresetsApiService presetsApiService;
 
     public Observable<List<String>> getCharacters() {

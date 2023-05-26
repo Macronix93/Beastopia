@@ -10,17 +10,14 @@ import java.util.List;
 
 public class TrainerService {
     @Inject
-    TokenStorage tokenStorage;
-
-    @Inject
     TrainerApiService trainerApiService;
 
     @Inject
     TrainerService() {
     }
 
-    public Observable<Trainer> createTrainer(String name, String image) {
-        return trainerApiService.createTrainer(new CreateTrainerDto(name, image));
+    public Observable<Trainer> createTrainer(String regionId, String name, String image) {
+        return trainerApiService.createTrainer(regionId, new CreateTrainerDto(name, image));
     }
 
     public Observable<List<Trainer>> getAllTrainer(String regionId) {
