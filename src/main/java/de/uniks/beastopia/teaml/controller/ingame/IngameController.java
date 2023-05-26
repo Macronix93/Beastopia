@@ -21,7 +21,7 @@ public class IngameController extends Controller {
     Provider<PauseController> pauseControllerProvider;
 
     @Inject
-    Provider<TrainerController> trainerControllerProvider;
+    Provider<EntityController> trainerControllerProvider;
 
     @Inject
     public IngameController() {

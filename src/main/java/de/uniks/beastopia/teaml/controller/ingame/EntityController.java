@@ -3,11 +3,12 @@ package de.uniks.beastopia.teaml.controller.ingame;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.trainer.Trainer;
 import de.uniks.beastopia.teaml.service.TrainerService;
+import de.uniks.beastopia.teaml.sockets.UDPEventListener;
 import javafx.scene.Parent;
 
 import javax.inject.Inject;
 
-public class TrainerController extends Controller {
+public class EntityController extends Controller {
 
     Trainer trainer;
 
@@ -15,7 +16,15 @@ public class TrainerController extends Controller {
     TrainerService trainerService;
 
     @Inject
-    public TrainerController() {}
+    UDPEventListener udpEventListener;
+
+    @Inject
+    public EntityController() {}
+
+    @Override
+    public void init() {
+        super.init();
+    }
 
     public void setTrainer(Trainer trainer) {
         this.trainer = trainer;
