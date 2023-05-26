@@ -2,6 +2,7 @@ package de.uniks.beastopia.teaml.controller.ingame;
 
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.service.TokenStorage;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -35,6 +36,8 @@ public class TrainerController extends Controller {
     @Inject
     TokenStorage tokenStorage;
 
+    private final SimpleStringProperty trainerName = new SimpleStringProperty();
+
     @Inject
     public TrainerController() {
     }
@@ -54,6 +57,9 @@ public class TrainerController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
+
+        trainerNameInput.textProperty().bindBidirectional(trainerName);
+        regionNameDisplay.setText("RegionName");
         return parent;
     }
 
