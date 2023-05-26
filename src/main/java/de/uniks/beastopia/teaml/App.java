@@ -45,6 +45,18 @@ public class App extends Application {
         stage.setHeight(600);
         stage.setTitle("Beastopia");
 
+        stage.widthProperty().addListener((observable, oldValue, newValue) -> {
+            if (controller != null) {
+                controller.onResize();
+            }
+        });
+
+        stage.heightProperty().addListener((observable, oldValue, newValue) -> {
+            if (controller != null) {
+                controller.onResize();
+            }
+        });
+
         scene = new Scene(new Label("Loading..."));
         stage.setScene(scene);
 

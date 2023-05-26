@@ -33,7 +33,11 @@ public class RegionCell extends ListCell<Region> {
             setText(null);
         } else {
             final Button join = new Button(item.name() + " " + resources.getString("join"));
-            join.setOnAction(event -> app.show(ingameControllerProvider.get()));
+            join.setOnAction(event -> {
+                IngameController controller = ingameControllerProvider.get();
+                controller.setRegion(item);
+                app.show(controller);
+            });
             setGraphic(join);
         }
         setAlignment(Pos.CENTER);
