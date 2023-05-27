@@ -110,7 +110,7 @@
                   <Font size="16.0" />
               </font>
           </Button>
-            <Button mnemonicParsing="false" onAction="#deleteUser" style="-fx-background-radius: 20;" text="%DeleteUser">
+            <Button fx:id="deleteUserButton" mnemonicParsing="false" onAction="#deleteUser" style="-fx-background-radius: 20;" text="%DeleteUser">
                <font>
                   <Font size="16.0" />
                </font>

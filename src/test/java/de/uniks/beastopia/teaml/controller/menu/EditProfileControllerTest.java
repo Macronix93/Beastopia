@@ -136,6 +136,18 @@ class EditProfileControllerTest extends ApplicationTest {
     }
 
     @Test
+    public void deleteUser() {
+        DeleteUserController mocked = mock();
+        when(deleteUserControllerProvider.get()).thenReturn(mocked);
+        when(mocked.render()).thenReturn(new Label());
+
+        clickOn("#deleteUserButton");
+
+        verify(deleteUserControllerProvider).get();
+        verify(mocked).render();
+    }
+
+    @Test
     void title() {
         assertEquals(resources.getString("titleEditProfile"), app.getStage().getTitle());
     }
