@@ -106,6 +106,7 @@ public class DirectMessageController extends Controller {
     public void init() {
         super.init();
         chatListController.setOnGroupClicked(this::loadGroup);
+        chatListController.init();
     }
 
     @Override

@@ -4,6 +4,7 @@ import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Group;
 import de.uniks.beastopia.teaml.service.GroupListService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
+import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -33,6 +34,8 @@ public class ChatListController extends Controller {
     TokenStorage tokenStorage;
     @Inject
     Prefs prefs;
+    @Inject
+    EventListener eventListener;
     @FXML
     private VBox chatList;
     private Consumer<Group> onGroupClicked;
@@ -40,6 +43,15 @@ public class ChatListController extends Controller {
     @Inject
     public ChatListController() {
 
+    }
+
+    @Override
+    public void init() {
+        disposables.add(eventListener.listen("groups.*.*", Group.class).observeOn(FX_SCHEDULER).subscribe(group -> {
+            if (chatList != null) {
+                reload();
+            }
+        }));
     }
 
     @Override
@@ -62,6 +74,7 @@ public class ChatListController extends Controller {
         this.onGroupClicked = onGroupClicked;
     }
 
+    /*
     private void addUser() {
 
     }
@@ -72,15 +85,16 @@ public class ChatListController extends Controller {
         app.show(editGroupControllerProvider.get());
     }
 
+    @FXML
+    public void showChats() {
+        app.show(directMessageControllerProvider.get());
+    }
+    */
+    
     @Override
     public void destroy() {
         clearSubControllers();
         super.destroy();
-    }
-
-    @FXML
-    public void showChats() {
-        app.show(directMessageControllerProvider.get());
     }
 
     public void updateGroupList() {
@@ -102,9 +116,7 @@ public class ChatListController extends Controller {
                 chatUserController.setOnGroupClicked(onGroupClicked);
                 chatUserController.setGroup(group);
                 chatUserController.init();
-                chatUserController.setOnPinChanged(e -> {
-                    updateGroupList();
-                });
+                chatUserController.setOnPinChanged(e -> updateGroupList());
                 if (groupPinned) {
                     chatList.getChildren().add(0, chatUserController.render());
                 } else {
@@ -116,9 +128,7 @@ public class ChatListController extends Controller {
                 chatGroupController.setOnGroupClicked(onGroupClicked);
                 chatGroupController.setGroup(group);
                 chatGroupController.init();
-                chatGroupController.setOnPinChanged(e -> {
-                    updateGroupList();
-                });
+                chatGroupController.setOnPinChanged(e -> updateGroupList());
                 if (groupPinned) {
                     chatList.getChildren().add(0, chatGroupController.render());
                 } else {

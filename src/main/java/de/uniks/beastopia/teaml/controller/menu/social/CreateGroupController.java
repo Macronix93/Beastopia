@@ -4,7 +4,9 @@ import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.FriendListService;
+import de.uniks.beastopia.teaml.service.GroupListService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
+import de.uniks.beastopia.teaml.utils.Dialog;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
@@ -34,6 +36,10 @@ public class CreateGroupController extends Controller {
     Provider<DirectMessageController> directMessageControllerProvider;
     @Inject
     Provider<UserController> userControllerProvider;
+    @Inject
+    Provider<CreateGroupController> createGroupControllerProvider;
+    @Inject
+    GroupListService groupListService;
     @Inject
     FriendListService friendListService;
     @Inject
@@ -137,7 +143,24 @@ public class CreateGroupController extends Controller {
     }
 
     public void createGroup() {
-        //shown in DirectMessageController setupDirectMessageController(User user) method
+        if (groupnameField.getText().isEmpty()) {
+            Dialog.error("Groupname missing", "Please enter a groupname");
+            return;
+        }
+        List<String> userIds = new ArrayList<>();
+        for (User user : addedUsersList) {
+            userIds.add(user._id());
+        }
+
+        userIds.add(tokenStorage.getCurrentUser()._id());
+
+        disposables.add(groupListService.addGroup(groupnameField.getText(), userIds)
+                .observeOn(FX_SCHEDULER)
+                .subscribe(group -> {
+                    DirectMessageController directMessageController = directMessageControllerProvider.get();
+                    app.show(directMessageController);
+                }, error -> Dialog.error(error, "error")));
+
     }
 
     @Override
