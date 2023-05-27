@@ -46,6 +46,8 @@ class EditProfileControllerTest extends ApplicationTest {
     AuthService authService;
     @Mock
     TokenStorage tokenStorage;
+    @Mock
+    Provider<ResourceBundle> resourcesProvider;
     @Spy
     ThemeSettings themeSettings;
     @Spy
@@ -132,7 +134,11 @@ class EditProfileControllerTest extends ApplicationTest {
 
     @Test
     public void changePasswordInvalid() {
-
+        clickOn("#passwordInput");
+        write("1234");
+        clickOn("#passwordRepeatInput");
+        write("1234");
+        clickOn("#changePasswordButton");
     }
 
     @Test
@@ -176,5 +182,27 @@ class EditProfileControllerTest extends ApplicationTest {
     @Test
     void title() {
         assertEquals(resources.getString("titleEditProfile"), app.getStage().getTitle());
+    }
+
+    @Test
+    public void setDe() {
+        when(resourcesProvider.get()).thenReturn(resources);
+        doNothing().when(prefs).setLocale(Locale.GERMAN.toLanguageTag());
+
+        clickOn("#selectGermanLanguage");
+
+        verify(prefs, times(1)).setLocale(Locale.GERMAN.toLanguageTag());
+    }
+
+    @Test
+    public void setEn() {
+        when(resourcesProvider.get()).thenReturn(resources);
+        doNothing().when(prefs).setLocale(Locale.GERMAN.toLanguageTag());
+        doNothing().when(prefs).setLocale(Locale.ENGLISH.toLanguageTag());
+
+        clickOn("#selectGermanLanguage");
+        clickOn("#selectEnglishLanguage");
+
+        verify(prefs, times(1)).setLocale(Locale.ENGLISH.toLanguageTag());
     }
 }
