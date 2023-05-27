@@ -34,4 +34,8 @@ public class TrainerService {
     public Observable<Trainer> deleteTrainer(String regionId, String trainerId){
         return trainerApiService.deleteTrainer(regionId, trainerId);
     }
+
+    public boolean isPlayer(Trainer trainer){
+        return trainer.npc() == null;
+    }
 }

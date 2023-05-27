@@ -28,7 +28,7 @@ public class PresetsService {
 
     public Observable<Image> getSpriteSheet(String fileName) {
         return presetsApiService.getSpriteSheet(fileName)
-                .map(res -> new Image(res.byteStream()));
+                .map((ResponseBody body) -> new Image(body.byteStream()));
     }
 
     public Observable<Image> getImage(TileSet tileSet) {

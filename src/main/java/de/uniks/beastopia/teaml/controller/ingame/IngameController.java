@@ -49,12 +49,17 @@ public class IngameController extends Controller {
     private int posx = 0;
     private int posy = 0;
     ImageView player;
+    EntityController entityController;
 
-    @Inject
-    Provider<EntityController> entityControllerProvider;
 
     @Inject
     public IngameController() {
+    }
+
+    @Override
+    public void init() {
+        super.init();
+
     }
 
     public void setRegion(Region region) {
@@ -90,7 +95,6 @@ public class IngameController extends Controller {
     }
 
     private void drawMap() {
-        tilePane.getChildren().add(entityControllerProvider.get().render());
         player = drawTile(0, 0, image, presetsService.getTileViewPort(1, tileSet));
 
         for (Layer layer : map.layers()) {
@@ -112,6 +116,8 @@ public class IngameController extends Controller {
         }
 
         updateOrigin();
+
+        tilePane.getChildren().add(entityController.render());
     }
 
     private ImageView drawTile(int x, int y, Image image, Rectangle2D viewPort) {
