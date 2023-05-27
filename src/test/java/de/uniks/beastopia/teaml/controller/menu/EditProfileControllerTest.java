@@ -148,6 +148,32 @@ class EditProfileControllerTest extends ApplicationTest {
     }
 
     @Test
+    public void backMenu() {
+        editProfileController.backController("menu");
+        MenuController mocked = mock();
+        when(menuControllerProvider.get()).thenReturn(mocked);
+        when(mocked.render()).thenReturn(new Label());
+
+        clickOn("#backButton");
+
+        verify(menuControllerProvider).get();
+        verify(mocked).render();
+    }
+
+    @Test
+    public void backPause() {
+        editProfileController.backController("pause");
+        PauseController mocked = mock();
+        when(pauseControllerProvider.get()).thenReturn(mocked);
+        when(mocked.render()).thenReturn(new Label());
+
+        clickOn("#backButton");
+
+        verify(pauseControllerProvider).get();
+        verify(mocked).render();
+    }
+
+    @Test
     void title() {
         assertEquals(resources.getString("titleEditProfile"), app.getStage().getTitle());
     }

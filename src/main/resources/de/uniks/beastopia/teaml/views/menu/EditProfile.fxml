@@ -116,7 +116,7 @@
                </font>
             </Button>
       </HBox>
-      <Button mnemonicParsing="false" onAction="#back" style="-fx-background-radius: 20;" text="%Back">
+      <Button fx:id="backButton" mnemonicParsing="false" onAction="#back" style="-fx-background-radius: 20;" text="%Back">
          <font>
             <Font size="16.0" />
          </font>
