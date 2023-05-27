@@ -1,8 +1,8 @@
 package de.uniks.beastopia.teaml.service;
 
-import de.uniks.beastopia.teaml.rest.trainer.CreateTrainerDto;
-import de.uniks.beastopia.teaml.rest.trainer.Trainer;
-import de.uniks.beastopia.teaml.rest.trainer.TrainerApiService;
+import de.uniks.beastopia.teaml.rest.CreateTrainerDto;
+import de.uniks.beastopia.teaml.rest.Trainer;
+import de.uniks.beastopia.teaml.rest.TrainerApiService;
 import io.reactivex.rxjava3.core.Observable;
 
 import javax.inject.Inject;

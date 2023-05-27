@@ -1,4 +1,4 @@
-package de.uniks.beastopia.teaml.rest.trainer;
+package de.uniks.beastopia.teaml.rest;
 
 import io.reactivex.rxjava3.core.Observable;
 import retrofit2.http.*;

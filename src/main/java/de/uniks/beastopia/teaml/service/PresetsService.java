@@ -11,6 +11,7 @@ import okhttp3.ResponseBody;
 
 import javax.inject.Inject;
 import java.io.File;
+import java.util.List;
 
 public class PresetsService {
 
@@ -25,9 +26,9 @@ public class PresetsService {
         return presetsApiService.getCharacters();
     }
 
-    public Observable<ResponseBody> getSpriteSheet(String fileName) {
+    public Observable<Image> getSpriteSheet(String fileName) {
         return presetsApiService.getSpriteSheet(fileName)
-                .map(res -> ResponseBody.create(MediaType.parse("image/png"), res.bytes()));
+                .map(res -> new Image(res.byteStream()));
     }
 
     public Observable<Image> getImage(TileSet tileSet) {

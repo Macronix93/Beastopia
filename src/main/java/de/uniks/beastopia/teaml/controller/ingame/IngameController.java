@@ -51,7 +51,7 @@ public class IngameController extends Controller {
     ImageView player;
 
     @Inject
-    Provider<EntityController> trainerControllerProvider;
+    Provider<EntityController> entityControllerProvider;
 
     @Inject
     public IngameController() {
@@ -90,6 +90,7 @@ public class IngameController extends Controller {
     }
 
     private void drawMap() {
+        tilePane.getChildren().add(entityControllerProvider.get().render());
         player = drawTile(0, 0, image, presetsService.getTileViewPort(1, tileSet));
 
         for (Layer layer : map.layers()) {

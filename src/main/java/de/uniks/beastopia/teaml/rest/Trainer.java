@@ -1,4 +1,4 @@
-package de.uniks.beastopia.teaml.rest.trainer;
+package de.uniks.beastopia.teaml.rest;
 
 import java.util.Date;
 

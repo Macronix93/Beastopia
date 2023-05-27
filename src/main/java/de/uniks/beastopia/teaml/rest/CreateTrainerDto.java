@@ -1,4 +1,4 @@
-package de.uniks.beastopia.teaml.rest.trainer;
+package de.uniks.beastopia.teaml.rest;
 
 public record CreateTrainerDto(String name, String image) {
 }

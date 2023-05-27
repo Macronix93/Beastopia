@@ -1,7 +1,8 @@
 package de.uniks.beastopia.teaml.service;
 
-import de.uniks.beastopia.teaml.rest.presets.PresetsApiService;
+import de.uniks.beastopia.teaml.rest.PresetsApiService;
 import io.reactivex.rxjava3.core.Observable;
+import javafx.scene.image.Image;
 import okhttp3.MediaType;
 import okhttp3.ResponseBody;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -44,9 +46,9 @@ class PresetsServiceTest {
     void getSpriteSheet() {
         when(presetsApiService.getSpriteSheet("A.png")).thenReturn(Observable.just(responseBody));
 
-        ResponseBody response = presetsService.getSpriteSheet("A.png").blockingFirst();
+        Image response = presetsService.getSpriteSheet("A.png").blockingFirst();
 
-        assertEquals(13, response.contentLength());
+        assertNull(response.getUrl());
         verify(presetsApiService).getSpriteSheet("A.png");
     }
 }
