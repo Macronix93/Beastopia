@@ -60,6 +60,10 @@ public abstract class Controller {
         return load(path + "/" + getClass().getSimpleName().replace("Controller", ""));
     }
 
+    public void onResize() {
+
+    }
+
     protected Parent load(String view) {
         final FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/" + view + ".fxml"));
         loader.setControllerFactory(c -> this);

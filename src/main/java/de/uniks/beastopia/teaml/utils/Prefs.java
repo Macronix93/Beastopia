@@ -1,7 +1,11 @@
 package de.uniks.beastopia.teaml.utils;
 
 import de.uniks.beastopia.teaml.rest.Group;
+import de.uniks.beastopia.teaml.rest.Area;
+import de.uniks.beastopia.teaml.rest.Region;
 import de.uniks.beastopia.teaml.rest.User;
+import de.uniks.beastopia.teaml.service.DataCache;
+import javafx.geometry.Point2D;
 
 import javax.inject.Inject;
 import java.util.Locale;
@@ -10,6 +14,9 @@ import java.util.prefs.Preferences;
 public class Prefs {
     @Inject
     Preferences preferences;
+
+    @Inject
+    DataCache cache;
 
     @Inject
     public Prefs() {
@@ -66,5 +73,33 @@ public class Prefs {
 
     public void setLocale(String locale) {
         preferences.put("locale", locale);
+    }
+
+    public void setRegion(Region region) {
+        preferences.put("region", region._id());
+    }
+
+    public Region getRegion() {
+        return cache.getRegion(preferences.get("region", null));
+    }
+
+    public void setArea(Area area) {
+        preferences.put("area", area._id());
+    }
+
+    public Area getArea() {
+        return cache.getArea(preferences.get("area", null));
+    }
+
+    public void setPosition(Point2D position) {
+        preferences.putDouble("positionX", position.getX());
+        preferences.putDouble("positionY", position.getY());
+    }
+
+    public Point2D getPosition() {
+        return new Point2D(
+                preferences.getDouble("positionX", 0),
+                preferences.getDouble("positionY", 0)
+        );
     }
 }
