@@ -1,13 +1,17 @@
 package de.uniks.beastopia.teaml.rest;
 
 import io.reactivex.rxjava3.core.Observable;
-import retrofit2.http.*;
+import retrofit2.http.Body;
+import retrofit2.http.DELETE;
+import retrofit2.http.GET;
+import retrofit2.http.POST;
+import retrofit2.http.Path;
 
 import java.util.List;
 
 public interface TrainerApiService {
     @POST("regions/{regionId}/trainers")
-    Observable<Trainer> createTrainer(@Body CreateTrainerDto createTrainerDto);
+    Observable<Trainer> createTrainer(@Path("regionId") String regionId, @Body CreateTrainerDto createTrainerDto);
 
     @GET("regions/{regionId}/trainers")
     Observable<List<Trainer>> getAllTrainer(@Path("regionId") String regionId);
@@ -17,4 +21,5 @@ public interface TrainerApiService {
 
     @DELETE("regions/{regionId}/trainers/{id}")
     Observable<Trainer> deleteTrainer(@Path("regionId") String regionId, @Path("id") String trainerId);
+
 }
