@@ -2,6 +2,7 @@ package de.uniks.beastopia.teaml.utils;
 
 import com.google.gson.Gson;
 import de.uniks.beastopia.teaml.rest.ErrorResponse;
+import de.uniks.beastopia.teaml.rest.ValidationErrorResponse;
 import javafx.scene.control.Alert;
 import retrofit2.HttpException;
 
@@ -16,7 +17,13 @@ public class Dialog {
                 ErrorResponse response = new Gson().fromJson(json, ErrorResponse.class);
                 message = response.message();
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                try {
+                    String json = Objects.requireNonNull(Objects.requireNonNull(httpError.response()).errorBody()).string();
+                    ValidationErrorResponse response = new Gson().fromJson(json, ValidationErrorResponse.class);
+                    message = String.join("\n", response.message());
+                } catch (Exception e2) {
+                    throw new RuntimeException(e2);
+                }
             }
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
