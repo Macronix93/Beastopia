@@ -71,7 +71,11 @@ public class IngameController extends Controller {
                 .subscribe(areas -> {
                     cache.setAreas(areas);
                     if (prefs.getArea() == null) {
-                        Area area = areas.stream().filter(a -> a._id().equals(region.spawn().area())).findFirst().orElseThrow();
+                        Area area = areas.stream().filter(a -> a._id().equals(region.spawn().area())).findFirst().orElse(null);
+                        if (area == null) {
+                            loadingPage.activate();
+                            return;
+                        }
                         prefs.setArea(area);
                         posx = region.spawn().x();
                         posy = region.spawn().y();
