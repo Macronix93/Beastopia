@@ -30,6 +30,7 @@ public class LoginController extends Controller {
     public RadioButton selectEnglishLanguage;
     @FXML
     public RadioButton selectGermanLanguage;
+
     @Inject
     Provider<RegistrationController> registrationControllerProvider;
     @Inject
@@ -37,7 +38,6 @@ public class LoginController extends Controller {
     @Inject
     AuthService authService;
     @SuppressWarnings("unused")
-
     @Inject
     TokenStorage tokenStorage;
     @SuppressWarnings("unused")
@@ -57,6 +57,15 @@ public class LoginController extends Controller {
     @Override
     public String getTitle() {
         return resources.getString("titleLogin");
+    }
+
+    @Override
+    public void init() {
+        if (prefs.isRememberMe()) {
+            disposables.add(authService.refresh().observeOn(FX_SCHEDULER).subscribe(
+                    lr -> app.show(menuControllerProvider.get()),
+                    error -> Dialog.error(error, "Remember me failed!")));
+        }
     }
 
     @Override

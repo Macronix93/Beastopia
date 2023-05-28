@@ -75,7 +75,10 @@ public class MenuController extends Controller {
 
         Controller friendListController = friendListControllerProvider.get();
         subControllers.add(friendListController);
-        friendListContainer.getChildren().add(friendListController.render());
+        Parent render = friendListController.render();
+        friendListContainer.getChildren().add(render);
+        VBox.setVgrow(render, javafx.scene.layout.Priority.ALWAYS);
+
         Controller regionController = regionControllerProvider.get();
         subControllers.add(regionController);
         regionContainer.getChildren().add(regionController.render());

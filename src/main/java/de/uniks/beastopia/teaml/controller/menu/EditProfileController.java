@@ -132,7 +132,7 @@ public class EditProfileController extends Controller {
     }
 
     public void deleteUser() {
-        app.show(deleteUserControllerProvider.get());
+        app.show(deleteUserControllerProvider.get().backController(backController));
     }
 
     public void back() {
