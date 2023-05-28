@@ -12,6 +12,8 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import okhttp3.MediaType;
+import okhttp3.ResponseBody;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,6 +21,8 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
+import retrofit2.HttpException;
+import retrofit2.Response;
 
 import javax.inject.Provider;
 import java.util.Locale;
@@ -134,11 +138,17 @@ class EditProfileControllerTest extends ApplicationTest {
 
     @Test
     public void changePasswordInvalid() {
+        ResponseBody body = ResponseBody.create(MediaType.get("application/json"), "{\"message\":\"At least 8 characters.\"}");
+        when(authService.updatePassword(anyString())).thenReturn(Observable.error(new HttpException(Response.error(400, body))));
         clickOn("#passwordInput");
         write("1234");
         clickOn("#passwordRepeatInput");
         write("1234");
         clickOn("#changePasswordButton");
+
+        Node dialogPane = lookup(".dialog-pane").query();
+        Node result = from(dialogPane).lookup((Text t) -> t.getText().contains("At least 8")).query();
+        assertNotNull(result);
     }
 
     @Test
@@ -146,6 +156,7 @@ class EditProfileControllerTest extends ApplicationTest {
         DeleteUserController mocked = mock();
         when(deleteUserControllerProvider.get()).thenReturn(mocked);
         when(mocked.render()).thenReturn(new Label());
+        when(mocked.backController(any())).thenReturn(mocked);
 
         clickOn("#deleteUserButton");
 
@@ -190,7 +201,6 @@ class EditProfileControllerTest extends ApplicationTest {
         doNothing().when(prefs).setLocale(Locale.GERMAN.toLanguageTag());
 
         clickOn("#selectGermanLanguage");
-
         verify(prefs, times(1)).setLocale(Locale.GERMAN.toLanguageTag());
     }
 
@@ -199,6 +209,7 @@ class EditProfileControllerTest extends ApplicationTest {
         when(resourcesProvider.get()).thenReturn(resources);
         doNothing().when(prefs).setLocale(Locale.GERMAN.toLanguageTag());
         doNothing().when(prefs).setLocale(Locale.ENGLISH.toLanguageTag());
+        when(prefs.getLocale()).thenReturn(Locale.GERMAN.toLanguageTag());
 
         clickOn("#selectGermanLanguage");
         clickOn("#selectEnglishLanguage");

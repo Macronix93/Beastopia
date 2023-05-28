@@ -3,6 +3,7 @@ package de.uniks.beastopia.teaml.controller.menu;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.service.AuthService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
+import de.uniks.beastopia.teaml.utils.Dialog;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import de.uniks.beastopia.teaml.utils.ThemeSettings;
 import javafx.beans.property.SimpleStringProperty;
@@ -114,20 +115,20 @@ public class EditProfileController extends Controller {
 
     private void setNewPassword() {
         if (!passwordInput.getText().equals(passwordRepeatInput.getText())) {
-            errorMessage("passwordsNotEqual");
+            errorMessage();
         } else {
             disposables.add(authService.updatePassword(passwordInput.getText())
                     .observeOn(FX_SCHEDULER).subscribe(
                             lr -> app.show(menuControllerProvider.get()),
-                            error -> errorMessage(resources.getString("passwordChangeFailed"))));
+                            error -> Dialog.error(error, resources.getString("passwordChangeFailed"))));
         }
     }
 
-    private void errorMessage(String message) {
+    private void errorMessage() {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(resources.getString("error"));
         alert.setHeaderText(resources.getString("error"));
-        alert.setContentText(resources.getString(message));
+        alert.setContentText(resources.getString("passwordsNotEqual"));
         alert.showAndWait();
     }
 
