@@ -73,7 +73,7 @@ public class IngameController extends Controller {
                     if (prefs.getArea() == null) {
                         Area area = areas.stream().filter(a -> a._id().equals(region.spawn().area())).findFirst().orElse(null);
                         if (area == null) {
-                            loadingPage.activate();
+                            loadingPage.setDone();
                             return;
                         }
                         prefs.setArea(area);
@@ -88,7 +88,7 @@ public class IngameController extends Controller {
                     this.tileSet = presetsService.getTileset(map.tilesets().get(0)).blockingFirst();
                     this.image = presetsService.getImage(tileSet).blockingFirst();
                     drawMap();
-                    loadingPage.activate();
+                    loadingPage.setDone();
                 }));
 
         return loadingPage.parent();

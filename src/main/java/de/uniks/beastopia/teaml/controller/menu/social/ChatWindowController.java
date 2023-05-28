@@ -96,6 +96,6 @@ public class ChatWindowController extends Controller {
         messages.clear();
         messages.addAll(msgs);
         messages.forEach(this::addMessageData);
-        loadingPage.activate();
+        loadingPage.setDone();
     }
 }

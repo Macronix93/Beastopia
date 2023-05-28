@@ -33,7 +33,7 @@ public class LoadingPage {
         return parent;
     }
 
-    public void activate() {
+    public void setDone() {
         parent.getChildren().clear();
         parent.getChildren().add(original);
 

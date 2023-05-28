@@ -66,12 +66,12 @@ public class FriendListController extends Controller {
                     .subscribe(users -> {
                         cache.setAllUsers(users);
                         updateUserList();
-                        loadingPage.activate();
+                        loadingPage.setDone();
                     }));
         } else {
             disposables.add(delay().observeOn(FX_SCHEDULER).subscribe(t -> {
                 updateUserList();
-                loadingPage.activate();
+                loadingPage.setDone();
             }));
         }
 
