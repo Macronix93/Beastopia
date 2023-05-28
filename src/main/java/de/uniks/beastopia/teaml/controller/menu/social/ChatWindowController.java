@@ -6,6 +6,7 @@ import de.uniks.beastopia.teaml.rest.Group;
 import de.uniks.beastopia.teaml.rest.Message;
 import de.uniks.beastopia.teaml.service.MessageService;
 import de.uniks.beastopia.teaml.sockets.EventListener;
+import de.uniks.beastopia.teaml.utils.LoadingPage;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -33,6 +34,7 @@ public class ChatWindowController extends Controller {
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     private final List<MessageBubbleController> subControllers = new ArrayList<>();
     private Group group;
+    private LoadingPage loadingPage;
 
     @Inject
     public ChatWindowController() {
@@ -54,7 +56,7 @@ public class ChatWindowController extends Controller {
 
     @Override
     public Parent render() {
-        Parent parent = super.render();
+        loadingPage = LoadingPage.makeLoadingPage(super.render());
 
         Observable<List<Message>> messagesFromGroup = messageService.getMessagesFromGroup(group._id());
         if (messagesFromGroup != null) {
@@ -63,7 +65,7 @@ public class ChatWindowController extends Controller {
                     .subscribe(this::fillInMessages));
         }
 
-        return parent;
+        return loadingPage.parent();
     }
 
     @Override
@@ -94,5 +96,6 @@ public class ChatWindowController extends Controller {
         messages.clear();
         messages.addAll(msgs);
         messages.forEach(this::addMessage);
+        loadingPage.activate();
     }
 }

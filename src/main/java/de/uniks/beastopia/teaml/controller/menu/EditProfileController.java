@@ -119,8 +119,6 @@ public class EditProfileController extends Controller {
     private void setNewPassword() {
         if (!passwordInput.getText().equals(passwordRepeatInput.getText())) {
             errorMessage("passwordsNotEqual");
-        } else if (passwordInput.getText().length() < 8) {
-            errorMessage("passwordTooShort");
         } else {
             disposables.add(authService.updatePassword(passwordInput.getText())
                     .observeOn(FX_SCHEDULER).subscribe(
@@ -129,7 +127,7 @@ public class EditProfileController extends Controller {
         }
     }
 
-    private void errorMessage(String message) {
+    private void errorMessage(@SuppressWarnings("SameParameterValue") String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(resources.getString("error"));
         alert.setHeaderText(resources.getString("error"));
