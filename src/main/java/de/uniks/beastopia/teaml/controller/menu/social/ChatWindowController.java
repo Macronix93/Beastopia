@@ -75,10 +75,10 @@ public class ChatWindowController extends Controller {
     }
 
     private void addMessage(Event<Message> event) {
-        addMessage(event.data());
+        addMessageData(event.data());
     }
 
-    private void addMessage(Message message) {
+    private void addMessageData(Message message) {
         MessageBubbleController subController = messageBubbleControllerProvider.get()
                 .setMessage(group, message)
                 .setOnDelete(pair -> {
@@ -95,7 +95,7 @@ public class ChatWindowController extends Controller {
     private void fillInMessages(List<Message> msgs) {
         messages.clear();
         messages.addAll(msgs);
-        messages.forEach(this::addMessage);
+        messages.forEach(this::addMessageData);
         loadingPage.activate();
     }
 }
