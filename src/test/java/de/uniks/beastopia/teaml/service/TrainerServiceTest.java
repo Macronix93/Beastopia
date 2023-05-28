@@ -31,10 +31,10 @@ public class TrainerServiceTest {
     @Test
     void createTrainerTest() {
         Trainer trainer = allTrainer.get(0);
-        when(trainerApiService.createTrainer(new CreateTrainerDto("A", "A")))
+        when(trainerApiService.createTrainer("123", new CreateTrainerDto("A", "A")))
                 .thenReturn(Observable.just(trainer));
 
-        Trainer responseTrainer = trainerService.createTrainer("A", "A").blockingFirst();
+        Trainer responseTrainer = trainerService.createTrainer("123", "A", "A").blockingFirst();
 
         assertEquals("123", responseTrainer._id());
         assertEquals("A", responseTrainer.region());
@@ -42,7 +42,7 @@ public class TrainerServiceTest {
         assertEquals("A", responseTrainer.name());
         assertEquals("A", responseTrainer.image());
         assertEquals(0, responseTrainer.coins());
-        verify(trainerApiService).createTrainer(new CreateTrainerDto("A", "A"));
+        verify(trainerApiService).createTrainer("123", new CreateTrainerDto("A", "A"));
     }
 
     @Test
