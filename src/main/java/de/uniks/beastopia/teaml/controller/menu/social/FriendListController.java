@@ -157,9 +157,10 @@ public class FriendListController extends Controller {
                     return;
                 }
 
+                User user = users.get(i);
                 FriendController controller = friendControllerProvider.get();
-                controller.setUser(users.get(i), prefs.isPinned(users.get(i)));
-                controller.checkFriend(friendListService.isFriend(users.get(i)));
+                controller.setUser(user, prefs.isPinned(user));
+                controller.checkFriend(friendListService.isFriend(user));
                 controller.init();
                 controller.setOnFriendChanged(u -> {
                     searchName.setText("");
