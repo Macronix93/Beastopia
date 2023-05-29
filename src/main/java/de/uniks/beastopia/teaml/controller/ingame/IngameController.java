@@ -169,7 +169,7 @@ public class IngameController extends Controller {
     }
 
     @FXML
-    public void pauseMenu(KeyEvent keyEvent) {
+    public void handleKeyEvent(KeyEvent keyEvent) {
         if (keyEvent.getCode().equals(KeyCode.ESCAPE)) {
             app.show(pauseControllerProvider.get());
         }
