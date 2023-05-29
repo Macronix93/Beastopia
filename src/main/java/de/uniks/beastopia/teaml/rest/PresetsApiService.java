@@ -12,5 +12,5 @@ public interface PresetsApiService {
     Observable<List<String>> getCharacters();
 
     @GET("presets/characters/{filename}")
-    Observable<ResponseBody> getSpriteSheet(@Path("filename") String fileName);
+    Observable<ResponseBody> getCharacterSprites(@Path("filename") String fileName);
 }
