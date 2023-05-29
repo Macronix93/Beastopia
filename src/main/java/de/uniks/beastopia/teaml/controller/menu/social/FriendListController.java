@@ -134,6 +134,7 @@ public class FriendListController extends Controller {
     private void stopTask() {
         if (currentTask != null) {
             currentTask.cancel();
+            currentTask = null;
             System.gc();
         }
     }

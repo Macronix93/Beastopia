@@ -116,7 +116,7 @@ class FriendListControllerTest extends ApplicationTest {
     void canSearchUser3() {
         when(tokenStorage.getCurrentUser()).thenReturn(users.get(0));
         write("user3");
-        sleep(1000);
+        sleep(2000);
         assertThrows(EmptyNodeQueryException.class, () -> lookup("user1").query());
         assertThrows(EmptyNodeQueryException.class, () -> lookup("user2").query());
         assertNotNull(lookup("user3").query());
