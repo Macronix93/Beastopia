@@ -152,7 +152,7 @@ public class FriendListController extends Controller {
             @Override
             public void run() {
                 if (i >= size || stamp != taskStamp) {
-                    timerDisposables.add(delay(50).observeOn(FX_SCHEDULER).subscribe(t -> timerDisposables.dispose()));
+                    timerDisposables.add(delay(500).observeOn(FX_SCHEDULER).subscribe(t -> timerDisposables.dispose()));
                     stopTask();
                     return;
                 }
@@ -182,7 +182,7 @@ public class FriendListController extends Controller {
                 }));
             }
         };
-        timer.scheduleAtFixedRate(currentTask, 0, 50);
+        timer.scheduleAtFixedRate(currentTask, 0, 100);
     }
 
     private List<User> sortByPin(List<User> users) {
