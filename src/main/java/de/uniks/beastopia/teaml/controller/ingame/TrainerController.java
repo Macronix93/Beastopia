@@ -23,6 +23,7 @@ import javax.inject.Provider;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class TrainerController extends Controller {
     @FXML
     private VBox trainerContainer;
@@ -89,8 +90,6 @@ public class TrainerController extends Controller {
                                 if (img.equals(currentImageString)) {
                                     currentIndex.set(index);
 
-                                    System.out.println(index);
-
                                     trainerSprite.setImage(presetsService.getCharacterSprites(currentImageString).blockingFirst());
                                     trainerSprite.setPreserveRatio(true);
                                     trainerSprite.setSmooth(true);
@@ -126,7 +125,11 @@ public class TrainerController extends Controller {
         }
 
         disposables.add(trainerService.createTrainer(tokenStorage.getCurrentRegion()._id(), trainerNameInput.getText(), characterImageStrings.get(currentIndex.get()))
-                .observeOn(FX_SCHEDULER).subscribe(tr -> app.show(ingameControllerProvider.get()), error -> Dialog.error(error, "Trainer creation failed!")));
+                .observeOn(FX_SCHEDULER)
+                .subscribe(tr -> {
+                    tokenStorage.setCurrentTrainer(tr);
+                    app.show(ingameControllerProvider.get());
+                }, error -> Dialog.error(error, "Trainer creation failed!")));
     }
 
     public void deleteTrainer() {
@@ -187,6 +190,7 @@ public class TrainerController extends Controller {
         trainerSprite.setImage(presetsService.getCharacterSprites(characterImageStrings.get(currentIndex.get())).blockingFirst());
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public TrainerController backController(String controller) {
         this.backController = controller;
         return this;
