@@ -68,6 +68,20 @@ public class TrainerController extends Controller {
     public void init() {
         super.init();
 
+        // Add currently available character sprite strings to list
+        disposables.add(presetsService.getCharacters()
+                .observeOn(FX_SCHEDULER)
+                .subscribe(characters -> {
+                    if (characters != null) {
+                        characterImageStrings.addAll(characters);
+
+                        trainerSprite.setImage(presetsService.getCharacterSprites(characterImageStrings.get(0)).blockingFirst());
+                        trainerSprite.setPreserveRatio(true);
+                        trainerSprite.setSmooth(true);
+                        trainerSprite.setViewport(new javafx.geometry.Rectangle2D(48, 0, 16, 32));
+                    }
+                }));
+
         if (tokenStorage.getCurrentTrainer() == null) {
             // Check if current user has a trainer for the specified region
             disposables.add(trainerService.getAllTrainer(tokenStorage.getCurrentRegion()._id())
@@ -80,22 +94,27 @@ public class TrainerController extends Controller {
                             app.show(ingameControllerProvider.get());
                         }
                     }));
-
-            // Add currently available character sprite strings to list
-            disposables.add(presetsService.getCharacters()
-                    .observeOn(FX_SCHEDULER)
-                    .subscribe(characters -> {
-                        if (characters != null) {
-                            characterImageStrings.addAll(characters);
-
-                            trainerSprite.setImage(presetsService.getCharacterSprites(characterImageStrings.get(0)).blockingFirst());
-                            trainerSprite.setPreserveRatio(true);
-                            trainerSprite.setSmooth(true);
-                            trainerSprite.setViewport(new javafx.geometry.Rectangle2D(48, 0, 16, 32));
-                        }
-                    }));
         } else {
+            //TODO: Show current trainer image and set index
 
+            /*int index = 0;
+            String currentImageString = tokenStorage.getCurrentTrainer().image();
+
+            for (String img : characterImageStrings) {
+                if (img.equals(currentImageString)) {
+                    currentIndex.set(index);
+
+                    System.out.println(index);
+
+                    trainerSprite.setImage(presetsService.getCharacterSprites(currentImageString).blockingFirst());
+                    trainerSprite.setPreserveRatio(true);
+                    trainerSprite.setSmooth(true);
+                    trainerSprite.setViewport(new javafx.geometry.Rectangle2D(48, 0, 16, 32));
+                    break;
+                } else {
+                    index++;
+                }
+            }*/
         }
     }
 
@@ -128,6 +147,13 @@ public class TrainerController extends Controller {
 
         trainerNameInput.textProperty().bindBidirectional(trainerName);
         regionNameDisplay.setText("RegionName");
+
+        if (tokenStorage.getCurrentTrainer() != null) {
+            chooseLeftButton.setDisable(true);
+            chooseRightButton.setDisable(true);
+            trainerNameInput.setEditable(false);
+            trainerNameInput.setText(tokenStorage.getCurrentTrainer().name());
+        }
         return parent;
     }
 
