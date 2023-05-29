@@ -8,6 +8,7 @@ import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.utils.LoadingPage;
 import de.uniks.beastopia.teaml.utils.Prefs;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -45,6 +46,7 @@ public class FriendListController extends Controller {
     Prefs prefs;
     LoadingPage loadingPage;
     @Inject
+    @SuppressWarnings("unused")
     EventListener eventListener;
     Timer timer = new Timer();
     TimerTask currentTask;
@@ -98,6 +100,7 @@ public class FriendListController extends Controller {
         forceUpdate = false;
         clearSubControllers();
         friendList.getChildren().clear();
+        System.gc();
 
         lastSearch = searchName.getText();
         if (lastSearch.isBlank()) {
@@ -128,12 +131,19 @@ public class FriendListController extends Controller {
         addUsers(sortedUsers);
     }
 
-    private void addUsers(List<User> users) {
+    private void stopTask() {
         if (currentTask != null) {
             currentTask.cancel();
+            System.gc();
         }
+    }
 
+    private void addUsers(List<User> users) {
+        stopTask();
+
+        System.gc();
         taskStamp = System.currentTimeMillis();
+        CompositeDisposable timerDisposables = new CompositeDisposable();
         currentTask = new TimerTask() {
             int i = 0;
             final int size = users.size();
@@ -141,8 +151,9 @@ public class FriendListController extends Controller {
 
             @Override
             public void run() {
-                if (i >= size) {
-                    currentTask.cancel();
+                if (i >= size || stamp != taskStamp) {
+                    timerDisposables.add(delay(50).observeOn(FX_SCHEDULER).subscribe(t -> timerDisposables.dispose()));
+                    stopTask();
                     return;
                 }
 
@@ -152,7 +163,7 @@ public class FriendListController extends Controller {
                 controller.init();
                 i++;
 
-                disposables.add(delay(50).observeOn(FX_SCHEDULER).subscribe(t -> {
+                timerDisposables.add(delay(50).observeOn(FX_SCHEDULER).subscribe(t -> {
                     if (stamp != taskStamp) {
                         return;
                     }
@@ -171,7 +182,7 @@ public class FriendListController extends Controller {
                 }));
             }
         };
-        timer.scheduleAtFixedRate(currentTask, 0, 1);
+        timer.scheduleAtFixedRate(currentTask, 0, 50);
     }
 
     private List<User> sortByPin(List<User> users) {
