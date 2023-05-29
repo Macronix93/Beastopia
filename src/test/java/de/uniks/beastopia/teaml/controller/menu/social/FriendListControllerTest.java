@@ -67,9 +67,11 @@ class FriendListControllerTest extends ApplicationTest {
     FriendController mockedFriendController1;
     FriendController mockedFriendController2;
     DirectMessageController mockedDirectMessageController;
+    Stage stage;
 
     @Override
     public void start(Stage stage) {
+        this.stage = stage;
         AppPreparer.prepare(app);
 
         mockedFriendController1 = mock();
@@ -117,8 +119,8 @@ class FriendListControllerTest extends ApplicationTest {
         when(tokenStorage.getCurrentUser()).thenReturn(users.get(0));
         write("user3");
         sleep(2000);
-        assertThrows(EmptyNodeQueryException.class, () -> lookup("user1").query());
-        assertThrows(EmptyNodeQueryException.class, () -> lookup("user2").query());
+        assertTrue(lookup("user1").queryAll().isEmpty());
+        assertTrue(lookup("user2").queryAll().isEmpty());
         assertNotNull(lookup("user3").query());
     }
 
