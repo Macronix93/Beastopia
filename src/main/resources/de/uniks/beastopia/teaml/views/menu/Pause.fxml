@@ -45,8 +45,7 @@
                     </ImageView>
                 </graphic>
             </Button>
-            <Button fx:id="mainMenuButton1" alignment="CENTER" minWidth="180.0" mnemonicParsing="false"
-                    onAction="#trainerMenuButtonPressed"
+            <Button alignment="CENTER" minWidth="180.0" mnemonicParsing="false" onAction="#trainerMenuButtonPressed"
                     style="-fx-background-color: transparent; -fx-border-color: black; -fx-border-radius: 10;"
                     text="%TrainerMenu">
                 <font>

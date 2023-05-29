@@ -75,10 +75,32 @@ public class TrainerController extends Controller {
                     if (characters != null) {
                         characterImageStrings.addAll(characters);
 
-                        trainerSprite.setImage(presetsService.getCharacterSprites(characterImageStrings.get(0)).blockingFirst());
-                        trainerSprite.setPreserveRatio(true);
-                        trainerSprite.setSmooth(true);
-                        trainerSprite.setViewport(new javafx.geometry.Rectangle2D(48, 0, 16, 32));
+                        // If the user already has a trainer for the region (coming from ingame), show the current trainer image, otherwise the first
+                        if (tokenStorage.getCurrentTrainer() == null) {
+                            trainerSprite.setImage(presetsService.getCharacterSprites(characterImageStrings.get(0)).blockingFirst());
+                            trainerSprite.setPreserveRatio(true);
+                            trainerSprite.setSmooth(true);
+                            trainerSprite.setViewport(new javafx.geometry.Rectangle2D(48, 0, 16, 32));
+                        } else {
+                            int index = 0;
+                            String currentImageString = tokenStorage.getCurrentTrainer().image();
+
+                            for (String img : characterImageStrings) {
+                                if (img.equals(currentImageString)) {
+                                    currentIndex.set(index);
+
+                                    System.out.println(index);
+
+                                    trainerSprite.setImage(presetsService.getCharacterSprites(currentImageString).blockingFirst());
+                                    trainerSprite.setPreserveRatio(true);
+                                    trainerSprite.setSmooth(true);
+                                    trainerSprite.setViewport(new javafx.geometry.Rectangle2D(48, 0, 16, 32));
+                                    break;
+                                } else {
+                                    index++;
+                                }
+                            }
+                        }
                     }
                 }));
 
@@ -94,27 +116,6 @@ public class TrainerController extends Controller {
                             app.show(ingameControllerProvider.get());
                         }
                     }));
-        } else {
-            //TODO: Show current trainer image and set index
-
-            /*int index = 0;
-            String currentImageString = tokenStorage.getCurrentTrainer().image();
-
-            for (String img : characterImageStrings) {
-                if (img.equals(currentImageString)) {
-                    currentIndex.set(index);
-
-                    System.out.println(index);
-
-                    trainerSprite.setImage(presetsService.getCharacterSprites(currentImageString).blockingFirst());
-                    trainerSprite.setPreserveRatio(true);
-                    trainerSprite.setSmooth(true);
-                    trainerSprite.setViewport(new javafx.geometry.Rectangle2D(48, 0, 16, 32));
-                    break;
-                } else {
-                    index++;
-                }
-            }*/
         }
     }
 
@@ -153,6 +154,8 @@ public class TrainerController extends Controller {
             chooseRightButton.setDisable(true);
             trainerNameInput.setEditable(false);
             trainerNameInput.setText(tokenStorage.getCurrentTrainer().name());
+        } else {
+            deleteTrainerButton.setDisable(true);
         }
         return parent;
     }
