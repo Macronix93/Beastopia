@@ -161,22 +161,21 @@ public class FriendListController extends Controller {
                 controller.setUser(users.get(i), prefs.isPinned(users.get(i)));
                 controller.checkFriend(friendListService.isFriend(users.get(i)));
                 controller.init();
+                controller.setOnFriendChanged(u -> {
+                    searchName.setText("");
+                    forceUpdate = true;
+                    updateUserList();
+                });
+                controller.setOnPinChanged(u -> {
+                    forceUpdate = true;
+                    updateUserList();
+                });
                 i++;
 
                 timerDisposables.add(delay(50).observeOn(FX_SCHEDULER).subscribe(t -> {
                     if (stamp != taskStamp) {
                         return;
                     }
-
-                    controller.setOnFriendChanged(u -> {
-                        searchName.setText("");
-                        forceUpdate = true;
-                        updateUserList();
-                    });
-                    controller.setOnPinChanged(u -> {
-                        forceUpdate = true;
-                        updateUserList();
-                    });
                     subControllers.add(controller);
                     friendList.getChildren().add(controller.render());
                 }));
