@@ -39,6 +39,14 @@ public class Dialog {
         }
     }
 
+    public static void error(String dialogHeader, String dialogContent) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Information");
+        alert.setHeaderText(dialogHeader);
+        alert.setContentText(dialogContent);
+        alert.showAndWait();
+    }
+
     public static void info(String dialogHeader, String dialogContent) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Information");

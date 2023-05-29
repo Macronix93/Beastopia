@@ -2,6 +2,7 @@ package de.uniks.beastopia.teaml.utils;
 
 import de.uniks.beastopia.teaml.rest.Area;
 import de.uniks.beastopia.teaml.rest.Region;
+import de.uniks.beastopia.teaml.rest.Group;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.DataCache;
 import javafx.geometry.Point2D;
@@ -25,8 +26,16 @@ public class Prefs {
         return preferences.getBoolean(user._id() + "_pinned", false);
     }
 
+    public boolean isPinned(Group group) {
+        return preferences.getBoolean(group._id() + "_pinned", false);
+    }
+
     public void setPinned(User user, boolean pinned) {
         preferences.putBoolean(user._id() + "_pinned", pinned);
+    }
+
+    public void setPinned(Group group, boolean pinned) {
+        preferences.putBoolean(group._id() + "_pinned", pinned);
     }
 
     public boolean isRememberMe() {

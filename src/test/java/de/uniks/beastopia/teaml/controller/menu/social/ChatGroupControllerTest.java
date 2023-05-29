@@ -6,6 +6,7 @@ import de.uniks.beastopia.teaml.rest.Group;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.GroupListService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
+import de.uniks.beastopia.teaml.utils.Prefs;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
@@ -34,6 +35,8 @@ public class ChatGroupControllerTest extends ApplicationTest {
     Provider<DirectMessageController> directMessageControllerProvider;
     @Mock
     TokenStorage tokenStorage;
+    @Mock
+    Prefs prefs;
 
     @Spy
     App app = new App(null);
@@ -48,7 +51,7 @@ public class ChatGroupControllerTest extends ApplicationTest {
         AppPreparer.prepare(app);
 
         group = new Group(null, null, "id", "test", null);
-        chatGroupController.setGroup(group, false);
+        chatGroupController.setGroup(group);
 
         app.start(stage);
         app.show(chatGroupController);
@@ -58,7 +61,7 @@ public class ChatGroupControllerTest extends ApplicationTest {
     @Test
     void deleteGroupOneMember() {
         group = new Group(null, null, "id2", "group", List.of("a"));
-        chatGroupController.setGroup(group, false);
+        chatGroupController.setGroup(group);
 
         when(groupListService.deleteGroup(group)).thenReturn(Observable.just(group));
         DirectMessageController mocked = mock();
@@ -73,7 +76,7 @@ public class ChatGroupControllerTest extends ApplicationTest {
     @Test
     void deleteGroupMoreMembers() {
         group = new Group(null, null, "id2", "group", List.of("a", "b"));
-        chatGroupController.setGroup(group, false);
+        chatGroupController.setGroup(group);
 
         when(groupListService.removeMember(group, "a")).thenReturn(Observable.just(group));
         DirectMessageController mocked = mock();

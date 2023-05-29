@@ -11,14 +11,22 @@ import okhttp3.ResponseBody;
 
 import javax.inject.Inject;
 import java.io.File;
+import java.util.List;
 
 public class PresetsService {
-
     @Inject
     PresetsApiService presetsApiService;
 
     @Inject
     public PresetsService() {
+    }
+
+    public Observable<List<String>> getCharacters() {
+        return presetsApiService.getCharacters();
+    }
+
+    public Observable<ResponseBody> getSpriteSheet(String fileName) {
+        return presetsApiService.getSpriteSheet(fileName);
     }
 
     public Observable<Image> getImage(TileSet tileSet) {

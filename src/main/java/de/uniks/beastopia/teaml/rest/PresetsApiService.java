@@ -10,4 +10,9 @@ public interface PresetsApiService {
     @GET("presets/tilesets/{filename}")
     Observable<ResponseBody> getTileset(@Path("filename") String filename);
 
+    @GET("presets/characters")
+    Observable<List<String>> getCharacters();
+
+    @GET("presets/characters/{filename}")
+    Observable<ResponseBody> getSpriteSheet(@Path("filename") String fileName);
 }

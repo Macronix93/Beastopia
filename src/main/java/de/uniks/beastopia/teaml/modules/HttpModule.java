@@ -4,7 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dagger.Module;
 import dagger.Provides;
 import de.uniks.beastopia.teaml.Main;
-import de.uniks.beastopia.teaml.rest.*;
+import de.uniks.beastopia.teaml.rest.AuthApiService;
+import de.uniks.beastopia.teaml.rest.GroupApiService;
+import de.uniks.beastopia.teaml.rest.MessageApiService;
+import de.uniks.beastopia.teaml.rest.RegionApiService;
+import de.uniks.beastopia.teaml.rest.TrainerApiService;
+import de.uniks.beastopia.teaml.rest.UserApiService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import javafx.util.Pair;
 import okhttp3.OkHttpClient;
@@ -128,5 +133,11 @@ public class HttpModule {
     @Singleton
     PresetsApiService presets(Retrofit retrofit) {
         return retrofit.create(PresetsApiService.class);
+    }
+
+    @Provides
+    @Singleton
+    TrainerApiService trainer(Retrofit retrofit) {
+        return retrofit.create(TrainerApiService.class);
     }
 }
