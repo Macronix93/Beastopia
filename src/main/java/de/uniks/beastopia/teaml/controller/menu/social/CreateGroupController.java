@@ -144,7 +144,7 @@ public class CreateGroupController extends Controller {
 
     public void createGroup() {
         if (groupnameField.getText().isEmpty()) {
-            Dialog.error("groupNameMissing", "enterGroupName");
+            Dialog.error(resources.getString("groupNameMissing"), resources.getString("enterGroupName"));
             return;
         }
         List<String> userIds = new ArrayList<>();
