@@ -13,7 +13,7 @@
             <Pane fx:id="tilePane" prefHeight="200.0" prefWidth="200.0"/>
         </ScrollPane>
         <AnchorPane prefHeight="200.0" prefWidth="200.0">
-            <Button alignment="CENTER" minWidth="180.0" mnemonicParsing="false" onKeyPressed="#pauseMenu"
+            <Button alignment="CENTER" minWidth="180.0" mnemonicParsing="false" onKeyPressed="#handleKeyEvent"
                     style="-fx-background-color: transparent; -fx-border-color: black; -fx-border-radius: 10;"
                     text="%ESCtoPause" textAlignment="CENTER" AnchorPane.bottomAnchor="0.0"
                     AnchorPane.leftAnchor="0.0">
