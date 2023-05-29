@@ -46,7 +46,6 @@ public class EditProfileController extends Controller {
     Provider<MenuController> menuControllerProvider;
     @Inject
     Provider<DeleteUserController> deleteUserControllerProvider;
-
     @Inject
     Provider<PauseController> pauseControllerProvider;
     @Inject
@@ -75,8 +74,6 @@ public class EditProfileController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
-
-
         if (prefs.getLocale().contains("de")) {
             selectGermanLanguage.setSelected(true);
         } else {
@@ -118,9 +115,7 @@ public class EditProfileController extends Controller {
 
     private void setNewPassword() {
         if (!passwordInput.getText().equals(passwordRepeatInput.getText())) {
-            errorMessage("passwordsNotEqual");
-        } else if (passwordInput.getText().length() < 8) {
-            errorMessage("passwordTooShort");
+            errorMessage();
         } else {
             disposables.add(authService.updatePassword(passwordInput.getText())
                     .observeOn(FX_SCHEDULER).subscribe(
@@ -129,11 +124,11 @@ public class EditProfileController extends Controller {
         }
     }
 
-    private void errorMessage(String message) {
+    private void errorMessage() {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(resources.getString("error"));
         alert.setHeaderText(resources.getString("error"));
-        alert.setContentText(resources.getString(message));
+        alert.setContentText(resources.getString("passwordsNotEqual"));
         alert.showAndWait();
     }
 

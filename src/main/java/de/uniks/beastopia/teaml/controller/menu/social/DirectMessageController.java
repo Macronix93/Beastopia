@@ -35,7 +35,10 @@ public class DirectMessageController extends Controller {
 
     @Inject
     Provider<ChatWindowController> chatWindowControllerProvider;
-
+    @Inject
+    Provider<EditGroupController> editGroupControllerProvider;
+    @Inject
+    Provider<CreateGroupController> createGroupControllerProvider;
     @Inject
     MessageService messageService;
 
@@ -103,6 +106,7 @@ public class DirectMessageController extends Controller {
     public void init() {
         super.init();
         chatListController.setOnGroupClicked(this::loadGroup);
+        chatListController.init();
     }
 
     @Override
@@ -130,8 +134,9 @@ public class DirectMessageController extends Controller {
         app.show(menuControllerProvider.get());
     }
 
-    public void newGroup() {
-        //ToDo show Group Controller
+    @FXML
+    public void createGroup() {
+        app.show(createGroupControllerProvider.get());
     }
 
     public void sendMessage() {
