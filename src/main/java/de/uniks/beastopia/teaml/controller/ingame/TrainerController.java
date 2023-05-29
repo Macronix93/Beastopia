@@ -146,7 +146,7 @@ public class TrainerController extends Controller {
         Parent parent = super.render();
 
         trainerNameInput.textProperty().bindBidirectional(trainerName);
-        regionNameDisplay.setText("RegionName");
+        regionNameDisplay.setText(tokenStorage.getCurrentRegion().name());
 
         if (tokenStorage.getCurrentTrainer() != null) {
             chooseLeftButton.setDisable(true);
