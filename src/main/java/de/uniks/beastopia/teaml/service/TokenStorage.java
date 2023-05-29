@@ -1,6 +1,7 @@
 package de.uniks.beastopia.teaml.service;
 
 import de.uniks.beastopia.teaml.rest.Region;
+import de.uniks.beastopia.teaml.rest.Trainer;
 import de.uniks.beastopia.teaml.rest.User;
 
 import javax.inject.Inject;
@@ -11,6 +12,8 @@ public class TokenStorage {
     private String accessToken;
     private String refreshToken;
     private User currentUser;
+    private Trainer currentTrainer;
+    private Region currentRegion;
 
     @Inject
     public TokenStorage() {
@@ -39,5 +42,21 @@ public class TokenStorage {
 
     public void setCurrentUser(User user) {
         this.currentUser = user;
+    }
+
+    public void setCurrentTrainer(Trainer trainer) {
+        this.currentTrainer = trainer;
+    }
+
+    public Trainer getCurrentTrainer() {
+        return this.currentTrainer;
+    }
+
+    public void setCurrentRegion(Region region) {
+        this.currentRegion = region;
+    }
+
+    public Region getCurrentRegion() {
+        return this.currentRegion;
     }
 }

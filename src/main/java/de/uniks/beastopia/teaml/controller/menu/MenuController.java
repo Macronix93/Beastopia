@@ -62,6 +62,9 @@ public class MenuController extends Controller {
     public void init() {
         super.init();
         app.addCleanupTask(() -> authService.goOffline().subscribe());
+
+        tokenStorage.setCurrentRegion(null);
+        tokenStorage.setCurrentTrainer(null);
     }
 
     @Override

@@ -2,7 +2,6 @@ package de.uniks.beastopia.teaml.controller.ingame;
 
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.menu.MenuController;
-import de.uniks.beastopia.teaml.rest.Region;
 import de.uniks.beastopia.teaml.rest.Trainer;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
@@ -55,9 +54,8 @@ public class TrainerController extends Controller {
     @Inject
     Provider<MenuController> menuControllerProvider;
 
-    private Region region;
-    private Trainer trainer;
-    private List<String> characterImageStrings = new ArrayList<>();
+    private final List<String> characterImageStrings = new ArrayList<>();
+    private String backController;
 
     private final SimpleStringProperty trainerName = new SimpleStringProperty();
     private final IntegerProperty currentIndex = new SimpleIntegerProperty(0);
@@ -70,32 +68,35 @@ public class TrainerController extends Controller {
     public void init() {
         super.init();
 
-        // Check if current user has a trainer for the specified region
-        disposables.add(trainerService.getAllTrainer(region._id())
-                .observeOn(FX_SCHEDULER)
-                .subscribe(trainers -> {
-                    Trainer tr = trainers.stream().filter(t -> t.user().equals(tokenStorage.getCurrentUser()._id())).findFirst().orElse(null);
+        if (tokenStorage.getCurrentTrainer() == null) {
+            // Check if current user has a trainer for the specified region
+            disposables.add(trainerService.getAllTrainer(tokenStorage.getCurrentRegion()._id())
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe(trainers -> {
+                        Trainer tr = trainers.stream().filter(t -> t.user().equals(tokenStorage.getCurrentUser()._id())).findFirst().orElse(null);
 
-                    if (tr != null) {
-                        IngameController controller = ingameControllerProvider.get();
-                        controller.setTrainer(tr);
-                        app.show(controller);
-                    }
-                }));
+                        if (tr != null) {
+                            tokenStorage.setCurrentTrainer(tr);
+                            app.show(ingameControllerProvider.get());
+                        }
+                    }));
 
-        // Add currently available character sprite strings to list
-        disposables.add(presetsService.getCharacters()
-                .observeOn(FX_SCHEDULER)
-                .subscribe(characters -> {
-                    if (characters != null) {
-                        characterImageStrings.addAll(characters);
+            // Add currently available character sprite strings to list
+            disposables.add(presetsService.getCharacters()
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe(characters -> {
+                        if (characters != null) {
+                            characterImageStrings.addAll(characters);
 
-                        trainerSprite.setImage(presetsService.getCharacterSprites(characterImageStrings.get(0)).blockingFirst());
-                        trainerSprite.setPreserveRatio(true);
-                        trainerSprite.setSmooth(true);
-                        trainerSprite.setViewport(new javafx.geometry.Rectangle2D(48, 0, 16, 32));
-                    }
-                }));
+                            trainerSprite.setImage(presetsService.getCharacterSprites(characterImageStrings.get(0)).blockingFirst());
+                            trainerSprite.setPreserveRatio(true);
+                            trainerSprite.setSmooth(true);
+                            trainerSprite.setViewport(new javafx.geometry.Rectangle2D(48, 0, 16, 32));
+                        }
+                    }));
+        } else {
+
+        }
     }
 
     public void saveTrainer() {
@@ -104,10 +105,8 @@ public class TrainerController extends Controller {
             return;
         }
 
-        disposables.add(trainerService.createTrainer(region._id(), trainerNameInput.getText(), characterImageStrings.get(currentIndex.get()))
-                .observeOn(FX_SCHEDULER).subscribe(tr -> {
-                    app.show(ingameControllerProvider.get());
-                }, error -> Dialog.error(error, "Trainer creation failed!")));
+        disposables.add(trainerService.createTrainer(tokenStorage.getCurrentRegion()._id(), trainerNameInput.getText(), characterImageStrings.get(currentIndex.get()))
+                .observeOn(FX_SCHEDULER).subscribe(tr -> app.show(ingameControllerProvider.get()), error -> Dialog.error(error, "Trainer creation failed!")));
     }
 
     public void deleteTrainer() {
@@ -115,7 +114,12 @@ public class TrainerController extends Controller {
     }
 
     public void back() {
-        app.show(menuControllerProvider.get());
+        if (this.backController.equals("menu")) {
+            tokenStorage.setCurrentTrainer(null);
+            app.show(menuControllerProvider.get());
+        } else {
+            app.show(ingameControllerProvider.get());
+        }
     }
 
     @Override
@@ -154,15 +158,8 @@ public class TrainerController extends Controller {
         trainerSprite.setImage(presetsService.getCharacterSprites(characterImageStrings.get(currentIndex.get())).blockingFirst());
     }
 
-    public void setRegion(Region region) {
-        this.region = region;
-    }
-
-    public void setTrainer(Trainer trainer) {
-        this.trainer = trainer;
-    }
-
-    public Trainer getTrainer() {
-        return this.trainer;
+    public TrainerController backController(String controller) {
+        this.backController = controller;
+        return this;
     }
 }
