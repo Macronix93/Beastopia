@@ -152,6 +152,7 @@ public class FriendController extends Controller {
 
     private ImageView createImage(String imageUrl) throws URISyntaxException, FileNotFoundException {
         ImageView imageView = new ImageView(imageUrl);
+        imageView.setCache(false);
         imageView.setFitHeight(25.0);
         imageView.setFitWidth(25.0);
         return imageView;
@@ -200,5 +201,18 @@ public class FriendController extends Controller {
         if (onPinChanged != null) {
             onPinChanged.accept(user);
         }
+    }
+
+    @Override
+    public void destroy() {
+        pinned = null;
+        notPinned = null;
+        addImage = null;
+        removeImage = null;
+
+        onPinChanged = null;
+        onFriendChanged = null;
+
+        super.destroy();
     }
 }

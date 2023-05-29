@@ -7,6 +7,7 @@ import de.uniks.beastopia.teaml.rest.*;
 import de.uniks.beastopia.teaml.service.AreaService;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
+import de.uniks.beastopia.teaml.utils.LoadingPage;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
@@ -48,9 +49,12 @@ public class IngameController extends Controller {
     private Parent parent;
     private int posx = 0;
     private int posy = 0;
+    private int width;
+    private int height;
     ImageView player;
     EntityController entityController;
 
+    private LoadingPage loadingPage;
 
     @Inject
     public IngameController() {
@@ -69,14 +73,18 @@ public class IngameController extends Controller {
 
     @Override
     public Parent render() {
-        parent = super.render();
+        loadingPage = LoadingPage.makeLoadingPage(super.render());
 
         disposables.add(areaService.getAreas(region._id())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(areas -> {
                     cache.setAreas(areas);
                     if (prefs.getArea() == null) {
-                        Area area = areas.stream().filter(a -> a._id().equals(region.spawn().area())).findFirst().orElseThrow();
+                        Area area = areas.stream().filter(a -> a._id().equals(region.spawn().area())).findFirst().orElse(null);
+                        if (area == null) {
+                            loadingPage.setDone();
+                            return;
+                        }
                         prefs.setArea(area);
                         posx = region.spawn().x();
                         posy = region.spawn().y();
@@ -89,9 +97,10 @@ public class IngameController extends Controller {
                     this.tileSet = presetsService.getTileset(map.tilesets().get(0)).blockingFirst();
                     this.image = presetsService.getImage(tileSet).blockingFirst();
                     drawMap();
+                    loadingPage.setDone();
                 }));
 
-        return parent;
+        return loadingPage.parent();
     }
 
     private void drawMap() {
@@ -140,8 +149,8 @@ public class IngameController extends Controller {
     }
 
     public void setOrigin(int tilex, int tiley) {
-        double parentWidth = parent.getScene().getWidth();
-        double parentHeight = parent.getScene().getHeight();
+        double parentWidth = width;
+        double parentHeight = height;
 
         double originX = parentWidth / 2 - TILE_SIZE / 2;
         double originY = parentHeight / 2 - TILE_SIZE / 2;
@@ -161,8 +170,12 @@ public class IngameController extends Controller {
     }
 
     @Override
-    public void onResize() {
-        updateOrigin();
+    public void onResize(int width, int height) {
+        this.width = width;
+        this.height = height;
+        if (loadingPage.isDone()) {
+            updateOrigin();
+        }
     }
 
     @FXML

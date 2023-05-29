@@ -15,8 +15,7 @@
         <AnchorPane prefHeight="200.0" prefWidth="200.0">
             <Button alignment="CENTER" minWidth="180.0" mnemonicParsing="false" onKeyPressed="#handleKeyEvent"
                     style="-fx-background-color: transparent; -fx-border-color: black; -fx-border-radius: 10;"
-                    text="%ESCtoPause" textAlignment="CENTER" AnchorPane.bottomAnchor="0.0"
-                    AnchorPane.leftAnchor="0.0">
+                    text="%ESCtoPause" textAlignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0">
                 <font>
                     <Font size="14.0"/>
                 </font>

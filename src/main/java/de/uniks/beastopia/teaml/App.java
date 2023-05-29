@@ -16,6 +16,8 @@ public class App extends Application {
     private Stage stage;
     private Controller controller;
     private Scene scene;
+    private int windowSizeX = 800;
+    private int windowSizeY = 600;
     private final List<Runnable> cleanupTasks = new ArrayList<>();
 
     public App() {
@@ -41,19 +43,21 @@ public class App extends Application {
     @Override
     public void start(Stage primaryStage) {
         stage = primaryStage;
-        stage.setWidth(800);
-        stage.setHeight(600);
+        stage.setWidth(windowSizeX);
+        stage.setHeight(windowSizeY);
         stage.setTitle("Beastopia");
 
         stage.widthProperty().addListener((observable, oldValue, newValue) -> {
+            windowSizeX = newValue.intValue();
             if (controller != null) {
-                controller.onResize();
+                controller.onResize(windowSizeX, windowSizeY);
             }
         });
 
         stage.heightProperty().addListener((observable, oldValue, newValue) -> {
+            windowSizeY = newValue.intValue();
             if (controller != null) {
-                controller.onResize();
+                controller.onResize(windowSizeX, windowSizeY);
             }
         });
 
@@ -102,6 +106,7 @@ public class App extends Application {
         if (controller == null) {
             return;
         }
+
         controller.init();
         update();
     }
@@ -118,6 +123,6 @@ public class App extends Application {
             stage.setTitle(controller.getTitle());
         }
         stage.getScene().setRoot(controller.render());
-        stage.getScene().getRoot().requestFocus();
+        controller.onResize(windowSizeX, windowSizeY);
     }
 }

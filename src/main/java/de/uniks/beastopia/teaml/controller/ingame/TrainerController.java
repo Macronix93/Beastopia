@@ -8,9 +8,7 @@ import de.uniks.beastopia.teaml.service.TrainerService;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
 
 import javax.inject.Inject;
@@ -21,18 +19,6 @@ public class TrainerController extends Controller {
     private TextField trainerNameInput;
     @FXML
     private Text regionNameDisplay;
-    @FXML
-    private ImageView trainerSprite;
-    @FXML
-    private Button backButton;
-    @FXML
-    private Button chooseLeftButton;
-    @FXML
-    private Button chooseRightButton;
-    @FXML
-    private Button deleteTrainerButton;
-    @FXML
-    private Button saveTrainerButton;
 
     @Inject
     TokenStorage tokenStorage;
@@ -42,6 +28,7 @@ public class TrainerController extends Controller {
     Provider<IngameController> ingameControllerProvider;
 
     private Region region;
+    @SuppressWarnings("unused")
     private Trainer trainer;
 
     private final SimpleStringProperty trainerName = new SimpleStringProperty();
@@ -66,7 +53,9 @@ public class TrainerController extends Controller {
     }
 
     public void saveTrainer() {
-        //TODO: Save trainer for current region
+        IngameController controller = ingameControllerProvider.get();
+        controller.setRegion(region);
+        app.show(controller);
     }
 
     public void deleteTrainer() {
@@ -95,6 +84,7 @@ public class TrainerController extends Controller {
         this.region = region;
     }
 
+    @SuppressWarnings("unused")
     public void setTrainer(Trainer trainer) {
         this.trainer = trainer;
     }

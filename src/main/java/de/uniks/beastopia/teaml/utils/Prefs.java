@@ -1,8 +1,8 @@
 package de.uniks.beastopia.teaml.utils;
 
-import de.uniks.beastopia.teaml.rest.Group;
 import de.uniks.beastopia.teaml.rest.Area;
 import de.uniks.beastopia.teaml.rest.Region;
+import de.uniks.beastopia.teaml.rest.Group;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.DataCache;
 import javafx.geometry.Point2D;

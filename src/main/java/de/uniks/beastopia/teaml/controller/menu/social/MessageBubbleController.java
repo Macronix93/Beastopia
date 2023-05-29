@@ -53,6 +53,7 @@ public class MessageBubbleController extends Controller {
     private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm");
     private Group group;
     Parent parent;
+    boolean editMode = false;
 
     @Inject
     public MessageBubbleController() {
@@ -111,23 +112,37 @@ public class MessageBubbleController extends Controller {
 
     @FXML
     public void editMessage() {
+        if (editMode) {
+            return;
+        }
         elementsBox.getChildren().add(1, editMessageBody);
         elementsBox.getChildren().remove(messageBody);
         editMessageBody.setText(message.body());
+        editMode = true;
     }
 
     @FXML
     public void keyEvent(KeyEvent event) {
         if (event.getCode().equals(KeyCode.ESCAPE)) {
+            if (!editMode) {
+                return;
+            }
+
             elementsBox.getChildren().add(1, messageBody);
             elementsBox.getChildren().remove(editMessageBody);
             event.consume();
+            editMode = false;
         } else if (event.getCode().equals(KeyCode.ENTER)) {
+            if (!editMode) {
+                return;
+            }
+
             disposables.add(messageService.updateMessage(group, message, editMessageBody.getText()).observeOn(FX_SCHEDULER).subscribe(message -> {
                 this.message = message;
                 messageBody.setText(message.body());
                 elementsBox.getChildren().add(1, messageBody);
                 elementsBox.getChildren().remove(editMessageBody);
+                editMode = false;
             }, throwable -> Dialog.error(throwable, "Problem while updating message")));
 
             event.consume();
@@ -136,6 +151,10 @@ public class MessageBubbleController extends Controller {
 
     @FXML
     public void deleteMessage() {
+        if (editMode) {
+            return;
+        }
+
         disposables.add(messageService.deleteMessage(group, message)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(

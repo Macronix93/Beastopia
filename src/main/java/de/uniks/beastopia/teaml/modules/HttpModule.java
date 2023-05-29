@@ -5,7 +5,6 @@ import dagger.Module;
 import dagger.Provides;
 import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.rest.*;
-import de.uniks.beastopia.teaml.rest.TrainerApiService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import javafx.util.Pair;
 import okhttp3.OkHttpClient;
@@ -44,6 +43,7 @@ public class HttpModule {
 
     @Provides
     @Singleton
+    @SuppressWarnings("unused")
     static OkHttpClient client(TokenStorage tokenStorage) {
         return new OkHttpClient.Builder()
                 .addInterceptor(chain -> {
@@ -80,6 +80,7 @@ public class HttpModule {
 
     @Provides
     @Singleton
+    @SuppressWarnings("unused")
     Retrofit retrofit(OkHttpClient client, ObjectMapper objectMapper) {
         return new Retrofit.Builder()
                 .baseUrl(Main.API_URL + "/")
@@ -91,49 +92,57 @@ public class HttpModule {
 
     @Provides
     @Singleton
+    @SuppressWarnings("unused")
     UserApiService user(Retrofit retrofit) {
         return retrofit.create(UserApiService.class);
     }
 
     @Provides
     @Singleton
+    @SuppressWarnings("unused")
     AuthApiService auth(Retrofit retrofit) {
         return retrofit.create(AuthApiService.class);
     }
 
     @Provides
     @Singleton
+    @SuppressWarnings("unused")
     GroupApiService group(Retrofit retrofit) {
         return retrofit.create(GroupApiService.class);
     }
 
     @Provides
     @Singleton
+    @SuppressWarnings("unused")
     MessageApiService message(Retrofit retrofit) {
         return retrofit.create(MessageApiService.class);
     }
 
     @Provides
     @Singleton
+    @SuppressWarnings("unused")
     RegionApiService region(Retrofit retrofit) {
         return retrofit.create(RegionApiService.class);
     }
 
     @Provides
     @Singleton
-    TrainerApiService trainer(Retrofit retrofit) {
-        return retrofit.create(TrainerApiService.class);
-    }
-
-    @Provides
-    @Singleton
+    @SuppressWarnings("unused")
     AreaApiService area(Retrofit retrofit) {
         return retrofit.create(AreaApiService.class);
     }
 
     @Provides
     @Singleton
+    @SuppressWarnings("unused")
     PresetsApiService presets(Retrofit retrofit) {
         return retrofit.create(PresetsApiService.class);
+    }
+
+    @Provides
+    @Singleton
+    @SuppressWarnings("unused")
+    TrainerApiService trainer(Retrofit retrofit) {
+        return retrofit.create(TrainerApiService.class);
     }
 }
