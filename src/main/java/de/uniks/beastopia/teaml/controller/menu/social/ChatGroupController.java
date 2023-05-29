@@ -46,6 +46,8 @@ public class ChatGroupController extends Controller {
     @Inject
     Provider<DirectMessageController> directMessageControllerProvider;
     @Inject
+    Provider<EditGroupController> editGroupControllerProvider;
+    @Inject
     TokenStorage tokenStorage;
     @Inject
     Prefs prefs;
@@ -114,8 +116,6 @@ public class ChatGroupController extends Controller {
         return imageView;
     }
 
-    public void editGroup() {
-    }
 
     @FXML
     public void deleteGroup() {
@@ -144,5 +144,10 @@ public class ChatGroupController extends Controller {
         if (onPinChanged != null) {
             onPinChanged.accept(group);
         }
+    }
+
+    @FXML
+    public void editGroup() {
+        app.show(editGroupControllerProvider.get().setGroup(group));
     }
 }

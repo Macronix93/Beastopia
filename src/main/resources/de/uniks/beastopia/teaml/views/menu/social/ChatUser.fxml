@@ -8,16 +8,13 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
-<HBox fx:id="_rootElement" onMouseClicked="#mouseClicked" prefHeight="60.0" prefWidth="265.0"
-      style="-fx-border-color: black; -fx-border-width: 1;" xmlns="http://javafx.com/javafx/19"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="de.uniks.beastopia.teaml.controller.menu.social.ChatGroupController">
+
+<HBox fx:id="_rootElement" onMouseClicked="#mouseClicked" prefHeight="60.0" prefWidth="265.0" style="-fx-border-color: black; -fx-border-width: 1;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.uniks.beastopia.teaml.controller.menu.social.ChatGroupController">
     <VBox prefHeight="200.0" prefWidth="10075.0">
         <VBox prefHeight="9985.0">
-            <Text fx:id="name" fontSmoothingType="LCD" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER"
-                  wrappingWidth="79.13671875">
+            <Text fx:id="name" fontSmoothingType="LCD" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="79.13671875">
                 <font>
-                    <Font size="14.0"/>
+                    <Font size="14.0" />
                 </font>
             </Text>
         </VBox>
@@ -25,21 +22,20 @@
             <Button fx:id="editGroupBtn" minHeight="25.0" minWidth="25.0" mnemonicParsing="false" onAction="#editGroup">
                 <graphic>
                     <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
-                        <Image url="@../../../assets/buttons/edit.png"/>
+                        <Image url="@../../../assets/buttons/edit.png" />
                     </ImageView>
                 </graphic>
             </Button>
-            <Button fx:id="deleteGroupBtn" minHeight="25.0" minWidth="25.0" mnemonicParsing="false"
-                    onAction="#deleteGroup">
+            <Button fx:id="deleteGroupBtn" minHeight="25.0" minWidth="25.0" mnemonicParsing="false" onAction="#deleteGroup">
                 <graphic>
                     <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
-                        <Image url="@../../../assets/buttons/abort.png"/>
+                        <Image url="@../../../assets/buttons/abort.png" />
                     </ImageView>
                 </graphic>
             </Button>
-            <Button fx:id="pinGroupBtn" minHeight="25.0" minWidth="25.0" mnemonicParsing="false" onAction="#pinGroup"/>
+            <Button fx:id="pinGroupBtn" minHeight="25.0" minWidth="25.0" mnemonicParsing="false" onAction="#pinGroup" />
             <padding>
-                <Insets bottom="15.0" left="15.0" right="15.0" top="15.0"/>
+                <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
             </padding>
         </HBox>
     </VBox>
