@@ -5,6 +5,8 @@ import okhttp3.ResponseBody;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 
+import java.util.List;
+
 public interface PresetsApiService {
 
     @GET("presets/tilesets/{filename}")
