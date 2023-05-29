@@ -57,7 +57,6 @@ public class TrainerController extends Controller {
 
     private Region region;
     private Trainer trainer;
-    private String trainerSpriteSheet;
     private List<String> characterImageStrings = new ArrayList<>();
 
     private final SimpleStringProperty trainerName = new SimpleStringProperty();
@@ -78,9 +77,9 @@ public class TrainerController extends Controller {
                     Trainer tr = trainers.stream().filter(t -> t.user().equals(tokenStorage.getCurrentUser()._id())).findFirst().orElse(null);
 
                     if (tr != null) {
-                        setTrainer(tr);
-
-                        app.show(ingameControllerProvider.get());
+                        IngameController controller = ingameControllerProvider.get();
+                        controller.setTrainer(tr);
+                        app.show(controller);
                     }
                 }));
 
@@ -107,9 +106,6 @@ public class TrainerController extends Controller {
 
         disposables.add(trainerService.createTrainer(region._id(), trainerNameInput.getText(), characterImageStrings.get(currentIndex.get()))
                 .observeOn(FX_SCHEDULER).subscribe(tr -> {
-                    setTrainer(tr);
-                    setTrainerSpriteSheet(characterImageStrings.get(currentIndex.get()));
-
                     app.show(ingameControllerProvider.get());
                 }, error -> Dialog.error(error, "Trainer creation failed!")));
     }
@@ -136,6 +132,7 @@ public class TrainerController extends Controller {
         return resources.getString("titleTrainer");
     }
 
+    @FXML
     public void chooseLeft() {
         currentIndex.set(currentIndex.get() - 1);
 
@@ -146,6 +143,7 @@ public class TrainerController extends Controller {
         trainerSprite.setImage(presetsService.getCharacterSprites(characterImageStrings.get(currentIndex.get())).blockingFirst());
     }
 
+    @FXML
     public void chooseRight() {
         currentIndex.set(currentIndex.get() + 1);
 
@@ -166,13 +164,5 @@ public class TrainerController extends Controller {
 
     public Trainer getTrainer() {
         return this.trainer;
-    }
-
-    public void setTrainerSpriteSheet(String trainerSpriteSheet) {
-        this.trainerSpriteSheet = trainerSpriteSheet;
-    }
-
-    public String getTrainerSpriteSheet() {
-        return this.trainerSpriteSheet;
     }
 }

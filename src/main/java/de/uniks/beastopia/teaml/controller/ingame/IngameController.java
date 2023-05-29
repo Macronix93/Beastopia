@@ -3,6 +3,7 @@ package de.uniks.beastopia.teaml.controller.ingame;
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
+import de.uniks.beastopia.teaml.rest.Trainer;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
@@ -22,6 +23,8 @@ public class IngameController extends Controller {
     @Inject
     Provider<PauseController> pauseControllerProvider;
 
+    Trainer trainer;
+
     @Inject
     public IngameController() {
     }
@@ -36,5 +39,9 @@ public class IngameController extends Controller {
     @Override
     public String getTitle() {
         return resources.getString("titleIngame");
+    }
+
+    public void setTrainer(Trainer trainer) {
+        this.trainer = trainer;
     }
 }
