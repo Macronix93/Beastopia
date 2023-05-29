@@ -7,6 +7,7 @@ import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.rest.AuthApiService;
 import de.uniks.beastopia.teaml.rest.GroupApiService;
 import de.uniks.beastopia.teaml.rest.MessageApiService;
+import de.uniks.beastopia.teaml.rest.PresetsApiService;
 import de.uniks.beastopia.teaml.rest.RegionApiService;
 import de.uniks.beastopia.teaml.rest.TrainerApiService;
 import de.uniks.beastopia.teaml.rest.UserApiService;
@@ -101,5 +102,11 @@ public class HttpModule {
     @Singleton
     TrainerApiService trainer(Retrofit retrofit) {
         return retrofit.create(TrainerApiService.class);
+    }
+
+    @Provides
+    @Singleton
+    PresetsApiService presets(Retrofit retrofit) {
+        return retrofit.create(PresetsApiService.class);
     }
 }
