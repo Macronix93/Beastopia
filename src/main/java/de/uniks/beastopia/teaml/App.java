@@ -102,7 +102,6 @@ public class App extends Application {
         if (controller == null) {
             return;
         }
-
         controller.init();
         update();
     }
@@ -119,5 +118,6 @@ public class App extends Application {
             stage.setTitle(controller.getTitle());
         }
         stage.getScene().setRoot(controller.render());
+        stage.getScene().getRoot().requestFocus();
     }
 }

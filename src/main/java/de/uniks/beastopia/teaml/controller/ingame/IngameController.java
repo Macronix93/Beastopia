@@ -116,7 +116,6 @@ public class IngameController extends Controller {
         }
 
         updateOrigin();
-
         tilePane.getChildren().add(entityController.render());
     }
 
