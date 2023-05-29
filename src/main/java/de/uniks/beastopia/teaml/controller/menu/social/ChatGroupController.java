@@ -115,7 +115,6 @@ public class ChatGroupController extends Controller {
     }
 
     public void editGroup() {
-        //TODO: show edit group dialog
     }
 
     @FXML
