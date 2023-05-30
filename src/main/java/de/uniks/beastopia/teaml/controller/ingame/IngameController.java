@@ -46,13 +46,14 @@ public class IngameController extends Controller {
     private Image image;
     private Map map;
     private TileSet tileSet;
-    private Parent parent;
     private int posx = 0;
     private int posy = 0;
     private int width;
     private int height;
-    ImageView player;
-    EntityController entityController;
+
+    Parent player;
+    @Inject
+    Provider<EntityController> entityControllerProvider;
 
     private LoadingPage loadingPage;
 
@@ -63,7 +64,6 @@ public class IngameController extends Controller {
     @Override
     public void init() {
         super.init();
-
     }
 
     public void setRegion(Region region) {
@@ -104,8 +104,8 @@ public class IngameController extends Controller {
     }
 
     private void drawMap() {
-        player = drawTile(0, 0, image, presetsService.getTileViewPort(1, tileSet));
-
+        //player = drawTile(0, 0, image, presetsService.getTileViewPort(1, tileSet));
+        player = drawPlayer(posx, posy, entityControllerProvider.get().render());
         for (Layer layer : map.layers()) {
             if (layer.chunks() == null) {
                 continue;
@@ -125,10 +125,16 @@ public class IngameController extends Controller {
         }
 
         updateOrigin();
-        tilePane.getChildren().add(entityController.render());
     }
 
-    private ImageView drawTile(int x, int y, Image image, Rectangle2D viewPort) {
+    private Parent drawPlayer(int posx, int posy, Parent player) {
+        player.setTranslateX(posx * TILE_SIZE);
+        player.setTranslateY(posy * TILE_SIZE);
+        tilePane.getChildren().add(player);
+        return player;
+    }
+
+    private void drawTile(int x, int y, Image image, Rectangle2D viewPort) {
         ImageView view = new ImageView();
         view.setPreserveRatio(true);
         view.setSmooth(true);
@@ -139,13 +145,12 @@ public class IngameController extends Controller {
         view.setTranslateX(x * TILE_SIZE);
         view.setTranslateY(y * TILE_SIZE);
         tilePane.getChildren().add(view);
-        return view;
     }
 
-    private void moveTile(int x, int y, ImageView view) {
-        view.toFront();
-        view.setTranslateX(x * TILE_SIZE);
-        view.setTranslateY(y * TILE_SIZE);
+    private void movePlayer(int x, int y) {
+        player.toFront();
+        player.setTranslateX(x * TILE_SIZE);
+        player.setTranslateY(y * TILE_SIZE);
     }
 
     public void setOrigin(int tilex, int tiley) {
@@ -161,7 +166,7 @@ public class IngameController extends Controller {
         tilePane.setTranslateX(tilePaneTranslationX);
         tilePane.setTranslateY(tilePaneTranslationY);
 
-        moveTile(tilex, tiley, player);
+        movePlayer(tilex, tiley);
         prefs.setPosition(new Point2D(tilex, tiley));
     }
 
