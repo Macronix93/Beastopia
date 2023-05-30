@@ -4,7 +4,6 @@ import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Group;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.DataCache;
-import de.uniks.beastopia.teaml.service.FriendListService;
 import de.uniks.beastopia.teaml.service.GroupListService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.utils.Dialog;
@@ -40,8 +39,6 @@ public class EditGroupController extends Controller {
     Provider<UserController> userControllerProvider;
     @Inject
     GroupListService groupListService;
-    @Inject
-    FriendListService friendListService;
     @Inject
     TokenStorage tokenStorage;
     @Inject
