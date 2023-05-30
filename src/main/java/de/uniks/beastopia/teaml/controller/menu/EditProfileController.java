@@ -32,6 +32,12 @@ public class EditProfileController extends Controller {
     @FXML
     public RadioButton selectGermanLanguage;
     @FXML
+    public Button editProfileButton;
+    @FXML
+    public Button deleteUserButton;
+    @FXML
+    public Button backButton;
+    @FXML
     private TextField usernameInput;
     @FXML
     public PasswordField passwordInput;
@@ -157,6 +163,11 @@ public class EditProfileController extends Controller {
         prefs.setLocale(locale.toLanguageTag());
         resources = resourcesProvider.get();
         app.update();
+    }
+
+    @FXML
+    public void editProfile() {
+
     }
 
 }
