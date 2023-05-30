@@ -11,7 +11,6 @@ import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
 import java.util.Objects;
@@ -28,9 +27,6 @@ public class UserController extends Controller {
     public Button addRemoveButton;
     @FXML
     public Button pinButton;
-
-    @Inject
-    Provider<CreateGroupController> createGroupControllerProvider;
     @Inject
     Prefs prefs;
 
