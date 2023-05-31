@@ -107,7 +107,7 @@ class FriendListControllerTest extends ApplicationTest {
 
     @Test
     void showsFriends() {
-        sleep(1000);
+        sleep(2000);
 
         assertThrows(EmptyNodeQueryException.class, () -> lookup("user1").query());
         assertNotNull(lookup("user2").query());
@@ -117,6 +117,7 @@ class FriendListControllerTest extends ApplicationTest {
     @Test
     void canSearchUser3() {
         when(tokenStorage.getCurrentUser()).thenReturn(users.get(0));
+        clickOn("#searchName");
         write("user3");
         sleep(2000);
         assertTrue(lookup("user1").queryAll().isEmpty());
@@ -127,14 +128,16 @@ class FriendListControllerTest extends ApplicationTest {
     @Test
     void cannotSearchUser1() {
         when(tokenStorage.getCurrentUser()).thenReturn(users.get(0));
+        clickOn("#searchName");
         write("user1");
-        sleep(1000);
+        sleep(2000);
         assertEquals(0, lookup("#friendList").queryAs(VBox.class).getChildren().size());
     }
 
     @Test
     void showsFriendsAgainAfterSearch() {
         when(tokenStorage.getCurrentUser()).thenReturn(users.get(0));
+        clickOn("#searchName");
 
         write("user3");
         for (int i = 0; i < 5; i++) {
@@ -142,9 +145,7 @@ class FriendListControllerTest extends ApplicationTest {
             release(BACK_SPACE);
         }
         write(" ");
-        sleep(1000);
-
-        sleep(100);
+        sleep(2000);
 
         assertThrows(EmptyNodeQueryException.class, () -> lookup("user1").query());
         assertNotNull(lookup("user2").query());
