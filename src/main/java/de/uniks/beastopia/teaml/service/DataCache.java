@@ -74,4 +74,12 @@ public class DataCache {
                 .findFirst()
                 .orElse(null);
     }
+    public User getUser(String id) {
+        for (User user : allUsers) {
+            if (user._id().equals(id)) {
+                return user;
+            }
+        }
+        return null;
+    }
 }
