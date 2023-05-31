@@ -26,8 +26,10 @@ public class ChatUserController extends Controller {
     HBox _rootElement;
     @FXML
     Button pinGroupBtn;
+    @SuppressWarnings("unused")
     @FXML
     Button deleteGroupBtn;
+    @SuppressWarnings("unused")
     @FXML
     Button editGroupBtn;
     @FXML
@@ -67,6 +69,7 @@ public class ChatUserController extends Controller {
         this.onGroupClicked = onGroupClicked;
     }
 
+
     public void setOnPinChanged(Consumer<Group> onPinChanged) {
         this.onPinChanged = onPinChanged;
     }
@@ -98,6 +101,7 @@ public class ChatUserController extends Controller {
         return parent;
     }
 
+    @SuppressWarnings("unused")
     public void mouseClicked() {
         onGroupClicked.accept(group);
     }
@@ -109,14 +113,17 @@ public class ChatUserController extends Controller {
         return imageView;
     }
 
+    @SuppressWarnings("unused")
     public void editGroup() {
         //TODO: show edit group dialog
     }
 
+    @SuppressWarnings("unused")
     public void deleteGroup() {
         //TODO: delete group
     }
 
+    @SuppressWarnings("unused")
     @FXML
     public void pinGroup() {
         if (!prefs.isPinned(this.group)) {

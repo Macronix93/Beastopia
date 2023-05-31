@@ -39,9 +39,6 @@ class ChatListControllerTest extends ApplicationTest {
     Provider<ChatGroupController> chatGroupControllerProvider;
     @SuppressWarnings("unused")
     @Mock
-    Provider<EditGroupController> editGroupControllerProvider;
-    @SuppressWarnings("unused")
-    @Mock
     TokenStorage tokenStorage;
     @Mock
     Prefs prefs;
@@ -102,6 +99,7 @@ class ChatListControllerTest extends ApplicationTest {
     @Test
     public void render() {
         verify(eventListener, times(1)).listen("groups.*.*", Group.class);
+
     }
 
 
