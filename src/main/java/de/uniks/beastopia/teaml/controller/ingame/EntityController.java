@@ -57,8 +57,8 @@ public class EntityController extends Controller {
         entityView.setPreserveRatio(true);
         entityView.setSmooth(true);
         entityView.setImage(spriteSheet);
-        entityView.setFitWidth(21);
-        entityView.setFitHeight(21);
+        entityView.setFitWidth(41);
+        entityView.setFitHeight(41);
         entityView.setViewport(new javafx.geometry.Rectangle2D(0, 64, 16, 32));
         return parent;
     }

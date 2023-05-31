@@ -55,6 +55,8 @@ public class IngameController extends Controller {
     @Inject
     Provider<EntityController> entityControllerProvider;
 
+    EntityController playerController;
+
     private LoadingPage loadingPage;
 
     @Inject
@@ -64,6 +66,8 @@ public class IngameController extends Controller {
     @Override
     public void init() {
         super.init();
+        playerController = entityControllerProvider.get();
+        playerController.init();
     }
 
     public void setRegion(Region region) {
@@ -105,7 +109,8 @@ public class IngameController extends Controller {
 
     private void drawMap() {
         //player = drawTile(0, 0, image, presetsService.getTileViewPort(1, tileSet));
-        player = drawPlayer(posx, posy, entityControllerProvider.get().render());
+        // TODO keep controller in cache --> into init method keep playerController over lifetime of ingame
+        player = drawPlayer(posx, posy, playerController.render());
         for (Layer layer : map.layers()) {
             if (layer.chunks() == null) {
                 continue;
@@ -209,3 +214,5 @@ public class IngameController extends Controller {
         return resources.getString("titleIngame");
     }
 }
+
+// TODO datagram socket for datagram socket server
