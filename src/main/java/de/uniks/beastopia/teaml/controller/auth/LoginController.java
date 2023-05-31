@@ -67,7 +67,7 @@ public class LoginController extends Controller {
     public void init() {
         if (prefs.isRememberMe()) {
             disposables.add(authService.refresh().observeOn(FX_SCHEDULER).subscribe(
-                    lr -> app.show(entityControllerProvider.get()),
+                    lr -> app.show(menuControllerProvider.get()),
                     error -> Dialog.error(error, "Remember me failed!")));
         }
     }

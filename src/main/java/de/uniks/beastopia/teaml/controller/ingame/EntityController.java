@@ -41,7 +41,7 @@ public class EntityController extends Controller {
         // TODO find problem here
         disposables.add(udpEventListener.listen("areas." + trainer.area() + ".trainers." + trainer._id() + ".moved", MoveTrainerDto.class)
                 .observeOn(FX_SCHEDULER)
-                .subscribe(event -> System.out.println(event.event())));
+                .subscribe(event -> System.out.println("event.event() " + event.event())));
         // TODO trainer_image needs to be passed
         this.spriteSheet = presetsService.getSpriteSheet(trainer.image()).blockingFirst();
     }
