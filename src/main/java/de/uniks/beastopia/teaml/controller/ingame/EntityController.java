@@ -39,9 +39,14 @@ public class EntityController extends Controller {
     public void init() {
         super.init();
         // TODO find problem here
-        disposables.add(udpEventListener.listen("areas." + trainer.area() + ".trainers." + trainer._id() + ".moved", MoveTrainerDto.class)
+        disposables.add(udpEventListener.listen("areas.*.trainers.*.moved", MoveTrainerDto.class)
                 .observeOn(FX_SCHEDULER)
-                .subscribe(event -> System.out.println("event.event() " + event.event())));
+                .subscribe(
+                        event -> System.out.println(event.event()),
+                        error -> {
+                            throw new RuntimeException(error);
+                        }
+                ));
         // TODO trainer_image needs to be passed
         this.spriteSheet = presetsService.getSpriteSheet(trainer.image()).blockingFirst();
     }
@@ -57,8 +62,8 @@ public class EntityController extends Controller {
         entityView.setPreserveRatio(true);
         entityView.setSmooth(true);
         entityView.setImage(spriteSheet);
-        entityView.setFitWidth(41);
-        entityView.setFitHeight(41);
+        entityView.setFitWidth(21);
+        entityView.setFitHeight(21);
         entityView.setViewport(new javafx.geometry.Rectangle2D(0, 64, 16, 32));
         return parent;
     }
