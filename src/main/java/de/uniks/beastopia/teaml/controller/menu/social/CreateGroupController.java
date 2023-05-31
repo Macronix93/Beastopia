@@ -31,7 +31,7 @@ public class CreateGroupController extends Controller {
     @FXML
     public VBox addedUsers;
     @FXML
-    public TextField groupnameField;
+    public TextField groupNameField;
     @Inject
     Provider<DirectMessageController> directMessageControllerProvider;
     @Inject
@@ -143,7 +143,7 @@ public class CreateGroupController extends Controller {
     }
 
     public void createGroup() {
-        if (groupnameField.getText().isEmpty()) {
+        if (groupNameField.getText().isEmpty()) {
             Dialog.error(resources.getString("groupNameMissing"), resources.getString("enterGroupName"));
             return;
         }
@@ -154,7 +154,7 @@ public class CreateGroupController extends Controller {
 
         userIds.add(tokenStorage.getCurrentUser()._id());
 
-        disposables.add(groupListService.addGroup(groupnameField.getText(), userIds)
+        disposables.add(groupListService.addGroup(groupNameField.getText(), userIds)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(group -> {
                     DirectMessageController directMessageController = directMessageControllerProvider.get();

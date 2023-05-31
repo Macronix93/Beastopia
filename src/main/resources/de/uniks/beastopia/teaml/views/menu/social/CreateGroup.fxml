@@ -60,7 +60,7 @@
                 </font>
             </Label>
         </HBox>
-        <TextField fx:id="groupnameField" promptText="%enterGroupName" GridPane.rowIndex="1"/>
+        <TextField fx:id="groupNameField" promptText="%enterGroupName" GridPane.rowIndex="1"/>
         <HBox alignment="CENTER" GridPane.rowIndex="2">
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%addedUsers">
                 <font>
