@@ -5,7 +5,6 @@ import de.uniks.beastopia.teaml.rest.Event;
 import de.uniks.beastopia.teaml.rest.Group;
 import de.uniks.beastopia.teaml.rest.Message;
 import de.uniks.beastopia.teaml.service.DataCache;
-import de.uniks.beastopia.teaml.service.FriendListService;
 import de.uniks.beastopia.teaml.service.MessageService;
 import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.utils.Dialog;
@@ -45,18 +44,16 @@ public class MessageBubbleController extends Controller {
     @Inject
     EventListener eventListener;
     @Inject
-    FriendListService friendListService;
-    @Inject
     MessageService messageService;
     @Inject
     DataCache cache;
     Consumer<Pair<Parent, MessageBubbleController>> onDelete;
-
     Message message;
 
     private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm");
     private Group group;
     Parent parent;
+    boolean editMode = false;
 
     @Inject
     public MessageBubbleController() {
@@ -115,23 +112,37 @@ public class MessageBubbleController extends Controller {
 
     @FXML
     public void editMessage() {
+        if (editMode) {
+            return;
+        }
         elementsBox.getChildren().add(1, editMessageBody);
         elementsBox.getChildren().remove(messageBody);
         editMessageBody.setText(message.body());
+        editMode = true;
     }
 
     @FXML
     public void keyEvent(KeyEvent event) {
         if (event.getCode().equals(KeyCode.ESCAPE)) {
+            if (!editMode) {
+                return;
+            }
+
             elementsBox.getChildren().add(1, messageBody);
             elementsBox.getChildren().remove(editMessageBody);
             event.consume();
+            editMode = false;
         } else if (event.getCode().equals(KeyCode.ENTER)) {
+            if (!editMode) {
+                return;
+            }
+
             disposables.add(messageService.updateMessage(group, message, editMessageBody.getText()).observeOn(FX_SCHEDULER).subscribe(message -> {
                 this.message = message;
                 messageBody.setText(message.body());
                 elementsBox.getChildren().add(1, messageBody);
                 elementsBox.getChildren().remove(editMessageBody);
+                editMode = false;
             }, throwable -> Dialog.error(throwable, "Problem while updating message")));
 
             event.consume();
@@ -140,6 +151,10 @@ public class MessageBubbleController extends Controller {
 
     @FXML
     public void deleteMessage() {
+        if (editMode) {
+            return;
+        }
+
         disposables.add(messageService.deleteMessage(group, message)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(

@@ -8,6 +8,10 @@ import retrofit2.http.Path;
 import java.util.List;
 
 public interface PresetsApiService {
+
+    @GET("presets/tilesets/{filename}")
+    Observable<ResponseBody> getTileset(@Path("filename") String filename);
+
     @GET("presets/characters")
     Observable<List<String>> getCharacters();
 

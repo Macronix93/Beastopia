@@ -10,18 +10,14 @@ import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.prefs.Preferences;
@@ -46,6 +42,8 @@ public class ChatGroupController extends Controller {
     @Inject
     Provider<DirectMessageController> directMessageControllerProvider;
     @Inject
+    Provider<EditGroupController> editGroupControllerProvider;
+    @Inject
     TokenStorage tokenStorage;
     @Inject
     Prefs prefs;
@@ -59,10 +57,6 @@ public class ChatGroupController extends Controller {
     @Inject
     public ChatGroupController() {
 
-    }
-
-    private static Image loadImage(URL imageUrl) throws FileNotFoundException, URISyntaxException {
-        return new Image(new FileInputStream(new File(imageUrl.toURI())));
     }
 
     @Override
@@ -114,8 +108,6 @@ public class ChatGroupController extends Controller {
         return imageView;
     }
 
-    public void editGroup() {
-    }
 
     @FXML
     public void deleteGroup() {
@@ -144,5 +136,10 @@ public class ChatGroupController extends Controller {
         if (onPinChanged != null) {
             onPinChanged.accept(group);
         }
+    }
+
+    @FXML
+    public void editGroup() {
+        app.show(editGroupControllerProvider.get().setGroup(group));
     }
 }

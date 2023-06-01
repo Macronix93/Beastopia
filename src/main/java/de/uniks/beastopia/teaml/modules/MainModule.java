@@ -14,7 +14,6 @@ import java.util.ResourceBundle;
 
 @Module
 public class MainModule {
-
     @Provides
     ResourceBundle bundle(Prefs prefs) {
         return ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang", Locale.forLanguageTag(prefs.getLocale()));

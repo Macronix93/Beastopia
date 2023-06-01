@@ -2,6 +2,7 @@ package de.uniks.beastopia.teaml.controller;
 
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.Main;
+import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Scheduler;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.TimeUnit;
 
 public abstract class Controller {
 
@@ -58,6 +60,18 @@ public abstract class Controller {
         parts.remove(0);
         String path = String.join("/", parts);
         return load(path + "/" + getClass().getSimpleName().replace("Controller", ""));
+    }
+
+    protected Observable<Long> delay() {
+        return Observable.timer(50, TimeUnit.MILLISECONDS);
+    }
+
+    protected Observable<Long> delay(@SuppressWarnings("SameParameterValue") long ms) {
+        return Observable.timer(ms, TimeUnit.MILLISECONDS);
+    }
+
+    public void onResize(int width, int height) {
+
     }
 
     protected Parent load(String view) {

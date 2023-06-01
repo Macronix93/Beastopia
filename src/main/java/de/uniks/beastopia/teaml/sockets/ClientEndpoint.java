@@ -21,7 +21,7 @@ public class ClientEndpoint {
     }
 
     public boolean isOpen() {
-        return false;
+        return this.userSession != null && this.userSession.isOpen();
     }
 
     public void open() {
@@ -49,7 +49,7 @@ public class ClientEndpoint {
     }
 
     @OnMessage
-    public void onMessage(String Message) {
+    public synchronized void onMessage(String Message) {
         for (final Consumer<String> handler : this.messageHandlers) {
             handler.accept(Message);
         }
@@ -86,6 +86,7 @@ public class ClientEndpoint {
         }
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean hasMessageHandlers() {
         return !this.messageHandlers.isEmpty();
     }
