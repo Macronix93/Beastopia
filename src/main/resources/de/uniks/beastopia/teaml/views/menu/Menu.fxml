@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
+
 <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.uniks.beastopia.teaml.controller.menu.MenuController">
    <VBox alignment="BOTTOM_CENTER" prefHeight="600.0" prefWidth="9800.0">
       <Button fx:id="logoutBtn" mnemonicParsing="false" onAction="#logout" text="%logout">
@@ -25,22 +28,38 @@
          <VBox alignment="CENTER" prefHeight="200.0" prefWidth="9500.0">
             <ImageView fx:id="userAvatar" fitHeight="75.0" fitWidth="75.0" pickOnBounds="true" preserveRatio="true" />
          </VBox>
-         <VBox prefHeight="200.0" prefWidth="9600.0">
+         <VBox alignment="CENTER_LEFT" prefHeight="200.0" prefWidth="9600.0" spacing="15.0">
             <Text fx:id="userName" strokeType="OUTSIDE" strokeWidth="0.0">
                <VBox.margin>
                   <Insets left="25.0" top="15.0" />
                </VBox.margin>
+               <font>
+                  <Font size="16.0" />
+               </font>
             </Text>
-            <Button fx:id="editProfileBtn" mnemonicParsing="false" onAction="#editProfileButtonPressed">
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
                <VBox.margin>
-                  <Insets left="25.0" top="5.0" />
+                  <Insets left="25.0" />
                </VBox.margin>
-               <graphic>
-                  <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                     <Image url="@../../assets/buttons/edit.png" />
-                  </ImageView>
-               </graphic>
-            </Button>
+               <children>
+                  <Button fx:id="editProfileBtn" mnemonicParsing="false" onAction="#editProfileButtonPressed">
+                     <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                           <Image url="@../../assets/buttons/edit.png" />
+                        </ImageView>
+                     </graphic>
+                  </Button>
+                  <Button fx:id="settingsBtn" mnemonicParsing="false" onAction="#settingsButtonPressed">
+                     <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../assets/buttons/settings.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
+               </children>
+            </HBox>
          </VBox>
       </HBox>
       <VBox fx:id="regionContainer" prefHeight="10200.0" prefWidth="10000.0" />
@@ -48,7 +67,7 @@
    <VBox prefHeight="600.0" prefWidth="9800.0" />
    <VBox fx:id="friendListContainer" alignment="CENTER" prefHeight="500.0" prefWidth="10000.0" spacing="15.0">
       <HBox.margin>
-         <Insets bottom="50.0" top="50.0"/>
+         <Insets bottom="50.0" top="50.0" />
       </HBox.margin>
    </VBox>
    <VBox prefHeight="600.0" prefWidth="9800.0" />
