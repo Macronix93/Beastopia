@@ -64,6 +64,20 @@ public class AuthService {
         return userApiService.updateUser(tokenStorage.getCurrentUser()._id(), new UpdateUserDto(null, null, null, null, password));
     }
 
+    public Observable<User> updateUsername(String username) {
+        return userApiService.updateUser(tokenStorage.getCurrentUser()._id(), new UpdateUserDto(username, null, null, null, null)).map(user -> {
+            tokenStorage.setCurrentUser(user);
+            return user;
+        });
+    }
+
+    public Observable<User> updateUsernameAndPassword(String username, String password) {
+        return userApiService.updateUser(tokenStorage.getCurrentUser()._id(), new UpdateUserDto(username, null, null, null, password)).map(user -> {
+            tokenStorage.setCurrentUser(user);
+            return user;
+        });
+    }
+
     @SuppressWarnings("unused")
     public Observable<User> updateAvatar(String avatar) {
         return userApiService.updateUser(tokenStorage.getCurrentUser()._id(), new UpdateUserDto(null, null, avatar, null, null));
