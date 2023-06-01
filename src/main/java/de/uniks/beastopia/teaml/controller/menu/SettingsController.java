@@ -1,0 +1,124 @@
+package de.uniks.beastopia.teaml.controller.menu;
+
+import de.uniks.beastopia.teaml.controller.Controller;
+import de.uniks.beastopia.teaml.utils.Prefs;
+import de.uniks.beastopia.teaml.utils.ThemeSettings;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.Parent;
+import javafx.scene.control.Button;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.Slider;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.input.DragEvent;
+import javafx.scene.layout.VBox;
+
+import javax.inject.Inject;
+import javax.inject.Provider;
+import java.util.Locale;
+import java.util.ResourceBundle;
+
+public class SettingsController extends Controller {
+
+    @FXML
+    public RadioButton selectEnglishLanguage;
+    @FXML
+    public ToggleGroup language;
+    @FXML
+    public RadioButton selectGermanLanguage;
+    @FXML
+    public RadioButton darkRadioButton;
+    @FXML
+    public RadioButton summerRadioButton;
+    @FXML
+    public ToggleGroup theme;
+    @FXML
+    public Slider musicVolumeSlider;
+    @FXML
+    public Slider soundVolumeSlider;
+    @FXML
+    public Button backButton;
+    @FXML
+    public VBox vboxKeybindings;
+
+    @Inject
+    Prefs prefs;
+    @Inject
+    ThemeSettings themeSettings;
+    @Inject
+    Provider<ResourceBundle> resourcesProvider;
+    @Inject
+    Provider<MenuController> menuControllerProvider;
+
+
+    @Inject
+    public SettingsController() {
+    }
+
+    @Override
+    public void init() {
+
+    }
+
+    @Override
+    public Parent render() {
+        Parent parent = super.render();
+        if (prefs.getLocale().contains("de")) {
+            selectGermanLanguage.setSelected(true);
+        } else {
+            selectEnglishLanguage.setSelected(true);
+        }
+
+        darkRadioButton.setSelected(prefs.getTheme().equals("dark"));
+        summerRadioButton.setSelected(!prefs.getTheme().equals("dark"));
+        
+
+        return parent;
+    }
+
+    @FXML
+    public void setEn() {
+        setLanguage(Locale.ENGLISH);
+    }
+
+    @FXML
+    public void setDe() {
+        setLanguage(Locale.GERMAN);
+    }
+
+    private void setLanguage(Locale locale) {
+        prefs.setLocale(locale.toLanguageTag());
+        resources = resourcesProvider.get();
+        app.update();
+    }
+
+    @FXML
+    public void setDarkTheme() {
+        prefs.setTheme("dark");
+        themeSettings.updateSceneTheme.accept("dark");
+    }
+
+    @FXML
+    public void setSummerTheme() {
+        prefs.setTheme("summer");
+        themeSettings.updateSceneTheme.accept("summer");
+    }
+
+    @FXML
+    public void changeMusicVolume() {
+    }
+
+    @FXML
+    public void changeSoundVolume() {
+    }
+
+    @FXML
+    public void back() {
+        app.show(menuControllerProvider.get());
+    }
+
+    @Override
+    public String getTitle() {
+        return resources.getString("titleSettings");
+    }
+}

@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" spacing="10.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
+<VBox alignment="CENTER" spacing="10.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.uniks.beastopia.teaml.controller.menu.SettingsController">
     <Label text="%Language">
         <font>
             <Font size="16.0" />
@@ -52,13 +52,13 @@
               </font>
           </RadioButton>
       </HBox>
-   <Label text="%Music Volume">
+   <Label text="%MusicVolume">
       <font>
          <Font size="16.0" />
       </font>
    </Label>
    <Slider fx:id="musicVolumeSlider" onDragDone="#changeMusicVolume" />
-   <Label text="%Music Volume">
+   <Label text="%SoundVolume">
       <font>
          <Font size="16.0" />
       </font>
@@ -71,7 +71,7 @@
    </Label>
    <ScrollPane fitToHeight="true" fitToWidth="true">
       <content>
-         <VBox fx:id="vboxKeybinds" spacing="10.0" />
+         <VBox fx:id="vboxKeybindings" spacing="10.0" />
       </content>
    </ScrollPane>
       <Button fx:id="backButton" mnemonicParsing="false" onAction="#back" style="-fx-background-radius: 20;" text="%Back">
