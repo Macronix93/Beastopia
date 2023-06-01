@@ -80,7 +80,10 @@ public class AuthService {
 
     @SuppressWarnings("unused")
     public Observable<User> updateAvatar(String avatar) {
-        return userApiService.updateUser(tokenStorage.getCurrentUser()._id(), new UpdateUserDto(null, null, avatar, null, null));
+        return userApiService.updateUser(tokenStorage.getCurrentUser()._id(), new UpdateUserDto(null, null, avatar, null, null)).map(user -> {
+            tokenStorage.setCurrentUser(user);
+            return user;
+        });
     }
 
     public Observable<User> deleteUser() {
