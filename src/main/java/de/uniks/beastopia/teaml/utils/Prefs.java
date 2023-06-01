@@ -102,4 +102,20 @@ public class Prefs {
                 preferences.getDouble("positionY", 0)
         );
     }
+
+    public void setMusicVolume(double volume) {
+        preferences.putDouble("musicVolume", volume);
+    }
+
+    public double getMusicVolume(double volume) {
+        return preferences.getDouble("musicVolume", 0);
+    }
+
+    public void setSoundVolume(double volume) {
+        preferences.putDouble("musicVolume", volume);
+    }
+
+    public double getSoundVolume(double volume) {
+        return preferences.getDouble("musicVolume", 0);
+    }
 }
