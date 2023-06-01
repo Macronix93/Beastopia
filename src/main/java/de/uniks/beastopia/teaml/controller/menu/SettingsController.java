@@ -71,6 +71,9 @@ public class SettingsController extends Controller {
 
         darkRadioButton.setSelected(prefs.getTheme().equals("dark"));
         summerRadioButton.setSelected(!prefs.getTheme().equals("dark"));
+
+        musicVolumeSlider.setValue(prefs.getMusicVolume());
+        soundVolumeSlider.setValue(prefs.getSoundVolume());
         
 
         return parent;
@@ -106,10 +109,12 @@ public class SettingsController extends Controller {
 
     @FXML
     public void changeMusicVolume() {
+        prefs.setMusicVolume(musicVolumeSlider.getValue());
     }
 
     @FXML
     public void changeSoundVolume() {
+        prefs.setSoundVolume(soundVolumeSlider.getValue());
     }
 
     @FXML

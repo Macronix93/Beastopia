@@ -107,15 +107,15 @@ public class Prefs {
         preferences.putDouble("musicVolume", volume);
     }
 
-    public double getMusicVolume(double volume) {
+    public double getMusicVolume() {
         return preferences.getDouble("musicVolume", 0);
     }
 
     public void setSoundVolume(double volume) {
-        preferences.putDouble("musicVolume", volume);
+        preferences.putDouble("soundVolume", volume);
     }
 
-    public double getSoundVolume(double volume) {
-        return preferences.getDouble("musicVolume", 0);
+    public double getSoundVolume() {
+        return preferences.getDouble("soundVolume", 0);
     }
 }
