@@ -1,5 +1,7 @@
 package de.uniks.beastopia.teaml.controller.ingame;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
@@ -7,6 +9,7 @@ import de.uniks.beastopia.teaml.rest.*;
 import de.uniks.beastopia.teaml.service.AreaService;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
+import de.uniks.beastopia.teaml.sockets.UDPEventListener;
 import de.uniks.beastopia.teaml.utils.LoadingPage;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
@@ -56,6 +59,8 @@ public class IngameController extends Controller {
     Provider<EntityController> entityControllerProvider;
 
     EntityController playerController;
+    @Inject
+    UDPEventListener udpEventListener;
 
     private LoadingPage loadingPage;
 
@@ -67,6 +72,11 @@ public class IngameController extends Controller {
     public void init() {
         super.init();
         playerController = entityControllerProvider.get();
+        playerController.setOnTrainerUpdate(trainer -> {
+            posx = trainer.x();
+            posy = trainer.y();
+            updateOrigin();
+        });
         playerController.init();
     }
 
@@ -188,6 +198,21 @@ public class IngameController extends Controller {
         }
     }
 
+    private void updateServerPos() {
+        JsonObject data = new JsonObject();
+        data.add("_id", new JsonPrimitive("645e36639f9cbc7aec094de3"));
+        data.add("area", new JsonPrimitive("645e32c6866ace359554a7fa"));
+        data.add("x", new JsonPrimitive(posx));
+        data.add("y", new JsonPrimitive(posy));
+        data.add("direction", new JsonPrimitive(1));
+
+        JsonObject message = new JsonObject();
+        message.add("event", new JsonPrimitive("areas.645e32c6866ace359554a7fa.trainers.645e36639f9cbc7aec094de3.moved"));
+        message.add("data", data);
+
+        udpEventListener.send(message.toString());
+    }
+
     @FXML
     public void handleKeyEvent(KeyEvent keyEvent) {
         if (keyEvent.getCode().equals(KeyCode.ESCAPE)) {
@@ -197,21 +222,31 @@ public class IngameController extends Controller {
         if (keyEvent.getCode().equals(KeyCode.UP) || keyEvent.getCode().equals(KeyCode.W)) {
             posy--;
             updateOrigin();
+            updateServerPos();
         } else if (keyEvent.getCode().equals(KeyCode.DOWN) || keyEvent.getCode().equals(KeyCode.S)) {
             posy++;
             updateOrigin();
+            updateServerPos();
         } else if (keyEvent.getCode().equals(KeyCode.LEFT) || keyEvent.getCode().equals(KeyCode.A)) {
             posx--;
             updateOrigin();
+            updateServerPos();
         } else if (keyEvent.getCode().equals(KeyCode.RIGHT) || keyEvent.getCode().equals(KeyCode.D)) {
             posx++;
             updateOrigin();
+            updateServerPos();
         }
     }
 
     @Override
     public String getTitle() {
         return resources.getString("titleIngame");
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        playerController.destroy();
     }
 }
 

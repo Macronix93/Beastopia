@@ -1,5 +1,6 @@
 package de.uniks.beastopia.teaml.sockets;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.uniks.beastopia.teaml.Main;
@@ -14,6 +15,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.nio.channels.AsynchronousCloseException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +43,10 @@ public class UDPEventListener {
 
         try {
             clientSocket = new DatagramSocket();
+            final String host = Main.UDP_URL.split(":")[0];
+            final InetAddress address = InetAddress.getByName(host);
+            final int port = Integer.parseInt(Main.UDP_URL.split(":")[1]);
+            clientSocket.connect(address, port);
             this.receiver = new Thread(this::receive);
             this.receiver.start();
         } catch (Exception e) {
@@ -90,15 +96,23 @@ public class UDPEventListener {
     }
 
     public void send(Map<String, String> message) {
+        try {
+            send(mapper.writeValueAsString(message));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void send(String message) {
         ensureOpen();
         try {
-            final String json = mapper.writeValueAsString(message);
             final String host = Main.UDP_URL.split(":")[0];
             final InetAddress address = InetAddress.getByName(host);
             final int port = Integer.parseInt(Main.UDP_URL.split(":")[1]);
-            final byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+            final byte[] bytes = message.getBytes(StandardCharsets.UTF_8);
             final DatagramPacket packet = new DatagramPacket(bytes, bytes.length, address, port);
             clientSocket.send(packet);
+            System.out.println("Sent: " + message);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -120,7 +134,12 @@ public class UDPEventListener {
             try {
                 clientSocket.receive(packet);
                 final String message = new String(packet.getData(), packet.getOffset(), packet.getLength());
+                System.out.println("Received: " + message);
                 messageHandlers.forEach(handler -> handler.accept(message));
+            } catch (AsynchronousCloseException e) {
+                // main thread closed the socket
+                // exit gracefully
+                return;
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

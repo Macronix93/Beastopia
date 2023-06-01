@@ -4,7 +4,6 @@ import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.MoveTrainerDto;
 import de.uniks.beastopia.teaml.rest.Trainer;
 import de.uniks.beastopia.teaml.service.PresetsService;
-import de.uniks.beastopia.teaml.service.TrainerService;
 import de.uniks.beastopia.teaml.sockets.UDPEventListener;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -12,6 +11,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 import javax.inject.Inject;
+import java.util.function.Consumer;
 
 public class EntityController extends Controller {
 
@@ -23,26 +23,29 @@ public class EntityController extends Controller {
     Parent parent;
 
     @Inject
-    TrainerService trainerService;
-
-    @Inject
     PresetsService presetsService;
 
     @Inject
     UDPEventListener udpEventListener;
 
+    Consumer<MoveTrainerDto> onTrainerUpdate;
+
     @Inject
     public EntityController() {
+    }
+
+    public void setOnTrainerUpdate(Consumer<MoveTrainerDto> onTrainerUpdate) {
+        this.onTrainerUpdate = onTrainerUpdate;
     }
 
     @Override
     public void init() {
         super.init();
         // TODO find problem here
-        disposables.add(udpEventListener.listen("areas.*.trainers.*.moved", MoveTrainerDto.class)
+        disposables.add(udpEventListener.listen("areas.645e32c6866ace359554a7fa.trainers.645e36639f9cbc7aec094de3.moved", MoveTrainerDto.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(
-                        event -> System.out.println(event.event()),
+                        event -> onTrainerUpdate.accept(event.data()),
                         error -> {
                             throw new RuntimeException(error);
                         }
