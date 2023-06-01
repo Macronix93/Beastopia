@@ -23,13 +23,9 @@ public class ChatListController extends Controller {
     @Inject
     GroupListService groupListService;
     @Inject
-    Provider<DirectMessageController> directMessageControllerProvider;
-    @Inject
     Provider<ChatUserController> chatUserControllerProvider;
     @Inject
     Provider<ChatGroupController> chatGroupControllerProvider;
-    @Inject
-    Provider<EditGroupController> editGroupControllerProvider;
     @Inject
     TokenStorage tokenStorage;
     @Inject
@@ -73,23 +69,6 @@ public class ChatListController extends Controller {
     public void setOnGroupClicked(Consumer<Group> onGroupClicked) {
         this.onGroupClicked = onGroupClicked;
     }
-
-    /*
-    private void addUser() {
-
-    }
-
-    @FXML
-    private void createGroup() {
-        //for Testing
-        app.show(editGroupControllerProvider.get());
-    }
-
-    @FXML
-    public void showChats() {
-        app.show(directMessageControllerProvider.get());
-    }
-    */
     
     @Override
     public void destroy() {

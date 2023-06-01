@@ -10,17 +10,13 @@ import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 
 import javax.inject.Inject;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -55,10 +51,6 @@ public class ChatUserController extends Controller {
     @Inject
     public ChatUserController() {
 
-    }
-
-    private static Image loadImage(URL imageUrl) throws FileNotFoundException, URISyntaxException {
-        return new Image(new FileInputStream(new File(imageUrl.toURI())));
     }
 
     @Override
