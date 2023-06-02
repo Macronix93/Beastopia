@@ -116,7 +116,7 @@ class EditProfileControllerTest extends ApplicationTest {
         write("12345678");
         clickOn("#passwordRepeatInput");
         write("12345678");
-        clickOn("#changePasswordButton");
+        clickOn("#editProfileButton");
 
         verify(authService).updatePassword("12345678");
         verify(menuControllerProvider).get();
@@ -129,7 +129,7 @@ class EditProfileControllerTest extends ApplicationTest {
         write("123456789");
         clickOn("#passwordRepeatInput");
         write("12345678");
-        clickOn("#changePasswordButton");
+        clickOn("#editProfileButton");
 
         Node dialogPane = lookup(".dialog-pane").query();
         Node result = from(dialogPane).lookup((Text t) -> t.getText().contains("not equal")).query();
@@ -144,7 +144,7 @@ class EditProfileControllerTest extends ApplicationTest {
         write("1234");
         clickOn("#passwordRepeatInput");
         write("1234");
-        clickOn("#changePasswordButton");
+        clickOn("#editProfileButton");
 
         Node dialogPane = lookup(".dialog-pane").query();
         Node result = from(dialogPane).lookup((Text t) -> t.getText().contains("At least 8")).query();

@@ -32,6 +32,12 @@ public class EditProfileController extends Controller {
     @FXML
     public RadioButton selectGermanLanguage;
     @FXML
+    public Button editProfileButton;
+    @FXML
+    public Button deleteUserButton;
+    @FXML
+    public Button backButton;
+    @FXML
     private TextField usernameInput;
     @FXML
     public PasswordField passwordInput;
@@ -57,9 +63,9 @@ public class EditProfileController extends Controller {
 
     private String backController;
 
-    private final SimpleStringProperty username = new SimpleStringProperty();
-    private final SimpleStringProperty password = new SimpleStringProperty();
-    private final SimpleStringProperty passwordRepeat = new SimpleStringProperty();
+    private final SimpleStringProperty username = new SimpleStringProperty("");
+    private final SimpleStringProperty password = new SimpleStringProperty("");
+    private final SimpleStringProperty passwordRepeat = new SimpleStringProperty("");
 
     @Inject
     public EditProfileController() {
@@ -107,28 +113,13 @@ public class EditProfileController extends Controller {
         themeSettings.updateSceneTheme.accept("summer");
     }
 
-    public void changePassword() {
-        if (!passwordInput.getText().isEmpty()) {
-            setNewPassword();
-        }
-    }
 
-    private void setNewPassword() {
-        if (!passwordInput.getText().equals(passwordRepeatInput.getText())) {
-            errorMessage();
-        } else {
-            disposables.add(authService.updatePassword(passwordInput.getText())
-                    .observeOn(FX_SCHEDULER).subscribe(
-                            lr -> app.show(menuControllerProvider.get()),
-                            error -> Dialog.error(error, resources.getString("passwordChangeFailed"))));
-        }
-    }
 
-    private void errorMessage() {
+    private void errorMessage(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(resources.getString("error"));
         alert.setHeaderText(resources.getString("error"));
-        alert.setContentText(resources.getString("passwordsNotEqual"));
+        alert.setContentText(resources.getString(message));
         alert.showAndWait();
     }
 
@@ -158,5 +149,51 @@ public class EditProfileController extends Controller {
         resources = resourcesProvider.get();
         app.update();
     }
+
+    @FXML
+    public void editProfile() {
+        if (usernameInput.getText().isEmpty()) {
+            errorMessage("usernameEmpty");
+        } else if (!passwordInput.getText().isBlank()) {
+            if (usernameInput.getText().equals(tokenStorage.getCurrentUser().name())) {
+                setNewPassword();
+            } else {
+                setNewUsernameAndPassword();
+            }
+        } else if (!usernameInput.getText().equals(tokenStorage.getCurrentUser().name())) {
+            setNewUsername();
+        }
+    }
+
+    private void setNewUsername() {
+        disposables.add(authService.updateUsername(usernameInput.getText())
+                .observeOn(FX_SCHEDULER).subscribe(
+                        lr -> app.show(menuControllerProvider.get()),
+                        error -> Dialog.error(error, resources.getString("usernameChangeFailed"))));
+    }
+
+    private void setNewPassword() {
+        if (!passwordInput.getText().equals(passwordRepeatInput.getText())) {
+            errorMessage("passwordsNotEqual");
+        } else {
+            disposables.add(authService.updatePassword(passwordInput.getText())
+                    .observeOn(FX_SCHEDULER).subscribe(
+                            lr -> app.show(menuControllerProvider.get()),
+                            error -> Dialog.error(error, resources.getString("passwordChangeFailed"))));
+        }
+    }
+
+    private void setNewUsernameAndPassword() {
+        if (!passwordInput.getText().equals(passwordRepeatInput.getText())) {
+            errorMessage("passwordsNotEqual");
+        } else {
+            disposables.add(authService.updateUsernameAndPassword(usernameInput.getText(), passwordInput.getText())
+                    .observeOn(FX_SCHEDULER).subscribe(
+                            lr -> app.show(menuControllerProvider.get()),
+                            error -> Dialog.error(error, resources.getString("UsernameAndPasswordChangeFailed"))));
+        }
+    }
+
+
 
 }

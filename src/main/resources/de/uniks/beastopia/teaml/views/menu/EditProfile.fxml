@@ -19,7 +19,7 @@
             <Font size="16.0" />
         </font>
     </Label>
-    <TextField fx:id="usernameInput" editable="false">
+    <TextField fx:id="usernameInput">
         <font>
             <Font size="16.0" />
         </font>
@@ -105,7 +105,7 @@
           </RadioButton>
       </HBox>
       <HBox spacing="15.0">
-          <Button fx:id="changePasswordButton" mnemonicParsing="false" onAction="#changePassword" style="-fx-background-radius: 20;" text="%ChangePassword">
+          <Button fx:id="editProfileButton" mnemonicParsing="false" onAction="#editProfile" style="-fx-background-radius: 20;" text="%EditProfile">
               <font>
                   <Font size="16.0" />
               </font>
