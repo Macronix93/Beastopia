@@ -58,11 +58,6 @@ public class SettingsController extends Controller {
     }
 
     @Override
-    public void init() {
-
-    }
-
-    @Override
     public Parent render() {
         Parent parent = super.render();
         if (prefs.getLocale().contains("de")) {

@@ -30,11 +30,6 @@ public class KeybindElementController extends Controller {
     }
 
     @Override
-    public void init() {
-
-    }
-
-    @Override
     public Parent render() {
         Parent parent = super.render();
         keyBtn.setText(key);
