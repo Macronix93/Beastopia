@@ -88,14 +88,27 @@ public class TrainerController extends Controller {
     }
 
     public void saveTrainer() {
-        if (trainerNameInput.getText() == null || trainerNameInput.getText().isEmpty()) {
+        String nameInput = trainerNameInput.getText();
+        String trainerImage = cache.getCharacters().get(currentIndex.get()).getKey();
+
+        if (nameInput == null || nameInput.isEmpty()) {
             Dialog.error(resources.getString("trainerNameMissing"), resources.getString("enterTrainerName"));
             return;
         }
 
-        disposables.add(trainerService.createTrainer(region._id(), trainerNameInput.getText(), cache.getCharacters().get(currentIndex.get()).getKey())
-                .observeOn(FX_SCHEDULER)
-                .subscribe(tr -> showIngameController(region, tr), error -> Dialog.error(error, "Trainer creation failed!")));
+        // Either change the current trainer or create
+        if (cache.getTrainer() == null) {
+            disposables.add(trainerService.createTrainer(region._id(), nameInput, trainerImage)
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe(tr -> showIngameController(region), error -> Dialog.error(error, "Trainer creation failed!")));
+        } else {
+            disposables.add(trainerService.updateTrainer(region._id(), cache.getTrainer()._id(), nameInput, trainerImage)
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe(tr -> {
+                        cache.setTrainer(tr);
+                        showIngameController(region);
+                    }, error -> Dialog.error(error, "Trainer adjustments failed!")));
+        }
     }
 
     public void deleteTrainer() {
@@ -106,11 +119,11 @@ public class TrainerController extends Controller {
         if (this.backController.equals("menu")) {
             app.show(menuControllerProvider.get());
         } else {
-            showIngameController(region, trainer);
+            showIngameController(region);
         }
     }
 
-    public void showIngameController(Region region, Trainer trainer) {
+    public void showIngameController(Region region) {
         IngameController ingameController = ingameControllerProvider.get();
         ingameController.setRegion(region);
         app.show(ingameController);
@@ -214,7 +227,7 @@ public class TrainerController extends Controller {
                             .findFirst()
                             .ifPresent(tr -> {
                                 cache.setTrainer(tr);
-                                showIngameController(region, tr);
+                                showIngameController(region);
                             })));
         }
     }
@@ -231,8 +244,9 @@ public class TrainerController extends Controller {
     }
 
     public String stripString(String stringToStrip) {
-        stringToStrip = stringToStrip.replace("_", " ");
-        stringToStrip = stringToStrip.replace("16x16", "");
+        stringToStrip = stringToStrip
+                .replace("_", " ")
+                .replace("16x16", "");
         stringToStrip = stringToStrip.substring(0, stringToStrip.lastIndexOf("."));
         return stringToStrip;
     }
