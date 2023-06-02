@@ -47,6 +47,8 @@ public class SettingsController extends Controller {
     Provider<ResourceBundle> resourcesProvider;
     @Inject
     Provider<MenuController> menuControllerProvider;
+    @Inject
+    Provider<KeybindElementController> keybindElementControllerProvider;
 
 
     @Inject
@@ -72,6 +74,16 @@ public class SettingsController extends Controller {
 
         musicVolumeSlider.setValue(prefs.getMusicVolume());
         soundVolumeSlider.setValue(prefs.getSoundVolume());
+
+        vboxKeybindings.getChildren().clear();
+        vboxKeybindings.getChildren().add(keybindElementControllerProvider.get().render());
+        vboxKeybindings.getChildren().add(keybindElementControllerProvider.get().render());
+        vboxKeybindings.getChildren().add(keybindElementControllerProvider.get().render());
+        vboxKeybindings.getChildren().add(keybindElementControllerProvider.get().render());
+        vboxKeybindings.getChildren().add(keybindElementControllerProvider.get().render());
+        vboxKeybindings.getChildren().add(keybindElementControllerProvider.get().render());
+        vboxKeybindings.getChildren().add(keybindElementControllerProvider.get().render());
+        vboxKeybindings.getChildren().add(keybindElementControllerProvider.get().render());
 
         return parent;
     }
