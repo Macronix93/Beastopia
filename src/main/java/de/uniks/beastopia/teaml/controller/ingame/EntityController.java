@@ -41,8 +41,7 @@ public class EntityController extends Controller {
     @Override
     public void init() {
         super.init();
-        // TODO find problem here
-        disposables.add(udpEventListener.listen("areas.645e32c6866ace359554a7fa.trainers.645e36639f9cbc7aec094de3.moved", MoveTrainerDto.class)
+        disposables.add(udpEventListener.listen("areas.645e32c6866ace359554a7fa.trainers.646c84a0f148f6eb461bf654.moved", MoveTrainerDto.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(
                         event -> onTrainerUpdate.accept(event.data()),
@@ -71,9 +70,13 @@ public class EntityController extends Controller {
         return parent;
     }
 
+    // TODO
+    // Animation
+    //
+
+
     @Override
     public void destroy() {
         super.destroy();
     }
-
 }

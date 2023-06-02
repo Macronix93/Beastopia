@@ -55,10 +55,9 @@ public class IngameController extends Controller {
     private int height;
 
     Parent player;
+    EntityController playerController;
     @Inject
     Provider<EntityController> entityControllerProvider;
-
-    EntityController playerController;
     @Inject
     UDPEventListener udpEventListener;
 
@@ -118,7 +117,6 @@ public class IngameController extends Controller {
     }
 
     private void drawMap() {
-        //player = drawTile(0, 0, image, presetsService.getTileViewPort(1, tileSet));
         // TODO keep controller in cache --> into init method keep playerController over lifetime of ingame
         player = drawPlayer(posx, posy, playerController.render());
         for (Layer layer : map.layers()) {
@@ -200,14 +198,14 @@ public class IngameController extends Controller {
 
     private void updateServerPos() {
         JsonObject data = new JsonObject();
-        data.add("_id", new JsonPrimitive("645e36639f9cbc7aec094de3"));
+        data.add("_id", new JsonPrimitive("646c84a0f148f6eb461bf654"));
         data.add("area", new JsonPrimitive("645e32c6866ace359554a7fa"));
         data.add("x", new JsonPrimitive(posx));
         data.add("y", new JsonPrimitive(posy));
         data.add("direction", new JsonPrimitive(1));
 
         JsonObject message = new JsonObject();
-        message.add("event", new JsonPrimitive("areas.645e32c6866ace359554a7fa.trainers.645e36639f9cbc7aec094de3.moved"));
+        message.add("event", new JsonPrimitive("areas.645e32c6866ace359554a7fa.trainers.646c84a0f148f6eb461bf654.moved"));
         message.add("data", data);
 
         udpEventListener.send(message.toString());
@@ -221,21 +219,14 @@ public class IngameController extends Controller {
 
         if (keyEvent.getCode().equals(KeyCode.UP) || keyEvent.getCode().equals(KeyCode.W)) {
             posy--;
-            updateOrigin();
-            updateServerPos();
         } else if (keyEvent.getCode().equals(KeyCode.DOWN) || keyEvent.getCode().equals(KeyCode.S)) {
             posy++;
-            updateOrigin();
-            updateServerPos();
         } else if (keyEvent.getCode().equals(KeyCode.LEFT) || keyEvent.getCode().equals(KeyCode.A)) {
             posx--;
-            updateOrigin();
-            updateServerPos();
         } else if (keyEvent.getCode().equals(KeyCode.RIGHT) || keyEvent.getCode().equals(KeyCode.D)) {
             posx++;
-            updateOrigin();
-            updateServerPos();
         }
+        updateServerPos();
     }
 
     @Override
@@ -249,5 +240,3 @@ public class IngameController extends Controller {
         playerController.destroy();
     }
 }
-
-// TODO datagram socket for datagram socket server
