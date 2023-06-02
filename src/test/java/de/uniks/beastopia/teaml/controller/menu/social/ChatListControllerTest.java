@@ -44,6 +44,7 @@ class ChatListControllerTest extends ApplicationTest {
     Prefs prefs;
     @Mock
     EventListener eventListener;
+
     @Spy
     App app;
     @SuppressWarnings("unused")
@@ -99,7 +100,15 @@ class ChatListControllerTest extends ApplicationTest {
     @Test
     public void render() {
         verify(eventListener, times(1)).listen("groups.*.*", Group.class);
-
+        verify(groupListService, times(1)).getGroups();
+        verify(prefs, atLeastOnce()).isPinned(groups.get(0));
+        verify(prefs, atLeastOnce()).isPinned(groups.get(1));
+        verify(mockedChatGroupController1, times(1)).setGroup(groups.get(0));
+        verify(mockedChatGroupController2, times(1)).setGroup(groups.get(1));
+        verify(mockedChatGroupController1, times(1)).init();
+        verify(mockedChatGroupController2, times(1)).init();
+        verify(mockedChatGroupController1, times(1)).render();
+        verify(mockedChatGroupController2, times(1)).render();
     }
 
 
