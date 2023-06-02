@@ -1,6 +1,7 @@
 package de.uniks.beastopia.teaml.controller.auth;
 
 import de.uniks.beastopia.teaml.controller.Controller;
+import de.uniks.beastopia.teaml.controller.ingame.EntityController;
 import de.uniks.beastopia.teaml.controller.menu.MenuController;
 import de.uniks.beastopia.teaml.service.AuthService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
@@ -35,6 +36,9 @@ public class LoginController extends Controller {
     Provider<RegistrationController> registrationControllerProvider;
     @Inject
     Provider<MenuController> menuControllerProvider;
+    // TODO remove
+    @Inject
+    Provider<EntityController> entityControllerProvider;
     @Inject
     AuthService authService;
     @SuppressWarnings("unused")

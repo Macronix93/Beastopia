@@ -7,13 +7,15 @@ public record Trainer(
         Date updatedAt,
         String _id,
         String region,
-        String user,
+        String userId,
         String name,
         String image,
         int coins,
         String area,
-        int x,
-        int y,
-        int direction
+        int x_pos,
+        int y_pos,
+        int direction,
+        NPCInfo npc
+
 ) {
 }

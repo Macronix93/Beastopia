@@ -1,5 +1,6 @@
 package de.uniks.beastopia.teaml.service;
 
+
 import com.google.gson.Gson;
 import de.uniks.beastopia.teaml.rest.PresetsApiService;
 import de.uniks.beastopia.teaml.rest.TileSet;
@@ -14,6 +15,7 @@ import java.io.File;
 import java.util.List;
 
 public class PresetsService {
+
     @Inject
     PresetsApiService presetsApiService;
 
@@ -25,8 +27,9 @@ public class PresetsService {
         return presetsApiService.getCharacters();
     }
 
-    public Observable<ResponseBody> getSpriteSheet(String fileName) {
-        return presetsApiService.getSpriteSheet(fileName);
+    public Observable<Image> getSpriteSheet(String fileName) {
+        return presetsApiService.getSpriteSheet(fileName)
+                .map((ResponseBody body) -> new Image(body.byteStream()));
     }
 
     public Observable<Image> getImage(TileSet tileSet) {

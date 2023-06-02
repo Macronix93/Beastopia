@@ -11,8 +11,14 @@ import io.reactivex.rxjava3.core.ObservableEmitter;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.nio.channels.AsynchronousCloseException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
@@ -20,30 +26,32 @@ import java.util.regex.Pattern;
 @Singleton
 @SuppressWarnings("unused")
 public class UDPEventListener {
-    private final TokenStorage tokenStorage;
     private final ObjectMapper mapper;
-    private ClientEndpoint endpoint;
+    DatagramSocket clientSocket;
+    List<Consumer<String>> messageHandlers = new ArrayList<>();
+    Thread receiver;
 
     @Inject
     public UDPEventListener(TokenStorage tokenStorage, ObjectMapper objectMapper) {
-        this.tokenStorage = tokenStorage;
         this.mapper = objectMapper;
     }
 
     private void ensureOpen() {
-        if (endpoint != null && endpoint.isOpen()) {
+        if (clientSocket != null && clientSocket.isConnected()) {
             return;
         }
 
-        final URI endpointURI;
         try {
-            endpointURI = new URI(Main.UDP_URL + "/events?authToken=" + tokenStorage.getAccessToken());
-        } catch (URISyntaxException e) {
+            clientSocket = new DatagramSocket();
+            final String host = Main.UDP_URL.split(":")[0];
+            final InetAddress address = InetAddress.getByName(host);
+            final int port = Integer.parseInt(Main.UDP_URL.split(":")[1]);
+            clientSocket.connect(address, port);
+            this.receiver = new Thread(this::receive);
+            this.receiver.start();
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
-        endpoint = new ClientEndpoint(endpointURI);
-        endpoint.open();
     }
 
     public <T> Observable<Event<T>> listen(String pattern, Class<T> type) {
@@ -51,7 +59,7 @@ public class UDPEventListener {
             this.ensureOpen();
             send(Map.of("event", "subscribe", "data", pattern));
             final Consumer<String> handler = createPatternHandler(mapper, pattern, type, emitter);
-            endpoint.addMessageHandler(handler);
+            messageHandlers.add(handler);
             emitter.setCancellable(() -> removeEventHandler(pattern, handler));
         });
     }
@@ -76,32 +84,65 @@ public class UDPEventListener {
     }
 
     private void removeEventHandler(String pattern, Consumer<String> handler) {
-        if (endpoint == null) {
+        if (clientSocket == null) {
             return;
         }
 
         send(Map.of("event", "unsubscribe", "data", pattern));
-        endpoint.removeMessageHandler(handler);
-        if (!endpoint.hasMessageHandlers()) {
+        messageHandlers.remove(handler);
+        if (messageHandlers.isEmpty()) {
             close();
         }
     }
 
-    private void send(Map<String, String> message) {
-        ensureOpen();
+    public void send(Map<String, String> message) {
         try {
-            endpoint.sendMessage(mapper.writeValueAsString(message));
+            send(mapper.writeValueAsString(message));
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }
 
+    public void send(String message) {
+        ensureOpen();
+        try {
+            final String host = Main.UDP_URL.split(":")[0];
+            final InetAddress address = InetAddress.getByName(host);
+            final int port = Integer.parseInt(Main.UDP_URL.split(":")[1]);
+            final byte[] bytes = message.getBytes(StandardCharsets.UTF_8);
+            final DatagramPacket packet = new DatagramPacket(bytes, bytes.length, address, port);
+            clientSocket.send(packet);
+            System.out.println("Sent: " + message);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private void close() {
-        if (endpoint == null) {
+        if (clientSocket == null) {
             return;
         }
 
-        endpoint.close();
-        endpoint = null;
+        clientSocket.close();
+        clientSocket = null;
+    }
+
+    private void receive() {
+        while (clientSocket != null) {
+            byte[] data = new byte[1024];
+            DatagramPacket packet = new DatagramPacket(data, data.length);
+            try {
+                clientSocket.receive(packet);
+                final String message = new String(packet.getData(), packet.getOffset(), packet.getLength());
+                System.out.println("Received: " + message);
+                messageHandlers.forEach(handler -> handler.accept(message));
+            } catch (AsynchronousCloseException e) {
+                // main thread closed the socket
+                // exit gracefully
+                return;
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }

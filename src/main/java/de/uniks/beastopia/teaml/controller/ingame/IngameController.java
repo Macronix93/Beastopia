@@ -1,5 +1,7 @@
 package de.uniks.beastopia.teaml.controller.ingame;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
@@ -7,6 +9,7 @@ import de.uniks.beastopia.teaml.rest.*;
 import de.uniks.beastopia.teaml.service.AreaService;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
+import de.uniks.beastopia.teaml.sockets.UDPEventListener;
 import de.uniks.beastopia.teaml.utils.LoadingPage;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
@@ -50,11 +53,31 @@ public class IngameController extends Controller {
     private int posy = 0;
     private int width;
     private int height;
-    ImageView player;
+
+    Parent player;
+    @Inject
+    Provider<EntityController> entityControllerProvider;
+
+    EntityController playerController;
+    @Inject
+    UDPEventListener udpEventListener;
+
     private LoadingPage loadingPage;
 
     @Inject
     public IngameController() {
+    }
+
+    @Override
+    public void init() {
+        super.init();
+        playerController = entityControllerProvider.get();
+        playerController.setOnTrainerUpdate(trainer -> {
+            posx = trainer.x();
+            posy = trainer.y();
+            updateOrigin();
+        });
+        playerController.init();
     }
 
     public void setRegion(Region region) {
@@ -95,8 +118,9 @@ public class IngameController extends Controller {
     }
 
     private void drawMap() {
-        player = drawTile(0, 0, image, presetsService.getTileViewPort(1, tileSet));
-
+        //player = drawTile(0, 0, image, presetsService.getTileViewPort(1, tileSet));
+        // TODO keep controller in cache --> into init method keep playerController over lifetime of ingame
+        player = drawPlayer(posx, posy, playerController.render());
         for (Layer layer : map.layers()) {
             if (layer.chunks() == null) {
                 continue;
@@ -118,7 +142,14 @@ public class IngameController extends Controller {
         updateOrigin();
     }
 
-    private ImageView drawTile(int x, int y, Image image, Rectangle2D viewPort) {
+    private Parent drawPlayer(int posx, int posy, Parent player) {
+        player.setTranslateX(posx * TILE_SIZE);
+        player.setTranslateY(posy * TILE_SIZE);
+        tilePane.getChildren().add(player);
+        return player;
+    }
+
+    private void drawTile(int x, int y, Image image, Rectangle2D viewPort) {
         ImageView view = new ImageView();
         view.setPreserveRatio(true);
         view.setSmooth(true);
@@ -129,13 +160,12 @@ public class IngameController extends Controller {
         view.setTranslateX(x * TILE_SIZE);
         view.setTranslateY(y * TILE_SIZE);
         tilePane.getChildren().add(view);
-        return view;
     }
 
-    private void moveTile(int x, int y, ImageView view) {
-        view.toFront();
-        view.setTranslateX(x * TILE_SIZE);
-        view.setTranslateY(y * TILE_SIZE);
+    private void movePlayer(int x, int y) {
+        player.toFront();
+        player.setTranslateX(x * TILE_SIZE);
+        player.setTranslateY(y * TILE_SIZE);
     }
 
     public void setOrigin(int tilex, int tiley) {
@@ -151,7 +181,7 @@ public class IngameController extends Controller {
         tilePane.setTranslateX(tilePaneTranslationX);
         tilePane.setTranslateY(tilePaneTranslationY);
 
-        moveTile(tilex, tiley, player);
+        movePlayer(tilex, tiley);
         prefs.setPosition(new Point2D(tilex, tiley));
     }
 
@@ -168,6 +198,21 @@ public class IngameController extends Controller {
         }
     }
 
+    private void updateServerPos() {
+        JsonObject data = new JsonObject();
+        data.add("_id", new JsonPrimitive("645e36639f9cbc7aec094de3"));
+        data.add("area", new JsonPrimitive("645e32c6866ace359554a7fa"));
+        data.add("x", new JsonPrimitive(posx));
+        data.add("y", new JsonPrimitive(posy));
+        data.add("direction", new JsonPrimitive(1));
+
+        JsonObject message = new JsonObject();
+        message.add("event", new JsonPrimitive("areas.645e32c6866ace359554a7fa.trainers.645e36639f9cbc7aec094de3.moved"));
+        message.add("data", data);
+
+        udpEventListener.send(message.toString());
+    }
+
     @FXML
     public void handleKeyEvent(KeyEvent keyEvent) {
         if (keyEvent.getCode().equals(KeyCode.ESCAPE)) {
@@ -177,15 +222,19 @@ public class IngameController extends Controller {
         if (keyEvent.getCode().equals(KeyCode.UP) || keyEvent.getCode().equals(KeyCode.W)) {
             posy--;
             updateOrigin();
+            updateServerPos();
         } else if (keyEvent.getCode().equals(KeyCode.DOWN) || keyEvent.getCode().equals(KeyCode.S)) {
             posy++;
             updateOrigin();
+            updateServerPos();
         } else if (keyEvent.getCode().equals(KeyCode.LEFT) || keyEvent.getCode().equals(KeyCode.A)) {
             posx--;
             updateOrigin();
+            updateServerPos();
         } else if (keyEvent.getCode().equals(KeyCode.RIGHT) || keyEvent.getCode().equals(KeyCode.D)) {
             posx++;
             updateOrigin();
+            updateServerPos();
         }
     }
 
@@ -193,4 +242,12 @@ public class IngameController extends Controller {
     public String getTitle() {
         return resources.getString("titleIngame");
     }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        playerController.destroy();
+    }
 }
+
+// TODO datagram socket for datagram socket server
