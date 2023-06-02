@@ -17,22 +17,21 @@ import java.util.List;
 
 public class PauseController extends Controller {
 
+    private final List<Controller> subControllers = new ArrayList<>();
     @FXML
     public Button editProfileButton;
-    @FXML
-    private VBox friendListContainer;
-
-    private final List<Controller> subControllers = new ArrayList<>();
     @Inject
     Provider<FriendListController> friendListControllerProvider;
     @Inject
     Provider<MenuController> menuControllerProvider;
-
     @Inject
     Provider<IngameController> ingameControllerProvider;
-
     @Inject
     Provider<EditProfileController> editProfileControllerProvider;
+    @Inject
+    Provider<SettingsController> settingsControllerProvider;
+    @FXML
+    private VBox friendListContainer;
 
     @Inject
     public PauseController() {
@@ -64,6 +63,11 @@ public class PauseController extends Controller {
     }
 
     @FXML
+    public void settingsButtonPressed() {
+        app.show(settingsControllerProvider.get().backController("pause"));
+    }
+
+    @FXML
     public void mainMenuButtonPressed() {
         app.show(menuControllerProvider.get());
     }
@@ -74,4 +78,6 @@ public class PauseController extends Controller {
             app.show(ingameControllerProvider.get());
         }
     }
+
+
 }

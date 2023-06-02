@@ -111,6 +111,6 @@ public class MenuController extends Controller {
     }
 
     public void settingsButtonPressed() {
-        app.show(settingsControllerProvider.get());
+        app.show(settingsControllerProvider.get().backController("menu"));
     }
 }
