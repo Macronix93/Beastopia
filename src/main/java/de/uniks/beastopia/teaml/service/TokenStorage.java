@@ -43,20 +43,4 @@ public class TokenStorage {
     public void setCurrentUser(User user) {
         this.currentUser = user;
     }
-
-    public void setCurrentTrainer(Trainer trainer) {
-        this.currentTrainer = trainer;
-    }
-
-    public Trainer getCurrentTrainer() {
-        return this.currentTrainer;
-    }
-
-    public void setCurrentRegion(Region region) {
-        this.currentRegion = region;
-    }
-
-    public Region getCurrentRegion() {
-        return this.currentRegion;
-    }
 }

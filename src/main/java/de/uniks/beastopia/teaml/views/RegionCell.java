@@ -37,8 +37,10 @@ public class RegionCell extends ListCell<Region> {
         } else {
             final Button join = new Button(item.name() + " " + resources.getString("join"));
             join.setOnAction(event -> {
-                tokenStorage.setCurrentRegion(item);
-                app.show(trainerControllerProvider.get().backController("menu"));
+                TrainerController controller = trainerControllerProvider.get();
+                controller.setRegion(item);
+                controller.backController("menu");
+                app.show(controller);
             });
             setGraphic(join);
         }

@@ -4,6 +4,8 @@ import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.ingame.IngameController;
 import de.uniks.beastopia.teaml.controller.ingame.TrainerController;
 import de.uniks.beastopia.teaml.controller.menu.social.FriendListController;
+import de.uniks.beastopia.teaml.rest.Region;
+import de.uniks.beastopia.teaml.rest.Trainer;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -34,6 +36,9 @@ public class PauseController extends Controller {
     Provider<EditProfileController> editProfileControllerProvider;
     @Inject
     Provider<TrainerController> trainerControllerProvider;
+
+    private Trainer trainer;
+    private Region region;
 
     @Inject
     public PauseController() {
@@ -72,6 +77,8 @@ public class PauseController extends Controller {
     @FXML
     public void trainerMenuButtonPressed() {
         TrainerController controller = trainerControllerProvider.get();
+        controller.setTrainer(trainer);
+        controller.setRegion(region);
         controller.backController("pause");
         app.show(controller);
     }
@@ -79,7 +86,18 @@ public class PauseController extends Controller {
     @FXML
     public void pauseMenu(KeyEvent keyEvent) {
         if (keyEvent.getCode().equals(KeyCode.ESCAPE)) {
-            app.show(ingameControllerProvider.get());
+            IngameController controller = ingameControllerProvider.get();
+            controller.setTrainer(trainer);
+            controller.setRegion(region);
+            app.show(controller);
         }
+    }
+
+    public void setRegion(Region region) {
+        this.region = region;
+    }
+
+    public void setTrainer(Trainer trainer) {
+        this.trainer = trainer;
     }
 }
