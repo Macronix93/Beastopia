@@ -3,14 +3,12 @@ package de.uniks.beastopia.teaml.controller.menu;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import de.uniks.beastopia.teaml.utils.ThemeSettings;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Slider;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.input.DragEvent;
 import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
@@ -74,7 +72,6 @@ public class SettingsController extends Controller {
 
         musicVolumeSlider.setValue(prefs.getMusicVolume());
         soundVolumeSlider.setValue(prefs.getSoundVolume());
-        
 
         return parent;
     }
