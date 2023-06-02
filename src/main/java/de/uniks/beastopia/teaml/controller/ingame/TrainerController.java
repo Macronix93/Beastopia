@@ -4,6 +4,7 @@ import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.menu.MenuController;
 import de.uniks.beastopia.teaml.rest.Region;
 import de.uniks.beastopia.teaml.rest.Trainer;
+import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.service.TrainerService;
@@ -20,13 +21,14 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.util.Pair;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
-@SuppressWarnings("unused")
 public class TrainerController extends Controller {
     @FXML
     private VBox trainerContainer;
@@ -46,9 +48,13 @@ public class TrainerController extends Controller {
     private Button deleteTrainerButton;
     @FXML
     private Button saveTrainerButton;
+    @FXML
+    private Text spriteNameDisplay;
 
     @Inject
     TokenStorage tokenStorage;
+    @Inject
+    DataCache cache;
     @Inject
     TrainerService trainerService;
     @Inject
@@ -60,8 +66,6 @@ public class TrainerController extends Controller {
 
     private Trainer trainer;
     private Region region;
-    private final List<String> characterImageStrings = new ArrayList<>();
-    private final List<Image> characterImages = new ArrayList<>();
     private String backController;
     private LoadingPage loadingPage;
     private static final int PREVIEW_SCALING = 3;
@@ -73,74 +77,13 @@ public class TrainerController extends Controller {
     public TrainerController() {
     }
 
-    @Override
-    public void init() {
-        super.init();
-
-        // Add currently available character sprite strings to list
-        disposables.add(presetsService.getCharacters()
-                .observeOn(FX_SCHEDULER)
-                .subscribe(characters -> {
-                    if (characters != null) {
-                        characterImageStrings.addAll(characters);
-
-                        for (String str : characterImageStrings) {
-                            characterImages.add(new Image("https://stpmon.uniks.de/api/v2/presets/characters/" + str));
-                        }
-
-                        // If the user already has a trainer for the region (coming from ingame), show the current trainer image, otherwise the first
-                        if (trainer == null) {
-                            trainerSprite.setImage(presetsService.getCharacterSprites(characterImageStrings.get(0)).blockingFirst());
-                            trainerSprite.setPreserveRatio(true);
-                            trainerSprite.setViewport(new javafx.geometry.Rectangle2D(48, 0, 16, 32));
-                            trainerSprite.setFitWidth(32 * PREVIEW_SCALING);
-                            trainerSprite.setFitHeight(32 * PREVIEW_SCALING);
-                            trainerSprite.setSmooth(false);
-                        } else {
-                            int index = 0;
-                            String currentImageString = trainer.image();
-
-                            for (String img : characterImageStrings) {
-                                if (img.equals(currentImageString)) {
-                                    currentIndex.set(index);
-
-                                    trainerSprite.setImage(presetsService.getCharacterSprites(currentImageString).blockingFirst());
-                                    trainerSprite.setPreserveRatio(true);
-                                    trainerSprite.setViewport(new javafx.geometry.Rectangle2D(48, 0, 16, 32));
-                                    trainerSprite.setFitWidth(32 * PREVIEW_SCALING);
-                                    trainerSprite.setFitHeight(32 * PREVIEW_SCALING);
-                                    trainerSprite.setSmooth(false);
-                                    break;
-                                } else {
-                                    index++;
-                                }
-                            }
-                        }
-                    }
-                    loadingPage.setDone();
-                }));
-
-        if (trainer == null) {
-            // Check if current user has a trainer for the specified region
-            disposables.add(trainerService.getAllTrainer(region._id())
-                    .observeOn(FX_SCHEDULER)
-                    .subscribe(trainers -> {
-                        Trainer tr = trainers.stream().filter(t -> t.user().equals(tokenStorage.getCurrentUser()._id())).findFirst().orElse(null);
-
-                        if (tr != null) {
-                            showIngameController(region, tr);
-                        }
-                    }));
-        }
-    }
-
     public void saveTrainer() {
         if (trainerNameInput.getText() == null || trainerNameInput.getText().isEmpty()) {
             Dialog.error(resources.getString("trainerNameMissing"), resources.getString("enterTrainerName"));
             return;
         }
 
-        disposables.add(trainerService.createTrainer(region._id(), trainerNameInput.getText(), characterImageStrings.get(currentIndex.get()))
+        disposables.add(trainerService.createTrainer(region._id(), trainerNameInput.getText(), cache.getCharacters().get(currentIndex.get()).getKey())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(tr -> showIngameController(region, tr), error -> Dialog.error(error, "Trainer creation failed!")));
     }
@@ -171,14 +114,45 @@ public class TrainerController extends Controller {
         trainerNameInput.textProperty().bindBidirectional(trainerName);
         regionNameDisplay.setText(region.name());
 
-        if (trainer != null) {
-            chooseLeftButton.setDisable(true);
-            chooseRightButton.setDisable(true);
-            trainerNameInput.setEditable(false);
-            trainerNameInput.setText(trainer.name());
+        // Check if list of character strings and images is empty
+        if (cache.getCharacters().isEmpty()) {
+            // Add currently available character sprite strings to Pair list in cache
+            disposables.add(presetsService.getCharacters()
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe(characters -> {
+                        if (characters != null) {
+                            List<Pair<String, Image>> charList = new ArrayList<>();
+                            for (String charImg : characters) {
+                                charList.add(new Pair<>(charImg, new Image("https://stpmon.uniks.de/api/v2/presets/characters/" + charImg)));
+                            }
+                            cache.setCharacters(charList);
+
+                            showTrainerSpritePreview(cache.getCharacters().get(0).getKey(), cache.getCharacters().get(0).getValue());
+                            checkForExistingTrainer();
+
+                            loadingPage.setDone();
+                        }
+                    }));
         } else {
-            deleteTrainerButton.setDisable(true);
+            if (trainer == null) {
+                showTrainerSpritePreview(cache.getCharacters().get(0).getKey(), cache.getCharacters().get(0).getValue());
+            } else {
+                showTrainerSpritePreview(cache.getCharacterImage(trainer.image()).getKey(), cache.getCharacterImage(trainer.image()).getValue());
+
+                // Find index of the found trainer
+                currentIndex.set(IntStream.range(0, cache.getCharacters().size())
+                        .filter(i -> cache.getCharacters().get(i).getKey().equals(trainer.image()))
+                        .findFirst()
+                        .orElse(-1));
+                trainerNameInput.setText(trainer.name());
+                trainerNameInput.positionCaret(trainer.name().length());
+            }
+
+            checkForExistingTrainer();
+
+            loadingPage.setDone();
         }
+
         return loadingPage.parent();
     }
 
@@ -192,23 +166,23 @@ public class TrainerController extends Controller {
         currentIndex.set(currentIndex.get() - 1);
 
         if (currentIndex.get() < 0) {
-            currentIndex.set(characterImageStrings.size() - 1);
+            currentIndex.set(cache.getCharacters().size() - 1);
         }
 
-        //trainerSprite.setImage(presetsService.getCharacterSprites(characterImageStrings.get(currentIndex.get())).blockingFirst());
-        trainerSprite.setImage(characterImages.get(currentIndex.get()));
+        trainerSprite.setImage(cache.getCharacters().get(currentIndex.get()).getValue());
+        spriteNameDisplay.setText(stripString(cache.getCharacters().get(currentIndex.get()).getKey()));
     }
 
     @FXML
     public void chooseRight() {
         currentIndex.set(currentIndex.get() + 1);
 
-        if (currentIndex.get() >= characterImageStrings.size()) {
+        if (currentIndex.get() >= cache.getCharacters().size()) {
             currentIndex.set(0);
         }
 
-        //trainerSprite.setImage(presetsService.getCharacterSprites(characterImageStrings.get(currentIndex.get())).blockingFirst());
-        trainerSprite.setImage(characterImages.get(currentIndex.get()));
+        trainerSprite.setImage(cache.getCharacters().get(currentIndex.get()).getValue());
+        spriteNameDisplay.setText(stripString(cache.getCharacters().get(currentIndex.get()).getKey()));
     }
 
     @SuppressWarnings("UnusedReturnValue")
@@ -223,5 +197,35 @@ public class TrainerController extends Controller {
 
     public void setRegion(Region region) {
         this.region = region;
+    }
+
+    public void checkForExistingTrainer() {
+        if (trainer == null) {
+            // Check if current user has a trainer for the specified region
+            disposables.add(trainerService.getAllTrainer(region._id())
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe(trainers -> trainers.stream()
+                            .filter(t -> t.user().equals(tokenStorage.getCurrentUser()._id()))
+                            .findFirst()
+                            .ifPresent(tr -> showIngameController(region, tr))));
+        }
+    }
+
+    public void showTrainerSpritePreview(String charName, Image sprite) {
+        trainerSprite.setImage(sprite);
+        trainerSprite.setPreserveRatio(true);
+        trainerSprite.setViewport(new javafx.geometry.Rectangle2D(48, 0, 16, 32));
+        trainerSprite.setFitWidth(32 * PREVIEW_SCALING);
+        trainerSprite.setFitHeight(32 * PREVIEW_SCALING);
+        trainerSprite.setSmooth(false);
+
+        spriteNameDisplay.setText(stripString(charName));
+    }
+
+    public String stripString(String stringToStrip) {
+        stringToStrip = stringToStrip.replace("_", " ");
+        stringToStrip = stringToStrip.replace("16x16", "");
+        stringToStrip = stringToStrip.substring(0, stringToStrip.lastIndexOf("."));
+        return stringToStrip;
     }
 }
