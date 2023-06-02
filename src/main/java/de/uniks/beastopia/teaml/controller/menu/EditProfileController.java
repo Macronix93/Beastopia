@@ -5,7 +5,6 @@ import de.uniks.beastopia.teaml.service.AuthService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.utils.Dialog;
 import de.uniks.beastopia.teaml.utils.Prefs;
-import de.uniks.beastopia.teaml.utils.ThemeSettings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -13,12 +12,13 @@ import javafx.scene.control.*;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import java.util.Locale;
-import java.util.ResourceBundle;
 
 
 public class EditProfileController extends Controller {
 
+    private final SimpleStringProperty username = new SimpleStringProperty("");
+    private final SimpleStringProperty password = new SimpleStringProperty("");
+    private final SimpleStringProperty passwordRepeat = new SimpleStringProperty("");
     @FXML
     public RadioButton darkRadioButton;
     @FXML
@@ -38,14 +38,9 @@ public class EditProfileController extends Controller {
     @FXML
     public Button backButton;
     @FXML
-    private TextField usernameInput;
-    @FXML
     public PasswordField passwordInput;
     @FXML
     public PasswordField passwordRepeatInput;
-
-    @Inject
-    Provider<ResourceBundle> resourcesProvider;
     @Inject
     Prefs prefs;
     @Inject
@@ -58,14 +53,9 @@ public class EditProfileController extends Controller {
     AuthService authService;
     @Inject
     TokenStorage tokenStorage;
-    @Inject
-    ThemeSettings themeSettings;
-
+    @FXML
+    private TextField usernameInput;
     private String backController;
-
-    private final SimpleStringProperty username = new SimpleStringProperty("");
-    private final SimpleStringProperty password = new SimpleStringProperty("");
-    private final SimpleStringProperty passwordRepeat = new SimpleStringProperty("");
 
     @Inject
     public EditProfileController() {
@@ -80,18 +70,10 @@ public class EditProfileController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
-        if (prefs.getLocale().contains("de")) {
-            selectGermanLanguage.setSelected(true);
-        } else {
-            selectEnglishLanguage.setSelected(true);
-        }
         usernameInput.textProperty().bindBidirectional(username);
         passwordInput.textProperty().bindBidirectional(password);
         passwordRepeatInput.textProperty().bindBidirectional(passwordRepeat);
-
         usernameInput.setText(tokenStorage.getCurrentUser().name());
-        darkRadioButton.setSelected(prefs.getTheme().equals("dark"));
-        summerRadioButton.setSelected(!prefs.getTheme().equals("dark"));
         return parent;
     }
 
@@ -102,18 +84,6 @@ public class EditProfileController extends Controller {
 
     public void uploadAvatar() {
     }
-
-    public void setDarkTheme() {
-        prefs.setTheme("dark");
-        themeSettings.updateSceneTheme.accept("dark");
-    }
-
-    public void setSummerTheme() {
-        prefs.setTheme("summer");
-        themeSettings.updateSceneTheme.accept("summer");
-    }
-
-
 
     private void errorMessage(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -134,20 +104,6 @@ public class EditProfileController extends Controller {
             app.show(pauseControllerProvider.get());
         }
 
-    }
-
-    public void setDe() {
-        setLanguage(Locale.GERMAN);
-    }
-
-    public void setEn() {
-        setLanguage(Locale.ENGLISH);
-    }
-
-    private void setLanguage(Locale locale) {
-        prefs.setLocale(locale.toLanguageTag());
-        resources = resourcesProvider.get();
-        app.update();
     }
 
     @FXML
@@ -193,7 +149,5 @@ public class EditProfileController extends Controller {
                             error -> Dialog.error(error, resources.getString("UsernameAndPasswordChangeFailed"))));
         }
     }
-
-
 
 }
