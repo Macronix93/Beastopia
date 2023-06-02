@@ -66,7 +66,9 @@ public class MenuController extends Controller {
         super.init();
         app.addCleanupTask(() -> authService.goOffline().subscribe());
 
-        cache.setTrainer(null);
+        if (cache.getTrainer() != null) {
+            cache.setTrainer(null);
+        }
     }
 
     @Override
