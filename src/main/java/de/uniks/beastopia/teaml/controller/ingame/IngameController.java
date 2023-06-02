@@ -106,7 +106,9 @@ public class IngameController extends Controller {
     }
 
     private void drawMap() {
-        player = drawTile(0, 0, image, presetsService.getTileViewPort(1, tileSet));
+        player = drawTile(0, 0, cache.getCharacterImage(trainer.image()).getValue(), new javafx.geometry.Rectangle2D(48, 0, 16, 32));
+        player.setScaleX(2);
+        player.setScaleY(2);
 
         for (Layer layer : map.layers()) {
             if (layer.chunks() == null) {
