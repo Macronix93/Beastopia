@@ -77,7 +77,6 @@ public class PauseController extends Controller {
     @FXML
     public void trainerMenuButtonPressed() {
         TrainerController controller = trainerControllerProvider.get();
-        controller.setTrainer(trainer);
         controller.setRegion(region);
         controller.backController("pause");
         app.show(controller);
@@ -87,7 +86,6 @@ public class PauseController extends Controller {
     public void pauseMenu(KeyEvent keyEvent) {
         if (keyEvent.getCode().equals(KeyCode.ESCAPE)) {
             IngameController controller = ingameControllerProvider.get();
-            controller.setTrainer(trainer);
             controller.setRegion(region);
             app.show(controller);
         }
@@ -95,9 +93,5 @@ public class PauseController extends Controller {
 
     public void setRegion(Region region) {
         this.region = region;
-    }
-
-    public void setTrainer(Trainer trainer) {
-        this.trainer = trainer;
     }
 }

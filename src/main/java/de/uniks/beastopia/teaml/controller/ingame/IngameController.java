@@ -9,7 +9,6 @@ import de.uniks.beastopia.teaml.rest.Layer;
 import de.uniks.beastopia.teaml.rest.Map;
 import de.uniks.beastopia.teaml.rest.Region;
 import de.uniks.beastopia.teaml.rest.TileSet;
-import de.uniks.beastopia.teaml.rest.Trainer;
 import de.uniks.beastopia.teaml.service.AreaService;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
@@ -49,7 +48,6 @@ public class IngameController extends Controller {
     @Inject
     DataCache cache;
     private Region region;
-    private Trainer trainer;
     private Image image;
     private Map map;
     private TileSet tileSet;
@@ -67,10 +65,6 @@ public class IngameController extends Controller {
     public void setRegion(Region region) {
         prefs.setRegion(region);
         this.region = region;
-    }
-
-    public void setTrainer(Trainer trainer) {
-        this.trainer = trainer;
     }
 
     @Override
@@ -106,7 +100,7 @@ public class IngameController extends Controller {
     }
 
     private void drawMap() {
-        player = drawTile(0, 0, cache.getCharacterImage(trainer.image()).getValue(), new javafx.geometry.Rectangle2D(48, 0, 16, 32));
+        player = drawTile(0, 0, cache.getCharacterImage(cache.getTrainer().image()).getValue(), new javafx.geometry.Rectangle2D(48, 0, 16, 32));
         player.setScaleX(2);
         player.setScaleY(2);
 
@@ -186,7 +180,6 @@ public class IngameController extends Controller {
         if (keyEvent.getCode().equals(KeyCode.ESCAPE)) {
             PauseController controller = pauseControllerProvider.get();
             controller.setRegion(region);
-            controller.setTrainer(trainer);
             app.show(controller);
         }
 

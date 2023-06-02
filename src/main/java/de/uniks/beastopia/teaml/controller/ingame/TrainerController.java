@@ -10,6 +10,7 @@ import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.service.TrainerService;
 import de.uniks.beastopia.teaml.utils.Dialog;
 import de.uniks.beastopia.teaml.utils.LoadingPage;
+import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -52,6 +53,8 @@ public class TrainerController extends Controller {
     private Text spriteNameDisplay;
 
     @Inject
+    Prefs prefs;
+    @Inject
     TokenStorage tokenStorage;
     @Inject
     DataCache cache;
@@ -75,6 +78,13 @@ public class TrainerController extends Controller {
 
     @Inject
     public TrainerController() {
+    }
+
+    @Override
+    public void init() {
+        super.init();
+
+        this.trainer = cache.getTrainer();
     }
 
     public void saveTrainer() {
@@ -103,7 +113,6 @@ public class TrainerController extends Controller {
     public void showIngameController(Region region, Trainer trainer) {
         IngameController ingameController = ingameControllerProvider.get();
         ingameController.setRegion(region);
-        ingameController.setTrainer(trainer);
         app.show(ingameController);
     }
 
@@ -191,10 +200,6 @@ public class TrainerController extends Controller {
         return this;
     }
 
-    public void setTrainer(Trainer trainer) {
-        this.trainer = trainer;
-    }
-
     public void setRegion(Region region) {
         this.region = region;
     }
@@ -207,7 +212,10 @@ public class TrainerController extends Controller {
                     .subscribe(trainers -> trainers.stream()
                             .filter(t -> t.user().equals(tokenStorage.getCurrentUser()._id()))
                             .findFirst()
-                            .ifPresent(tr -> showIngameController(region, tr))));
+                            .ifPresent(tr -> {
+                                cache.setTrainer(tr);
+                                showIngameController(region, tr);
+                            })));
         }
     }
 
