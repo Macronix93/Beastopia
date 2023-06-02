@@ -69,7 +69,7 @@ public class ChatListController extends Controller {
     public void setOnGroupClicked(Consumer<Group> onGroupClicked) {
         this.onGroupClicked = onGroupClicked;
     }
-    
+
     @Override
     public void destroy() {
         clearSubControllers();
