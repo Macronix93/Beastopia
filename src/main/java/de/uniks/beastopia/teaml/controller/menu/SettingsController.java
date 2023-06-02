@@ -13,11 +13,13 @@ import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
 public class SettingsController extends Controller {
 
+    private final ArrayList<Controller> subControllers = new ArrayList<>();
     @FXML
     public RadioButton selectEnglishLanguage;
     @FXML
@@ -76,14 +78,13 @@ public class SettingsController extends Controller {
         soundVolumeSlider.setValue(prefs.getSoundVolume());
 
         vboxKeybindings.getChildren().clear();
-        vboxKeybindings.getChildren().add(keybindElementControllerProvider.get().render());
-        vboxKeybindings.getChildren().add(keybindElementControllerProvider.get().render());
-        vboxKeybindings.getChildren().add(keybindElementControllerProvider.get().render());
-        vboxKeybindings.getChildren().add(keybindElementControllerProvider.get().render());
-        vboxKeybindings.getChildren().add(keybindElementControllerProvider.get().render());
-        vboxKeybindings.getChildren().add(keybindElementControllerProvider.get().render());
-        vboxKeybindings.getChildren().add(keybindElementControllerProvider.get().render());
-        vboxKeybindings.getChildren().add(keybindElementControllerProvider.get().render());
+        vboxKeybindings.getChildren().add(createController("ESC", "OpensPauseMenu").render());
+        vboxKeybindings.getChildren().add(createController("W", "MoveUp").render());
+        vboxKeybindings.getChildren().add(createController("A", "MoveLeft").render());
+        vboxKeybindings.getChildren().add(createController("S", "MoveDown").render());
+        vboxKeybindings.getChildren().add(createController("D", "MoveRight").render());
+        vboxKeybindings.getChildren().add(createController("B", "OpensBeastList").render());
+        vboxKeybindings.getChildren().add(createController("M", "OpenMap").render());
 
         return parent;
     }
@@ -134,5 +135,18 @@ public class SettingsController extends Controller {
     @Override
     public String getTitle() {
         return resources.getString("titleSettings");
+    }
+
+    private KeybindElementController createController(String key, String action) {
+        KeybindElementController controller = keybindElementControllerProvider.get();
+        controller.setKeyAndAction(key, action);
+        subControllers.add(controller);
+        return controller;
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        subControllers.forEach(Controller::destroy);
     }
 }
