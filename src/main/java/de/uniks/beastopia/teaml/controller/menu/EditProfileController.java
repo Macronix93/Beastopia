@@ -4,11 +4,13 @@ import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.service.AuthService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.utils.Dialog;
-import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -20,18 +22,6 @@ public class EditProfileController extends Controller {
     private final SimpleStringProperty password = new SimpleStringProperty("");
     private final SimpleStringProperty passwordRepeat = new SimpleStringProperty("");
     @FXML
-    public RadioButton darkRadioButton;
-    @FXML
-    public RadioButton summerRadioButton;
-    @FXML
-    public ToggleGroup language;
-    @FXML
-    public ToggleGroup theme;
-    @FXML
-    public RadioButton selectEnglishLanguage;
-    @FXML
-    public RadioButton selectGermanLanguage;
-    @FXML
     public Button editProfileButton;
     @FXML
     public Button deleteUserButton;
@@ -41,8 +31,6 @@ public class EditProfileController extends Controller {
     public PasswordField passwordInput;
     @FXML
     public PasswordField passwordRepeatInput;
-    @Inject
-    Prefs prefs;
     @Inject
     Provider<MenuController> menuControllerProvider;
     @Inject
