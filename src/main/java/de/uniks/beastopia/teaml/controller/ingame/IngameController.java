@@ -29,6 +29,7 @@ import javafx.scene.layout.Pane;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+import java.util.ArrayList;
 
 public class IngameController extends Controller {
     static final double TILE_SIZE = 20;
@@ -49,6 +50,14 @@ public class IngameController extends Controller {
     Prefs prefs;
     @Inject
     DataCache cache;
+    @Inject
+    Provider<EntityController> entityControllerProvider;
+    @SuppressWarnings("unused")
+    @Inject
+    Provider<EntityRemoteController> entityRemoteControllerProvider;
+    @Inject
+    UDPEventListener udpEventListener;
+
     private Region region;
     private Image image;
     private Map map;
@@ -57,16 +66,14 @@ public class IngameController extends Controller {
     private int posy = 0;
     private int width;
     private int height;
+    private LoadingPage loadingPage;
+
     Direction direction;
     ObjectProperty<PlayerState> state = new SimpleObjectProperty<>();
     Parent player;
     EntityController playerController;
-    @Inject
-    Provider<EntityController> entityControllerProvider;
-    @Inject
-    UDPEventListener udpEventListener;
-
-    private LoadingPage loadingPage;
+    @SuppressWarnings("unused")
+    ArrayList<EntityRemoteController> otherPlayers = new ArrayList<>();
 
     @Inject
     public IngameController() {
@@ -143,7 +150,6 @@ public class IngameController extends Controller {
                 }
             }
         }
-
         updateOrigin();
     }
 
@@ -252,6 +258,12 @@ public class IngameController extends Controller {
         state.setValue(PlayerState.IDLE);
         drawPlayer(posx, posy);
     }
+
+    @SuppressWarnings("unused")
+    private void updateRemoteTrainerPos(Direction direction) {
+
+    }
+
 
     @Override
     public String getTitle() {
