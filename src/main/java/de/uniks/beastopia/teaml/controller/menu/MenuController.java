@@ -4,6 +4,7 @@ import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.auth.LoginController;
 import de.uniks.beastopia.teaml.controller.menu.social.FriendListController;
 import de.uniks.beastopia.teaml.service.AuthService;
+import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.utils.Dialog;
 import javafx.fxml.FXML;
@@ -56,6 +57,11 @@ public class MenuController extends Controller {
     private Text userName;
 
     @Inject
+    TokenStorage tokenStorage;
+    @Inject
+    DataCache cache;
+
+    @Inject
     public MenuController() {
 
     }
@@ -64,6 +70,10 @@ public class MenuController extends Controller {
     public void init() {
         super.init();
         app.addCleanupTask(() -> authService.goOffline().subscribe());
+
+        if (cache.getTrainer() != null) {
+            cache.setTrainer(null);
+        }
     }
 
     @Override

@@ -6,6 +6,7 @@ import de.uniks.beastopia.teaml.controller.auth.LoginController;
 import de.uniks.beastopia.teaml.controller.menu.social.FriendListController;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.AuthService;
+import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.scene.control.Button;
@@ -26,7 +27,11 @@ import java.util.ResourceBundle;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -42,6 +47,8 @@ class MenuControllerTest extends ApplicationTest {
     AuthService authService;
     @Mock
     TokenStorage tokenStorage;
+    @Mock
+    DataCache cache;
     @Spy
     @SuppressWarnings("unused")
     App app;

@@ -14,6 +14,7 @@ public record Trainer(
         String area,
         int x,
         int y,
-        int direction
+        int direction,
+        NPCInfo npc
 ) {
 }
