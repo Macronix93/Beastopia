@@ -27,7 +27,6 @@ import retrofit2.Response;
 import javax.inject.Provider;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -50,10 +49,6 @@ class EditProfileControllerTest extends ApplicationTest {
     AuthService authService;
     @Mock
     TokenStorage tokenStorage;
-    @Mock
-    Provider<ResourceBundle> resourcesProvider;
-    @Spy
-    ThemeSettings themeSettings;
     @Spy
     App app;
     @Spy
@@ -67,8 +62,7 @@ class EditProfileControllerTest extends ApplicationTest {
 
     @Override
     public void start(Stage stage) {
-        AppPreparer.prepare(app, prefs);
-        when(prefs.getTheme()).thenReturn("dark");
+        AppPreparer.prepare(app);
 
         user = new User(null, null, null, "Alice", null, null, null);
         when(tokenStorage.getCurrentUser()).thenReturn(user);
@@ -76,33 +70,6 @@ class EditProfileControllerTest extends ApplicationTest {
         app.start(stage);
         app.show(editProfileController);
         stage.requestFocus();
-    }
-
-    @Test
-    public void setDarkTheme() {
-        doNothing().when(prefs).setTheme(any());
-        Consumer<String> mocked = mock();
-        doNothing().when(mocked).accept(any());
-        themeSettings.updateSceneTheme = mocked;
-
-        clickOn("#summerRadioButton");
-        clickOn("#darkRadioButton");
-
-        verify(prefs, times(1)).setTheme("dark");
-        verify(mocked, times(1)).accept("dark");
-    }
-
-    @Test
-    public void setSummerTheme() {
-        doNothing().when(prefs).setTheme(any());
-        Consumer<String> mocked = mock();
-        doNothing().when(mocked).accept(any());
-        themeSettings.updateSceneTheme = mocked;
-
-        clickOn("#summerRadioButton");
-
-        verify(prefs, times(1)).setTheme("summer");
-        verify(mocked, times(1)).accept("summer");
     }
 
     @Test
@@ -193,27 +160,5 @@ class EditProfileControllerTest extends ApplicationTest {
     @Test
     void title() {
         assertEquals(resources.getString("titleEditProfile"), app.getStage().getTitle());
-    }
-
-    @Test
-    public void setDe() {
-        when(resourcesProvider.get()).thenReturn(resources);
-        doNothing().when(prefs).setLocale(Locale.GERMAN.toLanguageTag());
-
-        clickOn("#selectGermanLanguage");
-        verify(prefs, times(1)).setLocale(Locale.GERMAN.toLanguageTag());
-    }
-
-    @Test
-    public void setEn() {
-        when(resourcesProvider.get()).thenReturn(resources);
-        doNothing().when(prefs).setLocale(Locale.GERMAN.toLanguageTag());
-        doNothing().when(prefs).setLocale(Locale.ENGLISH.toLanguageTag());
-        when(prefs.getLocale()).thenReturn(Locale.GERMAN.toLanguageTag());
-
-        clickOn("#selectGermanLanguage");
-        clickOn("#selectEnglishLanguage");
-
-        verify(prefs, times(1)).setLocale(Locale.ENGLISH.toLanguageTag());
     }
 }
