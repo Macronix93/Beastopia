@@ -75,9 +75,10 @@ public class IngameController extends Controller {
     @Override
     public void init() {
         super.init();
-        playerController = entityControllerProvider.get();
-        playerController.playerState().bind(state);
         state.setValue(PlayerState.IDLE);
+        playerController = entityControllerProvider.get();
+        playerController.setTrainer(cache.getTrainer());
+        playerController.playerState().bind(state);
         playerController.setOnTrainerUpdate(trainer -> {
             posx = trainer.x();
             posy = trainer.y();
@@ -124,7 +125,6 @@ public class IngameController extends Controller {
     }
 
     private void drawMap() {
-        // TODO keep controller in cache --> into init method keep playerController over lifetime of ingame
         drawPlayer(posx, posy);
         for (Layer layer : map.layers()) {
             if (layer.chunks() == null) {
@@ -147,15 +147,6 @@ public class IngameController extends Controller {
         updateOrigin();
     }
 
-    private Parent drawPlayer(int posx, int posy) {
-        tilePane.getChildren().remove(player);
-        player = playerController.render();
-        player.setTranslateX(posx * TILE_SIZE);
-        player.setTranslateY(posy * TILE_SIZE);
-        tilePane.getChildren().add(player);
-        return player;
-    }
-
     private void drawTile(int x, int y, Image image, Rectangle2D viewPort) {
         ImageView view = new ImageView();
         view.setPreserveRatio(true);
@@ -167,13 +158,6 @@ public class IngameController extends Controller {
         view.setTranslateX(x * TILE_SIZE);
         view.setTranslateY(y * TILE_SIZE);
         tilePane.getChildren().add(view);
-    }
-
-    private void movePlayer(int x, int y) {
-        player = drawPlayer(x, y);
-        player.toFront();
-        player.setTranslateX(x * TILE_SIZE);
-        player.setTranslateY(y * TILE_SIZE);
     }
 
     public void setOrigin(int tilex, int tiley) {
@@ -197,6 +181,22 @@ public class IngameController extends Controller {
         setOrigin(posx, posy);
     }
 
+    private Parent drawPlayer(int posx, int posy) {
+        tilePane.getChildren().remove(player);
+        player = playerController.render();
+        player.setTranslateX(posx * TILE_SIZE);
+        player.setTranslateY(posy * TILE_SIZE);
+        tilePane.getChildren().add(player);
+        return player;
+    }
+
+    private void movePlayer(int x, int y) {
+        player = drawPlayer(x, y);
+        player.toFront();
+        player.setTranslateX(x * TILE_SIZE);
+        player.setTranslateY(y * TILE_SIZE);
+    }
+
     @Override
     public void onResize(int width, int height) {
         this.width = width;
@@ -206,16 +206,17 @@ public class IngameController extends Controller {
         }
     }
 
-    private void updateServerPos(Direction direction) {
+    private void updateTrainerPos(Direction direction) {
+        Trainer trainer = cache.getTrainer();
         JsonObject data = new JsonObject();
-        data.add("_id", new JsonPrimitive("646c84a0f148f6eb461bf654"));
-        data.add("area", new JsonPrimitive("645e32c6866ace359554a7fa"));
+        data.add("_id", new JsonPrimitive(trainer._id()));
+        data.add("area", new JsonPrimitive(trainer.area()));
         data.add("x", new JsonPrimitive(posx));
         data.add("y", new JsonPrimitive(posy));
         data.add("direction", new JsonPrimitive(direction.ordinal()));
 
         JsonObject message = new JsonObject();
-        message.add("event", new JsonPrimitive("areas.645e32c6866ace359554a7fa.trainers.646c84a0f148f6eb461bf654.moved"));
+        message.add("event", new JsonPrimitive("areas." + trainer.area() + ".trainers." + trainer._id() + ".moved"));
         message.add("data", data);
 
         udpEventListener.send(message.toString());
@@ -224,9 +225,10 @@ public class IngameController extends Controller {
     @FXML
     public void handleKeyEvent(KeyEvent keyEvent) {
         if (keyEvent.getCode().equals(KeyCode.ESCAPE)) {
-            app.show(pauseControllerProvider.get());
+            PauseController controller = pauseControllerProvider.get();
+            controller.setRegion(region);
+            app.show(controller);
         }
-        System.out.println("keyEvent = " + keyEvent.getCode());
 
         if (keyEvent.getCode().equals(KeyCode.UP) || keyEvent.getCode().equals(KeyCode.W)) {
             posy--;
@@ -242,7 +244,13 @@ public class IngameController extends Controller {
             direction = Direction.RIGHT;
         }
         state.setValue(PlayerState.WALKING);
-        updateServerPos(direction);
+        updateTrainerPos(direction);
+    }
+
+    @FXML
+    public void setIdleState() {
+        state.setValue(PlayerState.IDLE);
+        drawPlayer(posx, posy);
     }
 
     @Override
@@ -254,10 +262,5 @@ public class IngameController extends Controller {
     public void destroy() {
         super.destroy();
         playerController.destroy();
-    }
-
-    public void setIdleState() {
-        state.setValue(PlayerState.IDLE);
-        drawPlayer(posx, posy);
     }
 }
