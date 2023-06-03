@@ -41,7 +41,6 @@
                <VBox.margin>
                   <Insets left="25.0" />
                </VBox.margin>
-               <children>
                   <Button fx:id="editProfileBtn" mnemonicParsing="false" onAction="#editProfileButtonPressed">
                      <graphic>
                         <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
@@ -52,13 +51,10 @@
                   <Button fx:id="settingsBtn" mnemonicParsing="false" onAction="#settingsButtonPressed">
                      <graphic>
                         <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
                               <Image url="@../../assets/buttons/settings.png" />
-                           </image>
                         </ImageView>
                      </graphic>
                   </Button>
-               </children>
             </HBox>
          </VBox>
       </HBox>

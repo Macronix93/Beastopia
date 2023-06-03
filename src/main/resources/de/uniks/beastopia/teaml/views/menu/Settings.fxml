@@ -70,9 +70,7 @@
       </font>
    </Label>
    <ScrollPane fitToHeight="true" fitToWidth="true">
-      <content>
          <VBox fx:id="vboxKeybindings" spacing="10.0" />
-      </content>
    </ScrollPane>
       <Button fx:id="backButton" mnemonicParsing="false" onAction="#back" style="-fx-background-radius: 20;" text="%Back">
          <font>
