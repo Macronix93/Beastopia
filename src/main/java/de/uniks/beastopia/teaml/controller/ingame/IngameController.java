@@ -10,8 +10,12 @@ import de.uniks.beastopia.teaml.service.AreaService;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import de.uniks.beastopia.teaml.sockets.UDPEventListener;
+import de.uniks.beastopia.teaml.utils.Direction;
 import de.uniks.beastopia.teaml.utils.LoadingPage;
+import de.uniks.beastopia.teaml.utils.PlayerState;
 import de.uniks.beastopia.teaml.utils.Prefs;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
@@ -53,7 +57,8 @@ public class IngameController extends Controller {
     private int posy = 0;
     private int width;
     private int height;
-
+    Direction direction;
+    ObjectProperty<PlayerState> state = new SimpleObjectProperty<>();
     Parent player;
     EntityController playerController;
     @Inject
@@ -71,6 +76,8 @@ public class IngameController extends Controller {
     public void init() {
         super.init();
         playerController = entityControllerProvider.get();
+        playerController.playerState().bind(state);
+        state.setValue(PlayerState.IDLE);
         playerController.setOnTrainerUpdate(trainer -> {
             posx = trainer.x();
             posy = trainer.y();
@@ -118,7 +125,7 @@ public class IngameController extends Controller {
 
     private void drawMap() {
         // TODO keep controller in cache --> into init method keep playerController over lifetime of ingame
-        player = drawPlayer(posx, posy, playerController.render());
+        drawPlayer(posx, posy);
         for (Layer layer : map.layers()) {
             if (layer.chunks() == null) {
                 continue;
@@ -140,7 +147,9 @@ public class IngameController extends Controller {
         updateOrigin();
     }
 
-    private Parent drawPlayer(int posx, int posy, Parent player) {
+    private Parent drawPlayer(int posx, int posy) {
+        tilePane.getChildren().remove(player);
+        player = playerController.render();
         player.setTranslateX(posx * TILE_SIZE);
         player.setTranslateY(posy * TILE_SIZE);
         tilePane.getChildren().add(player);
@@ -161,6 +170,7 @@ public class IngameController extends Controller {
     }
 
     private void movePlayer(int x, int y) {
+        player = drawPlayer(x, y);
         player.toFront();
         player.setTranslateX(x * TILE_SIZE);
         player.setTranslateY(y * TILE_SIZE);
@@ -196,13 +206,13 @@ public class IngameController extends Controller {
         }
     }
 
-    private void updateServerPos() {
+    private void updateServerPos(Direction direction) {
         JsonObject data = new JsonObject();
         data.add("_id", new JsonPrimitive("646c84a0f148f6eb461bf654"));
         data.add("area", new JsonPrimitive("645e32c6866ace359554a7fa"));
         data.add("x", new JsonPrimitive(posx));
         data.add("y", new JsonPrimitive(posy));
-        data.add("direction", new JsonPrimitive(1));
+        data.add("direction", new JsonPrimitive(direction.ordinal()));
 
         JsonObject message = new JsonObject();
         message.add("event", new JsonPrimitive("areas.645e32c6866ace359554a7fa.trainers.646c84a0f148f6eb461bf654.moved"));
@@ -216,17 +226,23 @@ public class IngameController extends Controller {
         if (keyEvent.getCode().equals(KeyCode.ESCAPE)) {
             app.show(pauseControllerProvider.get());
         }
+        System.out.println("keyEvent = " + keyEvent.getCode());
 
         if (keyEvent.getCode().equals(KeyCode.UP) || keyEvent.getCode().equals(KeyCode.W)) {
             posy--;
+            direction = Direction.UP;
         } else if (keyEvent.getCode().equals(KeyCode.DOWN) || keyEvent.getCode().equals(KeyCode.S)) {
             posy++;
+            direction = Direction.DOWN;
         } else if (keyEvent.getCode().equals(KeyCode.LEFT) || keyEvent.getCode().equals(KeyCode.A)) {
             posx--;
+            direction = Direction.LEFT;
         } else if (keyEvent.getCode().equals(KeyCode.RIGHT) || keyEvent.getCode().equals(KeyCode.D)) {
             posx++;
+            direction = Direction.RIGHT;
         }
-        updateServerPos();
+        state.setValue(PlayerState.WALKING);
+        updateServerPos(direction);
     }
 
     @Override
@@ -238,5 +254,10 @@ public class IngameController extends Controller {
     public void destroy() {
         super.destroy();
         playerController.destroy();
+    }
+
+    public void setIdleState() {
+        state.setValue(PlayerState.IDLE);
+        drawPlayer(posx, posy);
     }
 }
