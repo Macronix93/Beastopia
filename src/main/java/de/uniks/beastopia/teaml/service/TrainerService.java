@@ -3,6 +3,7 @@ package de.uniks.beastopia.teaml.service;
 import de.uniks.beastopia.teaml.rest.CreateTrainerDto;
 import de.uniks.beastopia.teaml.rest.Trainer;
 import de.uniks.beastopia.teaml.rest.TrainerApiService;
+import de.uniks.beastopia.teaml.rest.UpdateTrainerDto;
 import io.reactivex.rxjava3.core.Observable;
 
 import javax.inject.Inject;
@@ -30,5 +31,9 @@ public class TrainerService {
 
     public Observable<Trainer> deleteTrainer(String regionId, String trainerId) {
         return trainerApiService.deleteTrainer(regionId, trainerId);
+    }
+
+    public Observable<Trainer> updateTrainer(String regionId, String trainerId, String name, String image) {
+        return trainerApiService.updateTrainer(regionId, trainerId, new UpdateTrainerDto(name, image));
     }
 }

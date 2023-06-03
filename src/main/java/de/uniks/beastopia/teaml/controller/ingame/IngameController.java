@@ -3,7 +3,12 @@ package de.uniks.beastopia.teaml.controller.ingame;
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
-import de.uniks.beastopia.teaml.rest.*;
+import de.uniks.beastopia.teaml.rest.Area;
+import de.uniks.beastopia.teaml.rest.Chunk;
+import de.uniks.beastopia.teaml.rest.Layer;
+import de.uniks.beastopia.teaml.rest.Map;
+import de.uniks.beastopia.teaml.rest.Region;
+import de.uniks.beastopia.teaml.rest.TileSet;
 import de.uniks.beastopia.teaml.service.AreaService;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
@@ -95,7 +100,9 @@ public class IngameController extends Controller {
     }
 
     private void drawMap() {
-        player = drawTile(0, 0, image, presetsService.getTileViewPort(1, tileSet));
+        player = drawTile(0, 0, cache.getCharacterImage(cache.getTrainer().image()).getValue(), new javafx.geometry.Rectangle2D(48, 0, 16, 32));
+        player.setScaleX(2);
+        player.setScaleY(2);
 
         for (Layer layer : map.layers()) {
             if (layer.chunks() == null) {
@@ -171,7 +178,9 @@ public class IngameController extends Controller {
     @FXML
     public void handleKeyEvent(KeyEvent keyEvent) {
         if (keyEvent.getCode().equals(KeyCode.ESCAPE)) {
-            app.show(pauseControllerProvider.get());
+            PauseController controller = pauseControllerProvider.get();
+            controller.setRegion(region);
+            app.show(controller);
         }
 
         if (keyEvent.getCode().equals(KeyCode.UP) || keyEvent.getCode().equals(KeyCode.W)) {

@@ -4,6 +4,7 @@ import io.reactivex.rxjava3.core.Observable;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
@@ -22,4 +23,6 @@ public interface TrainerApiService {
     @DELETE("regions/{regionId}/trainers/{id}")
     Observable<Trainer> deleteTrainer(@Path("regionId") String regionId, @Path("id") String trainerId);
 
+    @PATCH("regions/{regionId}/trainers/{id}")
+    Observable<Trainer> updateTrainer(@Path("regionId") String regionId, @Path("id") String trainerId, @Body UpdateTrainerDto updateTrainerDto);
 }
