@@ -1,11 +1,14 @@
 package de.uniks.beastopia.teaml.controller.ingame;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
-import de.uniks.beastopia.teaml.rest.*;
+import de.uniks.beastopia.teaml.rest.Area;
+import de.uniks.beastopia.teaml.rest.Chunk;
+import de.uniks.beastopia.teaml.rest.Layer;
+import de.uniks.beastopia.teaml.rest.Map;
+import de.uniks.beastopia.teaml.rest.Region;
+import de.uniks.beastopia.teaml.rest.TileSet;
 import de.uniks.beastopia.teaml.service.AreaService;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
@@ -167,6 +170,7 @@ public class IngameController extends Controller {
         view.setTranslateX(x * TILE_SIZE);
         view.setTranslateY(y * TILE_SIZE);
         tilePane.getChildren().add(view);
+        return view;
     }
 
     private void movePlayer(int x, int y) {
@@ -224,9 +228,10 @@ public class IngameController extends Controller {
     @FXML
     public void handleKeyEvent(KeyEvent keyEvent) {
         if (keyEvent.getCode().equals(KeyCode.ESCAPE)) {
-            app.show(pauseControllerProvider.get());
+            PauseController controller = pauseControllerProvider.get();
+            controller.setRegion(region);
+            app.show(controller);
         }
-        System.out.println("keyEvent = " + keyEvent.getCode());
 
         if (keyEvent.getCode().equals(KeyCode.UP) || keyEvent.getCode().equals(KeyCode.W)) {
             posy--;

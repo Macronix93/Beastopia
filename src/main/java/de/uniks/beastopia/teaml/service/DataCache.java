@@ -2,7 +2,10 @@ package de.uniks.beastopia.teaml.service;
 
 import de.uniks.beastopia.teaml.rest.Area;
 import de.uniks.beastopia.teaml.rest.Region;
+import de.uniks.beastopia.teaml.rest.Trainer;
 import de.uniks.beastopia.teaml.rest.User;
+import javafx.scene.image.Image;
+import javafx.util.Pair;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -14,6 +17,8 @@ public class DataCache {
     private List<User> users = new ArrayList<>();
     private List<Region> regions = new ArrayList<>();
     private List<Area> areas = new ArrayList<>();
+    private List<Pair<String, Image>> characters = new ArrayList<>();
+    Trainer trainer;
 
     @Inject
     public DataCache() {
@@ -71,6 +76,29 @@ public class DataCache {
     public Area getArea(String id) {
         return areas.stream()
                 .filter(area -> area._id().equals(id))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public void setTrainer(Trainer trainer) {
+        this.trainer = trainer;
+    }
+
+    public Trainer getTrainer() {
+        return trainer;
+    }
+
+    public void setCharacters(List<Pair<String, Image>> characters) {
+        this.characters = new ArrayList<>(characters);
+    }
+
+    public List<Pair<String, Image>> getCharacters() {
+        return characters;
+    }
+
+    public Pair<String, Image> getCharacterImage(String image) {
+        return characters.stream()
+                .filter(pair -> pair.getKey().equals(image))
                 .findFirst()
                 .orElse(null);
     }
