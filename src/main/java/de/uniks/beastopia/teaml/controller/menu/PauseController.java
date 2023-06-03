@@ -5,7 +5,6 @@ import de.uniks.beastopia.teaml.controller.ingame.IngameController;
 import de.uniks.beastopia.teaml.controller.ingame.TrainerController;
 import de.uniks.beastopia.teaml.controller.menu.social.FriendListController;
 import de.uniks.beastopia.teaml.rest.Region;
-import de.uniks.beastopia.teaml.rest.Trainer;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -20,12 +19,9 @@ import java.util.List;
 
 public class PauseController extends Controller {
 
+    private final List<Controller> subControllers = new ArrayList<>();
     @FXML
     public Button editProfileButton;
-    @FXML
-    private VBox friendListContainer;
-
-    private final List<Controller> subControllers = new ArrayList<>();
     @Inject
     Provider<FriendListController> friendListControllerProvider;
     @Inject
@@ -35,9 +31,11 @@ public class PauseController extends Controller {
     @Inject
     Provider<EditProfileController> editProfileControllerProvider;
     @Inject
+    Provider<SettingsController> settingsControllerProvider;
+    @Inject
     Provider<TrainerController> trainerControllerProvider;
-
-    private Trainer trainer;
+    @FXML
+    private VBox friendListContainer;
     private Region region;
 
     @Inject
@@ -67,6 +65,11 @@ public class PauseController extends Controller {
     @FXML
     public void editProfileButtonPressed() {
         app.show(editProfileControllerProvider.get().backController("pause"));
+    }
+
+    @FXML
+    public void settingsButtonPressed() {
+        app.show(settingsControllerProvider.get().backController("pause"));
     }
 
     @FXML
