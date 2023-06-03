@@ -256,6 +256,7 @@ public class IngameController extends Controller {
         playerController.destroy();
     }
 
+    @FXML
     public void setIdleState() {
         state.setValue(PlayerState.IDLE);
         drawPlayer(posx, posy);

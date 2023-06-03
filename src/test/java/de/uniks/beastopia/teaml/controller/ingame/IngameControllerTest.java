@@ -41,6 +41,9 @@ class IngameControllerTest extends ApplicationTest {
     @Mock
     Provider<PauseController> pauseControllerProvider;
     @Mock
+    Provider<EntityController> entityControllerProvider;
+
+    @Mock
     AreaService areaService;
     @Mock
     PresetsService presetsService;

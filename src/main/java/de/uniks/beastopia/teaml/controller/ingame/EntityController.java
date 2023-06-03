@@ -57,7 +57,6 @@ public class EntityController extends Controller {
                 .observeOn(FX_SCHEDULER)
                 .subscribe(
                         event -> {
-                            onTrainerUpdate.accept(event.data());
                             switch (event.data().direction()) {
                                 case 0 -> direction = Direction.RIGHT;
                                 case 1 -> direction = Direction.UP;
@@ -66,6 +65,7 @@ public class EntityController extends Controller {
                             }
                             index = (index + 1) % 6;
                             this.render();
+                            onTrainerUpdate.accept(event.data());
                         },
                         error -> {
                             throw new RuntimeException(error);
