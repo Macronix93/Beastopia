@@ -5,6 +5,10 @@ import de.uniks.beastopia.teaml.rest.MoveTrainerDto;
 import de.uniks.beastopia.teaml.rest.Trainer;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import de.uniks.beastopia.teaml.sockets.UDPEventListener;
+import de.uniks.beastopia.teaml.utils.Direction;
+import de.uniks.beastopia.teaml.utils.PlayerState;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.image.Image;
@@ -21,6 +25,9 @@ public class EntityController extends Controller {
     Trainer trainer = new Trainer(null, null, "646c84a0f148f6eb461bf654", null, null, null, "Prisoner_1_16x16.png", 0, "645e32c6866ace359554a7fa"
             , 0, 0, 0, null);
     Parent parent;
+    Direction direction;
+    int index = 0;
+    ObjectProperty<PlayerState> state = new SimpleObjectProperty<>();
 
     @Inject
     PresetsService presetsService;
@@ -38,19 +45,32 @@ public class EntityController extends Controller {
         this.onTrainerUpdate = onTrainerUpdate;
     }
 
+    public ObjectProperty<PlayerState> playerState() {
+        return state;
+    }
+
     @Override
     public void init() {
         super.init();
-        // TODO find problem here
-        disposables.add(udpEventListener.listen("areas.645e32c6866ace359554a7fa.trainers.645e36639f9cbc7aec094de3.moved", MoveTrainerDto.class)
+        direction = Direction.DOWN;
+        disposables.add(udpEventListener.listen("areas.645e32c6866ace359554a7fa.trainers.646c84a0f148f6eb461bf654.moved", MoveTrainerDto.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(
-                        event -> onTrainerUpdate.accept(event.data()),
+                        event -> {
+                            onTrainerUpdate.accept(event.data());
+                            switch (event.data().direction()) {
+                                case 0 -> direction = Direction.RIGHT;
+                                case 1 -> direction = Direction.UP;
+                                case 2 -> direction = Direction.LEFT;
+                                case 3 -> direction = Direction.DOWN;
+                            }
+                            index = (index + 1) % 6;
+                            this.render();
+                        },
                         error -> {
                             throw new RuntimeException(error);
                         }
                 ));
-        // TODO trainer_image needs to be passed
         this.spriteSheet = presetsService.getSpriteSheet(trainer.image()).blockingFirst();
     }
 
@@ -65,15 +85,17 @@ public class EntityController extends Controller {
         entityView.setPreserveRatio(true);
         entityView.setSmooth(true);
         entityView.setImage(spriteSheet);
-        entityView.setFitWidth(21);
-        entityView.setFitHeight(21);
-        entityView.setViewport(new javafx.geometry.Rectangle2D(0, 64, 16, 32));
+        entityView.setFitWidth(40);
+        entityView.setFitHeight(40);
+        entityView.setViewport(
+                new javafx.geometry.Rectangle2D(direction.ordinal() * 96 + index * 16
+                        , state.get().ordinal() * 32 + 32, 16, 32));
         return parent;
     }
+
 
     @Override
     public void destroy() {
         super.destroy();
     }
-
 }

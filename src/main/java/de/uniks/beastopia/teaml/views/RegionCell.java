@@ -38,12 +38,12 @@ public class RegionCell extends ListCell<Region> {
         } else {
             final Button join = new Button(item.name() + " " + resources.getString("join"));
             join.setOnAction(event -> {
-                //TrainerController controller = trainerControllerProvider.get();
-                //controller.setRegion(item);
+                TrainerController controller = trainerControllerProvider.get();
+                controller.setRegion(item);
                 // TODO roll back to trainer controller
-                IngameController con = ingameControllerProvider.get();
-                con.setRegion(item);
-                app.show(con);
+                //IngameController controller = ingameControllerProvider.get();
+                //controller.setRegion(item);
+                app.show(controller);
             });
             setGraphic(join);
         }
