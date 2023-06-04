@@ -70,6 +70,9 @@ public class DirectMessageController extends Controller {
         disposables.add(groupListService.getGroups()
                 .observeOn(FX_SCHEDULER)
                 .subscribe(groups -> {
+                    if (groups == null) {
+                        return;
+                    }
                     //noinspection ReassignedVariable
                     Group existing = null;
                     for (Group group : groups) {
@@ -89,6 +92,9 @@ public class DirectMessageController extends Controller {
                         disposables.add(groupListService.addGroup(groupName, List.of(tokenStorage.getCurrentUser()._id(), user._id()))
                                 .observeOn(FX_SCHEDULER)
                                 .subscribe(group -> {
+                                    if (group == null) {
+                                        return;
+                                    }
                                     chatListController.reload();
                                     loadGroup(group);
                                 }));
