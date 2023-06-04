@@ -70,6 +70,9 @@ public class DirectMessageController extends Controller {
         disposables.add(groupListService.getGroups()
                 .observeOn(FX_SCHEDULER)
                 .subscribe(groups -> {
+                    if (groups == null) {
+                        return;
+                    }
                     //noinspection ReassignedVariable
                     Group existing = null;
                     for (Group group : groups) {
@@ -89,6 +92,9 @@ public class DirectMessageController extends Controller {
                         disposables.add(groupListService.addGroup(groupName, List.of(tokenStorage.getCurrentUser()._id(), user._id()))
                                 .observeOn(FX_SCHEDULER)
                                 .subscribe(group -> {
+                                    if (group == null) {
+                                        return;
+                                    }
                                     chatListController.reload();
                                     loadGroup(group);
                                 }));
@@ -141,7 +147,16 @@ public class DirectMessageController extends Controller {
         }
 
         String message = chatInput.getText();
-        disposables.add(messageService.sendMessageToGroup(currentGroup, message).subscribe(r -> chatInput.setText("")));
+        disposables.add(messageService
+                .sendMessageToGroup(currentGroup, message)
+                .observeOn(FX_SCHEDULER)
+                .subscribe(r -> {
+                            if (r == null) {
+                                return;
+                            }
+                            chatInput.setText("");
+                        }
+                ));
     }
 
     private void loadGroup(Group group) {
