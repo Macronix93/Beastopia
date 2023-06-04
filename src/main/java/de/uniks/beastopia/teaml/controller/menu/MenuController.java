@@ -55,9 +55,6 @@ public class MenuController extends Controller {
     private ImageView userAvatar;
     @FXML
     private Text userName;
-
-    @Inject
-    TokenStorage tokenStorage;
     @Inject
     DataCache cache;
 
