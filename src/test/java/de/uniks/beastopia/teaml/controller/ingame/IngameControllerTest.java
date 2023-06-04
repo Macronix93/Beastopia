@@ -7,6 +7,7 @@ import de.uniks.beastopia.teaml.rest.*;
 import de.uniks.beastopia.teaml.service.AreaService;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
+import de.uniks.beastopia.teaml.sockets.UDPEventListener;
 import de.uniks.beastopia.teaml.utils.PlayerState;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import io.reactivex.rxjava3.core.Observable;
@@ -53,6 +54,8 @@ class IngameControllerTest extends ApplicationTest {
     AreaService areaService;
     @Mock
     PresetsService presetsService;
+    @Mock
+    UDPEventListener udpEventListener;
     @Mock
     DataCache cache;
     @Mock
@@ -123,6 +126,7 @@ class IngameControllerTest extends ApplicationTest {
 
     @Test
     void movePlayer() {
+        doNothing().when(udpEventListener).send(anyString());
         type(KeyCode.W);
         type(KeyCode.S);
         type(KeyCode.A);
