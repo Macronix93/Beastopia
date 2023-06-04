@@ -4,6 +4,7 @@ import de.uniks.beastopia.teaml.controller.Controller;
 import fr.brouillard.oss.cssfx.CSSFX;
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
@@ -46,6 +47,8 @@ public class App extends Application {
         stage.setWidth(windowSizeX);
         stage.setHeight(windowSizeY);
         stage.setTitle("Beastopia");
+
+        checkJavaVersion();
 
         stage.widthProperty().addListener((observable, oldValue, newValue) -> {
             windowSizeX = newValue.intValue();
@@ -124,5 +127,19 @@ public class App extends Application {
         }
         stage.getScene().setRoot(controller.render());
         controller.onResize(windowSizeX, windowSizeY);
+    }
+
+    private void checkJavaVersion() {
+        String versionString = System.getProperty("java.version");
+        String regex = "17\\..*";
+        if (!versionString.matches(regex)) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Java Version Warning");
+            alert.setHeaderText("Java Version Warning");
+            alert.setContentText("You are using Java " + versionString + ".\n" +
+                    "This application was tested with Java 17.\n" +
+                    "Please use Java 17 to avoid any problems.");
+            alert.showAndWait();
+        }
     }
 }
