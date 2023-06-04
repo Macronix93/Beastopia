@@ -147,7 +147,16 @@ public class DirectMessageController extends Controller {
         }
 
         String message = chatInput.getText();
-        disposables.add(messageService.sendMessageToGroup(currentGroup, message).subscribe(r -> chatInput.setText("")));
+        disposables.add(messageService
+                .sendMessageToGroup(currentGroup, message)
+                .observeOn(FX_SCHEDULER)
+                .subscribe(r -> {
+                            if (r == null) {
+                                return;
+                            }
+                            chatInput.setText("");
+                        }
+                ));
     }
 
     private void loadGroup(Group group) {
