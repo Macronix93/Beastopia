@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="CENTER" spacing="10.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.uniks.beastopia.teaml.controller.menu.SettingsController">
+    <Label text="%Language">
+        <font>
+            <Font size="16.0" />
+        </font>
+    </Label>
+    <HBox alignment="CENTER" spacing="15.0">
+        <RadioButton fx:id="selectEnglishLanguage" mnemonicParsing="false" onAction="#setEn" selected="true" text="%English">
+            <font>
+                <Font size="16.0" />
+            </font>
+            <toggleGroup>
+                <ToggleGroup fx:id="language" />
+            </toggleGroup>
+        </RadioButton>
+        <RadioButton fx:id="selectGermanLanguage" mnemonicParsing="false" onAction="#setDe" text="%German" toggleGroup="$language">
+            <font>
+                <Font size="16.0" />
+            </font>
+        </RadioButton>
+    </HBox>
+    <Label text="%ChangeTheme">
+        <font>
+            <Font size="16.0" />
+        </font>
+    </Label>
+    <HBox alignment="CENTER" spacing="15.0">
+        <RadioButton fx:id="darkRadioButton" mnemonicParsing="false" onAction="#setDarkTheme" selected="true" text="%Dark">
+            <font>
+                <Font size="16.0" />
+              </font>
+              <toggleGroup>
+                  <ToggleGroup fx:id="theme" />
+              </toggleGroup>
+          </RadioButton>
+          <RadioButton fx:id="summerRadioButton" mnemonicParsing="false" onAction="#setSummerTheme" text="%Summer" toggleGroup="$theme">
+              <font>
+                  <Font size="16.0" />
+              </font>
+          </RadioButton>
+      </HBox>
+   <Label text="%MusicVolume">
+      <font>
+         <Font size="16.0" />
+      </font>
+   </Label>
+   <Slider fx:id="musicVolumeSlider" onMouseDragged="#changeMusicVolume" />
+   <Label text="%SoundVolume">
+      <font>
+         <Font size="16.0" />
+      </font>
+   </Label>
+   <Slider fx:id="soundVolumeSlider" onMouseDragged="#changeSoundVolume" />
+   <Label text="%Keybinds">
+      <font>
+         <Font name="System Bold Italic" size="16.0" />
+      </font>
+   </Label>
+   <ScrollPane fitToHeight="true" fitToWidth="true">
+         <VBox fx:id="vboxKeybindings" spacing="10.0" />
+   </ScrollPane>
+      <Button fx:id="backButton" mnemonicParsing="false" onAction="#back" style="-fx-background-radius: 20;" text="%Back">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Button>
+   <padding>
+      <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
+   </padding>
+</VBox>

@@ -66,7 +66,7 @@ public class EditGroupController extends Controller {
 
     @Override
     public String getTitle() {
-        return resources.getString("titleNewGroup");
+        return resources.getString("titleEditGroup");
     }
 
     @FXML

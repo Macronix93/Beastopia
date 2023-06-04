@@ -23,6 +23,12 @@ public class MenuController extends Controller {
     private final List<Controller> subControllers = new ArrayList<>();
     @FXML
     public VBox left;
+    @FXML
+    public Button settingsBtn;
+    @FXML
+    public Button logoutBtn;
+    @FXML
+    public Button editProfileBtn;
     @Inject
     Provider<RegionController> regionControllerProvider;
     @Inject
@@ -32,12 +38,11 @@ public class MenuController extends Controller {
     @Inject
     Provider<EditProfileController> editProfileControllerProvider;
     @Inject
+    Provider<SettingsController> settingsControllerProvider;
+    @Inject
     AuthService authService;
-    @FXML
-    public Button logoutBtn;
-    @FXML
-    public Button editProfileBtn;
-
+    @Inject
+    TokenStorage tokenStorage;
     @FXML
     private VBox friendListContainer;
     @FXML
@@ -50,9 +55,6 @@ public class MenuController extends Controller {
     private ImageView userAvatar;
     @FXML
     private Text userName;
-
-    @Inject
-    TokenStorage tokenStorage;
     @Inject
     DataCache cache;
 
@@ -113,5 +115,9 @@ public class MenuController extends Controller {
     @FXML
     public void editProfileButtonPressed() {
         app.show(editProfileControllerProvider.get().backController("menu"));
+    }
+
+    public void settingsButtonPressed() {
+        app.show(settingsControllerProvider.get().backController("menu"));
     }
 }
