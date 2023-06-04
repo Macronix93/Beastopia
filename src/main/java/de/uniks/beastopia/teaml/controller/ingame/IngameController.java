@@ -230,21 +230,29 @@ public class IngameController extends Controller {
             app.show(controller);
         }
 
+        boolean moved = false;
         if (keyEvent.getCode().equals(KeyCode.UP) || keyEvent.getCode().equals(KeyCode.W)) {
             posy--;
             direction = Direction.UP;
+            moved = true;
         } else if (keyEvent.getCode().equals(KeyCode.DOWN) || keyEvent.getCode().equals(KeyCode.S)) {
             posy++;
             direction = Direction.DOWN;
+            moved = true;
         } else if (keyEvent.getCode().equals(KeyCode.LEFT) || keyEvent.getCode().equals(KeyCode.A)) {
             posx--;
             direction = Direction.LEFT;
+            moved = true;
         } else if (keyEvent.getCode().equals(KeyCode.RIGHT) || keyEvent.getCode().equals(KeyCode.D)) {
             posx++;
             direction = Direction.RIGHT;
+            moved = true;
         }
-        state.setValue(PlayerState.WALKING);
-        updateTrainerPos(direction);
+
+        if (moved) {
+            state.setValue(PlayerState.WALKING);
+            updateTrainerPos(direction);
+        }
     }
 
     @FXML

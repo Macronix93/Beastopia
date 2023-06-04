@@ -38,7 +38,7 @@ public class TrainerServiceTest {
 
         assertEquals("123", responseTrainer._id());
         assertEquals("A", responseTrainer.region());
-        assertEquals("123", responseTrainer.userId());
+        assertEquals("123", responseTrainer.user());
         assertEquals("A", responseTrainer.name());
         assertEquals("A", responseTrainer.image());
         assertEquals(0, responseTrainer.coins());
@@ -66,7 +66,7 @@ public class TrainerServiceTest {
 
         assertEquals("123", responseTrainer._id());
         assertEquals("A", responseTrainer.region());
-        assertEquals("123", responseTrainer.userId());
+        assertEquals("123", responseTrainer.user());
         assertEquals("A", responseTrainer.name());
         assertEquals("A", responseTrainer.image());
         assertEquals(0, responseTrainer.coins());
@@ -81,7 +81,7 @@ public class TrainerServiceTest {
 
         assertEquals("123", deletedtrainer._id());
         assertEquals("A", deletedtrainer.region());
-        assertEquals("123", deletedtrainer.userId());
+        assertEquals("123", deletedtrainer.user());
         assertEquals("A", deletedtrainer.name());
         assertEquals("A", deletedtrainer.image());
         assertEquals(0, deletedtrainer.coins());

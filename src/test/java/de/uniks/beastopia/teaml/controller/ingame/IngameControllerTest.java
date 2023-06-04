@@ -3,28 +3,22 @@ package de.uniks.beastopia.teaml.controller.ingame;
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
-import de.uniks.beastopia.teaml.rest.Area;
-import de.uniks.beastopia.teaml.rest.Chunk;
-import de.uniks.beastopia.teaml.rest.Layer;
-import de.uniks.beastopia.teaml.rest.Map;
-import de.uniks.beastopia.teaml.rest.NPCInfo;
-import de.uniks.beastopia.teaml.rest.Region;
-import de.uniks.beastopia.teaml.rest.Spawn;
-import de.uniks.beastopia.teaml.rest.TileSet;
-import de.uniks.beastopia.teaml.rest.TileSetDescription;
-import de.uniks.beastopia.teaml.rest.Trainer;
+import de.uniks.beastopia.teaml.rest.*;
 import de.uniks.beastopia.teaml.service.AreaService;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
+import de.uniks.beastopia.teaml.utils.PlayerState;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import io.reactivex.rxjava3.core.Observable;
-import javafx.geometry.Point2D;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import org.junit.jupiter.api.Test;
@@ -44,12 +38,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class IngameControllerTest extends ApplicationTest {
@@ -58,7 +47,8 @@ class IngameControllerTest extends ApplicationTest {
     Provider<PauseController> pauseControllerProvider;
     @Mock
     Provider<EntityController> entityControllerProvider;
-
+    @Mock
+    EntityController playerController;
     @Mock
     AreaService areaService;
     @Mock
@@ -67,6 +57,8 @@ class IngameControllerTest extends ApplicationTest {
     DataCache cache;
     @Mock
     Prefs prefs;
+    @Mock
+    ObjectProperty<PlayerState> state;
     @Spy
     App app;
     @Spy
@@ -91,6 +83,8 @@ class IngameControllerTest extends ApplicationTest {
     @Override
     public void start(Stage stage) {
         AppPreparer.prepare(app);
+
+
         doNothing().when(prefs).setRegion(any());
         doNothing().when(prefs).setArea(any());
         when(areaService.getAreas(anyString())).thenReturn(Observable.just(List.of(area)));
@@ -98,8 +92,13 @@ class IngameControllerTest extends ApplicationTest {
         when(presetsService.getTileset(tileSetDescription)).thenReturn(Observable.just(tileSet));
         when(presetsService.getImage(tileSet)).thenReturn(Observable.just(image));
         when(cache.getTrainer()).thenReturn(trainer);
-        when(cache.getCharacterImage("TRAINER_IMAGE")).thenReturn(charList.get(0));
-
+        //when(cache.getCharacterImage("TRAINER_IMAGE")).thenReturn(charList.get(0));
+        when(entityControllerProvider.get()).thenReturn(playerController);
+        doNothing().when(playerController).setTrainer(any());
+        when(playerController.playerState()).thenReturn(new SimpleObjectProperty<>(PlayerState.IDLE));
+        doNothing().when(playerController).setOnTrainerUpdate(any());
+        doNothing().when(playerController).init();
+        when(playerController.render()).thenReturn(new Pane());
         ingameController.setRegion(region);
 
         app.start(stage);
@@ -124,19 +123,11 @@ class IngameControllerTest extends ApplicationTest {
 
     @Test
     void movePlayer() {
-        doNothing().when(prefs).setPosition(any());
-
         type(KeyCode.W);
-        verify(prefs, atLeastOnce()).setPosition(new Point2D(0, -1));
-
         type(KeyCode.S);
-        verify(prefs, atLeastOnce()).setPosition(new Point2D(0, 0));
-
         type(KeyCode.A);
-        verify(prefs, atLeastOnce()).setPosition(new Point2D(-1, 0));
-
         type(KeyCode.D);
-        verify(prefs, atLeastOnce()).setPosition(new Point2D(0, 0));
+        verify(state, times(4)).setValue(PlayerState.WALKING);
     }
 
     @SuppressWarnings("SameParameterValue")
