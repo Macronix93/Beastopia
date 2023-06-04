@@ -1,19 +1,21 @@
 package de.uniks.beastopia.teaml.controller.ingame;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
-import de.uniks.beastopia.teaml.rest.Area;
-import de.uniks.beastopia.teaml.rest.Chunk;
-import de.uniks.beastopia.teaml.rest.Layer;
-import de.uniks.beastopia.teaml.rest.Map;
-import de.uniks.beastopia.teaml.rest.Region;
-import de.uniks.beastopia.teaml.rest.TileSet;
+import de.uniks.beastopia.teaml.rest.*;
 import de.uniks.beastopia.teaml.service.AreaService;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
+import de.uniks.beastopia.teaml.sockets.UDPEventListener;
+import de.uniks.beastopia.teaml.utils.Direction;
 import de.uniks.beastopia.teaml.utils.LoadingPage;
+import de.uniks.beastopia.teaml.utils.PlayerState;
 import de.uniks.beastopia.teaml.utils.Prefs;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
@@ -55,11 +57,34 @@ public class IngameController extends Controller {
     private int posy = 0;
     private int width;
     private int height;
-    ImageView player;
+    Direction direction;
+    ObjectProperty<PlayerState> state = new SimpleObjectProperty<>();
+    Parent player;
+    EntityController playerController;
+    @Inject
+    Provider<EntityController> entityControllerProvider;
+    @Inject
+    UDPEventListener udpEventListener;
+
     private LoadingPage loadingPage;
 
     @Inject
     public IngameController() {
+    }
+
+    @Override
+    public void init() {
+        super.init();
+        state.setValue(PlayerState.IDLE);
+        playerController = entityControllerProvider.get();
+        playerController.setTrainer(cache.getTrainer());
+        playerController.playerState().bind(state);
+        playerController.setOnTrainerUpdate(trainer -> {
+            posx = trainer.x();
+            posy = trainer.y();
+            updateOrigin();
+        });
+        playerController.init();
     }
 
     public void setRegion(Region region) {
@@ -100,10 +125,7 @@ public class IngameController extends Controller {
     }
 
     private void drawMap() {
-        player = drawTile(0, 0, cache.getCharacterImage(cache.getTrainer().image()).getValue(), new javafx.geometry.Rectangle2D(48, 0, 16, 32));
-        player.setScaleX(2);
-        player.setScaleY(2);
-
+        drawPlayer(posx, posy);
         for (Layer layer : map.layers()) {
             if (layer.chunks() == null) {
                 continue;
@@ -125,7 +147,7 @@ public class IngameController extends Controller {
         updateOrigin();
     }
 
-    private ImageView drawTile(int x, int y, Image image, Rectangle2D viewPort) {
+    private void drawTile(int x, int y, Image image, Rectangle2D viewPort) {
         ImageView view = new ImageView();
         view.setPreserveRatio(true);
         view.setSmooth(true);
@@ -136,13 +158,6 @@ public class IngameController extends Controller {
         view.setTranslateX(x * TILE_SIZE);
         view.setTranslateY(y * TILE_SIZE);
         tilePane.getChildren().add(view);
-        return view;
-    }
-
-    private void moveTile(int x, int y, ImageView view) {
-        view.toFront();
-        view.setTranslateX(x * TILE_SIZE);
-        view.setTranslateY(y * TILE_SIZE);
     }
 
     public void setOrigin(int tilex, int tiley) {
@@ -158,12 +173,28 @@ public class IngameController extends Controller {
         tilePane.setTranslateX(tilePaneTranslationX);
         tilePane.setTranslateY(tilePaneTranslationY);
 
-        moveTile(tilex, tiley, player);
+        movePlayer(tilex, tiley);
         prefs.setPosition(new Point2D(tilex, tiley));
     }
 
     public void updateOrigin() {
         setOrigin(posx, posy);
+    }
+
+    private Parent drawPlayer(int posx, int posy) {
+        tilePane.getChildren().remove(player);
+        player = playerController.render();
+        player.setTranslateX(posx * TILE_SIZE);
+        player.setTranslateY(posy * TILE_SIZE);
+        tilePane.getChildren().add(player);
+        return player;
+    }
+
+    private void movePlayer(int x, int y) {
+        player = drawPlayer(x, y);
+        player.toFront();
+        player.setTranslateX(x * TILE_SIZE);
+        player.setTranslateY(y * TILE_SIZE);
     }
 
     @Override
@@ -175,6 +206,22 @@ public class IngameController extends Controller {
         }
     }
 
+    private void updateTrainerPos(Direction direction) {
+        Trainer trainer = cache.getTrainer();
+        JsonObject data = new JsonObject();
+        data.add("_id", new JsonPrimitive(trainer._id()));
+        data.add("area", new JsonPrimitive(trainer.area()));
+        data.add("x", new JsonPrimitive(posx));
+        data.add("y", new JsonPrimitive(posy));
+        data.add("direction", new JsonPrimitive(direction.ordinal()));
+
+        JsonObject message = new JsonObject();
+        message.add("event", new JsonPrimitive("areas." + trainer.area() + ".trainers." + trainer._id() + ".moved"));
+        message.add("data", data);
+
+        udpEventListener.send(message.toString());
+    }
+
     @FXML
     public void handleKeyEvent(KeyEvent keyEvent) {
         if (keyEvent.getCode().equals(KeyCode.ESCAPE)) {
@@ -183,23 +230,45 @@ public class IngameController extends Controller {
             app.show(controller);
         }
 
+        boolean moved = false;
         if (keyEvent.getCode().equals(KeyCode.UP) || keyEvent.getCode().equals(KeyCode.W)) {
             posy--;
-            updateOrigin();
+            direction = Direction.UP;
+            moved = true;
         } else if (keyEvent.getCode().equals(KeyCode.DOWN) || keyEvent.getCode().equals(KeyCode.S)) {
             posy++;
-            updateOrigin();
+            direction = Direction.DOWN;
+            moved = true;
         } else if (keyEvent.getCode().equals(KeyCode.LEFT) || keyEvent.getCode().equals(KeyCode.A)) {
             posx--;
-            updateOrigin();
+            direction = Direction.LEFT;
+            moved = true;
         } else if (keyEvent.getCode().equals(KeyCode.RIGHT) || keyEvent.getCode().equals(KeyCode.D)) {
             posx++;
-            updateOrigin();
+            direction = Direction.RIGHT;
+            moved = true;
         }
+
+        if (moved) {
+            state.setValue(PlayerState.WALKING);
+            updateTrainerPos(direction);
+        }
+    }
+
+    @FXML
+    public void setIdleState() {
+        state.setValue(PlayerState.IDLE);
+        drawPlayer(posx, posy);
     }
 
     @Override
     public String getTitle() {
         return resources.getString("titleIngame");
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        playerController.destroy();
     }
 }

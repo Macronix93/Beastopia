@@ -5,6 +5,7 @@ import fr.brouillard.oss.cssfx.CSSFX;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
@@ -47,6 +48,7 @@ public class App extends Application {
         stage.setHeight(windowSizeY);
         stage.setTitle("Beastopia");
 
+
         stage.widthProperty().addListener((observable, oldValue, newValue) -> {
             windowSizeX = newValue.intValue();
             if (controller != null) {
@@ -66,6 +68,7 @@ public class App extends Application {
 
         scene.getStylesheets().add(Objects.requireNonNull(Main.class.getResource("views/summer.css")).toString());
         CSSFX.start(scene);
+        setAppIcon();
 
         stage.show();
 
@@ -125,4 +128,10 @@ public class App extends Application {
         stage.getScene().setRoot(controller.render());
         controller.onResize(windowSizeX, windowSizeY);
     }
+
+    private void setAppIcon() {
+        final Image icon = new Image(Objects.requireNonNull(App.class.getResource("assets/bt_icon.png")).toString());
+        stage.getIcons().add(icon);
+    }
+
 }

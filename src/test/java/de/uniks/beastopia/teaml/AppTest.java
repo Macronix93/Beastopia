@@ -1,5 +1,6 @@
 package de.uniks.beastopia.teaml;
 
+import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
