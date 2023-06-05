@@ -4,6 +4,7 @@ import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Region;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.TrainerService;
+import de.uniks.beastopia.teaml.utils.Dialog;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.TextField;
@@ -37,8 +38,6 @@ public class DeleteTrainerController extends Controller {
     public Parent render() {
         Parent parent = super.render();
 
-        trainerNameField.setEditable(false);
-        trainerNameField.setText(cache.getTrainer().name());
         trainerSprite.setImage(cache.getCharacterImage(cache.getTrainer().image()).getValue());
         trainerSprite.setPreserveRatio(true);
         trainerSprite.setViewport(new javafx.geometry.Rectangle2D(48, 0, 16, 32));
@@ -54,6 +53,11 @@ public class DeleteTrainerController extends Controller {
     }
 
     public void deleteTrainer() {
+        if (trainerNameField == null || trainerNameField.getText().isEmpty() || !trainerNameField.getText().equals(cache.getTrainer().name())) {
+            Dialog.error(resources.getString("trainerNameMissing"), resources.getString("trainerDeletionNameMissing"));
+            return;
+        }
+
         disposables.add(trainerService.deleteTrainer(region._id(), cache.getTrainer()._id())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(tr -> {
