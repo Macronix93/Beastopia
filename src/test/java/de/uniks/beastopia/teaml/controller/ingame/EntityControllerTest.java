@@ -59,18 +59,6 @@ class EntityControllerTest extends ApplicationTest {
     }
 
     @Test
-    void setOnTrainerUpdate() {
-    }
-
-    @Test
-    void playerState() {
-    }
-
-    @Test
-    void setTrainer() {
-    }
-
-    @Test
     void render() {
         lookup("#entityView");
         verify(udpEventListener, atLeastOnce()).listen(any(), any());
