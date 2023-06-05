@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="218.0"
+      prefWidth="344.0" spacing="10.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="de.uniks.beastopia.teaml.controller.ingame.DeleteTrainerController">
+    <padding>
+        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+    </padding>
+    <children>
+        <Label text="%DeleteTrainerMessage">
+            <font>
+                <Font size="16.0"/>
+            </font>
+        </Label>
+        <Label text="%TrainerName">
+            <font>
+                <Font size="16.0"/>
+            </font>
+        </Label>
+        <TextField fx:id="trainerNameField" editable="false">
+            <font>
+                <Font size="16.0"/>
+            </font>
+        </TextField>
+        <HBox spacing="15.0">
+            <children>
+                <Button mnemonicParsing="false" onAction="#deleteTrainer" style="-fx-background-radius: 20;"
+                        text="%DeleteTrainer">
+                    <font>
+                        <Font size="16.0"/>
+                    </font>
+                </Button>
+                <Button mnemonicParsing="false" onAction="#cancel" style="-fx-background-radius: 20;" text="%Cancel">
+                    <font>
+                        <Font size="16.0"/>
+                    </font>
+                </Button>
+            </children>
+        </HBox>
+    </children>
+</VBox>

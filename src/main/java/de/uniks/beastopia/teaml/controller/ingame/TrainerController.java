@@ -66,6 +66,8 @@ public class TrainerController extends Controller {
     Provider<IngameController> ingameControllerProvider;
     @Inject
     Provider<MenuController> menuControllerProvider;
+    @Inject
+    Provider<DeleteTrainerController> deleteTrainerControllerProvider;
 
     private Trainer trainer;
     private Region region;
@@ -112,7 +114,7 @@ public class TrainerController extends Controller {
     }
 
     public void deleteTrainer() {
-        //TODO: Delete trainer for current region
+        app.show(deleteTrainerControllerProvider.get());
     }
 
     public void back() {
