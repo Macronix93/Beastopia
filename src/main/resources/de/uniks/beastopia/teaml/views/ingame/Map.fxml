@@ -15,6 +15,6 @@
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
     </rowConstraints>
     <Pane fx:id="mapPane" prefHeight="200.0" prefWidth="200.0">
-        <Button layoutX="676.0" layoutY="552.0" mnemonicParsing="false" onAction="#closeMap" text="Close"/>
+        <Button layoutX="619.0" layoutY="512.0" mnemonicParsing="false" onAction="#closeMap" text="%CloseMap"/>
     </Pane>
 </GridPane>

@@ -45,7 +45,7 @@ public class MapController extends Controller {
     public void closeMap() {
         IngameController ingameController = ingameControllerProvider.get();
         ingameController.setRegion(region);
-        app.show(ingameController);
+        app.show(backController);
     }
 
     public void setRegion(Region region) {
