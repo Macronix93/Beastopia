@@ -64,6 +64,8 @@ public class IngameController extends Controller {
     @Inject
     Provider<EntityController> entityControllerProvider;
     @Inject
+    Provider<MapController> mapControllerProvider;
+    @Inject
     UDPEventListener udpEventListener;
 
     private LoadingPage loadingPage;
@@ -224,6 +226,13 @@ public class IngameController extends Controller {
 
     @FXML
     public void handleKeyEvent(KeyEvent keyEvent) {
+        if (keyEvent.getCode().equals(KeyCode.M)) {
+            MapController map = mapControllerProvider.get();
+            map.setRegion(region);
+            map.setBackController(this);
+            app.show(map);
+        }
+
         if (keyEvent.getCode().equals(KeyCode.ESCAPE)) {
             PauseController controller = pauseControllerProvider.get();
             controller.setRegion(region);
