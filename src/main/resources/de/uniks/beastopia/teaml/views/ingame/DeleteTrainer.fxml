@@ -14,43 +14,37 @@
     <padding>
         <Insets bottom="10.0" left="30.0" right="30.0" top="10.0"/>
     </padding>
-    <children>
-        <Label text="%DeleteTrainerMessage">
+    <Label text="%DeleteTrainerMessage">
+        <font>
+            <Font size="16.0"/>
+        </font>
+    </Label>
+    <Label text="%trainerName">
+        <font>
+            <Font size="16.0"/>
+        </font>
+    </Label>
+    <TextField fx:id="trainerNameField" editable="false">
+        <font>
+            <Font size="16.0"/>
+        </font>
+    </TextField>
+    <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+        <ImageView fx:id="trainerSprite" fitHeight="80.0" fitWidth="91.0" pickOnBounds="true"
+                   preserveRatio="true"/>
+    </VBox>
+    <HBox alignment="CENTER" spacing="15.0">
+        <Button mnemonicParsing="false" onAction="#deleteTrainer" style="-fx-background-radius: 20;"
+                text="%DeleteTrainer">
             <font>
                 <Font size="16.0"/>
             </font>
-        </Label>
-        <Label text="%trainerName">
+        </Button>
+        <Button maxWidth="130.0" minWidth="130.0" mnemonicParsing="false" onAction="#cancel"
+                style="-fx-background-radius: 20;" text="%Cancel">
             <font>
                 <Font size="16.0"/>
             </font>
-        </Label>
-        <TextField fx:id="trainerNameField" editable="false">
-            <font>
-                <Font size="16.0"/>
-            </font>
-        </TextField>
-        <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
-            <children>
-                <ImageView fx:id="trainerSprite" fitHeight="80.0" fitWidth="91.0" pickOnBounds="true"
-                           preserveRatio="true"/>
-            </children>
-        </VBox>
-        <HBox alignment="CENTER" spacing="15.0">
-            <children>
-                <Button mnemonicParsing="false" onAction="#deleteTrainer" style="-fx-background-radius: 20;"
-                        text="%DeleteTrainer">
-                    <font>
-                        <Font size="16.0"/>
-                    </font>
-                </Button>
-                <Button maxWidth="130.0" minWidth="130.0" mnemonicParsing="false" onAction="#cancel"
-                        style="-fx-background-radius: 20;" text="%Cancel">
-                    <font>
-                        <Font size="16.0"/>
-                    </font>
-                </Button>
-            </children>
-        </HBox>
-    </children>
+        </Button>
+    </HBox>
 </VBox>

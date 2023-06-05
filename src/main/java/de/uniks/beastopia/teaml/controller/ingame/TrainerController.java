@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 public class TrainerController extends Controller {
+    @SuppressWarnings("unused")
     @FXML
     private VBox trainerContainer;
     @FXML
@@ -40,15 +41,7 @@ public class TrainerController extends Controller {
     @FXML
     private ImageView trainerSprite;
     @FXML
-    private Button backButton;
-    @FXML
-    private Button chooseLeftButton;
-    @FXML
-    private Button chooseRightButton;
-    @FXML
     private Button deleteTrainerButton;
-    @FXML
-    private Button saveTrainerButton;
     @FXML
     private Text spriteNameDisplay;
 
