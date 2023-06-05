@@ -187,7 +187,7 @@ public class IngameController extends Controller {
         setOrigin(posx, posy);
     }
 
-    private Parent drawPlayer(int posx, int posy) {
+    private void drawPlayer(int posx, int posy) {
         tilePane.getChildren().remove(player);
         player = playerController.render();
         player.setTranslateX(posx * TILE_SIZE);
@@ -258,6 +258,7 @@ public class IngameController extends Controller {
         if (moved) {
             state.setValue(PlayerState.WALKING);
             updateTrainerPos(direction);
+            updateOrigin();
         }
     }
 
