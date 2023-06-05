@@ -13,6 +13,7 @@ import javafx.scene.layout.VBox;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -35,6 +36,7 @@ public class ChatListController extends Controller {
     @FXML
     private VBox chatList;
     private Consumer<Group> onGroupClicked;
+    private boolean firstRender = true;
 
     @Inject
     public ChatListController() {
@@ -85,6 +87,7 @@ public class ChatListController extends Controller {
         chatList.getChildren().clear();
 
         // <ida>_<idb> is the name of a group with two members
+        HashMap<Parent, Group> groupMap = new HashMap<>();
         for (Group group : groups) {
             boolean groupPinned = prefs.isPinned(group);
             if (group.members().size() == 2 &&
@@ -96,11 +99,13 @@ public class ChatListController extends Controller {
                 chatUserController.setGroup(group);
                 chatUserController.init();
                 chatUserController.setOnPinChanged(e -> updateGroupList());
+                Parent parent = chatUserController.render();
                 if (groupPinned) {
-                    chatList.getChildren().add(0, chatUserController.render());
+                    chatList.getChildren().add(0, parent);
                 } else {
-                    chatList.getChildren().add(chatUserController.render());
+                    chatList.getChildren().add(parent);
                 }
+                groupMap.put(parent, group);
             } else {
                 ChatGroupController chatGroupController = chatGroupControllerProvider.get();
                 subControllers.add(chatGroupController);
@@ -108,12 +113,20 @@ public class ChatListController extends Controller {
                 chatGroupController.setGroup(group);
                 chatGroupController.init();
                 chatGroupController.setOnPinChanged(e -> updateGroupList());
+                Parent parent = chatGroupController.render();
                 if (groupPinned) {
-                    chatList.getChildren().add(0, chatGroupController.render());
+                    chatList.getChildren().add(0, parent);
                 } else {
-                    chatList.getChildren().add(chatGroupController.render());
+                    chatList.getChildren().add(parent);
                 }
+                groupMap.put(parent, group);
             }
+        }
+
+        if (firstRender && chatList.getChildren().size() > 0) {
+            firstRender = false;
+            //noinspection SuspiciousMethodCalls
+            onGroupClicked.accept(groupMap.get(chatList.getChildren().get(0)));
         }
     }
 

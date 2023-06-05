@@ -7,7 +7,6 @@ import de.uniks.beastopia.teaml.service.PresetsService;
 import de.uniks.beastopia.teaml.sockets.UDPEventListener;
 import de.uniks.beastopia.teaml.utils.Direction;
 import de.uniks.beastopia.teaml.utils.PlayerState;
-import javafx.animation.Animation;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
@@ -20,25 +19,26 @@ import javax.inject.Inject;
 import java.util.function.Consumer;
 
 public class EntityController extends Controller {
-    int VIEW_SIZE = 40;
+    private Image spriteSheet;
     int PORT_WIDTH = 16;
     int PORT_HEIGHT = 32;
+    int SPRITE_STEP = 16;
+    int STATE_STEP = 32;
+    int DIRECTION_STEP = 96;
     int index = 0;
-    @FXML
-    public ImageView entityView;
-    private Image spriteSheet;
     Trainer trainer;
     Parent parent;
     Direction direction;
     ObjectProperty<PlayerState> state = new SimpleObjectProperty<>();
+    Consumer<MoveTrainerDto> onTrainerUpdate;
 
+    @FXML
+    public ImageView entityView;
     @Inject
     PresetsService presetsService;
-
     @Inject
     UDPEventListener udpEventListener;
 
-    Consumer<MoveTrainerDto> onTrainerUpdate;
 
     @Inject
     public EntityController() {
@@ -83,6 +83,7 @@ public class EntityController extends Controller {
 
     @Override
     public Parent render() {
+        int VIEW_SIZE = 40;
         parent = super.render();
         entityView.toFront();
         entityView.setPreserveRatio(true);
@@ -95,11 +96,10 @@ public class EntityController extends Controller {
     }
 
     private Rectangle2D getViewport() {
-        return new Rectangle2D(direction.ordinal() * 96 + index * 16, state.get().ordinal() * 32 + 32, PORT_WIDTH, PORT_HEIGHT);
-    }
-
-    private Animation createAnimation() {
-        return null;
+        return new Rectangle2D(direction.ordinal() * DIRECTION_STEP + index * SPRITE_STEP,
+                state.get().ordinal() * STATE_STEP + STATE_STEP,
+                PORT_WIDTH,
+                PORT_HEIGHT);
     }
 
     @Override

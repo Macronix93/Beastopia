@@ -44,11 +44,11 @@ class PresetsServiceTest {
 
     @Test
     void getSpriteSheet() {
-        when(presetsApiService.getSpriteSheet("A.png")).thenReturn(Observable.just(responseBody));
+        when(presetsApiService.getCharacterSprites("A.png")).thenReturn(Observable.just(responseBody));
 
-        Image response = presetsService.getSpriteSheet("A.png").blockingFirst();
+        Image response = presetsService.getCharacterSprites("A.png").blockingFirst();
 
         assertNull(response.getUrl());
-        verify(presetsApiService).getSpriteSheet("A.png");
+        verify(presetsApiService).getCharacterSprites("A.png");
     }
 }
