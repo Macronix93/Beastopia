@@ -231,6 +231,8 @@ public class TrainerController extends Controller {
                             .filter(t -> t.user().equals(tokenStorage.getCurrentUser()._id()))
                             .findFirst()
                             .ifPresent(tr -> {
+                                loadingPage.setDone();
+
                                 cache.setTrainer(tr);
                                 showIngameController(region);
                             })));
