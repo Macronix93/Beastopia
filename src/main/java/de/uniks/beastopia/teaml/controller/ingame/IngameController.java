@@ -9,6 +9,7 @@ import de.uniks.beastopia.teaml.rest.*;
 import de.uniks.beastopia.teaml.service.AreaService;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
+import de.uniks.beastopia.teaml.service.TrainerService;
 import de.uniks.beastopia.teaml.sockets.UDPEventListener;
 import de.uniks.beastopia.teaml.utils.Direction;
 import de.uniks.beastopia.teaml.utils.LoadingPage;
@@ -29,7 +30,7 @@ import javafx.scene.layout.Pane;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import java.util.ArrayList;
+import java.util.HashMap;
 
 public class IngameController extends Controller {
     static final double TILE_SIZE = 20;
@@ -42,6 +43,8 @@ public class IngameController extends Controller {
     App app;
     @Inject
     AreaService areaService;
+    @Inject
+    TrainerService trainerService;
     @Inject
     PresetsService presetsService;
     @Inject
@@ -73,7 +76,7 @@ public class IngameController extends Controller {
     Parent player;
     EntityController playerController;
     @SuppressWarnings("unused")
-    ArrayList<EntityRemoteController> otherPlayers = new ArrayList<>();
+    java.util.Map<EntityController, Parent> otherPlayers = new HashMap<>();
 
     @Inject
     public IngameController() {
@@ -124,7 +127,28 @@ public class IngameController extends Controller {
                     }
                     this.tileSet = presetsService.getTileset(map.tilesets().get(0)).blockingFirst();
                     this.image = presetsService.getImage(tileSet).blockingFirst();
+
                     drawMap();
+
+                    disposables.add(trainerService.getAllTrainer(region._id()).observeOn(FX_SCHEDULER).subscribe(trainers -> {
+                        for (Trainer trainer : trainers) {
+                            if (trainer._id().equals(cache.getTrainer()._id())) {
+                                continue;
+                            }
+
+                            System.out.println("trainer at pos: " + trainer.x() + " " + trainer.y());
+                            EntityController controller = entityControllerProvider.get();
+                            ObjectProperty<PlayerState> ps = new SimpleObjectProperty<>();
+                            controller.playerState().bind(ps);
+                            ps.setValue(PlayerState.IDLE);
+                            controller.setTrainer(trainer);
+                            controller.setOnTrainerUpdate(moveDto -> movePlayer(controller, moveDto.x(), moveDto.y()));
+                            controller.init();
+                            Parent parent = drawRemotePlayer(controller, trainer.x(), trainer.y());
+                            otherPlayers.put(controller, parent);
+                        }
+                    }));
+
                     loadingPage.setDone();
                 }));
 
@@ -193,14 +217,29 @@ public class IngameController extends Controller {
         player.setTranslateX(posx * TILE_SIZE);
         player.setTranslateY(posy * TILE_SIZE);
         tilePane.getChildren().add(player);
-        return player;
+        player.toFront();
+    }
+
+    private Parent drawRemotePlayer(EntityController controller, int posx, int posy) {
+        Parent parent = controller.render();
+        parent.setTranslateX(posx * TILE_SIZE);
+        parent.setTranslateY(posy * TILE_SIZE);
+        tilePane.getChildren().add(parent);
+        parent.toFront();
+        return parent;
     }
 
     private void movePlayer(int x, int y) {
-        player = drawPlayer(x, y);
         player.toFront();
         player.setTranslateX(x * TILE_SIZE);
         player.setTranslateY(y * TILE_SIZE);
+    }
+
+    private void movePlayer(EntityController controller, int x, int y) {
+        Parent remotePlayer = otherPlayers.get(controller);
+        remotePlayer.toFront();
+        remotePlayer.setTranslateX(x * TILE_SIZE);
+        remotePlayer.setTranslateY(y * TILE_SIZE);
     }
 
     @Override

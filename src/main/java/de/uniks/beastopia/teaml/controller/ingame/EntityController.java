@@ -16,10 +16,12 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 import javax.inject.Inject;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public class EntityController extends Controller {
-    private Image spriteSheet;
+    private static final Map<String, Image> SPRITESHEET = new HashMap<>();
     int PORT_WIDTH = 16;
     int PORT_HEIGHT = 32;
     int SPRITE_STEP = 16;
@@ -56,6 +58,9 @@ public class EntityController extends Controller {
     public void init() {
         super.init();
         direction = Direction.DOWN;
+        if (!SPRITESHEET.containsKey(trainer.image())) {
+            SPRITESHEET.put(trainer.image(), presetsService.getCharacterSprites(trainer.image()).blockingFirst());
+        }
         disposables.add(udpEventListener.listen("areas." + trainer.area() + ".trainers." + trainer._id() + ".moved", MoveTrainerDto.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(
@@ -74,7 +79,6 @@ public class EntityController extends Controller {
                             throw new RuntimeException(error);
                         }
                 ));
-        this.spriteSheet = presetsService.getCharacterSprites(trainer.image()).blockingFirst();
     }
 
     public void setTrainer(Trainer trainer) {
@@ -88,7 +92,7 @@ public class EntityController extends Controller {
         entityView.toFront();
         entityView.setPreserveRatio(true);
         entityView.setSmooth(true);
-        entityView.setImage(spriteSheet);
+        entityView.setImage(SPRITESHEET.get(trainer.image()));
         entityView.setFitWidth(VIEW_SIZE);
         entityView.setFitHeight(VIEW_SIZE);
         entityView.setViewport(getViewport());
