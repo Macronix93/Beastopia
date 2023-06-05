@@ -19,7 +19,7 @@
                 <Font size="16.0"/>
             </font>
         </Label>
-        <Label text="%TrainerName">
+        <Label text="%trainerName">
             <font>
                 <Font size="16.0"/>
             </font>
