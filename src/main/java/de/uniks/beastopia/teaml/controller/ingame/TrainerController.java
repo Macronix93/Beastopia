@@ -102,7 +102,10 @@ public class TrainerController extends Controller {
         if (cache.getTrainer() == null) {
             disposables.add(trainerService.createTrainer(region._id(), nameInput, trainerImage)
                     .observeOn(FX_SCHEDULER)
-                    .subscribe(tr -> showIngameController(region), error -> Dialog.error(error, "Trainer creation failed!")));
+                    .subscribe(tr -> {
+                        cache.setTrainer(tr);
+                        showIngameController(region);
+                    }, error -> Dialog.error(error, "Trainer creation failed!")));
         } else {
             disposables.add(trainerService.updateTrainer(region._id(), cache.getTrainer()._id(), nameInput, trainerImage)
                     .observeOn(FX_SCHEDULER)
@@ -114,7 +117,9 @@ public class TrainerController extends Controller {
     }
 
     public void deleteTrainer() {
-        app.show(deleteTrainerControllerProvider.get());
+        DeleteTrainerController deleteTrainerController = deleteTrainerControllerProvider.get();
+        deleteTrainerController.setRegion(region);
+        app.show(deleteTrainerController);
     }
 
     public void back() {
@@ -137,6 +142,11 @@ public class TrainerController extends Controller {
 
         trainerNameInput.textProperty().bindBidirectional(trainerName);
         regionNameDisplay.setText(region.name());
+
+        // Disable trainer deletion button if no trainer present
+        if (trainer == null) {
+            deleteTrainerButton.setDisable(true);
+        }
 
         // Check if list of character strings and images is empty
         if (cache.getCharacters().isEmpty()) {
