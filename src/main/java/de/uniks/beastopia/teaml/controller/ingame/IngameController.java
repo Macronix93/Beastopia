@@ -46,6 +46,8 @@ public class IngameController extends Controller {
     @Inject
     Provider<PauseController> pauseControllerProvider;
     @Inject
+    Provider<BeastListController> beastListControllerProvider;
+    @Inject
     Prefs prefs;
     @Inject
     DataCache cache;
@@ -68,6 +70,8 @@ public class IngameController extends Controller {
 
     private LoadingPage loadingPage;
 
+    private boolean beastListOpen;
+
     @Inject
     public IngameController() {
     }
@@ -75,6 +79,7 @@ public class IngameController extends Controller {
     @Override
     public void init() {
         super.init();
+        beastListOpen = false;
         state.setValue(PlayerState.IDLE);
         playerController = entityControllerProvider.get();
         playerController.setTrainer(cache.getTrainer());
@@ -254,9 +259,19 @@ public class IngameController extends Controller {
             updateTrainerPos(direction);
         }
 
-        if (keyEvent.getCode().equals(KeyCode.B)) {
-            //ToDo Open Beast Menu
+        if (keyEvent.getCode().equals(KeyCode.B) && !beastListOpen) {
+            BeastListController controller = beastListControllerProvider.get();
+            ingame.getChildren().add(controller.render());
+            beastListOpen = true;
+        } else if (keyEvent.getCode().equals(KeyCode.B) && beastListOpen) {
+            closeBeastList();
         }
+    }
+
+    public void closeBeastList() {
+        //ToDo remove BeastListController, not only the last child
+        ingame.getChildren().remove(ingame.getChildren().size() - 1);
+        beastListOpen = false;
     }
 
     @FXML
