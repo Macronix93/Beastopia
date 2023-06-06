@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 public class TrainerController extends Controller {
+    @SuppressWarnings("unused")
     @FXML
     private VBox trainerContainer;
     @FXML
@@ -40,15 +41,7 @@ public class TrainerController extends Controller {
     @FXML
     private ImageView trainerSprite;
     @FXML
-    private Button backButton;
-    @FXML
-    private Button chooseLeftButton;
-    @FXML
-    private Button chooseRightButton;
-    @FXML
     private Button deleteTrainerButton;
-    @FXML
-    private Button saveTrainerButton;
     @FXML
     private Text spriteNameDisplay;
 
@@ -66,6 +59,8 @@ public class TrainerController extends Controller {
     Provider<IngameController> ingameControllerProvider;
     @Inject
     Provider<MenuController> menuControllerProvider;
+    @Inject
+    Provider<DeleteTrainerController> deleteTrainerControllerProvider;
 
     private Trainer trainer;
     private Region region;
@@ -100,7 +95,10 @@ public class TrainerController extends Controller {
         if (cache.getTrainer() == null) {
             disposables.add(trainerService.createTrainer(region._id(), nameInput, trainerImage)
                     .observeOn(FX_SCHEDULER)
-                    .subscribe(tr -> showIngameController(region), error -> Dialog.error(error, "Trainer creation failed!")));
+                    .subscribe(tr -> {
+                        cache.setTrainer(tr);
+                        showIngameController(region);
+                    }, error -> Dialog.error(error, "Trainer creation failed!")));
         } else {
             disposables.add(trainerService.updateTrainer(region._id(), cache.getTrainer()._id(), nameInput, trainerImage)
                     .observeOn(FX_SCHEDULER)
@@ -112,7 +110,9 @@ public class TrainerController extends Controller {
     }
 
     public void deleteTrainer() {
-        //TODO: Delete trainer for current region
+        DeleteTrainerController deleteTrainerController = deleteTrainerControllerProvider.get();
+        deleteTrainerController.setRegion(region);
+        app.show(deleteTrainerController);
     }
 
     public void back() {
@@ -135,6 +135,11 @@ public class TrainerController extends Controller {
 
         trainerNameInput.textProperty().bindBidirectional(trainerName);
         regionNameDisplay.setText(region.name());
+
+        // Disable trainer deletion button if no trainer present
+        if (trainer == null) {
+            deleteTrainerButton.setDisable(true);
+        }
 
         // Check if list of character strings and images is empty
         if (cache.getCharacters().isEmpty()) {
@@ -226,6 +231,8 @@ public class TrainerController extends Controller {
                             .filter(t -> t.user().equals(tokenStorage.getCurrentUser()._id()))
                             .findFirst()
                             .ifPresent(tr -> {
+                                loadingPage.setDone();
+
                                 cache.setTrainer(tr);
                                 showIngameController(region);
                             })));
