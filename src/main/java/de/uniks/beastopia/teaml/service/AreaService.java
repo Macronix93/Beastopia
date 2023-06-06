@@ -19,5 +19,4 @@ public class AreaService {
     public Observable<List<Area>> getAreas(String region) {
         return areaApiService.getAreas(region);
     }
-
 }

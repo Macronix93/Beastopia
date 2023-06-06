@@ -19,6 +19,7 @@ public class DataCache {
     private List<Area> areas = new ArrayList<>();
     private List<Pair<String, Image>> characters = new ArrayList<>();
     Trainer trainer;
+    Region joinedRegion;
 
     @Inject
     public DataCache() {
@@ -67,6 +68,14 @@ public class DataCache {
                 .filter(region -> region._id().equals(id))
                 .findFirst()
                 .orElse(null);
+    }
+
+    public void setRegion(Region region) {
+        this.joinedRegion = region;
+    }
+
+    public Region getJoinedRegion() {
+        return joinedRegion;
     }
 
     public void setAreas(List<Area> areas) {

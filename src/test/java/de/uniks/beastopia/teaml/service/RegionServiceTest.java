@@ -32,4 +32,14 @@ class RegionServiceTest {
         assertEquals("NAME", result.get(0).name());
         verify(regionApiService).getRegions();
     }
+
+    @Test
+    void getRegion() {
+        when(regionApiService.getRegion("ID"))
+                .thenReturn(Observable.just(new Region(null, null, "ID", "NAME", null)));
+        Region result = regionService.getRegion("ID").blockingFirst();
+        assertEquals("ID", result._id());
+        assertEquals("NAME", result.name());
+        verify(regionApiService).getRegion("ID");
+    }
 }

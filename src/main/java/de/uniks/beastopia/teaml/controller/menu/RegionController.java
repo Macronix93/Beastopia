@@ -2,6 +2,7 @@ package de.uniks.beastopia.teaml.controller.menu;
 
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Region;
+import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.RegionService;
 import de.uniks.beastopia.teaml.views.RegionCell;
 import javafx.collections.FXCollections;
@@ -24,7 +25,8 @@ public class RegionController extends Controller {
     public ScrollPane scrollPane;
     @Inject
     RegionService regionService;
-
+    @Inject
+    DataCache cache;
     @Inject
     Provider<RegionCell> regionCellProvider;
 
@@ -38,7 +40,10 @@ public class RegionController extends Controller {
         final ListView<Region> regions = new ListView<>(this.regions);
         regions.setCellFactory(param -> regionCellProvider.get());
         regionList.getChildren().add(regions);
-        disposables.add(regionService.getRegions().subscribe(this.regions::setAll));
+        disposables.add(regionService.getRegions().subscribe(col -> {
+            cache.setRegions(col);
+            this.regions.setAll(col);
+        }));
         return parent;
     }
 }

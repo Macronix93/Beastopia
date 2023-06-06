@@ -1,8 +1,10 @@
 package de.uniks.beastopia.teaml.views;
 
 import de.uniks.beastopia.teaml.App;
+import de.uniks.beastopia.teaml.controller.ingame.MapController;
 import de.uniks.beastopia.teaml.controller.ingame.TrainerController;
 import de.uniks.beastopia.teaml.rest.Region;
+import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -19,9 +21,14 @@ public class RegionCell extends ListCell<Region> {
     Provider<TrainerController> trainerControllerProvider;
     @Inject
     TokenStorage tokenStorage;
-
+    @Inject
+    DataCache cache;
     @Inject
     App app;
+
+    //TODO: remove bypass
+    @Inject
+    Provider<MapController> mapControllerProvider;
 
     @Inject
     public RegionCell(ResourceBundle resources) {
@@ -38,9 +45,14 @@ public class RegionCell extends ListCell<Region> {
             final Button join = new Button(item.name() + " " + resources.getString("join"));
             join.setOnAction(event -> {
                 TrainerController controller = trainerControllerProvider.get();
+                cache.setRegion(item);
                 controller.setRegion(item);
                 controller.backController("menu");
-                app.show(controller);
+
+                //TODO: remove bypass
+                MapController mapController = mapControllerProvider.get();
+
+                app.show(mapController);
             });
             setGraphic(join);
         }
