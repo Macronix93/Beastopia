@@ -19,8 +19,10 @@ import javafx.scene.text.Text;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
+import java.util.Base64;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -108,16 +110,23 @@ public class FriendController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
-
-        //TODO change avatar URL when avatar upload is implemented to individual link
-        try {
-            Image image = loadImage(Objects.requireNonNull(Main.class.getResource("assets/Lumnix_Logo_tr.png")).toString(),
-                    40.0, 40.0, false, false);
-            friendAvatar.setImage(image);
-        } catch (FileNotFoundException | URISyntaxException e) {
-            throw new RuntimeException(e);
+        if (user.avatar() != null) {
+            if (user.avatar().contains("data:image/png;base64,")) {
+                String avatar = user.avatar().replace("data:image/png;base64,", "");
+                System.out.println(avatar);
+                byte[] imageData = Base64.getDecoder().decode(avatar);
+                friendAvatar.setImage(new Image(new ByteArrayInputStream(imageData)));
+            }
+        } else {
+            //TODO change avatar URL when avatar upload is implemented to individual link
+            try {
+                Image image = loadImage(Objects.requireNonNull(Main.class.getResource("assets/Lumnix_Logo_tr.png")).toString(),
+                        40.0, 40.0, false, false);
+                friendAvatar.setImage(image);
+            } catch (FileNotFoundException | URISyntaxException e) {
+                throw new RuntimeException(e);
+            }
         }
-
         name.setText(user.name());
         updateOnlineStatus(user);
 

@@ -1,5 +1,6 @@
 package de.uniks.beastopia.teaml.controller.auth;
 
+import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.service.RegistrationService;
 import de.uniks.beastopia.teaml.utils.Dialog;
@@ -13,8 +14,16 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 
+import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import javax.inject.Provider;
+import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.Base64;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -87,10 +96,31 @@ public class RegistrationController extends Controller {
 
     }
 
+    public String getAvatarDataUrl(String fileUrl) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        BufferedImage image = null;
+        try {
+            try {
+                image = ImageIO.read(new File(Main.class.getResource("assets/user.png").toURI()));
+            } catch (URISyntaxException e) {
+                throw new RuntimeException(e);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            ImageIO.write((RenderedImage) image, "png", bytes);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        String dataURL = "data:image/png;base64," + Base64.getEncoder().encodeToString(bytes.toByteArray());
+        return dataURL;
+    }
+
     @SuppressWarnings("UnnecessaryUnicodeEscape")
     @FXML
     private void signUp() {
-        disposables.add(registrationService.createUser(usernameInput.getText(), LUMNIX_LOGO_URL, passwordInput.getText())
+        disposables.add(registrationService.createUser(usernameInput.getText(), getAvatarDataUrl(""), passwordInput.getText())
                 .observeOn(FX_SCHEDULER).subscribe(user -> {
                     Dialog.info(isEnglish ? "Registration successful!" : "Registrierung erfolgreich!",
                             isEnglish ? "You can now sign in with your new account." : "Sie k\u00f6nnen sich jetzt mit Ihrem neuen Konto anmelden.");
