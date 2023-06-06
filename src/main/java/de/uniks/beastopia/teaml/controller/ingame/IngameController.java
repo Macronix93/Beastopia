@@ -253,6 +253,10 @@ public class IngameController extends Controller {
             state.setValue(PlayerState.WALKING);
             updateTrainerPos(direction);
         }
+
+        if (keyEvent.getCode().equals(KeyCode.B)) {
+            //ToDo Open Beast Menu
+        }
     }
 
     @FXML
