@@ -22,6 +22,8 @@ import java.util.concurrent.Semaphore;
 
 @Module
 public class HttpModule {
+    private static final List<String> RATE_LIMIT_FREE_ENDPOINTS = List.of("presets/");
+
     private static final int MAX_REQUESTS = 10;
     private static final int MAX_REQUESTS_TIME_FRAME_SECONDS = 11;
     private static final List<Pair<Date, String>> LAST_REQUESTS = new ArrayList<>();
@@ -47,6 +49,10 @@ public class HttpModule {
     static OkHttpClient client(TokenStorage tokenStorage) {
         return new OkHttpClient.Builder()
                 .addInterceptor(chain -> {
+                    if (RATE_LIMIT_FREE_ENDPOINTS.stream().anyMatch(chain.request().url().toString()::contains)) {
+                        return chain.proceed(chain.request());
+                    }
+
                     try {
                         SEMAPHORE.acquire();
                         if (getRequestsLastTimeFrame() >= MAX_REQUESTS) {
