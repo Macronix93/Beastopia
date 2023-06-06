@@ -54,7 +54,7 @@
                             </font>
                         </Text>
                         <HBox alignment="CENTER" prefHeight="69.0" prefWidth="340.0">
-                            <Button fx:id="chooseLeftButton" mnemonicParsing="false" onAction="#chooseLeft">
+                            <Button mnemonicParsing="false" onAction="#chooseLeft">
                                 <graphic>
                                     <ImageView fitHeight="24.0" fitWidth="41.0" pickOnBounds="true"
                                                preserveRatio="true">
@@ -62,7 +62,7 @@
                                     </ImageView>
                                 </graphic>
                             </Button>
-                            <Button fx:id="chooseRightButton" mnemonicParsing="false" onAction="#chooseRight">
+                            <Button mnemonicParsing="false" onAction="#chooseRight">
                                 <HBox.margin>
                                     <Insets left="40.0"/>
                                 </HBox.margin>
@@ -75,7 +75,7 @@
                             </Button>
                         </HBox>
                     </VBox>
-                    <Button fx:id="saveTrainerButton" minWidth="96.0" mnemonicParsing="false" onAction="#saveTrainer"
+                    <Button minWidth="96.0" mnemonicParsing="false" onAction="#saveTrainer"
                             text="%saveTrainer">
                         <VBox.margin>
                             <Insets top="15.0"/>
@@ -85,7 +85,7 @@
                         </font>
                     </Button>
                     <HBox alignment="CENTER" prefHeight="40.0" prefWidth="340.0" spacing="20.0">
-                        <Button fx:id="backButton" minWidth="96.0" mnemonicParsing="false" onAction="#back"
+                        <Button minWidth="96.0" mnemonicParsing="false" onAction="#back"
                                 text="%Back">
                             <font>
                                 <Font size="16.0"/>
