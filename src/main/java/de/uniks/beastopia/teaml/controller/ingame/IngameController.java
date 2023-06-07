@@ -108,23 +108,18 @@ public class IngameController extends Controller {
         disposables.add(trainerService.getAllTrainer(this.region._id())
                 .subscribe(trainers -> {
                     Trainer myTrainer = trainers.stream().filter(t -> t.user().equals(tokenStorage.getCurrentUser()._id())).findFirst().orElseThrow();
+                    cache.setTrainer(myTrainer);
                     posx = myTrainer.x();
                     posy = myTrainer.y();
-
                     disposables.add(areaService.getArea(this.region._id(), myTrainer.area()).observeOn(FX_SCHEDULER).subscribe(area -> {
-//                    cache.setAreas(areas);
                         if (prefs.getArea() == null) {
                             if (area == null) {
                                 loadingPage.setDone();
                                 return;
                             }
                             prefs.setArea(area);
-                            posx = region.spawn().x();
-                            posy = region.spawn().y();
                             this.map = area.map();
                         } else {
-                            posx = (int) prefs.getPosition().getX();
-                            posy = (int) prefs.getPosition().getY();
                             this.map = prefs.getArea().map();
                         }
                         this.tileSet = presetsService.getTileset(map.tilesets().get(0)).blockingFirst();
