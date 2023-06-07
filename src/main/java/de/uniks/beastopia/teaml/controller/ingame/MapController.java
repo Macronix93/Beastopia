@@ -70,7 +70,7 @@ public class MapController extends Controller {
 
         // TODO: remove this backpass
         MenuController menuController = menuControllerProvider.get();
-        app.show(menuController);
+        app.show(backController);
     }
 
     public void setRegion(Region region) {

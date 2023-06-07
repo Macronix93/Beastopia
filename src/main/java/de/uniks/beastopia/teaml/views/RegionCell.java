@@ -52,7 +52,7 @@ public class RegionCell extends ListCell<Region> {
                 //TODO: remove bypass
                 MapController mapController = mapControllerProvider.get();
 
-                app.show(mapController);
+                app.show(controller);
             });
             setGraphic(join);
         }
