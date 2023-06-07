@@ -71,6 +71,8 @@ public class IngameController extends Controller {
     UDPEventListener udpEventListener;
     @Inject
     ScoreboardController scoreBoardController;
+    @Inject
+    Provider<IngameController> ingameControllerProvider;
     Parent scoreBoardParent;
 
     private LoadingPage loadingPage;
@@ -86,14 +88,18 @@ public class IngameController extends Controller {
         scoreBoardController.init();
         state.setValue(PlayerState.IDLE);
         playerController = entityControllerProvider.get();
-        playerController.setTrainer(cache.getTrainer());
         playerController.playerState().bind(state);
         playerController.setOnTrainerUpdate(trainer -> {
+            if (!trainer.area().equals(prefs.getArea()._id())) {
+                IngameController controller = ingameControllerProvider.get();
+                controller.setRegion(region);
+                app.show(controller);
+                return;
+            }
             posx = trainer.x();
             posy = trainer.y();
             updateOrigin();
         });
-        playerController.init();
     }
 
     public void setRegion(Region region) {
@@ -108,20 +114,18 @@ public class IngameController extends Controller {
         disposables.add(trainerService.getAllTrainer(this.region._id())
                 .subscribe(trainers -> {
                     Trainer myTrainer = trainers.stream().filter(t -> t.user().equals(tokenStorage.getCurrentUser()._id())).findFirst().orElseThrow();
+
+                    playerController.setTrainer(myTrainer);
+                    playerController.init();
+
                     cache.setTrainer(myTrainer);
                     posx = myTrainer.x();
                     posy = myTrainer.y();
-                    disposables.add(areaService.getArea(this.region._id(), myTrainer.area()).observeOn(FX_SCHEDULER).subscribe(area -> {
-                        if (prefs.getArea() == null) {
-                            if (area == null) {
-                                loadingPage.setDone();
-                                return;
-                            }
-                            prefs.setArea(area);
-                            this.map = area.map();
-                        } else {
-                            this.map = prefs.getArea().map();
-                        }
+                    disposables.add(areaService.getAreas(this.region._id()).observeOn(FX_SCHEDULER).subscribe(areas -> {
+                        cache.setAreas(areas);
+                        Area area = areas.stream().filter(a -> a._id().equals(myTrainer.area())).findFirst().orElseThrow();
+                        prefs.setArea(area);
+                        this.map = area.map();
                         this.tileSet = presetsService.getTileset(map.tilesets().get(0)).blockingFirst();
                         this.image = presetsService.getImage(tileSet).blockingFirst();
                         drawMap();
@@ -288,5 +292,6 @@ public class IngameController extends Controller {
     public void destroy() {
         super.destroy();
         playerController.destroy();
+        scoreBoardController.destroy();
     }
 }
