@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.*?>
-<HBox alignment="CENTER_RIGHT" prefHeight="317.0" prefWidth="516.0" spacing="5.0" xmlns="http://javafx.com/javafx/19"
-      xmlns:fx="http://javafx.com/fxml/1"
+<HBox alignment="CENTER_RIGHT" onKeyPressed="#handleKeyEvent" prefHeight="317.0" prefWidth="516.0" spacing="5.0"
+      xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="de.uniks.beastopia.teaml.controller.ingame.ScoreboardController">
     <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: transparent;"
                 HBox.hgrow="ALWAYS">

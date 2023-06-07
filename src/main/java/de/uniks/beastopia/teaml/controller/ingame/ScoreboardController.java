@@ -9,6 +9,9 @@ import de.uniks.beastopia.teaml.service.TrainerService;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
@@ -34,6 +37,7 @@ public class ScoreboardController extends Controller {
     Provider<ScoreboardUserItemController> scoreBoardUserItemControllerProvider;
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     private final List<Controller> subControllers = new ArrayList<>();
+    private Runnable onCloseRequested;
 
     @Inject
     public ScoreboardController() {
@@ -70,12 +74,30 @@ public class ScoreboardController extends Controller {
                                                 .setName(user.name())
                                                 .setAchievements(achievementList.size())
                                                 .setTotalAchievements(allAchievements.size());
-                                        scoreBoard.getChildren().add(controller.render());
+                                        Parent parent = controller.render();
+                                        scoreBoard.getChildren().add(parent);
+                                        HBox.setHgrow(parent, javafx.scene.layout.Priority.ALWAYS);
                                         subControllers.add(controller);
                                     }));
                             return t;
                         }).subscribe());
                     }
                 }))).subscribe())));
+    }
+
+    public void handleKeyEvent(KeyEvent event) {
+        if (event.getCode().equals(KeyCode.N)) {
+            onCloseRequested.run();
+        }
+    }
+
+    @Override
+    public void destroy() {
+        subControllers.forEach(Controller::destroy);
+        super.destroy();
+    }
+
+    public void setOnCloseRequested(Runnable onCloseRequested) {
+        this.onCloseRequested = onCloseRequested;
     }
 }

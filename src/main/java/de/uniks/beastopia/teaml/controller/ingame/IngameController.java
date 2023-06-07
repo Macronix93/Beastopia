@@ -68,7 +68,7 @@ public class IngameController extends Controller {
     @Inject
     UDPEventListener udpEventListener;
     @Inject
-    ScoreboardController scoreboardController;
+    ScoreboardController scoreBoardController;
     Parent scoreBoardParent;
 
     private LoadingPage loadingPage;
@@ -80,7 +80,8 @@ public class IngameController extends Controller {
     @Override
     public void init() {
         super.init();
-        scoreboardController.init();
+        scoreBoardController.setOnCloseRequested(() -> scoreBoardLayout.getChildren().remove(scoreBoardParent));
+        scoreBoardController.init();
         state.setValue(PlayerState.IDLE);
         playerController = entityControllerProvider.get();
         playerController.setTrainer(cache.getTrainer());
@@ -124,7 +125,7 @@ public class IngameController extends Controller {
                     this.tileSet = presetsService.getTileset(map.tilesets().get(0)).blockingFirst();
                     this.image = presetsService.getImage(tileSet).blockingFirst();
                     drawMap();
-                    scoreBoardParent = scoreboardController.render();
+                    scoreBoardParent = scoreBoardController.render();
                     loadingPage.setDone();
                 }));
 
