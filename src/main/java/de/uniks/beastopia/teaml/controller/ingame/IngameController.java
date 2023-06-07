@@ -55,9 +55,6 @@ public class IngameController extends Controller {
     DataCache cache;
     @Inject
     Provider<EntityController> entityControllerProvider;
-    @SuppressWarnings("unused")
-    @Inject
-    Provider<EntityRemoteController> entityRemoteControllerProvider;
     @Inject
     UDPEventListener udpEventListener;
 
@@ -75,7 +72,6 @@ public class IngameController extends Controller {
     ObjectProperty<PlayerState> state = new SimpleObjectProperty<>();
     Parent player;
     EntityController playerController;
-    @SuppressWarnings("unused")
     java.util.Map<EntityController, Parent> otherPlayers = new HashMap<>();
 
     @Inject
@@ -142,7 +138,7 @@ public class IngameController extends Controller {
                             controller.playerState().bind(ps);
                             ps.setValue(PlayerState.IDLE);
                             controller.setTrainer(trainer);
-                            controller.setOnTrainerUpdate(moveDto -> movePlayer(controller, moveDto.x(), moveDto.y()));
+                            controller.setOnTrainerUpdate(moveDto -> moveRemotePlayer(controller, moveDto.x(), moveDto.y()));
                             controller.init();
                             Parent parent = drawRemotePlayer(controller, trainer.x(), trainer.y());
                             otherPlayers.put(controller, parent);
@@ -235,7 +231,7 @@ public class IngameController extends Controller {
         player.setTranslateY(y * TILE_SIZE);
     }
 
-    private void movePlayer(EntityController controller, int x, int y) {
+    private void moveRemotePlayer(EntityController controller, int x, int y) {
         Parent remotePlayer = otherPlayers.get(controller);
         remotePlayer.toFront();
         remotePlayer.setTranslateX(x * TILE_SIZE);
