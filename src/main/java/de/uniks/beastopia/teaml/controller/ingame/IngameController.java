@@ -24,9 +24,12 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.util.Pair;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+import java.util.ArrayList;
+import java.util.List;
 
 public class IngameController extends Controller {
     static final double TILE_SIZE = 20;
@@ -54,9 +57,8 @@ public class IngameController extends Controller {
     @Inject
     TokenStorage tokenStorage;
     private Region region;
-    private Image image;
     private Map map;
-    private TileSet tileSet;
+    private final List<Pair<TileSetDescription, Pair<TileSet, Image>>> tileSets = new ArrayList<>();
     private int posx = 0;
     private int posy = 0;
     private int width;
@@ -126,8 +128,11 @@ public class IngameController extends Controller {
                         Area area = areas.stream().filter(a -> a._id().equals(myTrainer.area())).findFirst().orElseThrow();
                         prefs.setArea(area);
                         this.map = area.map();
-                        this.tileSet = presetsService.getTileset(map.tilesets().get(0)).blockingFirst();
-                        this.image = presetsService.getImage(tileSet).blockingFirst();
+                        for (TileSetDescription tileSetDesc : map.tilesets()) {
+                            TileSet tileSet = presetsService.getTileset(tileSetDesc).blockingFirst();
+                            Image image = presetsService.getImage(tileSet).blockingFirst();
+                            tileSets.add(new Pair<>(tileSetDesc, new Pair<>(tileSet, image)));
+                        }
                         drawMap();
                         scoreBoardParent = scoreBoardController.render();
                         loadingPage.setDone();
@@ -152,12 +157,28 @@ public class IngameController extends Controller {
                     int x = index % chunk.width() + chunkX;
                     int y = index / chunk.width() + chunkY;
                     index++;
-                    drawTile(x, y, image, presetsService.getTileViewPort(id, tileSet));
+                    Pair<Pair<TileSet, Image>, Integer> tileSet = findTileSet(id);
+                    if (tileSet == null) {
+                        continue;
+                    }
+
+                    drawTile(x, y, tileSet.getKey().getValue(), presetsService.getTileViewPort(tileSet.getValue(), tileSet.getKey().getKey()));
                 }
             }
         }
 
         updateOrigin();
+    }
+
+    private Pair<Pair<TileSet, Image>, Integer> findTileSet(int id) {
+        id++;
+        for (int i = tileSets.size() - 1; i >= 0; i--) {
+            Pair<TileSetDescription, Pair<TileSet, Image>> tileSet = tileSets.get(i);
+            if (tileSet.getKey().firstgid() <= id) {
+                return new Pair<>(tileSet.getValue(), id - tileSet.getKey().firstgid());
+            }
+        }
+        return null;
     }
 
     private void drawTile(int x, int y, Image image, Rectangle2D viewPort) {
