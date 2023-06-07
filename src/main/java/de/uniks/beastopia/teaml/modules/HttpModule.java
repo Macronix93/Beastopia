@@ -49,6 +49,10 @@ public class HttpModule {
     static OkHttpClient client(TokenStorage tokenStorage) {
         return new OkHttpClient.Builder()
                 .addInterceptor(chain -> {
+                    if (RATE_LIMIT_FREE_ENDPOINTS.stream().anyMatch(chain.request().url().toString()::contains)) {
+                        return chain.proceed(chain.request());
+                    }
+
                     try {
                         SEMAPHORE.acquire();
                         if (getRequestsLastTimeFrame() >= MAX_REQUESTS) {

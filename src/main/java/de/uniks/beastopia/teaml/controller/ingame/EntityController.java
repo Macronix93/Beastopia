@@ -58,10 +58,11 @@ public class EntityController extends Controller {
     public void init() {
         super.init();
         direction = Direction.DOWN;
-        if (!SPRITESHEET.containsKey(trainer.image())) {
-            SPRITESHEET.put(trainer.image(), presetsService.getCharacterSprites(trainer.image()).blockingFirst());
-        }
-        disposables.add(udpEventListener.listen("areas." + trainer.area() + ".trainers." + trainer._id() + ".moved", MoveTrainerDto.class)
+        listenToMovements(trainer.area());
+    }
+
+    private void listenToMovements(String areaID) {
+        disposables.add(udpEventListener.listen("areas." + areaID + ".trainers." + trainer._id() + ".moved", MoveTrainerDto.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(
                         event -> {
@@ -73,6 +74,14 @@ public class EntityController extends Controller {
                             }
                             index = (index + 1) % 6;
                             this.render();
+                            if (!event.data().area().equals(trainer.area())) {
+                                trainer = new Trainer(
+                                        trainer.createdAt(), trainer.updatedAt(), trainer._id(), trainer.region(),
+                                        trainer.user(), trainer.name(), trainer.image(), trainer.coins(),
+                                        event.data().area(), trainer.x(), trainer.y(), trainer.direction(),
+                                        trainer.npc());
+                                listenToMovements(event.data().area());
+                            }
                             onTrainerUpdate.accept(event.data());
                         },
                         error -> {
@@ -85,6 +94,10 @@ public class EntityController extends Controller {
         this.trainer = trainer;
     }
 
+    public Trainer getTrainer() {
+        return this.trainer;
+    }
+
     @Override
     public Parent render() {
         int VIEW_SIZE = 40;
@@ -92,10 +105,20 @@ public class EntityController extends Controller {
         entityView.toFront();
         entityView.setPreserveRatio(true);
         entityView.setSmooth(true);
-        entityView.setImage(SPRITESHEET.get(trainer.image()));
         entityView.setFitWidth(VIEW_SIZE);
         entityView.setFitHeight(VIEW_SIZE);
         entityView.setViewport(getViewport());
+
+        if (!SPRITESHEET.containsKey(trainer.image())) {
+            disposables.add(presetsService.getCharacterSprites(trainer.image())
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe(image -> {
+                        SPRITESHEET.put(trainer.image(), image);
+                        entityView.setImage(image);
+                    }));
+        } else {
+            entityView.setImage(SPRITESHEET.get(trainer.image()));
+        }
         return parent;
     }
 
