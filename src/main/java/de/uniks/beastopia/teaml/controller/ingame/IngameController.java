@@ -37,6 +37,8 @@ public class IngameController extends Controller {
     public HBox ingame;
     @FXML
     public Pane tilePane;
+    @FXML
+    private HBox scoreBoardLayout;
     @Inject
     App app;
     @Inject
@@ -65,6 +67,9 @@ public class IngameController extends Controller {
     Provider<EntityController> entityControllerProvider;
     @Inject
     UDPEventListener udpEventListener;
+    @Inject
+    ScoreboardController scoreboardController;
+    Parent scoreBoardParent;
 
     private LoadingPage loadingPage;
 
@@ -75,6 +80,7 @@ public class IngameController extends Controller {
     @Override
     public void init() {
         super.init();
+        scoreboardController.init();
         state.setValue(PlayerState.IDLE);
         playerController = entityControllerProvider.get();
         playerController.setTrainer(cache.getTrainer());
@@ -88,7 +94,7 @@ public class IngameController extends Controller {
     }
 
     public void setRegion(Region region) {
-        prefs.setRegion(region);
+        prefs.setCurrentRegion(region);
         this.region = region;
     }
 
@@ -118,6 +124,7 @@ public class IngameController extends Controller {
                     this.tileSet = presetsService.getTileset(map.tilesets().get(0)).blockingFirst();
                     this.image = presetsService.getImage(tileSet).blockingFirst();
                     drawMap();
+                    scoreBoardParent = scoreboardController.render();
                     loadingPage.setDone();
                 }));
 
@@ -228,6 +235,15 @@ public class IngameController extends Controller {
             PauseController controller = pauseControllerProvider.get();
             controller.setRegion(region);
             app.show(controller);
+            return;
+        }
+
+        if (keyEvent.getCode().equals(KeyCode.N)) {
+            if (scoreBoardLayout.getChildren().contains(scoreBoardParent)) {
+                scoreBoardLayout.getChildren().remove(scoreBoardParent);
+            } else {
+                scoreBoardLayout.getChildren().add(scoreBoardParent);
+            }
         }
 
         boolean moved = false;

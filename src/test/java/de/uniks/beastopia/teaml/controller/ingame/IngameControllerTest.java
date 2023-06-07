@@ -88,7 +88,7 @@ class IngameControllerTest extends ApplicationTest {
         AppPreparer.prepare(app);
 
 
-        doNothing().when(prefs).setRegion(any());
+        doNothing().when(prefs).setCurrentRegion(any());
         doNothing().when(prefs).setArea(any());
         when(areaService.getAreas(anyString())).thenReturn(Observable.just(List.of(area)));
         doNothing().when(cache).setAreas(any());

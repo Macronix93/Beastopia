@@ -151,4 +151,11 @@ public class HttpModule {
     TrainerApiService trainer(Retrofit retrofit) {
         return retrofit.create(TrainerApiService.class);
     }
+
+    @Provides
+    @Singleton
+    @SuppressWarnings("unused")
+    AchievementsApiService achievements(Retrofit retrofit) {
+        return retrofit.create(AchievementsApiService.class);
+    }
 }
