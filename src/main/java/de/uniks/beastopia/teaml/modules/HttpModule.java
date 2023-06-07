@@ -24,8 +24,8 @@ import java.util.concurrent.Semaphore;
 public class HttpModule {
     private static final List<String> RATE_LIMIT_FREE_ENDPOINTS = List.of("presets/");
 
-    private static final int MAX_REQUESTS = 10;
-    private static final int MAX_REQUESTS_TIME_FRAME_SECONDS = 11;
+    private static final int MAX_REQUESTS = 9;
+    private static final int MAX_REQUESTS_TIME_FRAME_SECONDS = 10;
     private static final List<Pair<Date, String>> LAST_REQUESTS = new ArrayList<>();
     private static final Semaphore SEMAPHORE = new Semaphore(1);
 

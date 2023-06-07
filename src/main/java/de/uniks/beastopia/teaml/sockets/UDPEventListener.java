@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketException;
 import java.nio.channels.AsynchronousCloseException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -140,6 +141,13 @@ public class UDPEventListener {
                 // main thread closed the socket
                 // exit gracefully
                 return;
+            } catch (SocketException e) {
+                // socket was closed, try again
+                if (clientSocket != null) {
+                    ensureOpen();
+                } else {
+                    return;
+                }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

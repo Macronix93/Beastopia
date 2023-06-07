@@ -20,4 +20,8 @@ public class AreaService {
         return areaApiService.getAreas(region);
     }
 
+    public Observable<Area> getArea(String region, String id) {
+        return areaApiService.getArea(region, id);
+    }
+
 }

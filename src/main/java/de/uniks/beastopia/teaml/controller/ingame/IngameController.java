@@ -6,9 +6,7 @@ import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
 import de.uniks.beastopia.teaml.rest.*;
-import de.uniks.beastopia.teaml.service.AreaService;
-import de.uniks.beastopia.teaml.service.DataCache;
-import de.uniks.beastopia.teaml.service.PresetsService;
+import de.uniks.beastopia.teaml.service.*;
 import de.uniks.beastopia.teaml.sockets.UDPEventListener;
 import de.uniks.beastopia.teaml.utils.Direction;
 import de.uniks.beastopia.teaml.utils.LoadingPage;
@@ -46,11 +44,15 @@ public class IngameController extends Controller {
     @Inject
     PresetsService presetsService;
     @Inject
+    TrainerService trainerService;
+    @Inject
     Provider<PauseController> pauseControllerProvider;
     @Inject
     Prefs prefs;
     @Inject
     DataCache cache;
+    @Inject
+    TokenStorage tokenStorage;
     private Region region;
     private Image image;
     private Map map;
@@ -103,30 +105,34 @@ public class IngameController extends Controller {
     public Parent render() {
         loadingPage = LoadingPage.makeLoadingPage(super.render());
 
-        disposables.add(areaService.getAreas(region._id())
-                .observeOn(FX_SCHEDULER)
-                .subscribe(areas -> {
-                    cache.setAreas(areas);
-                    if (prefs.getArea() == null) {
-                        Area area = areas.stream().filter(a -> a._id().equals(region.spawn().area())).findFirst().orElse(null);
-                        if (area == null) {
-                            loadingPage.setDone();
-                            return;
+        disposables.add(trainerService.getAllTrainer(this.region._id())
+                .subscribe(trainers -> {
+                    Trainer myTrainer = trainers.stream().filter(t -> t.user().equals(tokenStorage.getCurrentUser()._id())).findFirst().orElseThrow();
+                    posx = myTrainer.x();
+                    posy = myTrainer.y();
+
+                    disposables.add(areaService.getArea(this.region._id(), myTrainer.area()).observeOn(FX_SCHEDULER).subscribe(area -> {
+//                    cache.setAreas(areas);
+                        if (prefs.getArea() == null) {
+                            if (area == null) {
+                                loadingPage.setDone();
+                                return;
+                            }
+                            prefs.setArea(area);
+                            posx = region.spawn().x();
+                            posy = region.spawn().y();
+                            this.map = area.map();
+                        } else {
+                            posx = (int) prefs.getPosition().getX();
+                            posy = (int) prefs.getPosition().getY();
+                            this.map = prefs.getArea().map();
                         }
-                        prefs.setArea(area);
-                        posx = region.spawn().x();
-                        posy = region.spawn().y();
-                        this.map = area.map();
-                    } else {
-                        posx = (int) prefs.getPosition().getX();
-                        posy = (int) prefs.getPosition().getY();
-                        this.map = prefs.getArea().map();
-                    }
-                    this.tileSet = presetsService.getTileset(map.tilesets().get(0)).blockingFirst();
-                    this.image = presetsService.getImage(tileSet).blockingFirst();
-                    drawMap();
-                    scoreBoardParent = scoreBoardController.render();
-                    loadingPage.setDone();
+                        this.tileSet = presetsService.getTileset(map.tilesets().get(0)).blockingFirst();
+                        this.image = presetsService.getImage(tileSet).blockingFirst();
+                        drawMap();
+                        scoreBoardParent = scoreBoardController.render();
+                        loadingPage.setDone();
+                    }));
                 }));
 
         return loadingPage.parent();
@@ -193,7 +199,7 @@ public class IngameController extends Controller {
         tilePane.getChildren().remove(player);
         player = playerController.render();
         player.setTranslateX(posx * TILE_SIZE);
-        player.setTranslateY(posy * TILE_SIZE);
+        player.setTranslateY((posy - 1) * TILE_SIZE);
         tilePane.getChildren().add(player);
         return player;
     }
@@ -202,7 +208,7 @@ public class IngameController extends Controller {
         player = drawPlayer(x, y);
         player.toFront();
         player.setTranslateX(x * TILE_SIZE);
-        player.setTranslateY(y * TILE_SIZE);
+        player.setTranslateY((y - 1) * TILE_SIZE);
     }
 
     @Override
