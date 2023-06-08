@@ -12,10 +12,7 @@ import de.uniks.beastopia.teaml.service.PresetsService;
 import de.uniks.beastopia.teaml.service.TrainerService;
 import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.sockets.UDPEventListener;
-import de.uniks.beastopia.teaml.utils.Direction;
-import de.uniks.beastopia.teaml.utils.LoadingPage;
-import de.uniks.beastopia.teaml.utils.PlayerState;
-import de.uniks.beastopia.teaml.utils.Prefs;
+import de.uniks.beastopia.teaml.utils.*;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
@@ -141,13 +138,15 @@ public class IngameController extends Controller {
                                         "regions." + this.region._id() + ".trainers.*.created",
                                         Trainer.class)
                                 .observeOn(FX_SCHEDULER)
-                                .subscribe(event -> this.createRemotePlayer(event.data())));
+                                .subscribe(event -> this.createRemotePlayer(event.data()),
+                                        error -> Dialog.error(error, resources.getString("getAllTrainerError"))));
                         disposables.add(eventListener.listen(
                                         "regions." + this.region._id() + ".trainers.*.deleted",
                                         Trainer.class)
                                 .observeOn(FX_SCHEDULER)
-                                .subscribe(event -> this.removeRemotePlayer(event.data())));
-                    }));
+                                .subscribe(event -> this.removeRemotePlayer(event.data()),
+                                        error -> Dialog.error(error, resources.getString("getAllTrainerError"))));
+                    }, error -> Dialog.error(error, resources.getString("getAllTrainerError"))));
 
                     loadingPage.setDone();
                 }));
