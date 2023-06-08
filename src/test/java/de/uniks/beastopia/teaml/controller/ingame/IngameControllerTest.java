@@ -4,9 +4,7 @@ import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
 import de.uniks.beastopia.teaml.rest.*;
-import de.uniks.beastopia.teaml.service.AreaService;
-import de.uniks.beastopia.teaml.service.DataCache;
-import de.uniks.beastopia.teaml.service.PresetsService;
+import de.uniks.beastopia.teaml.service.*;
 import de.uniks.beastopia.teaml.sockets.UDPEventListener;
 import de.uniks.beastopia.teaml.utils.PlayerState;
 import de.uniks.beastopia.teaml.utils.Prefs;
@@ -21,7 +19,6 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import javafx.util.Pair;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -34,7 +31,6 @@ import org.testfx.framework.junit5.ApplicationTest;
 import javax.inject.Provider;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -61,7 +57,13 @@ class IngameControllerTest extends ApplicationTest {
     @Mock
     Prefs prefs;
     @Mock
+    ScoreboardController scoreboardController = mock();
+    @Mock
     ObjectProperty<PlayerState> state;
+    @Mock
+    TrainerService trainerService;
+    @Mock
+    TokenStorage tokenStorage;
     @Spy
     App app;
     @Spy
@@ -79,23 +81,22 @@ class IngameControllerTest extends ApplicationTest {
     Region region = new Region(null, null, "ID", "NAME", spawn);
     Image image = createImage(2, 2, List.of(new Color(255, 0, 255), new Color(0, 255, 0), new Color(0, 0, 255), new Color(255, 255, 0)));
     Trainer trainer = new Trainer(null, null, "ID_TRAINER", "ID_REGION", "ID_USER", "TRAINER_NAME", "TRAINER_IMAGE", 0, "ID_AREA", 0, 0, 0, new NPCInfo(false));
-    List<Pair<String, Image>> charList = new ArrayList<>() {{
-        add(new Pair<>("TRAINER_IMAGE", image));
-    }};
+    User user = new User(null, null, "ID_USER", "USER_NAME", "USER_STATUS", "USER_AVATAR", List.of());
 
     @Override
     public void start(Stage stage) {
         AppPreparer.prepare(app);
 
-
+        when(tokenStorage.getCurrentUser()).thenReturn(user);
+        when(trainerService.getAllTrainer(any())).thenReturn(Observable.just(List.of(trainer)));
+        doNothing().when(scoreboardController).init();
+        when(scoreboardController.render()).thenReturn(new Pane());
         doNothing().when(prefs).setCurrentRegion(any());
         doNothing().when(prefs).setArea(any());
         when(areaService.getAreas(anyString())).thenReturn(Observable.just(List.of(area)));
         doNothing().when(cache).setAreas(any());
         when(presetsService.getTileset(tileSetDescription)).thenReturn(Observable.just(tileSet));
         when(presetsService.getImage(tileSet)).thenReturn(Observable.just(image));
-        when(cache.getTrainer()).thenReturn(trainer);
-        //when(cache.getCharacterImage("TRAINER_IMAGE")).thenReturn(charList.get(0));
         when(entityControllerProvider.get()).thenReturn(playerController);
         doNothing().when(playerController).setTrainer(any());
         when(playerController.playerState()).thenReturn(new SimpleObjectProperty<>(PlayerState.IDLE));
@@ -126,6 +127,7 @@ class IngameControllerTest extends ApplicationTest {
 
     @Test
     void movePlayer() {
+        when(cache.getTrainer()).thenReturn(trainer);
         doNothing().when(udpEventListener).send(anyString());
         type(KeyCode.W);
         type(KeyCode.S);
