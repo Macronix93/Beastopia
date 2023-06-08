@@ -46,4 +46,8 @@ public class ScoreboardUserItemController extends Controller {
         // TODO: load avatar
         return parent;
     }
+
+    public void toggleAchievements() {
+
+    }
 }

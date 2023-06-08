@@ -100,4 +100,6 @@ public class ScoreboardController extends Controller {
     public void setOnCloseRequested(Runnable onCloseRequested) {
         this.onCloseRequested = onCloseRequested;
     }
+
+
 }
