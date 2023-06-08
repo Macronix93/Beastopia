@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 <HBox alignment="CENTER_RIGHT" onKeyPressed="#handleKeyEvent" prefHeight="317.0" prefWidth="516.0" spacing="5.0"
       xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="de.uniks.beastopia.teaml.controller.ingame.ScoreboardController">
@@ -11,6 +14,16 @@
     </ScrollPane>
     <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: transparent;"
                 HBox.hgrow="ALWAYS">
-        <VBox fx:id="scoreBoard" prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: black;"/>
+        <VBox fx:id="scoreBoard" alignment="TOP_CENTER" prefHeight="200.0" prefWidth="200.0" spacing="3.0"
+              style="-fx-border-color: black;">
+            <padding>
+                <Insets top="5.0"/>
+            </padding>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Scoreboard:" underline="true">
+                <font>
+                    <Font size="23.0"/>
+                </font>
+            </Text>
+        </VBox>
     </ScrollPane>
 </HBox>
