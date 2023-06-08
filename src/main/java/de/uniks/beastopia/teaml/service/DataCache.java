@@ -17,7 +17,7 @@ public class DataCache {
     private List<User> users = new ArrayList<>();
     private List<Region> regions = new ArrayList<>();
     private List<Area> areas = new ArrayList<>();
-    private List<Pair<String, Image>> characters = new ArrayList<>();
+    private final List<Pair<String, Image>> characters = new ArrayList<>();
     private List<Trainer> trainers = new ArrayList<>();
     Trainer trainer;
     Region joinedRegion;
@@ -109,12 +109,27 @@ public class DataCache {
         this.trainers = trainers;
     }
 
-    public void setCharacters(List<Pair<String, Image>> characters) {
-        this.characters = new ArrayList<>(characters);
+    public void setCharacters(List<String> characters) {
+        synchronized (this.characters) {
+            for (String character : characters) {
+                if (this.characters.stream().anyMatch(pair -> pair.getKey().equals(character)))
+                    continue;
+                this.characters.add(new Pair<>(character, null));
+            }
+
+            this.characters.removeIf(pair -> characters.stream().noneMatch(character -> character.equals(pair.getKey())));
+        }
+    }
+
+    public void setCharacterImage(String name, Image image) {
+        synchronized (characters) {
+            characters.removeIf(pair -> pair.getKey().equals(name));
+            characters.add(new Pair<>(name, image));
+        }
     }
 
     public List<Pair<String, Image>> getCharacters() {
-        return characters;
+        return new ArrayList<>(characters);
     }
 
     public Pair<String, Image> getCharacterImage(String image) {
