@@ -20,7 +20,7 @@
     -fx-effect: dropshadow(gaussian, #E7F6F2, 5, 0, 0, 1);
 }
 
-.button {
+.button, .radio-button .radio, .slider .track, .scroll-bar .track, .scroll-bar .increment-button, .scroll-bar .decrement-button {
     -fx-background-color: #395B64;
     -fx-border-color: #162326;
     -fx-border-width: 1px;
@@ -105,6 +105,11 @@
 
 Text {
     -fx-fill: #C7C7C7;
+}
+
+.radio-button .dot {
+    -fx-mark-highlight-color: white;
+    -fx-mark-color: white;
 }
 
 .scroll-pane .viewport {
