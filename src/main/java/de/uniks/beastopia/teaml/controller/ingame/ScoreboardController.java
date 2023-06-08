@@ -73,6 +73,8 @@ public class ScoreboardController extends Controller {
                                         ScoreboardUserItemController controller = scoreBoardUserItemControllerProvider.get()
                                                 .setName(user.name())
                                                 .setAchievements(achievementList.size())
+                                                .setUserId(user._id())
+                                                .setOnUserClicked(this::onUserClicked)
                                                 .setTotalAchievements(allAchievements.size());
                                         Parent parent = controller.render();
                                         scoreBoard.getChildren().add(parent);
@@ -101,5 +103,13 @@ public class ScoreboardController extends Controller {
         this.onCloseRequested = onCloseRequested;
     }
 
+    private void onUserClicked(String userId) {
+        User user = cache.getAllUsers().stream()
+                .filter(u -> u._id().equals(userId))
+                .findFirst()
+                .orElse(null);
+
+        // TODO: show user achievements
+    }
 
 }

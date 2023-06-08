@@ -6,6 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.text.Text;
 
 import javax.inject.Inject;
+import java.util.function.Consumer;
 
 public class ScoreboardUserItemController extends Controller {
 
@@ -14,15 +15,27 @@ public class ScoreboardUserItemController extends Controller {
     @FXML
     private Text achievementsText;
     private String name;
+    private String userId;
     private int achievements;
     private int totalAchievements;
+    Consumer<String> onUserClicked;
 
     @Inject
     public ScoreboardUserItemController() {
     }
 
+    public ScoreboardUserItemController setOnUserClicked(Consumer<String> onUserClicked) {
+        this.onUserClicked = onUserClicked;
+        return this;
+    }
+
     public ScoreboardUserItemController setAchievements(int achievements) {
         this.achievements = achievements;
+        return this;
+    }
+
+    public ScoreboardUserItemController setUserId(String userId) {
+        this.userId = userId;
         return this;
     }
 
@@ -48,6 +61,8 @@ public class ScoreboardUserItemController extends Controller {
     }
 
     public void toggleAchievements() {
-
+        if (onUserClicked != null) {
+            onUserClicked.accept(userId);
+        }
     }
 }
