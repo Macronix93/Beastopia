@@ -69,7 +69,7 @@ class IngameControllerTest extends ApplicationTest {
     ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang");
     @InjectMocks
     IngameController ingameController;
-    TileSetDescription tileSetDescription = new TileSetDescription(null, "SOURCE");
+    TileSetDescription tileSetDescription = new TileSetDescription(0, "SOURCE");
     TileSet tileSet = new TileSet(2, "IMAGE", 2, 2, 0, "NAME", 0, 4, 1);
     Chunk chunk = new Chunk(List.of(0, 1, 2, 3), 2, 2, 0, 0);
     Layer layer = new Layer(List.of(chunk), null, 1, 0, 0, null, true, 2, 2, 0, 0);
