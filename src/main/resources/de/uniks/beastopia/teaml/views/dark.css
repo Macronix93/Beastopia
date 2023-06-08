@@ -94,6 +94,7 @@
 #chatList,
 #regionList,
 .region-cell,
+#vboxKeybindings,
 #chatScrollPane .viewport {
     -fx-background-color: #666666;
 }
