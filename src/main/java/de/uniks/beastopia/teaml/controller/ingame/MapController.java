@@ -13,6 +13,7 @@ import javafx.scene.Parent;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
@@ -23,9 +24,10 @@ import javax.inject.Provider;
 import java.util.HashMap;
 
 public class MapController extends Controller {
-    private int TILE_SIZE = 16;
     @FXML
     public Pane mapPane;
+    @FXML
+    public AnchorPane anchorPane;
     @Inject
     App app;
     @Inject
@@ -42,6 +44,8 @@ public class MapController extends Controller {
     private TileSet tileSet;
     private Image image;
     private Map map;
+    @Inject
+    Provider<RegionInfoController> regionInfoControllerProvider;
 
     // TODO: remove this backpass
     @Inject
@@ -76,19 +80,18 @@ public class MapController extends Controller {
 
     private void drawMap() {
         for (Layer layer : this.map.layers()) {
-            System.out.println("layer names: " + layer.type());
             if (layer.type().equals("tilelayer")) {
                 drawTileLayer(layer);
             } else if (layer.type().equals("objectgroup")) {
                 drawObjectGroup(layer);
             }
-
         }
     }
 
     private void drawObjectGroup(Layer layer) {
         for (MapObject object : layer.objects()) {
-            System.out.println("properties: " + object.properties().get(0).keySet());
+            RegionInfoController regionInfo = regionInfoControllerProvider.get();
+            regionInfo.init();
             if (object.polygon() == null) {
                 Rectangle r = new Rectangle();
                 r.setX(object.x());
@@ -107,7 +110,6 @@ public class MapController extends Controller {
                 mapPane.getChildren().add(r);
             } else {
                 Polygon p = new Polygon();
-
                 for (HashMap<String, Double> point : object.polygon()) {
                     double x = point.get("x") + object.x();
                     double y = point.get("y") + object.y();
@@ -115,12 +117,20 @@ public class MapController extends Controller {
                 }
                 p.fillProperty().setValue(Color.BLUEVIOLET);
                 p.setOnMouseEntered(event -> {
+                    String name = object.name();
+                    String description = object.properties().get(0).get("value");
+                    regionInfo.setPlace(name);
+                    regionInfo.setDescription(description);
                     System.out.println("entered");
                     p.setFill(Color.GREEN);
+                    anchorPane.getChildren().add(regionInfo.render());
+                    anchorPane.getChildren().get(1).setLayoutX(event.getX() + 10);
+                    anchorPane.getChildren().get(1).setLayoutY(event.getY() + 10);
                 });
                 p.setOnMouseExited(event -> {
                     System.out.println("exited");
                     p.setFill(Color.BLUEVIOLET);
+                    anchorPane.getChildren().remove(1);
                 });
                 mapPane.getChildren().add(p);
             }
@@ -129,11 +139,11 @@ public class MapController extends Controller {
     }
 
     private void drawTileLayer(Layer layer) {
+        int TILE_SIZE = 16;
         for (Chunk chunk : layer.chunks()) {
             int chunkX = chunk.x();
             int chunkY = chunk.y();
             int index = 0;
-
             for (int id : chunk.data()) {
                 int x = index % chunk.width() + chunkX;
                 int y = index / chunk.height() + chunkY;
@@ -176,6 +186,6 @@ public class MapController extends Controller {
     }
 
     public void giveCor(MouseEvent mouseEvent) {
-        System.out.println("x: " + mouseEvent.getX() + " y: " + mouseEvent.getY());
+        //System.out.println("x: " + mouseEvent.getX() + " y: " + mouseEvent.getY());
     }
 }
