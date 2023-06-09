@@ -40,6 +40,7 @@ public class ScoreboardController extends Controller {
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     private final List<Controller> subControllers = new ArrayList<>();
     private Runnable onCloseRequested;
+    private boolean clicked = false;
 
     @Inject
     public ScoreboardController() {
@@ -48,7 +49,7 @@ public class ScoreboardController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
-        achievements.setVisible(false);
+        achievements.setVisible(clicked);
         loadAchievements();
         return parent;
     }
@@ -118,6 +119,8 @@ public class ScoreboardController extends Controller {
         subControllers.add(controller);
         Parent parent = controller.render();
         achievements.getChildren().clear();
+        achievements.setVisible(!clicked);
+        clicked = !clicked;
         achievements.getChildren().add(parent);
     }
 
