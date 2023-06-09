@@ -13,8 +13,7 @@
           spacing="10.0" style="-fx-border-color: black;">
         <Separator layoutX="186.0" layoutY="49.0" prefWidth="200.0" visible="false"/>
         <!--suppress JavaFxUnresolvedFxIdReference -->
-        <ImageView fx:id="avatarImageView" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
-                   preserveRatio="true"/>
+        <ImageView fx:id="avatarImageView" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true"/>
         <Separator prefWidth="200.0" visible="false" HBox.hgrow="ALWAYS"/>
         <VBox alignment="CENTER">
             <Text fx:id="nameText" strokeType="OUTSIDE" strokeWidth="0.0" text="Name">
@@ -31,7 +30,8 @@
         </VBox>
         <Separator layoutX="53.0" layoutY="49.0" prefWidth="200.0" visible="false"/>
     </HBox>
-    <ScrollPane prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: black;">
-        <VBox prefHeight="200.0" prefWidth="100.0"/>
+    <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="200.0"
+                style="-fx-border-color: black; -fx-background-color: transparent;">
+        <VBox prefHeight="117.0" prefWidth="181.0"/>
     </ScrollPane>
 </VBox>
