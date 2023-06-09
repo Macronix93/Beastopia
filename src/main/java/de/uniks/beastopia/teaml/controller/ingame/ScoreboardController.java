@@ -35,6 +35,8 @@ public class ScoreboardController extends Controller {
     Prefs prefs;
     @Inject
     Provider<ScoreboardUserItemController> scoreBoardUserItemControllerProvider;
+    @Inject
+    Provider<UserInfoController> userInfoControllerProvider;
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     private final List<Controller> subControllers = new ArrayList<>();
     private Runnable onCloseRequested;
@@ -74,7 +76,7 @@ public class ScoreboardController extends Controller {
                                                 .setName(user.name())
                                                 .setAchievements(achievementList.size())
                                                 .setUserId(user._id())
-                                                .setOnUserClicked(this::onUserClicked)
+                                                .setOnUserClicked(u -> onUserClicked(u, achievementList.size(), allAchievements.size()))
                                                 .setTotalAchievements(allAchievements.size());
                                         Parent parent = controller.render();
                                         scoreBoard.getChildren().add(parent);
@@ -103,13 +105,20 @@ public class ScoreboardController extends Controller {
         this.onCloseRequested = onCloseRequested;
     }
 
-    private void onUserClicked(String userId) {
+    private void onUserClicked(String userId, int noOfAchievements, int totalAchievements) {
         User user = cache.getAllUsers().stream()
                 .filter(u -> u._id().equals(userId))
                 .findFirst()
-                .orElse(null);
+                .orElseThrow();
 
-        // TODO: show user achievements
+        UserInfoController controller = userInfoControllerProvider.get()
+                .setName(user.name())
+                .setAchievements(noOfAchievements)
+                .setTotalAchievements(totalAchievements);
+        subControllers.add(controller);
+        Parent parent = controller.render();
+        achievements.getChildren().clear();
+        achievements.getChildren().add(parent);
     }
 
 }
