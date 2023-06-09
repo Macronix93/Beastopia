@@ -2,7 +2,6 @@ package de.uniks.beastopia.teaml.controller.ingame;
 
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.Controller;
-import de.uniks.beastopia.teaml.controller.menu.MenuController;
 import de.uniks.beastopia.teaml.rest.*;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
@@ -39,17 +38,12 @@ public class MapController extends Controller {
     @Inject
     Provider<IngameController> ingameControllerProvider;
     private Region region;
-    private IngameController backController;
     private LoadingPage loadingPage;
     private TileSet tileSet;
     private Image image;
     private Map map;
     @Inject
     Provider<RegionInfoController> regionInfoControllerProvider;
-
-    // TODO: remove this backpass
-    @Inject
-    Provider<MenuController> menuControllerProvider;
 
     @Inject
     public MapController() {
@@ -124,7 +118,6 @@ public class MapController extends Controller {
         String name = object.name();
         String description = object.properties().get(0).get("value");
         regionInfo.setText(name, description);
-        Parent render = regionInfo.render();
         anchorPane.getChildren().add(regionInfo.render());
         anchorPane.getChildren().get(1).setLayoutX(event.getX() + 10);
         anchorPane.getChildren().get(1).setLayoutY(event.getY() + 10);
@@ -162,18 +155,10 @@ public class MapController extends Controller {
     public void closeMap() {
         IngameController ingameController = ingameControllerProvider.get();
         ingameController.setRegion(region);
-
-        // TODO: remove this backpass
-        MenuController menuController = menuControllerProvider.get();
-
-        app.show(menuController);
+        app.show(ingameController);
     }
 
     public void setRegion(Region region) {
         this.region = region;
-    }
-
-    public void setBackController(IngameController ingameController) {
-        this.backController = ingameController;
     }
 }

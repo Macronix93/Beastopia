@@ -1,7 +1,6 @@
 package de.uniks.beastopia.teaml.views;
 
 import de.uniks.beastopia.teaml.App;
-import de.uniks.beastopia.teaml.controller.ingame.MapController;
 import de.uniks.beastopia.teaml.controller.ingame.TrainerController;
 import de.uniks.beastopia.teaml.rest.Region;
 import de.uniks.beastopia.teaml.service.DataCache;
@@ -26,10 +25,6 @@ public class RegionCell extends ListCell<Region> {
     @Inject
     App app;
 
-    //TODO: remove bypass
-    @Inject
-    Provider<MapController> mapControllerProvider;
-
     @Inject
     public RegionCell(ResourceBundle resources) {
         this.resources = resources;
@@ -48,11 +43,7 @@ public class RegionCell extends ListCell<Region> {
                 cache.setRegion(item);
                 controller.setRegion(item);
                 controller.backController("menu");
-
-                //TODO: remove bypass
-                MapController mapController = mapControllerProvider.get();
-
-                app.show(mapController);
+                app.show(controller);
             });
             setGraphic(join);
         }
