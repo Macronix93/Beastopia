@@ -29,8 +29,8 @@ import javax.inject.Provider;
 import java.util.stream.IntStream;
 
 public class TrainerController extends Controller {
-    private static final int PREVIEW_SCALING = 3;
-    private static final Rectangle2D PREVIEW_VIEWPORT = new javafx.geometry.Rectangle2D(48 * PREVIEW_SCALING, 0, 16 * PREVIEW_SCALING, 32 * PREVIEW_SCALING);
+    public static final int PREVIEW_SCALING = 3;
+    public static final Rectangle2D PREVIEW_VIEWPORT = new javafx.geometry.Rectangle2D(48 * PREVIEW_SCALING, 0, 16 * PREVIEW_SCALING, 32 * PREVIEW_SCALING);
 
     @SuppressWarnings("unused")
     @FXML
@@ -85,7 +85,7 @@ public class TrainerController extends Controller {
 
     public void saveTrainer() {
         String nameInput = trainerNameInput.getText();
-        String trainerImage = cache.getCharacters().get(currentIndex.get()).getKey();
+        String trainerImage = currentSprite;
 
         if (nameInput == null || nameInput.isEmpty()) {
             Dialog.error(resources.getString("trainerNameMissing"), resources.getString("enterTrainerName"));
