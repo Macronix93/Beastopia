@@ -7,11 +7,13 @@ import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
 import de.uniks.beastopia.teaml.rest.*;
 import de.uniks.beastopia.teaml.service.*;
+import de.uniks.beastopia.teaml.service.AreaService;
+import de.uniks.beastopia.teaml.service.DataCache;
+import de.uniks.beastopia.teaml.service.PresetsService;
+import de.uniks.beastopia.teaml.service.TrainerService;
+import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.sockets.UDPEventListener;
-import de.uniks.beastopia.teaml.utils.Direction;
-import de.uniks.beastopia.teaml.utils.LoadingPage;
-import de.uniks.beastopia.teaml.utils.PlayerState;
-import de.uniks.beastopia.teaml.utils.Prefs;
+import de.uniks.beastopia.teaml.utils.*;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
@@ -28,8 +30,6 @@ import javafx.util.Pair;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import java.util.ArrayList;
-import java.util.List;
 
 public class IngameController extends Controller {
     static final double TILE_SIZE = 20;
@@ -56,6 +56,13 @@ public class IngameController extends Controller {
     DataCache cache;
     @Inject
     TokenStorage tokenStorage;
+    @Inject
+    Provider<EntityController> entityControllerProvider;
+    @Inject
+    UDPEventListener udpEventListener;
+    @Inject
+    EventListener eventListener;
+
     private Region region;
     private Map map;
     private final List<Pair<TileSetDescription, Pair<TileSet, Image>>> tileSets = new ArrayList<>();
@@ -63,6 +70,8 @@ public class IngameController extends Controller {
     private int posy = 0;
     private int width;
     private int height;
+    private LoadingPage loadingPage;
+
     Direction direction;
     ObjectProperty<PlayerState> state = new SimpleObjectProperty<>();
     Parent player;
@@ -78,6 +87,7 @@ public class IngameController extends Controller {
     Parent scoreBoardParent;
 
     private LoadingPage loadingPage;
+    java.util.Map<EntityController, Parent> otherPlayers = new HashMap<>();
 
     @Inject
     public IngameController() {
@@ -137,9 +147,116 @@ public class IngameController extends Controller {
                         scoreBoardParent = scoreBoardController.render();
                         loadingPage.setDone();
                     }));
+
+                    for (Trainer trainer : trainers) {
+                            if (trainer._id().equals(cache.getTrainer()._id())) {
+                                continue;
+                            }
+                            createRemotePlayer(trainer);
+                        }
+                        disposables.add(eventListener.listen(
+                                        "regions." + this.region._id() + ".trainers.*.created",
+                                        Trainer.class)
+                                .observeOn(FX_SCHEDULER)
+                                .subscribe(event -> this.createRemotePlayer(event.data()),
+                                        error -> Dialog.error(error, resources.getString("getAllTrainerError"))));
+                        disposables.add(eventListener.listen(
+                                        "regions." + this.region._id() + ".trainers.*.deleted",
+                                        Trainer.class)
+                                .observeOn(FX_SCHEDULER)
+                                .subscribe(event -> this.removeRemotePlayer(event.data()),
+                                        error -> Dialog.error(error, resources.getString("getAllTrainerError"))));
                 }));
 
         return loadingPage.parent();
+    }
+
+    private void createRemotePlayer(Trainer trainer) {
+        if (!prefs.getArea()._id().equals(trainer.area())) {
+            return;
+        }
+
+        System.out.println("trainer at pos: " + trainer.x() + " " + trainer.y());
+        EntityController controller = entityControllerProvider.get();
+        ObjectProperty<PlayerState> ps = new SimpleObjectProperty<>();
+        controller.playerState().bind(ps);
+        ps.setValue(PlayerState.IDLE);
+        controller.setTrainer(trainer);
+        controller.setOnTrainerUpdate(moveDto -> {
+            if (!isBeingRendered(moveDto._id()) && moveDto.area().equals(prefs.getArea()._id())) {
+                revealRemotePlayer(cache.getTrainer(moveDto._id()));
+            } else if (isBeingRendered(moveDto._id()) && !moveDto.area().equals(prefs.getArea()._id())) {
+                hideRemotePlayer(cache.getTrainer(moveDto._id()));
+            } else {
+                moveRemotePlayer(controller, moveDto.x(), moveDto.y());
+            }
+        });
+        controller.init();
+        Parent parent = drawRemotePlayer(controller, trainer.x(), trainer.y());
+        otherPlayers.put(controller, parent);
+
+        if (!prefs.getArea()._id().equals(trainer.area())) {
+            hideRemotePlayer(trainer);
+        }
+    }
+
+    private void removeRemotePlayer(Trainer trainer) {
+        EntityController trainerController = null;
+        for (EntityController controller : otherPlayers.keySet()) {
+            if (controller.getTrainer()._id().equals(trainer._id())) {
+                trainerController = controller;
+                break;
+            }
+        }
+
+        if (trainerController == null) {
+            return;
+        }
+
+        tilePane.getChildren().remove(otherPlayers.get(trainerController));
+        trainerController.destroy();
+        otherPlayers.remove(trainerController);
+    }
+
+    private void hideRemotePlayer(Trainer trainer) {
+        EntityController trainerController = null;
+        for (EntityController controller : otherPlayers.keySet()) {
+            if (controller.getTrainer()._id().equals(trainer._id())) {
+                trainerController = controller;
+                break;
+            }
+        }
+
+        if (trainerController == null) {
+            return;
+        }
+
+        tilePane.getChildren().remove(otherPlayers.get(trainerController));
+    }
+
+    private void revealRemotePlayer(Trainer trainer) {
+        EntityController trainerController = null;
+        for (EntityController controller : otherPlayers.keySet()) {
+            if (controller.getTrainer()._id().equals(trainer._id())) {
+                trainerController = controller;
+                break;
+            }
+        }
+
+        if (trainerController == null) {
+            return;
+        }
+
+        tilePane.getChildren().add(otherPlayers.get(trainerController));
+    }
+
+    private boolean isBeingRendered(String trainer) {
+        for (EntityController controller : otherPlayers.keySet()) {
+            if (controller.getTrainer()._id().equals(trainer)) {
+                return tilePane.getChildren().contains(otherPlayers.get(controller));
+            }
+        }
+        return false;
     }
 
     private void drawMap() {
@@ -166,7 +283,6 @@ public class IngameController extends Controller {
                 }
             }
         }
-
         updateOrigin();
     }
 
@@ -215,20 +331,35 @@ public class IngameController extends Controller {
         setOrigin(posx, posy);
     }
 
-    private Parent drawPlayer(int posx, int posy) {
+    private void drawPlayer(int posx, int posy) {
         tilePane.getChildren().remove(player);
         player = playerController.render();
         player.setTranslateX(posx * TILE_SIZE);
         player.setTranslateY((posy - 1) * TILE_SIZE);
         tilePane.getChildren().add(player);
-        return player;
+        player.toFront();
+    }
+
+    private Parent drawRemotePlayer(EntityController controller, int posx, int posy) {
+        Parent parent = controller.render();
+        parent.setTranslateX(posx * TILE_SIZE);
+        parent.setTranslateY(posy * TILE_SIZE);
+        tilePane.getChildren().add(parent);
+        parent.toFront();
+        return parent;
     }
 
     private void movePlayer(int x, int y) {
-        player = drawPlayer(x, y);
         player.toFront();
         player.setTranslateX(x * TILE_SIZE);
         player.setTranslateY((y - 1) * TILE_SIZE);
+    }
+
+    private void moveRemotePlayer(EntityController controller, int x, int y) {
+        Parent remotePlayer = otherPlayers.get(controller);
+        remotePlayer.toFront();
+        remotePlayer.setTranslateX(x * TILE_SIZE);
+        remotePlayer.setTranslateY(y * TILE_SIZE);
     }
 
     @Override
@@ -295,6 +426,7 @@ public class IngameController extends Controller {
         if (moved) {
             state.setValue(PlayerState.WALKING);
             updateTrainerPos(direction);
+            updateOrigin();
         }
     }
 
@@ -303,6 +435,12 @@ public class IngameController extends Controller {
         state.setValue(PlayerState.IDLE);
         drawPlayer(posx, posy);
     }
+
+    @SuppressWarnings("unused")
+    private void updateRemoteTrainerPos(Direction direction) {
+
+    }
+
 
     @Override
     public String getTitle() {
@@ -314,5 +452,8 @@ public class IngameController extends Controller {
         super.destroy();
         playerController.destroy();
         scoreBoardController.destroy();
+        for (EntityController controller : otherPlayers.keySet()) {
+            controller.destroy();
+        }
     }
 }

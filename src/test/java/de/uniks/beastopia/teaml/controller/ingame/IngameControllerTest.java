@@ -5,6 +5,11 @@ import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
 import de.uniks.beastopia.teaml.rest.*;
 import de.uniks.beastopia.teaml.service.*;
+import de.uniks.beastopia.teaml.service.AreaService;
+import de.uniks.beastopia.teaml.service.DataCache;
+import de.uniks.beastopia.teaml.service.PresetsService;
+import de.uniks.beastopia.teaml.service.TrainerService;
+import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.sockets.UDPEventListener;
 import de.uniks.beastopia.teaml.utils.PlayerState;
 import de.uniks.beastopia.teaml.utils.Prefs;
@@ -31,6 +36,7 @@ import org.testfx.framework.junit5.ApplicationTest;
 import javax.inject.Provider;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -49,9 +55,13 @@ class IngameControllerTest extends ApplicationTest {
     @Mock
     AreaService areaService;
     @Mock
+    TrainerService trainerService;
+    @Mock
     PresetsService presetsService;
     @Mock
     UDPEventListener udpEventListener;
+    @Mock
+    EventListener eventListener;
     @Mock
     DataCache cache;
     @Mock
@@ -60,8 +70,6 @@ class IngameControllerTest extends ApplicationTest {
     ScoreboardController scoreboardController = mock();
     @Mock
     ObjectProperty<PlayerState> state;
-    @Mock
-    TrainerService trainerService;
     @Mock
     TokenStorage tokenStorage;
     @Spy
@@ -91,12 +99,16 @@ class IngameControllerTest extends ApplicationTest {
         when(trainerService.getAllTrainer(any())).thenReturn(Observable.just(List.of(trainer)));
         doNothing().when(scoreboardController).init();
         when(scoreboardController.render()).thenReturn(new Pane());
+        when(eventListener.listen(any(), any())).thenReturn(Observable.empty());
+        doNothing().when(prefs).setRegion(any());
         doNothing().when(prefs).setCurrentRegion(any());
         doNothing().when(prefs).setArea(any());
         when(areaService.getAreas(anyString())).thenReturn(Observable.just(List.of(area)));
         doNothing().when(cache).setAreas(any());
         when(presetsService.getTileset(tileSetDescription)).thenReturn(Observable.just(tileSet));
         when(presetsService.getImage(tileSet)).thenReturn(Observable.just(image));
+        when(cache.getTrainer()).thenReturn(trainer);
+        //when(cache.getCharacterImage("TRAINER_IMAGE")).thenReturn(charList.get(0));
         when(entityControllerProvider.get()).thenReturn(playerController);
         doNothing().when(playerController).setTrainer(any());
         when(playerController.playerState()).thenReturn(new SimpleObjectProperty<>(PlayerState.IDLE));
