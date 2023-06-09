@@ -73,7 +73,9 @@ public class MapController extends Controller {
                             loadingPage.setDone();
                             drawMap();
                         },
-                        error -> System.out.println(error.getMessage())
+                        error -> {
+                            throw new RuntimeException(error);
+                        }
                 ));
         return loadingPage.parent();
     }
@@ -98,15 +100,9 @@ public class MapController extends Controller {
                 r.setY(object.y());
                 r.setWidth(object.width());
                 r.setHeight(object.height());
-                r.setFill(javafx.scene.paint.Color.RED);
-                r.setOnMouseEntered(event -> {
-                    System.out.println("entered");
-                    r.setFill(Color.GREEN);
-                });
-                r.setOnMouseExited(event -> {
-                    System.out.println("exited");
-                    r.setFill(Color.RED);
-                });
+                r.setFill(Color.TRANSPARENT);
+                r.setOnMouseEntered(event -> setRegionInfo(object, regionInfo, event));
+                r.setOnMouseExited(event -> anchorPane.getChildren().remove(1));
                 mapPane.getChildren().add(r);
             } else {
                 Polygon p = new Polygon();
@@ -115,26 +111,23 @@ public class MapController extends Controller {
                     double y = point.get("y") + object.y();
                     p.getPoints().addAll(x, y);
                 }
-                p.fillProperty().setValue(Color.BLUEVIOLET);
-                p.setOnMouseEntered(event -> {
-                    String name = object.name();
-                    String description = object.properties().get(0).get("value");
-                    regionInfo.setText(name, description);
-                    System.out.println("entered");
-                    p.setFill(Color.GREEN);
-                    anchorPane.getChildren().add(regionInfo.render());
-                    anchorPane.getChildren().get(1).setLayoutX(event.getX() + 10);
-                    anchorPane.getChildren().get(1).setLayoutY(event.getY() + 10);
-                });
-                p.setOnMouseExited(event -> {
-                    System.out.println("exited");
-                    p.setFill(Color.BLUEVIOLET);
-                    anchorPane.getChildren().remove(1);
-                });
+                p.setFill(Color.TRANSPARENT);
+                p.setOnMouseEntered(event -> setRegionInfo(object, regionInfo, event));
+                p.setOnMouseExited(event -> anchorPane.getChildren().remove(1));
                 mapPane.getChildren().add(p);
             }
 
         }
+    }
+
+    private void setRegionInfo(MapObject object, RegionInfoController regionInfo, MouseEvent event) {
+        String name = object.name();
+        String description = object.properties().get(0).get("value");
+        regionInfo.setText(name, description);
+        Parent render = regionInfo.render();
+        anchorPane.getChildren().add(regionInfo.render());
+        anchorPane.getChildren().get(1).setLayoutX(event.getX() + 10);
+        anchorPane.getChildren().get(1).setLayoutY(event.getY() + 10);
     }
 
     private void drawTileLayer(Layer layer) {
@@ -182,9 +175,5 @@ public class MapController extends Controller {
 
     public void setBackController(IngameController ingameController) {
         this.backController = ingameController;
-    }
-
-    public void giveCor(MouseEvent mouseEvent) {
-        //System.out.println("x: " + mouseEvent.getX() + " y: " + mouseEvent.getY());
     }
 }
