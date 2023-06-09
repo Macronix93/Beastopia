@@ -96,8 +96,8 @@ public class MapController extends Controller {
                 r.setHeight(object.height());
                 r.setFill(Color.TRANSPARENT);
                 r.setOnMouseEntered(event -> setRegionInfo(object, regionInfo, event));
-                r.setOnMouseExited(event -> anchorPane.getChildren().remove(1));
-                mapPane.getChildren().add(r);
+                r.setOnMouseExited(event -> anchorPane.getChildren().remove(anchorPane.getChildren().size() - 1));
+                anchorPane.getChildren().add(r);
             } else {
                 Polygon p = new Polygon();
                 for (HashMap<String, Double> point : object.polygon()) {
@@ -107,8 +107,8 @@ public class MapController extends Controller {
                 }
                 p.setFill(Color.TRANSPARENT);
                 p.setOnMouseEntered(event -> setRegionInfo(object, regionInfo, event));
-                p.setOnMouseExited(event -> anchorPane.getChildren().remove(1));
-                mapPane.getChildren().add(p);
+                p.setOnMouseExited(event -> anchorPane.getChildren().remove(anchorPane.getChildren().size() - 1));
+                anchorPane.getChildren().add(p);
             }
 
         }
@@ -118,9 +118,22 @@ public class MapController extends Controller {
         String name = object.name();
         String description = object.properties().get(0).get("value");
         regionInfo.setText(name, description);
+        double maxX = anchorPane.widthProperty().getValue();
+        double maxY = anchorPane.heightProperty().getValue();
         anchorPane.getChildren().add(regionInfo.render());
-        anchorPane.getChildren().get(1).setLayoutX(event.getX() + 10);
-        anchorPane.getChildren().get(1).setLayoutY(event.getY() + 10);
+        int lastChild = anchorPane.getChildren().size() - 1;
+
+        if (event.getX() + 10 + 231 > maxX) {
+            anchorPane.getChildren().get(lastChild).setLayoutX(event.getX() - 231 - 10);
+        } else {
+            anchorPane.getChildren().get(lastChild).setLayoutX(event.getX() + 10);
+        }
+
+        if (event.getY() + 10 + 131 > maxY) {
+            anchorPane.getChildren().get(lastChild).setLayoutY(event.getY() - 131 - 10);
+        } else {
+            anchorPane.getChildren().get(lastChild).setLayoutY(event.getY() + 10);
+        }
     }
 
     private void drawTileLayer(Layer layer) {
@@ -142,7 +155,7 @@ public class MapController extends Controller {
                 view.setViewport(presetsService.getTileViewPort(id, tileSet));
                 view.setTranslateX(x * TILE_SIZE);
                 view.setTranslateY(y * TILE_SIZE);
-                mapPane.getChildren().add(view);
+                anchorPane.getChildren().add(view);
             }
         }
     }
