@@ -14,11 +14,9 @@
         <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES"/>
         <RowConstraints maxHeight="30.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
     </rowConstraints>
-    <children>
-        <Pane fx:id="mapPane" onMouseMoved="#giveCor" prefHeight="600.0" prefWidth="287.0" GridPane.columnIndex="1"
-              GridPane.rowIndex="1">
-            <Button alignment="BOTTOM_CENTER" layoutX="414.0" layoutY="494.0" mnemonicParsing="false"
-                    onAction="#closeMap" text="%CloseMap"/>
-        </Pane>
-    </children>
+    <AnchorPane fx:id="anchorPane" GridPane.columnIndex="1" GridPane.rowIndex="1">
+        <Pane fx:id="mapPane" onMouseMoved="#giveCor"/>
+    </AnchorPane>
+    <Button alignment="BOTTOM_CENTER" mnemonicParsing="false" onAction="#closeMap" text="%CloseMap"
+            GridPane.columnIndex="2" GridPane.rowIndex="1" GridPane.valignment="BOTTOM"/>
 </GridPane>
