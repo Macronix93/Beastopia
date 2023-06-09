@@ -75,7 +75,7 @@
                             </Button>
                         </HBox>
                     </VBox>
-                    <Button minWidth="96.0" mnemonicParsing="false" onAction="#saveTrainer"
+                    <Button fx:id="saveTrainerButton" minWidth="96.0" mnemonicParsing="false" onAction="#saveTrainer"
                             text="%saveTrainer">
                         <VBox.margin>
                             <Insets top="15.0"/>
