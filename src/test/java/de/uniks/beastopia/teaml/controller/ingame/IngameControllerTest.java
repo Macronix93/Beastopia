@@ -76,11 +76,11 @@ class IngameControllerTest extends ApplicationTest {
     TileSetDescription tileSetDescription = new TileSetDescription(null, "SOURCE");
     TileSet tileSet = new TileSet(2, "IMAGE", 2, 2, 0, "NAME", 0, 4, 1);
     Chunk chunk = new Chunk(List.of(0, 1, 2, 3), 2, 2, 0, 0);
-    Layer layer = new Layer(List.of(chunk), null, 1, 0, 0, null, true, 2, 2, 0, 0);
+    Layer layer = new Layer(List.of(chunk), null, null, 1, 0, 0, null, true, 2, 2, 0, 0);
     Map map = new Map(List.of(tileSetDescription), List.of(layer), 2, 24, 4);
     Area area = new Area(null, null, "ID_AREA", "ID_REGION", "AREA_NAME", map);
     Spawn spawn = new Spawn("ID_AREA", 0, 0);
-    Region region = new Region(null, null, "ID", "NAME", spawn);
+    Region region = new Region(null, null, "ID", "NAME", spawn, null);
     Image image = createImage(2, 2, List.of(new Color(255, 0, 255), new Color(0, 255, 0), new Color(0, 0, 255), new Color(255, 255, 0)));
     Trainer trainer = new Trainer(null, null, "ID_TRAINER", "ID_REGION", "ID_USER", "TRAINER_NAME", "TRAINER_IMAGE", 0, "ID_AREA", 0, 0, 0, new NPCInfo(false));
     /*List<Pair<String, Image>> charList = new ArrayList<>() {{

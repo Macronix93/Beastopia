@@ -25,7 +25,7 @@ class RegionServiceTest {
     @Test
     void getRegions() {
         when(regionApiService.getRegions())
-                .thenReturn(Observable.just(List.of(new Region(null, null, "ID", "NAME", null))));
+                .thenReturn(Observable.just(List.of(new Region(null, null, "ID", "NAME", null, null))));
         List<Region> result = regionService.getRegions().blockingFirst();
         assertEquals(1, result.size());
         assertEquals("ID", result.get(0)._id());
@@ -36,7 +36,7 @@ class RegionServiceTest {
     @Test
     void getRegion() {
         when(regionApiService.getRegion("ID"))
-                .thenReturn(Observable.just(new Region(null, null, "ID", "NAME", null)));
+                .thenReturn(Observable.just(new Region(null, null, "ID", "NAME", null, null)));
         Region result = regionService.getRegion("ID").blockingFirst();
         assertEquals("ID", result._id());
         assertEquals("NAME", result.name());
