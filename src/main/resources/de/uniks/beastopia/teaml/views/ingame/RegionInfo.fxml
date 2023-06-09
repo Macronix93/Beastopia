@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Text?>
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0"
+      prefWidth="150.0" style="-fx-background-color: grey; -fx-opacity: 0.8;" xmlns="http://javafx.com/javafx/19"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="de.uniks.beastopia.teaml.controller.ingame.RegionInfoController">
+   <Text fx:id="place" layoutX="61.0" layoutY="17.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text"/>
+   <TextArea fx:id="description" layoutX="9.0" layoutY="25.0" prefHeight="66.0" prefWidth="132.0"
+             text="here comes the stuff in " wrapText="true"/>
+</Pane>
