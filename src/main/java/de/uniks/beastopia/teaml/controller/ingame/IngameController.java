@@ -166,11 +166,7 @@ public class IngameController extends Controller {
     }
 
     private void createRemotePlayer(Trainer trainer) {
-        if (prefs.getArea() != null && !prefs.getArea()._id().equals(trainer.area())) {
-            return;
-        }
-
-        System.out.println("trainer at pos: " + trainer.x() + " " + trainer.y());
+//        System.out.println("trainer at pos: " + trainer.x() + " " + trainer.y());
         EntityController controller = entityControllerProvider.get();
         ObjectProperty<PlayerState> ps = new SimpleObjectProperty<>();
         controller.playerState().bind(ps);
@@ -213,6 +209,10 @@ public class IngameController extends Controller {
     }
 
     private void hideRemotePlayer(Trainer trainer) {
+        if (trainer == null) {
+            return;
+        }
+
         EntityController trainerController = null;
         for (EntityController controller : otherPlayers.keySet()) {
             if (controller.getTrainer()._id().equals(trainer._id())) {
@@ -229,6 +229,10 @@ public class IngameController extends Controller {
     }
 
     private void revealRemotePlayer(Trainer trainer) {
+        if (trainer == null) {
+            return;
+        }
+
         EntityController trainerController = null;
         for (EntityController controller : otherPlayers.keySet()) {
             if (controller.getTrainer()._id().equals(trainer._id())) {
@@ -344,9 +348,7 @@ public class IngameController extends Controller {
     }
 
     private void movePlayer(int x, int y) {
-        tilePane.getChildren().remove(player);
-        player = playerController.render();
-        tilePane.getChildren().add(player);
+        playerController.updateViewPort();
         player.toFront();
         player.setTranslateX(x * TILE_SIZE);
         player.setTranslateY((y - 1) * TILE_SIZE);
@@ -354,6 +356,7 @@ public class IngameController extends Controller {
 
     private void moveRemotePlayer(EntityController controller, int x, int y) {
         Parent remotePlayer = otherPlayers.get(controller);
+        controller.updateViewPort();
         remotePlayer.toFront();
         remotePlayer.setTranslateX(x * TILE_SIZE);
         remotePlayer.setTranslateY((y - 1) * TILE_SIZE);
