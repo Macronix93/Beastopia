@@ -7,6 +7,8 @@ import de.uniks.beastopia.teaml.rest.*;
 import de.uniks.beastopia.teaml.service.AreaService;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
+import de.uniks.beastopia.teaml.service.TrainerService;
+import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.sockets.UDPEventListener;
 import de.uniks.beastopia.teaml.utils.PlayerState;
 import de.uniks.beastopia.teaml.utils.Prefs;
@@ -21,7 +23,6 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import javafx.util.Pair;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -34,7 +35,6 @@ import org.testfx.framework.junit5.ApplicationTest;
 import javax.inject.Provider;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -53,9 +53,13 @@ class IngameControllerTest extends ApplicationTest {
     @Mock
     AreaService areaService;
     @Mock
+    TrainerService trainerService;
+    @Mock
     PresetsService presetsService;
     @Mock
     UDPEventListener udpEventListener;
+    @Mock
+    EventListener eventListener;
     @Mock
     DataCache cache;
     @Mock
@@ -79,14 +83,16 @@ class IngameControllerTest extends ApplicationTest {
     Region region = new Region(null, null, "ID", "NAME", spawn);
     Image image = createImage(2, 2, List.of(new Color(255, 0, 255), new Color(0, 255, 0), new Color(0, 0, 255), new Color(255, 255, 0)));
     Trainer trainer = new Trainer(null, null, "ID_TRAINER", "ID_REGION", "ID_USER", "TRAINER_NAME", "TRAINER_IMAGE", 0, "ID_AREA", 0, 0, 0, new NPCInfo(false));
-    List<Pair<String, Image>> charList = new ArrayList<>() {{
+    /*List<Pair<String, Image>> charList = new ArrayList<>() {{
         add(new Pair<>("TRAINER_IMAGE", image));
-    }};
+    }};*/
 
     @Override
     public void start(Stage stage) {
         AppPreparer.prepare(app);
 
+        when(trainerService.getAllTrainer(anyString())).thenReturn(Observable.just(List.of(trainer)));
+        when(eventListener.listen(any(), any())).thenReturn(Observable.empty());
 
         doNothing().when(prefs).setRegion(any());
         doNothing().when(prefs).setArea(any());

@@ -18,6 +18,7 @@ public class DataCache {
     private List<Region> regions = new ArrayList<>();
     private List<Area> areas = new ArrayList<>();
     private List<Pair<String, Image>> characters = new ArrayList<>();
+    private List<Trainer> trainers = new ArrayList<>();
     Trainer trainer;
     Region joinedRegion;
 
@@ -95,6 +96,17 @@ public class DataCache {
 
     public Trainer getTrainer() {
         return trainer;
+    }
+
+    public Trainer getTrainer(String id) {
+        return trainers.stream()
+                .filter(trainer -> trainer._id().equals(id))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public void setTrainers(List<Trainer> trainers) {
+        this.trainers = trainers;
     }
 
     public void setCharacters(List<Pair<String, Image>> characters) {
