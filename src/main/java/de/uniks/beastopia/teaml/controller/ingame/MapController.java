@@ -119,8 +119,7 @@ public class MapController extends Controller {
                 p.setOnMouseEntered(event -> {
                     String name = object.name();
                     String description = object.properties().get(0).get("value");
-                    regionInfo.setPlace(name);
-                    regionInfo.setDescription(description);
+                    regionInfo.setText(name, description);
                     System.out.println("entered");
                     p.setFill(Color.GREEN);
                     anchorPane.getChildren().add(regionInfo.render());

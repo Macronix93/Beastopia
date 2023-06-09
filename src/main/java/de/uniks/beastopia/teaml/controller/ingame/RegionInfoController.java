@@ -14,6 +14,9 @@ public class RegionInfoController extends Controller {
     @FXML
     public TextArea description;
 
+    String name;
+    String information;
+
     @Inject
     public RegionInfoController() {
     }
@@ -27,7 +30,14 @@ public class RegionInfoController extends Controller {
 
     @Override
     public Parent render() {
-        return super.render();
+        Parent parent = super.render();
+        this.place.setText(name);
+        if (information.equals("")) {
+            this.description.visibleProperty().setValue(false);
+        } else {
+            this.description.setText(information);
+        }
+        return parent;
     }
 
     @Override
@@ -35,14 +45,9 @@ public class RegionInfoController extends Controller {
         super.destroy();
     }
 
-    public void setPlace(String name) {
-        System.out.println("setPlace: " + name);
-        this.place.setText(name);
-        this.render();
-    }
-
-    public void setDescription(String description) {
-        System.out.println("setDescription: " + description);
-        this.description.setText(description);
+    public RegionInfoController setText(String name, String description) {
+        this.name = name;
+        this.information = description;
+        return this;
     }
 }
