@@ -7,10 +7,6 @@ import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
 import de.uniks.beastopia.teaml.rest.*;
 import de.uniks.beastopia.teaml.service.*;
-import de.uniks.beastopia.teaml.service.AreaService;
-import de.uniks.beastopia.teaml.service.DataCache;
-import de.uniks.beastopia.teaml.service.PresetsService;
-import de.uniks.beastopia.teaml.service.TrainerService;
 import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.sockets.UDPEventListener;
 import de.uniks.beastopia.teaml.utils.*;
@@ -30,6 +26,9 @@ import javafx.util.Pair;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class IngameController extends Controller {
     static final double TILE_SIZE = 20;
@@ -77,16 +76,10 @@ public class IngameController extends Controller {
     Parent player;
     EntityController playerController;
     @Inject
-    Provider<EntityController> entityControllerProvider;
-    @Inject
-    UDPEventListener udpEventListener;
-    @Inject
     ScoreboardController scoreBoardController;
     @Inject
     Provider<IngameController> ingameControllerProvider;
     Parent scoreBoardParent;
-
-    private LoadingPage loadingPage;
     java.util.Map<EntityController, Parent> otherPlayers = new HashMap<>();
 
     @Inject
@@ -145,10 +138,8 @@ public class IngameController extends Controller {
                         }
                         drawMap();
                         scoreBoardParent = scoreBoardController.render();
-                        loadingPage.setDone();
-                    }));
 
-                    for (Trainer trainer : trainers) {
+                        for (Trainer trainer : trainers) {
                             if (trainer._id().equals(cache.getTrainer()._id())) {
                                 continue;
                             }
@@ -166,13 +157,16 @@ public class IngameController extends Controller {
                                 .observeOn(FX_SCHEDULER)
                                 .subscribe(event -> this.removeRemotePlayer(event.data()),
                                         error -> Dialog.error(error, resources.getString("getAllTrainerError"))));
+
+                        loadingPage.setDone();
+                    }));
                 }));
 
         return loadingPage.parent();
     }
 
     private void createRemotePlayer(Trainer trainer) {
-        if (!prefs.getArea()._id().equals(trainer.area())) {
+        if (prefs.getArea() != null && !prefs.getArea()._id().equals(trainer.area())) {
             return;
         }
 
@@ -195,7 +189,7 @@ public class IngameController extends Controller {
         Parent parent = drawRemotePlayer(controller, trainer.x(), trainer.y());
         otherPlayers.put(controller, parent);
 
-        if (!prefs.getArea()._id().equals(trainer.area())) {
+        if (prefs.getArea() != null && !prefs.getArea()._id().equals(trainer.area())) {
             hideRemotePlayer(trainer);
         }
     }
@@ -343,13 +337,16 @@ public class IngameController extends Controller {
     private Parent drawRemotePlayer(EntityController controller, int posx, int posy) {
         Parent parent = controller.render();
         parent.setTranslateX(posx * TILE_SIZE);
-        parent.setTranslateY(posy * TILE_SIZE);
+        parent.setTranslateY((posy - 1) * TILE_SIZE);
         tilePane.getChildren().add(parent);
         parent.toFront();
         return parent;
     }
 
     private void movePlayer(int x, int y) {
+        tilePane.getChildren().remove(player);
+        player = playerController.render();
+        tilePane.getChildren().add(player);
         player.toFront();
         player.setTranslateX(x * TILE_SIZE);
         player.setTranslateY((y - 1) * TILE_SIZE);
@@ -359,7 +356,7 @@ public class IngameController extends Controller {
         Parent remotePlayer = otherPlayers.get(controller);
         remotePlayer.toFront();
         remotePlayer.setTranslateX(x * TILE_SIZE);
-        remotePlayer.setTranslateY(y * TILE_SIZE);
+        remotePlayer.setTranslateY((y - 1) * TILE_SIZE);
     }
 
     @Override

@@ -17,7 +17,8 @@ public class DataCache {
     private List<User> users = new ArrayList<>();
     private List<Region> regions = new ArrayList<>();
     private List<Area> areas = new ArrayList<>();
-    private List<Trainer> trainers = new ArrayList<>();
+    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
+    private final List<Trainer> trainers = new ArrayList<>();
     private final List<Pair<String, Image>> characters = new ArrayList<>();
     Trainer trainer;
 
@@ -115,18 +116,18 @@ public class DataCache {
                 .orElse(null);
     }
 
-    public void setTrainers(List<Trainer> trainers) {
-        this.trainers = trainers;
-    }
-
     public List<Pair<String, Image>> getCharacters() {
-        return characters;
+        synchronized (characters) {
+            return new ArrayList<>(characters);
+        }
     }
 
     public Pair<String, Image> getCharacterImage(String image) {
-        return characters.stream()
-                .filter(pair -> pair.getKey().equals(image))
-                .findFirst()
-                .orElse(null);
+        synchronized (characters) {
+            return characters.stream()
+                    .filter(pair -> pair.getKey().equals(image))
+                    .findFirst()
+                    .orElse(null);
+        }
     }
 }

@@ -5,10 +5,6 @@ import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
 import de.uniks.beastopia.teaml.rest.*;
 import de.uniks.beastopia.teaml.service.*;
-import de.uniks.beastopia.teaml.service.AreaService;
-import de.uniks.beastopia.teaml.service.DataCache;
-import de.uniks.beastopia.teaml.service.PresetsService;
-import de.uniks.beastopia.teaml.service.TrainerService;
 import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.sockets.UDPEventListener;
 import de.uniks.beastopia.teaml.utils.PlayerState;
@@ -36,7 +32,6 @@ import org.testfx.framework.junit5.ApplicationTest;
 import javax.inject.Provider;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -100,7 +95,6 @@ class IngameControllerTest extends ApplicationTest {
         doNothing().when(scoreboardController).init();
         when(scoreboardController.render()).thenReturn(new Pane());
         when(eventListener.listen(any(), any())).thenReturn(Observable.empty());
-        doNothing().when(prefs).setRegion(any());
         doNothing().when(prefs).setCurrentRegion(any());
         doNothing().when(prefs).setArea(any());
         when(areaService.getAreas(anyString())).thenReturn(Observable.just(List.of(area)));
