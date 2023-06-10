@@ -362,7 +362,6 @@ public class IngameController extends Controller {
     public void handleKeyEvent(KeyEvent keyEvent) {
         if (keyEvent.getCode().equals(KeyCode.M)) {
             MapController map = mapControllerProvider.get();
-            map.setRegion(region);
             app.show(map);
         }
 

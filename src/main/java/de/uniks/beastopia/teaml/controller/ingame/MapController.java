@@ -38,17 +38,22 @@ public class MapController extends Controller {
     RegionService regionService;
     @Inject
     Provider<IngameController> ingameControllerProvider;
+    @Inject
+    Provider<RegionInfoController> regionInfoControllerProvider;
     private Region region;
     private LoadingPage loadingPage;
     private TileSet tileSet;
     private Image image;
     private Map map;
-    @Inject
-    Provider<RegionInfoController> regionInfoControllerProvider;
     private Area currentArea;
 
     @Inject
     public MapController() {
+    }
+
+    @Override
+    public String getTitle() {
+        return resources.getString("TitleMap");
     }
 
     @Override
@@ -185,9 +190,5 @@ public class MapController extends Controller {
         IngameController ingameController = ingameControllerProvider.get();
         ingameController.setRegion(region);
         app.show(ingameController);
-    }
-
-    public void setRegion(Region region) {
-        this.region = region;
     }
 }

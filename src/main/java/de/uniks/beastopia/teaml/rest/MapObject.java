@@ -7,7 +7,6 @@ public record MapObject(
         int height,
         int id,
         String name,
-        //Map<String, String> properties,
         List<HashMap<String, String>> properties,
         List<HashMap<String, Double>> polygon,
         int rotation,

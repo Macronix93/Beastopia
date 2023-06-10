@@ -18,6 +18,8 @@
         <Pane fx:id="mapPane" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0"
               AnchorPane.topAnchor="10.0"/>
     </AnchorPane>
-    <Button alignment="BOTTOM_CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#closeMap"
+    <!--suppress JavaFxUnresolvedFxIdReference -->
+    <Button fx:id="closeMapButton" alignment="BOTTOM_CENTER" contentDisplay="CENTER" mnemonicParsing="false"
+            onAction="#closeMap"
             text="%CloseMap" GridPane.columnIndex="2" GridPane.rowIndex="1" GridPane.valignment="BOTTOM"/>
 </GridPane>
