@@ -50,7 +50,7 @@ class MessageServiceTest {
 
     @Test
     void sendMessageToRegion() {
-        Region region = new Region(null, null, "REGIION", "REGION", null);
+        Region region = new Region(null, null, "REGIION", "REGION", null, null);
         when(messageApiService.createMessage("regions", region._id(), new CreateMessageDto("Hello")))
                 .thenReturn(Observable.just(new Message(null, null, "MSG_ID", "SENDER", "Hello")));
         Message message = messageService.sendMessageToRegion(region, "Hello").blockingFirst();
@@ -124,7 +124,7 @@ class MessageServiceTest {
 
     @Test
     void updateMessageRegion() {
-        Region region = new Region(null, null, "REGION", "REGION", null);
+        Region region = new Region(null, null, "REGION", "REGION", null, null);
         Message message = new Message(null, null, "MSG_ID", "SENDER", "Hello");
         when(messageApiService.updateMessage("regions", region._id(), message._id(), new UpdateMessageDto("World")))
                 .thenReturn(Observable.just(new Message(null, null, "MSG_ID", "SENDER", "World")));
@@ -163,7 +163,7 @@ class MessageServiceTest {
 
     @Test
     void deleteMessageRegion() {
-        Region region = new Region(null, null, "REGION", "REGION", null);
+        Region region = new Region(null, null, "REGION", "REGION", null, null);
         Message message = new Message(null, null, "MSG_ID", "SENDER", "Hello");
         when(messageApiService.deleteMessage("regions", region._id(), message._id()))
                 .thenReturn(Observable.just(new Message(null, null, "MSG_ID", "SENDER", "Hello")));

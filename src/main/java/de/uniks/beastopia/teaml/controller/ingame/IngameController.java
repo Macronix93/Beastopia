@@ -57,6 +57,8 @@ public class IngameController extends Controller {
     UDPEventListener udpEventListener;
     @Inject
     EventListener eventListener;
+    @Inject
+    Provider<MapController> mapControllerProvider;
 
     private Region region;
     private Image image;
@@ -261,6 +263,7 @@ public class IngameController extends Controller {
                 }
             }
         }
+
         updateOrigin();
     }
 
@@ -317,6 +320,7 @@ public class IngameController extends Controller {
     }
 
     private void movePlayer(int x, int y) {
+        drawPlayer(x, y);
         player.toFront();
         player.setTranslateX(x * TILE_SIZE);
         player.setTranslateY(y * TILE_SIZE);
@@ -356,6 +360,11 @@ public class IngameController extends Controller {
 
     @FXML
     public void handleKeyEvent(KeyEvent keyEvent) {
+        if (keyEvent.getCode().equals(KeyCode.M)) {
+            MapController map = mapControllerProvider.get();
+            app.show(map);
+        }
+
         if (keyEvent.getCode().equals(KeyCode.ESCAPE)) {
             PauseController controller = pauseControllerProvider.get();
             controller.setRegion(region);
