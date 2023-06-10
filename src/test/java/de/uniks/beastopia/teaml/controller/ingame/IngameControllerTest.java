@@ -49,6 +49,8 @@ class IngameControllerTest extends ApplicationTest {
     @Mock
     Provider<EntityController> entityControllerProvider;
     @Mock
+    Provider<MapController> mapControllerProvider;
+    @Mock
     EntityController playerController;
     @Mock
     AreaService areaService;
@@ -122,6 +124,15 @@ class IngameControllerTest extends ApplicationTest {
         when(mock.render()).thenReturn(new Label());
 
         type(KeyCode.ESCAPE);
+        verify(mock).render();
+    }
+
+    @Test
+    void openMapTest() {
+        final MapController mock = Mockito.mock(MapController.class);
+        when(mapControllerProvider.get()).thenReturn(mock);
+        when(mock.render()).thenReturn(new Label());
+        type(KeyCode.M);
         verify(mock).render();
     }
 
