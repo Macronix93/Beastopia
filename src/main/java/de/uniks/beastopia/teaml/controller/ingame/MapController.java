@@ -15,6 +15,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 
@@ -44,6 +45,7 @@ public class MapController extends Controller {
     private Map map;
     @Inject
     Provider<RegionInfoController> regionInfoControllerProvider;
+    private Area currentArea;
 
     @Inject
     public MapController() {
@@ -52,6 +54,8 @@ public class MapController extends Controller {
     @Override
     public void init() {
         super.init();
+        Trainer trainerData = cache.getTrainer();
+        currentArea = cache.getArea(trainerData.area());
     }
 
     @Override
@@ -88,6 +92,9 @@ public class MapController extends Controller {
         for (MapObject object : layer.objects()) {
             RegionInfoController regionInfo = regionInfoControllerProvider.get();
             regionInfo.init();
+            if (object.name().equals(currentArea.name())) {
+                markOwnPlayer(object);
+            }
             if (object.polygon() == null) {
                 Rectangle r = new Rectangle();
                 r.setX(object.x());
@@ -112,6 +119,15 @@ public class MapController extends Controller {
             }
 
         }
+    }
+
+    private void markOwnPlayer(MapObject object) {
+        Circle c = new Circle();
+        c.setRadius(5);
+        c.setCenterX(object.x());
+        c.setCenterY(object.y());
+        c.setFill(Color.BLUEVIOLET);
+        anchorPane.getChildren().add(c);
     }
 
     private void setRegionInfo(MapObject object, RegionInfoController regionInfo, MouseEvent event) {

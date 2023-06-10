@@ -3,14 +3,11 @@ package de.uniks.beastopia.teaml.controller.ingame;
 import de.uniks.beastopia.teaml.controller.Controller;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
-import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
 import javax.inject.Inject;
 
 public class RegionInfoController extends Controller {
-    @FXML
-    public VBox rootelement;
     @FXML
     public Text place;
     @FXML
