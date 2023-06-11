@@ -2,18 +2,22 @@ package de.uniks.beastopia.teaml.controller.menu.social;
 
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.AppPreparer;
-import de.uniks.beastopia.teaml.controller.Controller;
+import de.uniks.beastopia.teaml.rest.Group;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.DataCache;
-import de.uniks.beastopia.teaml.service.FriendListService;
 import de.uniks.beastopia.teaml.service.GroupListService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.utils.Prefs;
+import io.reactivex.rxjava3.core.Observable;
+import javafx.application.Platform;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
+import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -25,8 +29,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CreateGroupControllerTest extends ApplicationTest {
@@ -78,6 +85,43 @@ class CreateGroupControllerTest extends ApplicationTest {
         List<String> userIds = new ArrayList<>();
         userIds.add(userOne._id());
         userIds.add(userTwo._id());
+    }
+
+    @Test
+    void createGroupSuccessful() {
+        UserController userOneController = mock();
+        when(userControllerProvider.get()).thenReturn(userOneController);
+        doNothing().when(userOneController).setUser(any());
+        //noinspection unchecked
+        ArgumentCaptor<Consumer<User>> captor = ArgumentCaptor.forClass(Consumer.class);
+        when(userOneController.setOnUserToggled(captor.capture())).thenReturn(userOneController);
+        when(userOneController.setOnUserPinToggled(any())).thenReturn(userOneController);
+        when(userOneController.setIsAdded(anyBoolean())).thenReturn(userOneController);
+        doNothing().when(userOneController).init();
+        when(userOneController.render()).thenReturn(new Label(userOne.name()));
+        when(cache.getAllUsers()).thenReturn(List.of(userOne, userTwo));
+        when(tokenStorage.getCurrentUser()).thenReturn(userTwo);
+        when(groupListService.addGroup(any(), any())).thenReturn(Observable.just(new Group(null, null, "GROUP_ID", "TestGroup", List.of(userOne._id(), userTwo._id()))));
+        DirectMessageController mockedMessageController = mock();
+        when(directMessageControllerProvider.get()).thenReturn(mockedMessageController);
+        when(mockedMessageController.render()).thenReturn(new Pane());
+
+        // search user one
+        clickOn("#usernameField");
+        write(userOne.name());
+
+        // select user one
+        Platform.runLater(() -> captor.getValue().accept(userOne));
+
+        // set group name
+        clickOn("#groupNameField");
+        write("TestGroup");
+
+        // create group
+        clickOn("#createGrpButton");
+
+        verify(groupListService).addGroup("TestGroup", List.of(userOne._id(), userTwo._id()));
+        verify(mockedMessageController).render();
     }
 
     @Test
