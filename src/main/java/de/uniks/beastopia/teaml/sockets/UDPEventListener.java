@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketException;
 import java.nio.channels.AsynchronousCloseException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ import java.util.regex.Pattern;
 public class UDPEventListener {
     private final ObjectMapper mapper;
     DatagramSocket clientSocket;
-    List<Consumer<String>> messageHandlers = new ArrayList<>();
+    final List<Consumer<String>> messageHandlers = new ArrayList<>();
     Thread receiver;
 
     @Inject
@@ -59,7 +60,9 @@ public class UDPEventListener {
             this.ensureOpen();
             send(Map.of("event", "subscribe", "data", pattern));
             final Consumer<String> handler = createPatternHandler(mapper, pattern, type, emitter);
-            messageHandlers.add(handler);
+            synchronized (messageHandlers) {
+                messageHandlers.add(handler);
+            }
             emitter.setCancellable(() -> removeEventHandler(pattern, handler));
         });
     }
@@ -89,7 +92,10 @@ public class UDPEventListener {
         }
 
         send(Map.of("event", "unsubscribe", "data", pattern));
-        messageHandlers.remove(handler);
+
+        synchronized (messageHandlers) {
+            messageHandlers.remove(handler);
+        }
         if (messageHandlers.isEmpty()) {
             close();
         }
@@ -135,11 +141,20 @@ public class UDPEventListener {
                 clientSocket.receive(packet);
                 final String message = new String(packet.getData(), packet.getOffset(), packet.getLength());
                 System.out.println("Received: " + message);
-                messageHandlers.forEach(handler -> handler.accept(message));
+                synchronized (messageHandlers) {
+                    messageHandlers.forEach(handler -> handler.accept(message));
+                }
             } catch (AsynchronousCloseException e) {
                 // main thread closed the socket
                 // exit gracefully
                 return;
+            } catch (SocketException e) {
+                // socket was closed, try again
+                if (clientSocket != null) {
+                    ensureOpen();
+                } else {
+                    return;
+                }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

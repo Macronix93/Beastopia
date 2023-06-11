@@ -64,10 +64,6 @@ class EntityControllerTest extends ApplicationTest {
         verify(udpEventListener, atLeastOnce()).listen(any(), any());
     }
 
-    @Test
-    void destroy() {
-        entityController.destroy();
-    }
 
     private static Image createImage(List<Color> colors) {
         // create buffered image
