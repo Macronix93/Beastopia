@@ -7,6 +7,8 @@ import de.uniks.beastopia.teaml.rest.*;
 import de.uniks.beastopia.teaml.service.AreaService;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
+import de.uniks.beastopia.teaml.service.TrainerService;
+import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.sockets.UDPEventListener;
 import de.uniks.beastopia.teaml.utils.PlayerState;
 import de.uniks.beastopia.teaml.utils.Prefs;
@@ -21,7 +23,6 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import javafx.util.Pair;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -34,7 +35,6 @@ import org.testfx.framework.junit5.ApplicationTest;
 import javax.inject.Provider;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -49,13 +49,19 @@ class IngameControllerTest extends ApplicationTest {
     @Mock
     Provider<EntityController> entityControllerProvider;
     @Mock
+    Provider<MapController> mapControllerProvider;
+    @Mock
     EntityController playerController;
     @Mock
     AreaService areaService;
     @Mock
+    TrainerService trainerService;
+    @Mock
     PresetsService presetsService;
     @Mock
     UDPEventListener udpEventListener;
+    @Mock
+    EventListener eventListener;
     @Mock
     DataCache cache;
     @Mock
@@ -72,21 +78,23 @@ class IngameControllerTest extends ApplicationTest {
     TileSetDescription tileSetDescription = new TileSetDescription(null, "SOURCE");
     TileSet tileSet = new TileSet(2, "IMAGE", 2, 2, 0, "NAME", 0, 4, 1);
     Chunk chunk = new Chunk(List.of(0, 1, 2, 3), 2, 2, 0, 0);
-    Layer layer = new Layer(List.of(chunk), null, 1, 0, 0, null, true, 2, 2, 0, 0);
+    Layer layer = new Layer(List.of(chunk), null, null, 1, 0, 0, null, true, 2, 2, 0, 0);
     Map map = new Map(List.of(tileSetDescription), List.of(layer), 2, 24, 4);
     Area area = new Area(null, null, "ID_AREA", "ID_REGION", "AREA_NAME", map);
     Spawn spawn = new Spawn("ID_AREA", 0, 0);
-    Region region = new Region(null, null, "ID", "NAME", spawn);
+    Region region = new Region(null, null, "ID", "NAME", spawn, null);
     Image image = createImage(2, 2, List.of(new Color(255, 0, 255), new Color(0, 255, 0), new Color(0, 0, 255), new Color(255, 255, 0)));
     Trainer trainer = new Trainer(null, null, "ID_TRAINER", "ID_REGION", "ID_USER", "TRAINER_NAME", "TRAINER_IMAGE", 0, "ID_AREA", 0, 0, 0, new NPCInfo(false));
-    List<Pair<String, Image>> charList = new ArrayList<>() {{
+    /*List<Pair<String, Image>> charList = new ArrayList<>() {{
         add(new Pair<>("TRAINER_IMAGE", image));
-    }};
+    }};*/
 
     @Override
     public void start(Stage stage) {
         AppPreparer.prepare(app);
 
+        when(trainerService.getAllTrainer(anyString())).thenReturn(Observable.just(List.of(trainer)));
+        when(eventListener.listen(any(), any())).thenReturn(Observable.empty());
 
         doNothing().when(prefs).setRegion(any());
         doNothing().when(prefs).setArea(any());
@@ -116,6 +124,15 @@ class IngameControllerTest extends ApplicationTest {
         when(mock.render()).thenReturn(new Label());
 
         type(KeyCode.ESCAPE);
+        verify(mock).render();
+    }
+
+    @Test
+    void openMapTest() {
+        final MapController mock = Mockito.mock(MapController.class);
+        when(mapControllerProvider.get()).thenReturn(mock);
+        when(mock.render()).thenReturn(new Label());
+        type(KeyCode.M);
         verify(mock).render();
     }
 

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+<VBox alignment="CENTER" prefHeight="131.0" prefWidth="231.0" styleClass="regionInfo"
+      xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="de.uniks.beastopia.teaml.controller.ingame.RegionInfoController">
+    <Text fx:id="place" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" textAlignment="CENTER"
+          wrappingWidth="136.7294921875">
+        <VBox.margin>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+        </VBox.margin>
+        <font>
+            <Font name="System Bold" size="16.0"/>
+        </font>
+    </Text>
+    <Text fx:id="description" layoutX="69.0" layoutY="39.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text"
+          textAlignment="CENTER" wrappingWidth="207.7294921875"/>
+</VBox>
