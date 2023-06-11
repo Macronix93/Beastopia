@@ -17,6 +17,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import org.junit.jupiter.api.Test;
@@ -72,8 +73,8 @@ class TrainerControllerTest extends ApplicationTest {
     User user = new User(null, null, "ID", "USER", "ONLINE", null, List.of());
     Region region = new Region(null, null, "ID", "NAME", new Spawn(null, 0, 0));
     List<Trainer> allTrainer = List.of(
-            new Trainer(null, null, "123", "A", "123", "A", "A", 0, null, 0, 0, 0, null),
-            new Trainer(null, null, "456", "B", "456", "B", "B", 1, null, 0, 0, 0, null)
+            new Trainer(null, null, "123", "A", "123", "A", "A.png", 0, null, 0, 0, 0, null),
+            new Trainer(null, null, "456", "B", "456", "B", "B.png", 1, null, 0, 0, 0, null)
     );
 
     @Override
@@ -82,10 +83,14 @@ class TrainerControllerTest extends ApplicationTest {
 
         trainerController.setRegion(region);
 
+        //doNothing().when(cache).setTrainer(any());
+        //when(cache.getTrainer()).thenReturn(any());
         when(cache.getCharacters()).thenReturn(allCharacters);
-        when(trainerService.getAllTrainer(region._id())).thenReturn(Observable.just(allTrainer));
+        //when(cache.getCharacterImage(anyString())).thenReturn(List.of(allCharacters));
+        when(trainerService.getAllTrainer(anyString())).thenReturn(Observable.just(allTrainer));
         when(tokenStorage.getCurrentUser()).thenReturn(user);
         doNothing().when(mock(TrainerController.class)).showTrainerSpritePreview(any(), any());
+        when(trainerController.render()).thenAnswer(invocation -> new Text(allTrainer.get(0).name()));
 
         app.start(stage);
         app.show(trainerController);
@@ -93,14 +98,14 @@ class TrainerControllerTest extends ApplicationTest {
     }
 
     @Test
-    void createTrainer() {
+    void createNewTrainer() {
         IngameController mockedIngameController = mock(IngameController.class);
         when(ingameControllerProvider.get()).thenReturn(mockedIngameController);
         when(mockedIngameController.render()).thenReturn(new Button());
 
         when(trainerService.createTrainer(eq(region._id()), anyString(), anyString()))
                 .thenReturn(Observable.just(
-                        new Trainer(null, null, "ID", "REGION", "USER", "TRAINER_NAME", "TRAINER_IMAGE", 0, null, 0, 0, 0, new NPCInfo(false))));
+                        new Trainer(null, null, "ID", "REGION", "USER", "TRAINER_NAME", "A.png", 0, null, 0, 0, 0, new NPCInfo(false))));
 
         clickOn("#trainerNameInput");
         write("MyTrainer");
@@ -112,7 +117,17 @@ class TrainerControllerTest extends ApplicationTest {
     }
 
     @Test
-    void trainerDelete() {
+    void showTrainerDelete() {
+        DeleteTrainerController mocked = mock();
+        when(deleteTrainerControllerProvider.get()).thenReturn(mocked);
+        when(mocked.render()).thenReturn(new Button());
+        Trainer trainer = new Trainer(null, null, "123", "A", "123", "A", "A.png", 0, null, 0, 0, 0, null);
+        when(cache.getTrainer()).thenReturn(trainer);
+
+        clickOn("#deleteTrainerButton");
+
+        verify(deleteTrainerControllerProvider).get();
+        verify(mocked).render();
     }
 
     @Test
