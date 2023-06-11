@@ -25,7 +25,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
 
 import javax.inject.Provider;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -74,17 +73,13 @@ class CreateGroupControllerTest extends ApplicationTest {
 
 
     @Test
-    void createGroup() {
+    void missingGroupName() {
         assertEquals(createGroupController.groupNameField.getText().isEmpty(), createGroupController.groupNameField.getText().isEmpty());
         clickOn("#createGrpButton");
         Node dialogPane = lookup(".dialog-pane").query();
         from(dialogPane).lookup((Text t) -> t.getText().startsWith("Groupname missing")).query();
         clickOn("OK");
 
-        //noinspection MismatchedQueryAndUpdateOfCollection
-        List<String> userIds = new ArrayList<>();
-        userIds.add(userOne._id());
-        userIds.add(userTwo._id());
     }
 
     @Test
