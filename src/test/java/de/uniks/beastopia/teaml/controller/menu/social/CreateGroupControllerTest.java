@@ -44,13 +44,10 @@ class CreateGroupControllerTest extends ApplicationTest {
     @Mock
     Provider<UserController> userControllerProvider;
     @Mock
-    Provider<CreateGroupController> createGroupControllerProvider;
-    @Mock
     GroupListService groupListService;
     @Mock
-    FriendListService friendListService;
-    @Mock
     TokenStorage tokenStorage;
+    @SuppressWarnings("unused")
     @Mock
     Prefs prefs;
     @Mock
@@ -58,9 +55,6 @@ class CreateGroupControllerTest extends ApplicationTest {
 
     final User userOne = new User(null, null, "1", "1", null, null, null);
     final User userTwo = new User(null, null, "2", "2", null, null, null);
-    private final List<User> addedUsersList = new ArrayList<>();
-    private final List<Controller> addedUserControllers = new ArrayList<>();
-    private final List<Controller> availableUserControllers = new ArrayList<>();
 
     @Override
     public void start(Stage stage) {
@@ -71,15 +65,6 @@ class CreateGroupControllerTest extends ApplicationTest {
         stage.requestFocus();
     }
 
-    @Test
-    void updateUserList() {
-
-
-    }
-
-    @Test
-    void updateAddedUserList() {
-    }
 
     @Test
     void createGroup() {
@@ -88,13 +73,11 @@ class CreateGroupControllerTest extends ApplicationTest {
         Node dialogPane = lookup(".dialog-pane").query();
         from(dialogPane).lookup((Text t) -> t.getText().startsWith("Groupname missing")).query();
         clickOn("OK");
-        /*
-        clickOn("#chatInput");
-        write("Hello World");
-        clickOn("#sendButton");
-        */
 
-
+        //noinspection MismatchedQueryAndUpdateOfCollection
+        List<String> userIds = new ArrayList<>();
+        userIds.add(userOne._id());
+        userIds.add(userTwo._id());
     }
 
     @Test
