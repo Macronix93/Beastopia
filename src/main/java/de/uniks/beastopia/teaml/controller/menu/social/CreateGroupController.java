@@ -9,6 +9,7 @@ import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.utils.Dialog;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 
@@ -30,6 +31,10 @@ public class CreateGroupController extends Controller {
     public VBox users;
     @FXML
     public VBox addedUsers;
+    @FXML
+    public Button createGrpButton;
+    @FXML
+    public Button backButton;
     @FXML
     public TextField groupNameField;
     @Inject
