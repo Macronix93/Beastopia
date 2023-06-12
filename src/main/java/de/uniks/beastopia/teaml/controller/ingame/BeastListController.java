@@ -18,6 +18,8 @@ public class BeastListController extends Controller {
     @Inject
     Provider<IngameController> ingameControllerProvider;
     @Inject
+    Provider<BeastController> beastControllerProvider;
+    @Inject
     TokenStorage tokenStorage;
 
     private Runnable onCloseRequest;
@@ -36,6 +38,7 @@ public class BeastListController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
+        VBoxBeasts.getChildren().add(beastControllerProvider.get().render());
         return parent;
     }
 
