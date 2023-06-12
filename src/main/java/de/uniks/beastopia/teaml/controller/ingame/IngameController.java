@@ -37,7 +37,10 @@ public class IngameController extends Controller {
     public HBox ingame;
     @FXML
     public Pane tilePane;
+    @FXML
     public HBox beastListLayout;
+    @FXML
+    public HBox beastDetailLayout;
     @Inject
     App app;
     @Inject
@@ -50,6 +53,8 @@ public class IngameController extends Controller {
     Provider<PauseController> pauseControllerProvider;
     @Inject
     BeastListController beastListController;
+    @Inject
+    BeastDetailController beastDetailController;
     @Inject
     Prefs prefs;
     @Inject
@@ -77,6 +82,7 @@ public class IngameController extends Controller {
     ObjectProperty<PlayerState> state = new SimpleObjectProperty<>();
     Parent player;
     Parent beastListParent;
+    Parent beastDetailParent;
     EntityController playerController;
     java.util.Map<EntityController, Parent> otherPlayers = new HashMap<>();
 
@@ -136,6 +142,7 @@ public class IngameController extends Controller {
 
                     drawMap();
                     beastListParent = beastListController.render();
+                    beastDetailParent = beastDetailController.render();
 
                     disposables.add(trainerService.getAllTrainer(region._id()).observeOn(FX_SCHEDULER).subscribe(trainers -> {
                         cache.setTrainers(trainers);
@@ -408,8 +415,10 @@ public class IngameController extends Controller {
         if (keyEvent.getCode().equals(KeyCode.B)) {
             if (beastListLayout.getChildren().contains(beastListParent)) {
                 beastListLayout.getChildren().remove(beastListParent);
+                beastDetailLayout.getChildren().remove(beastDetailParent);
             } else {
                 beastListLayout.getChildren().add(beastListParent);
+                beastDetailLayout.getChildren().add(beastDetailParent);
             }
         }
     }

@@ -39,7 +39,7 @@
         <Label fx:id="level" alignment="CENTER" text="10" />
       </HBox>
       <HBox alignment="TOP_RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="1">
-        <Button mnemonicParsing="false" text="X">
+        <Button mnemonicParsing="false" onAction="#openDetails" text="X">
            <font>
               <Font size="10.0" />
            </font></Button>
