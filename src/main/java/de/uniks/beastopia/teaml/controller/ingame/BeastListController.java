@@ -32,7 +32,7 @@ public class BeastListController extends Controller {
     @Override
     public void init() {
         super.init();
-        System.out.println(tokenStorage.getCurrentUser().name());
+
     }
 
     @Override
