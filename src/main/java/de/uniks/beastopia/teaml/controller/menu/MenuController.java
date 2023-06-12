@@ -1,5 +1,6 @@
 package de.uniks.beastopia.teaml.controller.menu;
 
+import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.auth.LoginController;
 import de.uniks.beastopia.teaml.controller.menu.social.FriendListController;
@@ -10,6 +11,7 @@ import de.uniks.beastopia.teaml.utils.Dialog;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -18,6 +20,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class MenuController extends Controller {
     private final List<Controller> subControllers = new ArrayList<>();
@@ -47,10 +50,8 @@ public class MenuController extends Controller {
     private VBox friendListContainer;
     @FXML
     private VBox regionContainer;
-    @SuppressWarnings("unused")
     @FXML
     private ImageView banner;
-    @SuppressWarnings("unused")
     @FXML
     private ImageView userAvatar;
     @FXML
@@ -76,10 +77,9 @@ public class MenuController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
-        //set beastopia banner
 
-        //set userAvatar
-
+        banner.setImage(new Image(Objects.requireNonNull(Main.class.getResourceAsStream("assets/beastopia_banner.png"))));
+        userAvatar.setImage(cache.getImageAvatar(tokenStorage.getCurrentUser()));
         userName.setText(tokenStorage.getCurrentUser().name());
 
         Controller friendListController = friendListControllerProvider.get();
@@ -97,6 +97,8 @@ public class MenuController extends Controller {
     @Override
     public void destroy() {
         subControllers.forEach(Controller::destroy);
+        banner = null;
+        userAvatar = null;
         super.destroy();
     }
 
