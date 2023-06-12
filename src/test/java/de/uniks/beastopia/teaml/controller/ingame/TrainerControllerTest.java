@@ -118,6 +118,7 @@ class TrainerControllerTest extends ApplicationTest {
         when(cache.getTrainer()).thenReturn(allTrainer.get(0));
         when(cache.getCharacters()).thenReturn(allCharacters);
         when(cache.getCharacterImage(anyString())).thenReturn(allCharacters.get(0));
+        when(presetsService.getCharacters()).thenReturn(Observable.just(characters));
         doNothing().when(mock(TrainerController.class)).showTrainerSpritePreview(any(), any());
 
         app.start(stage);
@@ -244,7 +245,6 @@ class TrainerControllerTest extends ApplicationTest {
 
         when(trainerService.getAllTrainer(anyString())).thenReturn(Observable.just(allTrainer));
         when(tokenStorage.getCurrentUser()).thenReturn(user);
-        when(presetsService.getCharacters()).thenReturn(Observable.just(characters));
 
         when(cache.getTrainer()).thenReturn(null);
         when(tokenStorage.getCurrentUser()).thenReturn(user);
@@ -253,8 +253,6 @@ class TrainerControllerTest extends ApplicationTest {
         trainerController.render();
 
         when(cache.getCharacters()).thenReturn(allCharacters);
-
-        verify(presetsService).getCharacters();
     }
 
     @Test
