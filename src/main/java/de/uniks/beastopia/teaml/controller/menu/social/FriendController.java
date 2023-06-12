@@ -112,7 +112,7 @@ public class FriendController extends Controller {
         Parent parent = super.render();
         if (user.avatar() != null) {
             if (user.avatar().contains("data:image/png;base64,")) {
-                String avatar = user.avatar().replace("data:image/png;base64,", "");
+                String avatar = user.avatar().replace("data:image/png;base64,", "").trim();
                 System.out.println(avatar);
                 byte[] imageData = Base64.getDecoder().decode(avatar);
                 friendAvatar.setImage(new Image(new ByteArrayInputStream(imageData)));
@@ -120,7 +120,7 @@ public class FriendController extends Controller {
         } else {
             //TODO change avatar URL when avatar upload is implemented to individual link
             try {
-                Image image = loadImage(Objects.requireNonNull(Main.class.getResource("assets/Lumnix_Logo_tr.png")).toString(),
+                Image image = loadImage(Objects.requireNonNull(Main.class.getResource("assets/us")).toString(),
                         40.0, 40.0, false, false);
                 friendAvatar.setImage(image);
             } catch (FileNotFoundException | URISyntaxException e) {
