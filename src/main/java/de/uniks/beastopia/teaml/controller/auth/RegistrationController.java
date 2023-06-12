@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Base64;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class RegistrationController extends Controller {
@@ -104,16 +105,16 @@ public class RegistrationController extends Controller {
         avatarPreview.setImage(image);
     }
 
-    public String getAvatarDataUrl(ImageView imageReady) {
+    public String getAvatarDataUrl() {
         //TODO: implement upload via file URL
         // scale image to 128x128
         // put image into cache to use it everywhere --> main menu
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        BufferedImage bufferedImage = null;
+        BufferedImage bufferedImage;
         //SwingFXUtils.fromFXImage(imageReady, null);
         try {
             try {
-                bufferedImage = ImageIO.read(new File(Main.class.getResource("assets/user.png").toURI()));
+                bufferedImage = ImageIO.read(new File(Objects.requireNonNull(Main.class.getResource("assets/user.png")).toURI()));
             } catch (URISyntaxException e) {
                 throw new RuntimeException(e);
             }
@@ -125,14 +126,13 @@ public class RegistrationController extends Controller {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        String dataURL = "data:image/png;base64," + Base64.getEncoder().encodeToString(bytes.toByteArray());
-        return dataURL;
+        return "data:image/png;base64," + Base64.getEncoder().encodeToString(bytes.toByteArray());
     }
 
     @SuppressWarnings("UnnecessaryUnicodeEscape")
     @FXML
     private void signUp() {
-        disposables.add(registrationService.createUser(usernameInput.getText(), getAvatarDataUrl(avatarPreview), passwordInput.getText())
+        disposables.add(registrationService.createUser(usernameInput.getText(), getAvatarDataUrl(), passwordInput.getText())
                 .observeOn(FX_SCHEDULER).subscribe(user -> {
                     Dialog.info(isEnglish ? "Registration successful!" : "Registrierung erfolgreich!",
                             isEnglish ? "You can now sign in with your new account." : "Sie k\u00f6nnen sich jetzt mit Ihrem neuen Konto anmelden.");
