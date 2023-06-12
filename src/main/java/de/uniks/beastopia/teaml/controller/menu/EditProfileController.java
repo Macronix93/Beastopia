@@ -2,6 +2,7 @@ package de.uniks.beastopia.teaml.controller.menu;
 
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.service.AuthService;
+import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.utils.Dialog;
 import javafx.beans.property.SimpleStringProperty;
@@ -11,9 +12,15 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
+import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import javax.inject.Provider;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 
 public class EditProfileController extends Controller {
@@ -31,6 +38,8 @@ public class EditProfileController extends Controller {
     public PasswordField passwordInput;
     @FXML
     public PasswordField passwordRepeatInput;
+    @FXML
+    public ImageView avatarPreview;
     @Inject
     Provider<MenuController> menuControllerProvider;
     @Inject
@@ -41,9 +50,12 @@ public class EditProfileController extends Controller {
     AuthService authService;
     @Inject
     TokenStorage tokenStorage;
+    @Inject
+    DataCache cache;
     @FXML
     private TextField usernameInput;
     private String backController;
+    private BufferedImage bufferedImage = null;
 
     @Inject
     public EditProfileController() {
@@ -58,6 +70,7 @@ public class EditProfileController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
+        avatarPreview.setImage(cache.getImageAvatar(tokenStorage.getCurrentUser()));
         usernameInput.textProperty().bindBidirectional(username);
         passwordInput.textProperty().bindBidirectional(password);
         passwordRepeatInput.textProperty().bindBidirectional(passwordRepeat);
@@ -71,6 +84,13 @@ public class EditProfileController extends Controller {
     }
 
     public void uploadAvatar() {
+        File file = cache.provideFile(app);
+        try {
+            this.bufferedImage = ImageIO.read(file);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        avatarPreview.setImage(new Image(file.toURI().toString(), 128, 128, true, true, true));
     }
 
     private void errorMessage(String message) {
@@ -107,6 +127,10 @@ public class EditProfileController extends Controller {
         } else if (!usernameInput.getText().equals(tokenStorage.getCurrentUser().name())) {
             setNewUsername();
         }
+
+        if (bufferedImage != null) {
+            setNewAvatar();
+        }
     }
 
     private void setNewUsername() {
@@ -138,4 +162,15 @@ public class EditProfileController extends Controller {
         }
     }
 
+    private void setNewAvatar() {
+        disposables.add(authService.updateAvatar(cache.getAvatarDataUrl(bufferedImage)).observeOn(FX_SCHEDULER).subscribe(
+                lr -> app.show(menuControllerProvider.get()),
+                error -> Dialog.error(error, resources.getString("avatarChangeFailed"))));
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        avatarPreview = null;
+    }
 }
