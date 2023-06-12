@@ -2,6 +2,7 @@ package de.uniks.beastopia.teaml.controller.auth;
 
 import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
+import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.RegistrationService;
 import de.uniks.beastopia.teaml.utils.Dialog;
 import de.uniks.beastopia.teaml.utils.Prefs;
@@ -15,17 +16,14 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.stage.FileChooser;
 
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Base64;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.ResourceBundle;
@@ -55,14 +53,27 @@ public class RegistrationController extends Controller {
     Prefs prefs;
     @Inject
     Provider<LoginController> loginControllerProvider;
+    @Inject
+    DataCache cache;
 
     private final SimpleStringProperty username = new SimpleStringProperty();
     private final SimpleStringProperty password = new SimpleStringProperty();
     private final SimpleStringProperty passwordRepeat = new SimpleStringProperty();
     private boolean isEnglish = false;
+    private BufferedImage bufferedImage;
 
     @Inject
     public RegistrationController() {
+    }
+
+    @Override
+    public void init() {
+        super.init();
+        try {
+            bufferedImage = ImageIO.read(new File(Objects.requireNonNull(Main.class.getResource("assets/user.png")).toURI()));
+        } catch (IOException | URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -73,6 +84,8 @@ public class RegistrationController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
+
+        avatarPreview.setImage(new Image(Objects.requireNonNull(Main.class.getResourceAsStream("assets/user.png"))));
 
         if (prefs.getLocale().contains("de")) {
             selectGermanLanguage.setSelected(true);
@@ -96,43 +109,19 @@ public class RegistrationController extends Controller {
 
     @FXML
     private void uploadAvatar() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Choose Avatar");
-        fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg"));
-        File file = fileChooser.showOpenDialog(app.getStage());
-        Image image = new Image(file.toURI().toString(), 128, 128, true, true, true);
-        avatarPreview.setImage(image);
-    }
-
-    public String getAvatarDataUrl() {
-        //TODO: implement upload via file URL
-        // scale image to 128x128
-        // put image into cache to use it everywhere --> main menu
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        BufferedImage bufferedImage;
-        //SwingFXUtils.fromFXImage(imageReady, null);
+        File file = cache.provideFile(app);
         try {
-            try {
-                bufferedImage = ImageIO.read(new File(Objects.requireNonNull(Main.class.getResource("assets/user.png")).toURI()));
-            } catch (URISyntaxException e) {
-                throw new RuntimeException(e);
-            }
+            this.bufferedImage = ImageIO.read(file);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        try {
-            ImageIO.write(bufferedImage, "png", bytes);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return "data:image/png;base64," + Base64.getEncoder().encodeToString(bytes.toByteArray());
+        avatarPreview.setImage(new Image(file.toURI().toString(), 128, 128, true, true, true));
     }
 
     @SuppressWarnings("UnnecessaryUnicodeEscape")
     @FXML
     private void signUp() {
-        disposables.add(registrationService.createUser(usernameInput.getText(), getAvatarDataUrl(), passwordInput.getText())
+        disposables.add(registrationService.createUser(usernameInput.getText(), cache.getAvatarDataUrl(bufferedImage), passwordInput.getText())
                 .observeOn(FX_SCHEDULER).subscribe(user -> {
                     Dialog.info(isEnglish ? "Registration successful!" : "Registrierung erfolgreich!",
                             isEnglish ? "You can now sign in with your new account." : "Sie k\u00f6nnen sich jetzt mit Ihrem neuen Konto anmelden.");
@@ -159,5 +148,11 @@ public class RegistrationController extends Controller {
         prefs.setLocale(locale.toLanguageTag());
         resources = resourcesProvider.get();
         app.update();
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        avatarPreview = null;
     }
 }
