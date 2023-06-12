@@ -89,8 +89,8 @@ public class IngameController extends Controller {
         super.init();
         beastListController.setOnCloseRequest(() -> {
             beastListLayout.getChildren().remove(beastListParent);
-            beastListController.init();
         });
+        beastListController.init();
         state.setValue(PlayerState.IDLE);
         playerController = entityControllerProvider.get();
         playerController.setTrainer(cache.getTrainer());

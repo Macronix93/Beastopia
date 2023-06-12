@@ -1,6 +1,7 @@
 package de.uniks.beastopia.teaml.controller.ingame;
 
 import de.uniks.beastopia.teaml.controller.Controller;
+import de.uniks.beastopia.teaml.service.TokenStorage;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.input.KeyCode;
@@ -16,12 +17,20 @@ public class BeastListController extends Controller {
     public VBox VBoxBeasts;
     @Inject
     Provider<IngameController> ingameControllerProvider;
+    @Inject
+    TokenStorage tokenStorage;
 
     private Runnable onCloseRequest;
 
     @Inject
     public BeastListController() {
 
+    }
+
+    @Override
+    public void init() {
+        super.init();
+        System.out.println(tokenStorage.getCurrentUser().name());
     }
 
     @Override

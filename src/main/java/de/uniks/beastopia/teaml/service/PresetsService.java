@@ -1,6 +1,7 @@
 package de.uniks.beastopia.teaml.service;
 
 import com.google.gson.Gson;
+import de.uniks.beastopia.teaml.rest.Monster;
 import de.uniks.beastopia.teaml.rest.PresetsApiService;
 import de.uniks.beastopia.teaml.rest.TileSet;
 import de.uniks.beastopia.teaml.rest.TileSetDescription;
@@ -47,4 +48,9 @@ public class PresetsService {
         int y = (id - 1) / columns;
         return new Rectangle2D(x * tileSize, y * tileSize, tileSize, tileSize);
     }
+
+    public Observable<List<Monster>> getMonsters() {
+        return presetsApiService.getMonsters();
+    }
+
 }
