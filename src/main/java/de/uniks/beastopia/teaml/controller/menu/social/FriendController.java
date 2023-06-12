@@ -110,23 +110,7 @@ public class FriendController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
-        if (user.avatar() != null) {
-            if (user.avatar().contains("data:image/png;base64,")) {
-                String avatar = user.avatar().replace("data:image/png;base64,", "").trim();
-                System.out.println(avatar);
-                byte[] imageData = Base64.getDecoder().decode(avatar);
-                friendAvatar.setImage(new Image(new ByteArrayInputStream(imageData)));
-            }
-        } else {
-            //TODO change avatar URL when avatar upload is implemented to individual link
-            try {
-                Image image = loadImage(Objects.requireNonNull(Main.class.getResource("assets/us")).toString(),
-                        40.0, 40.0, false, false);
-                friendAvatar.setImage(image);
-            } catch (FileNotFoundException | URISyntaxException e) {
-                throw new RuntimeException(e);
-            }
-        }
+        friendAvatar.setImage(getImage());
         name.setText(user.name());
         updateOnlineStatus(user);
 
@@ -137,7 +121,7 @@ public class FriendController extends Controller {
                 this.pin.setGraphic(notPinned);
             }
         } else {
-            this.pin.setGraphic(notPinned); //that buttons align
+            this.pin.setGraphic(notPinned);
             this.pin.setVisible(false);
             this.pin.setDisable(true);
         }
@@ -149,6 +133,27 @@ public class FriendController extends Controller {
         }
 
         return parent;
+    }
+
+    private Image getImage() {
+        Image imageAvatar;
+
+        try {
+            if (user.avatar() != null && user.avatar().contains("data:image/png;base64,")) {
+                String avatar = user.avatar().replace("data:image/png;base64,", "").trim();
+                byte[] imageData = Base64.getDecoder().decode(avatar);
+                imageAvatar = new Image(new ByteArrayInputStream(imageData));
+            } else if (user.avatar() != null && user.avatar().contains("https://")) {
+                imageAvatar = loadImage(user.avatar(), 40.0, 40.0, false, false);
+            } else {
+                imageAvatar = loadImage(Objects.requireNonNull(Main.class.getResource("assets/user.png")).toString(),
+                        40.0, 40.0, false, false);
+            }
+        } catch (FileNotFoundException | URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+
+        return imageAvatar;
     }
 
     private void updateOnlineStatus(User user) {
@@ -218,7 +223,6 @@ public class FriendController extends Controller {
         notPinned = null;
         addImage = null;
         removeImage = null;
-
         onPinChanged = null;
         onFriendChanged = null;
 
