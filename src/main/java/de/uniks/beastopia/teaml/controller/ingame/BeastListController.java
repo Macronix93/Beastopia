@@ -1,6 +1,7 @@
 package de.uniks.beastopia.teaml.controller.ingame;
 
 import de.uniks.beastopia.teaml.controller.Controller;
+import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -21,6 +22,8 @@ public class BeastListController extends Controller {
     Provider<BeastController> beastControllerProvider;
     @Inject
     TokenStorage tokenStorage;
+    @Inject
+    DataCache cache;
 
     private Runnable onCloseRequest;
 
