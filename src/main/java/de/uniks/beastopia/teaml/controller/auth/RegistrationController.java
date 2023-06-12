@@ -14,13 +14,13 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -31,8 +31,8 @@ import java.util.ResourceBundle;
 
 public class RegistrationController extends Controller {
 
-    private static final String LUMNIX_LOGO_URL = "https://db3pap006files.storage.live.com/y4mxQt5LQarTNXi_kqABPhZym0Mz3F9OlGfaD_oTWOO9bOQ3O5ONq7RuM7MAs0jYC0KvrQzmUYviHw0_u5iWumlA_h1uJ8nkOdVyO1xjk5IP6DGAWWeLRBN4rTch1Pmtr0220reSsrz7T8FRApdi3u7U_0hgat5RaXj4_fO7xp-lAXwCSQoNIPhazCcAoEPtDKk?encodeFailures=1&width=500&height=500";
-
+    @FXML
+    public ImageView avatarPreview;
     @FXML
     private TextField usernameInput;
     @FXML
@@ -98,17 +98,22 @@ public class RegistrationController extends Controller {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Choose Avatar");
         fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg"));
         File file = fileChooser.showOpenDialog(app.getStage());
-        Image image = new Image(file.toURI().toString());
-        System.out.println(file.toURI());
+        Image image = new Image(file.toURI().toString(), 128, 128, true, true, true);
+        avatarPreview.setImage(image);
     }
 
-    public String getAvatarDataUrl(String fileUrl) {
+    public String getAvatarDataUrl(ImageView imageReady) {
+        //TODO: implement upload via file URL
+        // scale image to 128x128
+        // put image into cache to use it everywhere --> main menu
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        BufferedImage image = null;
+        BufferedImage bufferedImage = null;
+        //SwingFXUtils.fromFXImage(imageReady, null);
         try {
             try {
-                image = ImageIO.read(new File(Main.class.getResource("assets/user.png").toURI()));
+                bufferedImage = ImageIO.read(new File(Main.class.getResource("assets/user.png").toURI()));
             } catch (URISyntaxException e) {
                 throw new RuntimeException(e);
             }
@@ -116,7 +121,7 @@ public class RegistrationController extends Controller {
             throw new RuntimeException(e);
         }
         try {
-            ImageIO.write((RenderedImage) image, "png", bytes);
+            ImageIO.write(bufferedImage, "png", bytes);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -127,7 +132,7 @@ public class RegistrationController extends Controller {
     @SuppressWarnings("UnnecessaryUnicodeEscape")
     @FXML
     private void signUp() {
-        disposables.add(registrationService.createUser(usernameInput.getText(), getAvatarDataUrl(""), passwordInput.getText())
+        disposables.add(registrationService.createUser(usernameInput.getText(), getAvatarDataUrl(avatarPreview), passwordInput.getText())
                 .observeOn(FX_SCHEDULER).subscribe(user -> {
                     Dialog.info(isEnglish ? "Registration successful!" : "Registrierung erfolgreich!",
                             isEnglish ? "You can now sign in with your new account." : "Sie k\u00f6nnen sich jetzt mit Ihrem neuen Konto anmelden.");
