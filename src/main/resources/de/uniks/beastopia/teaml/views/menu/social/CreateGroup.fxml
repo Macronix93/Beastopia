@@ -75,9 +75,10 @@
             <padding>
                 <Insets left="20.0" right="20.0"/>
             </padding>
-            <Button mnemonicParsing="false" onAction="#back" prefHeight="500.0" prefWidth="1000.0" text="%Back"/>
-            <Button maxWidth="1000.0" mnemonicParsing="false" onAction="#createGroup" prefHeight="500.0"
-                    prefWidth="1000.0" text="%createGroup"/>
+            <Button fx:id="backButton" mnemonicParsing="false" onAction="#back" prefHeight="500.0" prefWidth="1000.0"
+                    text="%Back"/>
+            <Button fx:id="createGrpButton" maxWidth="1000.0" mnemonicParsing="false" onAction="#createGroup"
+                    prefHeight="500.0" prefWidth="1000.0" text="%createGroup"/>
         </HBox>
     </GridPane>
 </GridPane>

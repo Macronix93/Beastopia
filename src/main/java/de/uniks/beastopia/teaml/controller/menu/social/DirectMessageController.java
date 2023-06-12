@@ -28,27 +28,20 @@ public class DirectMessageController extends Controller {
 
     @FXML
     public Button backButton;
-
     @Inject
     Provider<MenuController> menuControllerProvider;
-
     @Inject
     Provider<ChatWindowController> chatWindowControllerProvider;
-    @Inject
-    Provider<EditGroupController> editGroupControllerProvider;
     @Inject
     Provider<CreateGroupController> createGroupControllerProvider;
     @Inject
     MessageService messageService;
-
     @Inject
     GroupListService groupListService;
-
     @Inject
     ChatListController chatListController;
     @Inject
     TokenStorage tokenStorage;
-
     @FXML
     public GridPane grid;
     @FXML
@@ -59,6 +52,7 @@ public class DirectMessageController extends Controller {
     public Label chatName; //this label shows the name of the person/group you are chatting with
     private Node rightSide;
     private Group currentGroup;
+    ChatWindowController controller;
 
     @Inject
     public DirectMessageController() {
@@ -162,7 +156,10 @@ public class DirectMessageController extends Controller {
     private void loadGroup(Group group) {
         currentGroup = group;
         grid.getChildren().remove(rightSide);
-        ChatWindowController controller = chatWindowControllerProvider.get().setupChatWindowController(group);
+        if (controller != null) {
+            controller.destroy();
+        }
+        controller = chatWindowControllerProvider.get().setupChatWindowController(group);
         controller.init();
         rightSide = controller.render();
         grid.add(rightSide, 1, 1);

@@ -19,4 +19,8 @@ public class RegionService {
     public Observable<List<Region>> getRegions() {
         return regionApiService.getRegions();
     }
+
+    public Observable<Region> getRegion(String id) {
+        return regionApiService.getRegion(id);
+    }
 }
