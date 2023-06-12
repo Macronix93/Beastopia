@@ -37,6 +37,7 @@ public abstract class Controller {
 
     public void destroy() {
         disposables.dispose();
+        FX_SCHEDULER.shutdown();
     }
 
     public String getTitle() {

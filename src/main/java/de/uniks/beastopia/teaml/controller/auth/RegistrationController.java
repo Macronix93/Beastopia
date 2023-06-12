@@ -13,6 +13,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.stage.FileChooser;
 
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
@@ -93,7 +95,12 @@ public class RegistrationController extends Controller {
 
     @FXML
     private void uploadAvatar() {
-
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Choose Avatar");
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        File file = fileChooser.showOpenDialog(app.getStage());
+        Image image = new Image(file.toURI().toString());
+        System.out.println(file.toURI());
     }
 
     public String getAvatarDataUrl(String fileUrl) {
