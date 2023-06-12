@@ -37,6 +37,7 @@ public class IngameController extends Controller {
     public HBox ingame;
     @FXML
     public Pane tilePane;
+    public HBox beastListLayout;
     @Inject
     App app;
     @Inject
@@ -48,7 +49,7 @@ public class IngameController extends Controller {
     @Inject
     Provider<PauseController> pauseControllerProvider;
     @Inject
-    Provider<BeastListController> beastListControllerProvider;
+    BeastListController beastListController;
     @Inject
     Prefs prefs;
     @Inject
@@ -75,10 +76,9 @@ public class IngameController extends Controller {
     Direction direction;
     ObjectProperty<PlayerState> state = new SimpleObjectProperty<>();
     Parent player;
+    Parent beastListParent;
     EntityController playerController;
     java.util.Map<EntityController, Parent> otherPlayers = new HashMap<>();
-
-    private boolean beastListOpen;
 
     @Inject
     public IngameController() {
@@ -87,7 +87,6 @@ public class IngameController extends Controller {
     @Override
     public void init() {
         super.init();
-        beastListOpen = false;
         state.setValue(PlayerState.IDLE);
         playerController = entityControllerProvider.get();
         playerController.setTrainer(cache.getTrainer());
@@ -132,6 +131,7 @@ public class IngameController extends Controller {
                     this.image = presetsService.getImage(tileSet).blockingFirst();
 
                     drawMap();
+                    beastListParent = beastListController.render();
 
                     disposables.add(trainerService.getAllTrainer(region._id()).observeOn(FX_SCHEDULER).subscribe(trainers -> {
                         cache.setTrainers(trainers);
@@ -401,19 +401,13 @@ public class IngameController extends Controller {
             updateOrigin();
         }
 
-        if (keyEvent.getCode().equals(KeyCode.B) && !beastListOpen) {
-            BeastListController controller = beastListControllerProvider.get();
-            ingame.getChildren().add(controller.render());
-            beastListOpen = true;
-        } else if (keyEvent.getCode().equals(KeyCode.B) && beastListOpen) {
-            closeBeastList();
+        if (keyEvent.getCode().equals(KeyCode.B)) {
+            if (beastListLayout.getChildren().contains(beastListParent)) {
+                beastListLayout.getChildren().remove(beastListParent);
+            } else {
+                beastListLayout.getChildren().add(beastListParent);
+            }
         }
-    }
-
-    public void closeBeastList() {
-        //ToDo remove BeastListController, not only the last child
-        ingame.getChildren().remove(ingame.getChildren().size() - 1);
-        beastListOpen = false;
     }
 
     @FXML
@@ -437,6 +431,7 @@ public class IngameController extends Controller {
     public void destroy() {
         super.destroy();
         playerController.destroy();
+        beastListController.destroy();
         for (EntityController controller : otherPlayers.keySet()) {
             controller.destroy();
         }
