@@ -4,13 +4,13 @@ package de.uniks.beastopia.teaml.controller.menu.social;
 import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.User;
+import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.FriendListService;
 import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Paint;
@@ -19,10 +19,8 @@ import javafx.scene.text.Text;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
-import java.util.Base64;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -60,6 +58,8 @@ public class FriendController extends Controller {
     Prefs prefs;
     @Inject
     EventListener eventListener;
+    @Inject
+    DataCache cache;
 
     private Consumer<User> onFriendChanged = null;
     private Consumer<User> onPinChanged = null;
@@ -110,7 +110,7 @@ public class FriendController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
-        friendAvatar.setImage(getImage());
+        friendAvatar.setImage(cache.getImageAvatar(user));
         name.setText(user.name());
         updateOnlineStatus(user);
 
@@ -135,27 +135,6 @@ public class FriendController extends Controller {
         return parent;
     }
 
-    private Image getImage() {
-        Image imageAvatar;
-
-        try {
-            if (user.avatar() != null && user.avatar().contains("data:image/png;base64,")) {
-                String avatar = user.avatar().replace("data:image/png;base64,", "").trim();
-                byte[] imageData = Base64.getDecoder().decode(avatar);
-                imageAvatar = new Image(new ByteArrayInputStream(imageData));
-            } else if (user.avatar() != null && user.avatar().contains("https://")) {
-                imageAvatar = loadImage(user.avatar(), 40.0, 40.0, false, false);
-            } else {
-                imageAvatar = loadImage(Objects.requireNonNull(Main.class.getResource("assets/user.png")).toString(),
-                        40.0, 40.0, false, false);
-            }
-        } catch (FileNotFoundException | URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-
-        return imageAvatar;
-    }
-
     private void updateOnlineStatus(User user) {
         if (user.status().equals(STATUS_ONLINE)) {
             statusCircle.setFill(Paint.valueOf("green"));
@@ -170,11 +149,6 @@ public class FriendController extends Controller {
         imageView.setFitHeight(25.0);
         imageView.setFitWidth(25.0);
         return imageView;
-    }
-
-    @SuppressWarnings("SameParameterValue")
-    private static Image loadImage(String imageUrl, double width, double height, boolean preserveRatio, boolean smooth) throws FileNotFoundException, URISyntaxException {
-        return new Image(imageUrl, width, height, preserveRatio, smooth);
     }
 
     @FXML
@@ -225,6 +199,7 @@ public class FriendController extends Controller {
         removeImage = null;
         onPinChanged = null;
         onFriendChanged = null;
+        friendAvatar = null;
 
         super.destroy();
     }
