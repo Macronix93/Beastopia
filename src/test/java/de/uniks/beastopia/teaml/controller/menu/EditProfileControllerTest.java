@@ -4,6 +4,7 @@ import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.AuthService;
+import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import io.reactivex.rxjava3.core.Observable;
@@ -48,6 +49,8 @@ class EditProfileControllerTest extends ApplicationTest {
     AuthService authService;
     @Mock
     TokenStorage tokenStorage;
+    @Mock
+    DataCache cache;
     @Spy
     App app;
     @Spy
@@ -91,6 +94,7 @@ class EditProfileControllerTest extends ApplicationTest {
 
     @Test
     public void changePasswordNotMatching() {
+
         clickOn("#passwordInput");
         write("123456789");
         clickOn("#passwordRepeatInput");
@@ -106,6 +110,7 @@ class EditProfileControllerTest extends ApplicationTest {
     public void changePasswordInvalid() {
         ResponseBody body = ResponseBody.create(MediaType.get("application/json"), "{\"message\":\"At least 8 characters.\"}");
         when(authService.updatePassword(anyString())).thenReturn(Observable.error(new HttpException(Response.error(400, body))));
+
         clickOn("#passwordInput");
         write("1234");
         clickOn("#passwordRepeatInput");
