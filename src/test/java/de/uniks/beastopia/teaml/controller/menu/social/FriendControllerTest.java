@@ -3,6 +3,7 @@ package de.uniks.beastopia.teaml.controller.menu.social;
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.rest.User;
+import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.FriendListService;
 import de.uniks.beastopia.teaml.sockets.EventListener;
 import io.reactivex.rxjava3.core.Observable;
@@ -34,7 +35,8 @@ class FriendControllerTest extends ApplicationTest {
 
     @Mock
     EventListener eventListener;
-
+    @Mock
+    DataCache cache;
     @InjectMocks
     FriendController friendController;
 
