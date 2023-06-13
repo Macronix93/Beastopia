@@ -114,7 +114,7 @@ public class FriendController extends Controller {
         name.setText(user.name());
         updateOnlineStatus(user);
 
-        if (friend) {
+        if (friendListService.isFriend(user) || friend) {
             if (this.friendPin) {
                 this.pin.setGraphic(pinned);
             } else {
