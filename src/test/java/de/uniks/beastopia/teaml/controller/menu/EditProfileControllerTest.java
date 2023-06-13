@@ -1,6 +1,7 @@
 package de.uniks.beastopia.teaml.controller.menu;
 
 import de.uniks.beastopia.teaml.App;
+import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.AuthService;
@@ -25,7 +26,9 @@ import retrofit2.HttpException;
 import retrofit2.Response;
 
 import javax.inject.Provider;
+import java.io.File;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -90,6 +93,44 @@ class EditProfileControllerTest extends ApplicationTest {
         clickOn("#editProfileButton");
 
         verify(authService).updatePassword("12345678");
+        verify(menuControllerProvider).get();
+        verify(mocked).render();
+    }
+
+    @Test
+    public void changeUsername() {
+        when(authService.updateUsername("Bob")).thenReturn(Observable.just(user));
+        MenuController mocked = mock();
+        when(menuControllerProvider.get()).thenReturn(mocked);
+        when(mocked.render()).thenReturn(new Label());
+
+        lookup("#usernameInput").queryTextInputControl().clear(); // clear username input (Alice
+        clickOn("#usernameInput");
+        write("Bob");
+        clickOn("#editProfileButton");
+
+        verify(authService).updateUsername("Bob");
+        verify(menuControllerProvider).get();
+        verify(mocked).render();
+    }
+
+    @Test
+    public void changeNameAndPassword() {
+        when(authService.updateUsernameAndPassword("Bob", "12345678")).thenReturn(Observable.just(user));
+        MenuController mocked = mock();
+        when(menuControllerProvider.get()).thenReturn(mocked);
+        when(mocked.render()).thenReturn(new Label());
+
+        lookup("#usernameInput").queryTextInputControl().clear();
+        clickOn("#usernameInput");
+        write("Bob");
+        clickOn("#passwordInput");
+        write("12345678");
+        clickOn("#passwordRepeatInput");
+        write("12345678");
+        clickOn("#editProfileButton");
+
+        verify(authService).updateUsernameAndPassword("Bob", "12345678");
         verify(menuControllerProvider).get();
         verify(mocked).render();
     }
@@ -170,6 +211,14 @@ class EditProfileControllerTest extends ApplicationTest {
 
     @Test
     public void uploadAvatarTest() {
+        final File file = new File(Objects.requireNonNull(Main.class.getResource("assets/user.png")).getFile());
+        when(cache.provideFile(any())).thenReturn(file);
+        when(authService.updateAvatar(any())).thenReturn(Observable.just(user));
 
+        clickOn("#chooseAvatar");
+        verify(cache, times(1)).provideFile(any());
+
+        clickOn("#editProfileButton");
+        verify(authService, times(1)).updateAvatar(any());
     }
 }
