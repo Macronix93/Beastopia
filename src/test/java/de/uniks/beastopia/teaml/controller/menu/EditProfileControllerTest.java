@@ -164,7 +164,12 @@ class EditProfileControllerTest extends ApplicationTest {
     }
 
     @Test
-    void title() {
+    public void title() {
         assertEquals(resources.getString("titleEditProfile"), app.getStage().getTitle());
+    }
+
+    @Test
+    public void uploadAvatarTest() {
+
     }
 }
