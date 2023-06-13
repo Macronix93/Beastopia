@@ -75,7 +75,7 @@ class FriendControllerTest extends ApplicationTest {
 
         clickOn("#addRemoveFriendButton");
 
-        verify(friendListService, times(2)).isFriend(testUser);
+        verify(friendListService, times(3)).isFriend(testUser);
         verify(friendListService).addFriend(testUser);
         assertEquals(testUser, changedUser.get());
     }
@@ -89,7 +89,7 @@ class FriendControllerTest extends ApplicationTest {
 
         clickOn("#addRemoveFriendButton");
 
-        verify(friendListService, times(2)).isFriend(testUser);
+        verify(friendListService, times(3)).isFriend(testUser);
         verify(friendListService).removeFriend(testUser);
         assertEquals(testUser, changedUser.get());
     }
