@@ -35,6 +35,7 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class EditProfileControllerTest extends ApplicationTest {
+    @SuppressWarnings("unused")
     @Mock
     Prefs prefs;
     @Mock
@@ -49,6 +50,7 @@ class EditProfileControllerTest extends ApplicationTest {
     AuthService authService;
     @Mock
     TokenStorage tokenStorage;
+    @SuppressWarnings("unused")
     @Mock
     DataCache cache;
     @Spy

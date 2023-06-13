@@ -35,6 +35,7 @@ class FriendControllerTest extends ApplicationTest {
 
     @Mock
     EventListener eventListener;
+    @SuppressWarnings("unused")
     @Mock
     DataCache cache;
     @InjectMocks
