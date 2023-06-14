@@ -26,6 +26,7 @@ import retrofit2.HttpException;
 import retrofit2.Response;
 
 import javax.inject.Provider;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.Locale;
 import java.util.Objects;
@@ -212,11 +213,13 @@ class EditProfileControllerTest extends ApplicationTest {
     @Test
     public void uploadAvatarTest() {
         final File file = new File(Objects.requireNonNull(Main.class.getResource("assets/user.png")).getFile());
-        when(cache.provideFile(any())).thenReturn(file);
+        final BufferedImage bufferedImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
+        when(cache.provideBufferedImage(any())).thenReturn(bufferedImage);
+        when(cache.provideImageFile(any())).thenReturn(file);
         when(authService.updateAvatar(any())).thenReturn(Observable.just(user));
 
         clickOn("#chooseAvatar");
-        verify(cache, times(1)).provideFile(any());
+        verify(cache, times(1)).provideBufferedImage(any());
 
         clickOn("#editProfileButton");
         verify(authService, times(1)).updateAvatar(any());

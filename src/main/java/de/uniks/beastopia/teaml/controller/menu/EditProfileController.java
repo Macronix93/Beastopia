@@ -15,12 +15,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 
 
 public class EditProfileController extends Controller {
@@ -84,12 +82,8 @@ public class EditProfileController extends Controller {
     }
 
     public void uploadAvatar() {
-        File file = cache.provideFile(app);
-        try {
-            this.bufferedImage = ImageIO.read(file);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        File file = cache.provideImageFile(app);
+        this.bufferedImage = cache.provideBufferedImage(file);
         avatarPreview.setImage(new Image(file.toURI().toString(), 128, 128, true, true, true));
     }
 

@@ -164,14 +164,32 @@ public class DataCache {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
         return "data:image/png;base64," + Base64.getEncoder().encodeToString(bytes.toByteArray());
     }
 
-    public File provideFile(App app) {
+    public File provideImageFile(App app) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Choose Avatar");
         fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg"));
         return fileChooser.showOpenDialog(app.getStage());
+    }
+
+    public BufferedImage provideBufferedImage(File file) {
+        BufferedImage bufferedImage;
+        try {
+            bufferedImage = ImageIO.read(file);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return resizeImage(bufferedImage);
+    }
+
+    private BufferedImage resizeImage(BufferedImage bufferedImage) {
+        BufferedImage resized = new BufferedImage(128, 128, BufferedImage.TYPE_INT_ARGB);
+        resized.getGraphics().drawImage(bufferedImage, 0, 0, null);
+        return resized;
     }
 }
