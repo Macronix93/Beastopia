@@ -42,6 +42,7 @@ public class ScoreboardController extends Controller {
     private Runnable onCloseRequested;
     private boolean clicked = false;
     private UserInfoController userInfoController;
+    private String selectedUserID = "";
 
     @Inject
     public ScoreboardController() {
@@ -107,6 +108,16 @@ public class ScoreboardController extends Controller {
                 .findFirst()
                 .orElseThrow();
 
+        if (selectedUserID.equals(user._id())) {
+            achievements.setVisible(!clicked);
+            clicked = !clicked;
+            return;
+        }
+
+        achievements.setVisible(true);
+        clicked = true;
+        selectedUserID = user._id();
+
         if (userInfoController != null) {
             userInfoController.destroy();
         }
@@ -119,9 +130,6 @@ public class ScoreboardController extends Controller {
         subControllers.add(userInfoController);
         Parent parent = userInfoController.render();
         achievements.getChildren().clear();
-        achievements.setVisible(!clicked);
-
-        clicked = !clicked;
         achievements.getChildren().add(parent);
     }
 
