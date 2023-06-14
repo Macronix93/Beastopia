@@ -13,6 +13,7 @@ import javafx.util.Pair;
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URISyntaxException;
@@ -205,7 +206,9 @@ public class DataCache {
 
     private BufferedImage resizeImage(BufferedImage bufferedImage) {
         BufferedImage resized = new BufferedImage(128, 128, BufferedImage.TYPE_INT_ARGB);
-        resized.getGraphics().drawImage(bufferedImage, 0, 0, null);
+        Graphics2D graphics = resized.createGraphics();
+        graphics.drawImage(bufferedImage, 0, 0, 128, 128, null);
+        graphics.dispose();
         return resized;
     }
 }
