@@ -28,10 +28,8 @@ public class ChatUserController extends Controller {
     HBox _rootElement;
     @FXML
     Button pinGroupBtn;
-    @SuppressWarnings("unused")
     @FXML
     Button deleteGroupBtn;
-    @SuppressWarnings("unused")
     @FXML
     Button editGroupBtn;
     @FXML
