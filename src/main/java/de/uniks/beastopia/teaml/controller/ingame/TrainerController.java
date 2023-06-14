@@ -147,12 +147,13 @@ public class TrainerController extends Controller {
             disposables.add(trainerService.getAllTrainer(region._id())
                     .observeOn(FX_SCHEDULER)
                     .subscribe(trainers -> trainers.stream()
-                            .filter(t -> t.user().equals(tokenStorage.getCurrentUser()._id()))
-                            .findFirst()
-                            .ifPresentOrElse(tr -> {
-                                cache.setTrainer(tr);
-                                showIngameController(region);
-                            }, this::loadCharacterSelection)));
+                                    .filter(t -> t.user().equals(tokenStorage.getCurrentUser()._id()))
+                                    .findFirst()
+                                    .ifPresentOrElse(tr -> {
+                                        cache.setTrainer(tr);
+                                        showIngameController(region);
+                                    }, this::loadCharacterSelection),
+                            error -> Dialog.error(error, "Trainer loading failed!")));
         } else {
             loadCharacterSelection();
         }
