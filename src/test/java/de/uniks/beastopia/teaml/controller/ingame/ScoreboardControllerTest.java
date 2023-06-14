@@ -9,6 +9,7 @@ import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.AchievementsService;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.TrainerService;
+import de.uniks.beastopia.teaml.utils.Prefs;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.application.Platform;
 import javafx.scene.input.KeyCode;
@@ -25,6 +26,7 @@ import org.testfx.framework.junit5.ApplicationTest;
 import javax.inject.Provider;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -38,6 +40,8 @@ class ScoreboardControllerTest extends ApplicationTest {
     AchievementsService achievementsService;
     @Mock
     TrainerService trainerService;
+    @Mock
+    Prefs prefs;
     @Mock
     Provider<ScoreboardUserItemController> scoreBoardUserItemControllerProvider;
     @Mock
@@ -66,6 +70,7 @@ class ScoreboardControllerTest extends ApplicationTest {
         when(controller.setTotalAchievements(anyInt())).thenReturn(controller);
         when(controller.render()).thenReturn(pane);
 
+        when(prefs.getRegionID()).thenReturn("region");
         when(achievementsService.getAchievements()).thenReturn(Observable.just(achievementSummaries));
         when(trainerService.getAllTrainer(any())).thenReturn(Observable.just(trainers));
         when(cache.getAllUsers()).thenReturn(users);
@@ -108,8 +113,15 @@ class ScoreboardControllerTest extends ApplicationTest {
 
         sleep(2000);
 
-        Platform.runLater(() -> onUserClickedCaptor.getValue().accept("ID"));
+        AtomicReference<Boolean> clicked = new AtomicReference<>(false);
+        Platform.runLater(() -> {
+            onUserClickedCaptor.getValue().accept("ID");
+            clicked.set(true);
+        });
 
+        while (!clicked.get()) {
+            sleep(100);
+        }
         verify(userInfoControllerProvider.get()).render();
     }
 }
