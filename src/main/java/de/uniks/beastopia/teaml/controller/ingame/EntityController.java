@@ -62,14 +62,14 @@ public class EntityController extends Controller {
     public void init() {
         super.init();
         direction = Direction.DOWN;
-        listenToMovements(trainer.area());
+        listenToMovements();
     }
 
-    private void listenToMovements(String areaID) {
+    private void listenToMovements() {
         if (eventListener != null) {
             eventListener.dispose();
         }
-        eventListener = udpEventListener.listen("areas." + areaID + ".trainers." + trainer._id() + ".moved", MoveTrainerDto.class).observeOn(FX_SCHEDULER).subscribe(event -> {
+        eventListener = udpEventListener.listen("areas.*.trainers." + trainer._id() + ".moved", MoveTrainerDto.class).observeOn(FX_SCHEDULER).subscribe(event -> {
             resetUpdateTimer();
             if (event.data() == null) {
                 return;
@@ -85,7 +85,7 @@ public class EntityController extends Controller {
             updateViewPort();
             if (!event.data().area().equals(trainer.area())) {
                 trainer = new Trainer(trainer.createdAt(), trainer.updatedAt(), trainer._id(), trainer.region(), trainer.user(), trainer.name(), trainer.image(), trainer.coins(), event.data().area(), trainer.x(), trainer.y(), trainer.direction(), trainer.npc());
-                listenToMovements(event.data().area());
+                listenToMovements();
             }
             onTrainerUpdate.accept(event.data());
         }, error -> {
@@ -119,7 +119,7 @@ public class EntityController extends Controller {
             public void run() {
                 self.onUI(() -> {
                     System.out.println("Reconnecting to trainer update for: " + trainer._id() + " in area: " + trainer.area());
-                    listenToMovements(trainer.area());
+                    listenToMovements();
                 });
             }
         };

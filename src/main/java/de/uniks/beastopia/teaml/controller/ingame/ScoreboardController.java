@@ -41,6 +41,7 @@ public class ScoreboardController extends Controller {
     private final List<Controller> subControllers = new ArrayList<>();
     private Runnable onCloseRequested;
     private boolean clicked = false;
+    private UserInfoController userInfoController;
 
     @Inject
     public ScoreboardController() {
@@ -96,12 +97,6 @@ public class ScoreboardController extends Controller {
         }
     }
 
-    @Override
-    public void destroy() {
-        subControllers.forEach(Controller::destroy);
-        super.destroy();
-    }
-
     public void setOnCloseRequested(Runnable onCloseRequested) {
         this.onCloseRequested = onCloseRequested;
     }
@@ -112,16 +107,30 @@ public class ScoreboardController extends Controller {
                 .findFirst()
                 .orElseThrow();
 
-        UserInfoController controller = userInfoControllerProvider.get()
+        if (userInfoController != null) {
+            userInfoController.destroy();
+        }
+
+        userInfoController = userInfoControllerProvider.get()
                 .setName(user.name())
                 .setAchievements(noOfAchievements)
                 .setTotalAchievements(totalAchievements);
-        subControllers.add(controller);
-        Parent parent = controller.render();
+
+        subControllers.add(userInfoController);
+        Parent parent = userInfoController.render();
         achievements.getChildren().clear();
         achievements.setVisible(!clicked);
+
         clicked = !clicked;
         achievements.getChildren().add(parent);
     }
 
+    @Override
+    public void destroy() {
+        super.destroy();
+        subControllers.forEach(Controller::destroy);
+        if (userInfoController != null) {
+            userInfoController.destroy();
+        }
+    }
 }
