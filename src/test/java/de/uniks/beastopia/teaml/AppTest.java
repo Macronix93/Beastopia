@@ -45,9 +45,12 @@ class AppTest extends ApplicationTest {
     @Test
     void canSwitchBetweenLoginAndRegistration() {
         assertEquals("Beastopia - Login", stage.getTitle());
+        sleep(1000);
         clickOn("#registerButton");
         assertEquals("Beastopia - Registration", stage.getTitle());
+        sleep(1000);
         clickOn("#login");
         assertEquals("Beastopia - Login", stage.getTitle());
+        sleep(1000);
     }
 }

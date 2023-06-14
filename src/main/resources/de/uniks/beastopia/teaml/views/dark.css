@@ -103,6 +103,13 @@
     -fx-text-fill: #C7C7C7;
 }
 
+.regionInfo {
+    -fx-background-color: linear-gradient(to bottom, #808C89, #395B64);
+    -fx-border-color: #162326;
+    -fx-font-family: Happy Monkey;
+    -fx-opacity: 0.7;
+}
+
 Text {
     -fx-fill: #C7C7C7;
 }

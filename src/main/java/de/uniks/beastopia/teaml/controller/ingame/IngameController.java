@@ -61,6 +61,8 @@ public class IngameController extends Controller {
     UDPEventListener udpEventListener;
     @Inject
     EventListener eventListener;
+    @Inject
+    Provider<MapController> mapControllerProvider;
 
     private Region region;
     private Map map;
@@ -281,6 +283,7 @@ public class IngameController extends Controller {
                 }
             }
         }
+
         updateOrigin();
     }
 
@@ -389,6 +392,11 @@ public class IngameController extends Controller {
 
     @FXML
     public void handleKeyEvent(KeyEvent keyEvent) {
+        if (keyEvent.getCode().equals(KeyCode.M)) {
+            MapController map = mapControllerProvider.get();
+            app.show(map);
+        }
+
         if (keyEvent.getCode().equals(KeyCode.ESCAPE)) {
             PauseController controller = pauseControllerProvider.get();
             controller.setRegion(region);
