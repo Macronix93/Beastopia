@@ -3,6 +3,7 @@ package de.uniks.beastopia.teaml.controller.menu.social;
 import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.User;
+import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -29,6 +30,8 @@ public class UserController extends Controller {
     public Button pinButton;
     @Inject
     Prefs prefs;
+    @Inject
+    DataCache cache;
 
     private User user;
     private ImageView pinned;
@@ -65,6 +68,7 @@ public class UserController extends Controller {
     public Parent render() {
         Parent parent = super.render();
         username.setText(user.name());
+        avatar.setImage(cache.getImageAvatar(user));
 
         if (prefs.isPinned(user)) {
             this.pinButton.setGraphic(pinned);
@@ -112,5 +116,11 @@ public class UserController extends Controller {
         imageView.setFitHeight(20.0);
         imageView.setFitWidth(20.0);
         return imageView;
+    }
+
+    @Override
+    public void destroy() {
+        avatar = null;
+        super.destroy();
     }
 }

@@ -10,6 +10,7 @@ import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
@@ -24,6 +25,8 @@ import java.util.prefs.Preferences;
 
 public class ChatGroupController extends Controller {
 
+    @FXML
+    public ImageView groupAvatar;
     @FXML
     HBox _rootElement;
     @FXML
@@ -87,6 +90,7 @@ public class ChatGroupController extends Controller {
     public Parent render() {
         Parent parent = super.render();
         name.setText(group.name());
+        groupAvatar.setImage(new Image(Objects.requireNonNull(Main.class.getResource("assets/group.png")).toString()));
 
         if (prefs.isPinned(this.group)) {
             this.pinGroupBtn.setGraphic(pinnedImg);
@@ -141,5 +145,11 @@ public class ChatGroupController extends Controller {
     @FXML
     public void editGroup() {
         app.show(editGroupControllerProvider.get().setGroup(group));
+    }
+
+    @Override
+    public void destroy() {
+        groupAvatar = null;
+        super.destroy();
     }
 }

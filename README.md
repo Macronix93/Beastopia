@@ -39,5 +39,11 @@ Catalin Fertu - Flaticon</a>
 <a href="https://www.flaticon.com/de/suche?word=kreuz" title="schließen Icons">Schließen Icons erstellt von Catalin
 Fertu - Flaticon</a>
 
-<a href="https://www.flaticon.com/de/kostenlose-icons/ausrustung" title="ausrüstung Icons">Ausrüstung Icons erstellt von Saepul Nahwan - Flaticon</a>
+<a href="https://www.flaticon.com/de/kostenlose-icons/ausrustung" title="ausrüstung Icons">Ausrüstung Icons erstellt von
+Saepul Nahwan - Flaticon</a>
 
+<a href="https://www.flaticon.com/de/kostenlose-icons/profil" title="profil Icons">Profil Icons erstellt von Pixel
+perfect - Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/gruppe" title="gruppe Icons">Gruppe Icons erstellt von Pixel
+perfect - Flaticon</a>

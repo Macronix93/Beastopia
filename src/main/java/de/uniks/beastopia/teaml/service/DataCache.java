@@ -1,16 +1,26 @@
 package de.uniks.beastopia.teaml.service;
 
+import de.uniks.beastopia.teaml.App;
+import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.rest.Area;
 import de.uniks.beastopia.teaml.rest.Region;
 import de.uniks.beastopia.teaml.rest.Trainer;
 import de.uniks.beastopia.teaml.rest.User;
 import javafx.scene.image.Image;
+import javafx.stage.FileChooser;
 import javafx.util.Pair;
 
+import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
+import java.util.Objects;
 
 @Singleton
 public class DataCache {
@@ -138,5 +148,67 @@ public class DataCache {
                     .findFirst()
                     .orElse(null);
         }
+    }
+
+    public Image getImageAvatar(User user) {
+        Image imageAvatar;
+        try {
+            if (user.avatar() != null && user.avatar().contains("data:image/png;base64,")) {
+                String avatar = user.avatar().replace("data:image/png;base64,", "").trim();
+                byte[] imageData = Base64.getDecoder().decode(avatar);
+                imageAvatar = new Image(new ByteArrayInputStream(imageData));
+            } else if (user.avatar() != null && user.avatar().contains("https://")) {
+                imageAvatar = loadImage(user.avatar(), 40.0, 40.0, false, false);
+            } else {
+                imageAvatar = loadImage(Objects.requireNonNull(Main.class.getResource("assets/user.png")).toString(),
+                        40.0, 40.0, false, false);
+            }
+        } catch (FileNotFoundException | URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+        return imageAvatar;
+    }
+
+    @SuppressWarnings("SameParameterValue")
+    private static Image loadImage(String imageUrl, double width, double height, boolean preserveRatio, boolean smooth) throws FileNotFoundException, URISyntaxException {
+        return new Image(imageUrl, width, height, preserveRatio, smooth);
+    }
+
+    public String getAvatarDataUrl(BufferedImage bufferedImage) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        try {
+            ImageIO.write(bufferedImage, "png", bytes);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return "data:image/png;base64," + Base64.getEncoder().encodeToString(bytes.toByteArray());
+    }
+
+    public File provideImageFile(App app) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Choose Avatar");
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg"));
+        return fileChooser.showOpenDialog(app.getStage());
+    }
+
+    public BufferedImage provideBufferedImage(File file) {
+        BufferedImage bufferedImage;
+        try {
+            bufferedImage = ImageIO.read(file);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return resizeImage(bufferedImage);
+    }
+
+    private BufferedImage resizeImage(BufferedImage bufferedImage) {
+        BufferedImage resized = new BufferedImage(128, 128, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D graphics = resized.createGraphics();
+        graphics.drawImage(bufferedImage, 0, 0, 128, 128, null);
+        graphics.dispose();
+        return resized;
     }
 }

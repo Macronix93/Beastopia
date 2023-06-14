@@ -87,5 +87,16 @@ public class ChatGroupControllerTest extends ApplicationTest {
         clickOn("#deleteGroupBtn");
 
         verify(app).show(mocked);
+        sleep(5000);
+    }
+
+    @Test
+    void pinGroupTest() {
+        when(prefs.isPinned(any(Group.class))).thenReturn(false, true);
+        doNothing().when(prefs).setPinned(any(Group.class), anyBoolean());
+        clickOn("#pinGroupBtn");
+        verify(prefs, times(1)).setPinned(any(Group.class), eq(true));
+        clickOn("#pinGroupBtn");
+        verify(prefs, times(1)).setPinned(any(Group.class), eq(false));
     }
 }
