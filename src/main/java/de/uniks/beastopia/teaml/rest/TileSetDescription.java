@@ -1,7 +1,7 @@
 package de.uniks.beastopia.teaml.rest;
 
 public record TileSetDescription(
-        String firstgid,
+        int firstgid,
         String source
 ) {
 }

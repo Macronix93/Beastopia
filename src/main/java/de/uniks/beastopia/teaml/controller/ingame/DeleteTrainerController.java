@@ -26,7 +26,6 @@ public class DeleteTrainerController extends Controller {
     @Inject
     Provider<TrainerController> trainerControllerProvider;
 
-    private static final int PREVIEW_SCALING = 3;
     private Region region;
 
 
@@ -40,9 +39,9 @@ public class DeleteTrainerController extends Controller {
 
         trainerSprite.setImage(cache.getCharacterImage(cache.getTrainer().image()).getValue());
         trainerSprite.setPreserveRatio(true);
-        trainerSprite.setViewport(new javafx.geometry.Rectangle2D(48, 0, 16, 32));
-        trainerSprite.setFitWidth(32 * PREVIEW_SCALING);
-        trainerSprite.setFitHeight(32 * PREVIEW_SCALING);
+        trainerSprite.setViewport(TrainerController.PREVIEW_VIEWPORT);
+        trainerSprite.setFitWidth(32 * TrainerController.PREVIEW_SCALING);
+        trainerSprite.setFitHeight(32 * TrainerController.PREVIEW_SCALING);
         trainerSprite.setSmooth(false);
         return parent;
     }

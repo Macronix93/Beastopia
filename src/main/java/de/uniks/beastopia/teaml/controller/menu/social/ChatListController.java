@@ -43,6 +43,10 @@ public class ChatListController extends Controller {
 
     }
 
+    public void preventFirstUpdate() {
+        firstRender = false;
+    }
+
     @Override
     public void init() {
         disposables.add(eventListener.listen("groups.*.*", Group.class).observeOn(FX_SCHEDULER).subscribe(group -> {

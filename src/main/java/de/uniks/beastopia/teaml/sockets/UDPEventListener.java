@@ -118,7 +118,7 @@ public class UDPEventListener {
             final byte[] bytes = message.getBytes(StandardCharsets.UTF_8);
             final DatagramPacket packet = new DatagramPacket(bytes, bytes.length, address, port);
             clientSocket.send(packet);
-            System.out.println("Sent: " + message);
+//            System.out.println("Sent: " + message);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -140,7 +140,7 @@ public class UDPEventListener {
             try {
                 clientSocket.receive(packet);
                 final String message = new String(packet.getData(), packet.getOffset(), packet.getLength());
-                System.out.println("Received: " + message);
+//                System.out.println("Received: " + message);
                 synchronized (messageHandlers) {
                     messageHandlers.forEach(handler -> handler.accept(message));
                 }
