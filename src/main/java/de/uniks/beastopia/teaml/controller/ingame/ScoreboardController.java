@@ -127,7 +127,6 @@ public class ScoreboardController extends Controller {
                 .setAchievements(noOfAchievements)
                 .setTotalAchievements(totalAchievements);
 
-        subControllers.add(userInfoController);
         Parent parent = userInfoController.render();
         achievements.getChildren().clear();
         achievements.getChildren().add(parent);
