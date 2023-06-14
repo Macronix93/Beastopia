@@ -85,7 +85,7 @@ public class TrainerController extends Controller {
 
     public void saveTrainer() {
         String nameInput = trainerNameInput.getText();
-        String trainerImage = cache.getCharacters().get(currentIndex.get()).getKey();
+        String trainerImage = currentSprite;
 
         if (nameInput == null || nameInput.isEmpty()) {
             Dialog.error(resources.getString("trainerNameMissing"), resources.getString("enterTrainerName"));

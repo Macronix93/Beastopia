@@ -17,8 +17,9 @@ public class DataCache {
     private List<User> users = new ArrayList<>();
     private List<Region> regions = new ArrayList<>();
     private List<Area> areas = new ArrayList<>();
+    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
+    private final List<Trainer> trainers = new ArrayList<>();
     private final List<Pair<String, Image>> characters = new ArrayList<>();
-    private List<Trainer> trainers = new ArrayList<>();
     Trainer trainer;
     Region joinedRegion;
 
@@ -98,17 +99,6 @@ public class DataCache {
         return trainer;
     }
 
-    public Trainer getTrainer(String id) {
-        return trainers.stream()
-                .filter(trainer -> trainer._id().equals(id))
-                .findFirst()
-                .orElse(null);
-    }
-
-    public void setTrainers(List<Trainer> trainers) {
-        this.trainers = trainers;
-    }
-
     public void setCharacters(List<String> characters) {
         synchronized (this.characters) {
             for (String character : characters) {
@@ -128,14 +118,25 @@ public class DataCache {
         }
     }
 
+    public Trainer getTrainer(String id) {
+        return trainers.stream()
+                .filter(trainer -> trainer._id().equals(id))
+                .findFirst()
+                .orElse(null);
+    }
+
     public List<Pair<String, Image>> getCharacters() {
-        return new ArrayList<>(characters);
+        synchronized (characters) {
+            return new ArrayList<>(characters);
+        }
     }
 
     public Pair<String, Image> getCharacterImage(String image) {
-        return characters.stream()
-                .filter(pair -> pair.getKey().equals(image))
-                .findFirst()
-                .orElse(null);
+        synchronized (characters) {
+            return characters.stream()
+                    .filter(pair -> pair.getKey().equals(image))
+                    .findFirst()
+                    .orElse(null);
+        }
     }
 }
