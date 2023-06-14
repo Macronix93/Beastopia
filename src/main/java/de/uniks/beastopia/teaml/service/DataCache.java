@@ -125,14 +125,6 @@ public class DataCache {
                 .orElse(null);
     }
 
-    public void setTrainers(List<Trainer> trainers) {
-        this.trainers = trainers;
-    }
-
-    public void setCharacters(List<Pair<String, Image>> characters) {
-        this.characters = new ArrayList<>(characters);
-    }
-
     public List<Pair<String, Image>> getCharacters() {
         synchronized (characters) {
             return new ArrayList<>(characters);
