@@ -89,7 +89,7 @@ class TrainerControllerTest extends ApplicationTest {
     );
     List<String> characters = List.of("A.png", "B.png", "C.png");
     User user = new User(null, null, "ID", "123", "ONLINE", null, List.of());
-    TileSetDescription tileSetDescription = new TileSetDescription(null, "SOURCE");
+    TileSetDescription tileSetDescription = new TileSetDescription(0, "SOURCE");
     List<HashMap<String, Double>> polygon = List.of(new HashMap<>() {{
         put("x", 0.0);
         put("y", 0.0);
