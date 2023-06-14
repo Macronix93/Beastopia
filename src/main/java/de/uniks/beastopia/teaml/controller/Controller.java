@@ -49,6 +49,10 @@ public abstract class Controller {
         disposables.add(Disposable.fromRunnable(action));
     }
 
+    public void onUI(Runnable action) {
+        disposables.add(Observable.just(action).observeOn(FX_SCHEDULER).subscribe(Runnable::run));
+    }
+
     public Parent render() {
         List<String> parts = new ArrayList<>(Arrays.stream(getClass().getPackageName().split("\\.")).toList());
 

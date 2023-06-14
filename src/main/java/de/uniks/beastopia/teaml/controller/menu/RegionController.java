@@ -40,6 +40,7 @@ public class RegionController extends Controller {
         final ListView<Region> regions = new ListView<>(this.regions);
         regions.setCellFactory(param -> regionCellProvider.get());
         regionList.getChildren().add(regions);
+        VBox.setVgrow(regions, javafx.scene.layout.Priority.ALWAYS);
         disposables.add(regionService.getRegions().subscribe(col -> {
             cache.setRegions(col);
             this.regions.setAll(col);
