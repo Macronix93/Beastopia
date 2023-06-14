@@ -41,6 +41,7 @@ import java.util.ResourceBundle;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
@@ -81,11 +82,7 @@ class DeleteTrainerControllerTest extends ApplicationTest {
     Layer tilelayer = new Layer(List.of(chunk), null, null, 1, 0, 0, "tilelayer", true, 2, 2, 0, 0);
     Map map = new Map(List.of(tileSetDescription), List.of(tilelayer, objectGroup), 2, 24, 4);
     Region region = new Region(null, null, "ID", "NAME", new Spawn(null, 0, 0), map);
-    List<Pair<String, Image>> allCharacters = List.of(
-            new Pair<>("A.png", image),
-            new Pair<>("B.png", image),
-            new Pair<>("C.png", image)
-    );
+    List<Pair<String, Image>> allCharacters = List.of(new Pair<>("A.png", image));
 
     @Override
     public void start(Stage stage) {
@@ -128,12 +125,14 @@ class DeleteTrainerControllerTest extends ApplicationTest {
 
     @Test
     void cancel() {
+        TrainerController mockedTrainerController = mock(TrainerController.class);
+        when(trainerControllerProvider.get()).thenReturn(mockedTrainerController);
+        doNothing().when(app).show(mockedTrainerController);
+        when(mockedTrainerController.backController(any())).thenReturn(mockedTrainerController);
 
-    }
+        clickOn("#cancel");
 
-    @Test
-    void showTrainerImage() {
-
+        verify(app).show(mockedTrainerController);
     }
 
     @Test
