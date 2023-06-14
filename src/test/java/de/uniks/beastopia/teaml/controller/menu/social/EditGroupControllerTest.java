@@ -8,7 +8,9 @@ import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.GroupListService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.utils.Prefs;
+import io.reactivex.rxjava3.core.Observable;
 import javafx.scene.control.Label;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,6 +37,9 @@ class EditGroupControllerTest extends ApplicationTest {
     @Spy
     @SuppressWarnings("unused")
     ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang");
+    @SuppressWarnings("unused")
+    @Mock
+    Prefs prefs;
     @Mock
     Provider<DirectMessageController> directMessageControllerProvider;
     @Mock
@@ -43,8 +48,6 @@ class EditGroupControllerTest extends ApplicationTest {
     GroupListService groupListService;
     @Mock
     TokenStorage tokenStorage;
-    @Mock
-    Prefs prefs;
     @Mock
     DataCache cache;
 
@@ -60,8 +63,6 @@ class EditGroupControllerTest extends ApplicationTest {
     UserController mockedUserController1 = mock();
     UserController mockedUserController2 = mock();
     UserController mockedUserController3 = mock();
-
-    DirectMessageController mockedDirectMessageController = mock(DirectMessageController.class);
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -94,32 +95,23 @@ class EditGroupControllerTest extends ApplicationTest {
         when(mockedUserController3.setIsAdded(anyBoolean())).thenReturn(mockedUserController3);
 
         doNothing().when(mockedUserController1).setUser(any(User.class));
-        when(mockedUserController1.setOnUserToggled(any())).thenReturn(mockedUserController1);
-        when(mockedUserController1.setOnUserPinToggled(any())).thenReturn(mockedUserController1);
         when(mockedUserController1.render()).thenReturn(testLabel1);
         doNothing().when(mockedUserController2).setUser(any(User.class));
-        when(mockedUserController2.setOnUserToggled(any())).thenReturn(mockedUserController2);
-        when(mockedUserController2.setOnUserPinToggled(any())).thenReturn(mockedUserController2);
         when(mockedUserController2.render()).thenReturn(testLabel2);
         doNothing().when(mockedUserController3).setUser(any(User.class));
-        when(mockedUserController3.setOnUserToggled(any())).thenReturn(mockedUserController3);
-        when(mockedUserController3.setOnUserPinToggled(any())).thenReturn(mockedUserController3);
         when(mockedUserController3.render()).thenReturn(testLabel3);
 
 
-        //when(directMessageControllerProvider.get()).thenReturn(mockedDirectMessageController);
-
         editGroupController.setGroup(group);
-        //when(cache.getAllUsers()).thenReturn(users);
         when(cache.getUser("ID0")).thenReturn(users.get(0));
         when(cache.getUser("ID1")).thenReturn(users.get(1));
         when(cache.getUser("ID2")).thenReturn(users.get(2));
-
 
         app.start(stage);
         app.show(editGroupController);
         stage.requestFocus();
     }
+
 
     @Test
     void getTitleTest() {
@@ -127,30 +119,30 @@ class EditGroupControllerTest extends ApplicationTest {
     }
 
     @Test
-    void render() {
-    }
-
-    @Test
     void updateUserList() {
+        when(cache.getAllUsers()).thenReturn(List.of(new User(null, null, "ID3", "user3", "offline", null, List.of())));
+        clickOn("#usernameField");
+        write("user3");
+        VBox users = lookup("#users").query();
+        assertEquals(1, users.getChildren().size());
     }
 
     @Test
-    void updateAddedUserList() {
+    void backTest() {
+        DirectMessageController mocked = mock(DirectMessageController.class);
+        when(directMessageControllerProvider.get()).thenReturn(mocked);
+        doNothing().when(app).show(mocked);
+        clickOn("#testBack");
+        verify(directMessageControllerProvider, times(1)).get();
     }
 
-    @Test
-    void back() {
-    }
 
     @Test
-    void destroy() {
-    }
-
-    @Test
-    void setGroup() {
-    }
-
-    @Test
-    void editGroup() {
+    void editGroupTest() {
+        when(tokenStorage.getCurrentUser()).thenReturn(users.get(0));
+        when(groupListService.updateGroup(any(Group.class))).thenReturn(Observable.just(group));
+        clickOn("#testEditGroup");
+        verify(tokenStorage, times(1)).getCurrentUser();
+        verify(groupListService, times(1)).updateGroup(any(Group.class));
     }
 }
