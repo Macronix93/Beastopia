@@ -8,13 +8,13 @@ import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 
 import javax.inject.Inject;
+import java.util.function.Consumer;
 
 public class BeastController extends Controller {
-
     @FXML
     public ImageView avatar;
     @FXML
-    public Label lastname;
+    public Label name;
     @FXML
     public Label hp;
     @FXML
@@ -24,7 +24,6 @@ public class BeastController extends Controller {
 
     @Inject
     public BeastController() {
-
     }
 
     public void setOnBeastClicked(Consumer<Monster> onBeastClicked) {
@@ -39,6 +38,12 @@ public class BeastController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
+
+        hp.setText(monster.currentAttributes().health() + " / " + monster.attributes().health());
+        level.setText(String.valueOf(monster.level()));
+
+        // TODO: show monster name / image
+
         return parent;
     }
 

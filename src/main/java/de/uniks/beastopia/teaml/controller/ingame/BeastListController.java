@@ -46,6 +46,10 @@ public class BeastListController extends Controller {
 
     }
 
+    public void setOnBeastClicked(Consumer<Monster> onBeastClicked) {
+        this.onBeastClicked = onBeastClicked;
+    }
+
     @Override
     public Parent render() {
         Parent parent = super.render();
@@ -62,6 +66,17 @@ public class BeastListController extends Controller {
                     reload();
                 }));
         return parent;
+    }
+
+    private void reload() {
+        for (Monster monster : monsters) {
+            BeastController beastController = new BeastController()
+                    .setBeast(monster);
+            beastController.setOnBeastClicked(onBeastClicked);
+            subControllers.add(beastController);
+            Parent parent = beastController.render();
+            VBoxBeasts.getChildren().add(parent);
+        }
     }
 
     @FXML
