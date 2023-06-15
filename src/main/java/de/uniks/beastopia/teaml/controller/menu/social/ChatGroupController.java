@@ -34,7 +34,6 @@ public class ChatGroupController extends Controller {
     Button editGroupBtn;
     @FXML
     Text name;
-
     @Inject
     GroupListService groupListService;
     @Inject
@@ -45,7 +44,6 @@ public class ChatGroupController extends Controller {
     TokenStorage tokenStorage;
     @Inject
     Prefs prefs;
-
     private Group group;
     private ImageView pinnedImg;
     private ImageView notPinnedImg;

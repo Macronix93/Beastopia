@@ -39,17 +39,8 @@ public class FriendController extends Controller {
     Button pin;
     @FXML
     HBox _rootElement;
-
-    private User user;
-
     @Inject
     Provider<DirectMessageController> directMessageControllerProvider;
-
-    private Boolean friendPin;
-    private ImageView pinned;
-    private ImageView notPinned;
-    private ImageView addImage;
-    private ImageView removeImage;
     @Inject
     FriendListService friendListService;
     @Inject
@@ -58,7 +49,12 @@ public class FriendController extends Controller {
     EventListener eventListener;
     @Inject
     DataCache cache;
-
+    private User user;
+    private Boolean friendPin;
+    private ImageView pinned;
+    private ImageView notPinned;
+    private ImageView addImage;
+    private ImageView removeImage;
     private Consumer<User> onFriendChanged = null;
     private Consumer<User> onPinChanged = null;
     private boolean friend;

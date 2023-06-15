@@ -32,7 +32,6 @@ public class ChatUserController extends Controller {
     Button deleteGroupBtn;
     @FXML
     Text name;
-
     @Inject
     TokenStorage tokenStorage;
     @Inject
@@ -43,7 +42,6 @@ public class ChatUserController extends Controller {
     GroupListService groupListService;
     @Inject
     Provider<DirectMessageController> directMessageControllerProvider;
-
     private Group group;
     private ImageView pinnedImg;
     private ImageView notPinnedImg;
@@ -65,15 +63,12 @@ public class ChatUserController extends Controller {
         this.onGroupClicked = onGroupClicked;
     }
 
-
     public void setOnPinChanged(Consumer<Group> onPinChanged) {
         this.onPinChanged = onPinChanged;
     }
 
-    @SuppressWarnings("UnusedReturnValue")
-    public ChatUserController setGroup(Group group) {
+    public void setGroup(Group group) {
         this.group = group;
-        return this;
     }
 
     @Override
@@ -100,7 +95,6 @@ public class ChatUserController extends Controller {
         return parent;
     }
 
-    @SuppressWarnings("unused")
     public void mouseClicked() {
         onGroupClicked.accept(group);
     }
@@ -112,7 +106,6 @@ public class ChatUserController extends Controller {
         return imageView;
     }
 
-    @SuppressWarnings("unused")
     public void deleteGroup() {
         if (group.members().size() < 2) {
             disposables.add(groupListService.deleteGroup(group).observeOn(FX_SCHEDULER).subscribe(
@@ -127,7 +120,6 @@ public class ChatUserController extends Controller {
         }
     }
 
-    @SuppressWarnings("unused")
     @FXML
     public void pinGroup() {
         if (!prefs.isPinned(this.group)) {

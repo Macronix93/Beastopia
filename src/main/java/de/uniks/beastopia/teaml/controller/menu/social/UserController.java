@@ -30,7 +30,6 @@ public class UserController extends Controller {
     Prefs prefs;
     @Inject
     DataCache cache;
-
     private User user;
     private ImageView pinned;
     private ImageView notPinned;
@@ -45,13 +44,11 @@ public class UserController extends Controller {
 
     }
 
-    @SuppressWarnings("UnusedReturnValue")
     public UserController setOnUserToggled(Consumer<User> onUserToggled) {
         this.onUserToggled = onUserToggled;
         return this;
     }
 
-    @SuppressWarnings("UnusedReturnValue")
     public UserController setOnUserPinToggled(Consumer<User> onUserPinToggled) {
         this.onUserPinToggled = onUserPinToggled;
         return this;

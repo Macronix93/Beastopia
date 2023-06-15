@@ -19,6 +19,7 @@ import javafx.scene.layout.VBox;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class FriendListController extends Controller {
     private final List<Controller> subControllers = new ArrayList<>();
@@ -146,44 +147,57 @@ public class FriendListController extends Controller {
         taskStamp = System.currentTimeMillis();
         CompositeDisposable timerDisposables = new CompositeDisposable();
         currentTask = new TimerTask() {
-            int i = 0;
+            final AtomicInteger i = new AtomicInteger(0);
             final int size = users.size();
             final long stamp = taskStamp;
 
             @Override
             public void run() {
-                if (i >= size || stamp != taskStamp) {
-                    timerDisposables.add(delay(500).observeOn(FX_SCHEDULER).subscribe(t -> timerDisposables.dispose()));
-                    stopTask();
-                    return;
-                }
-
-                User user = users.get(i);
-                FriendController controller = friendControllerProvider.get();
-                controller.setUser(user, prefs.isPinned(user));
-                controller.checkFriend(friendListService.isFriend(user));
-                controller.init();
-                controller.setOnFriendChanged(u -> {
-                    searchName.setText("");
-                    forceUpdate = true;
-                    updateUserList();
-                });
-                controller.setOnPinChanged(u -> {
-                    forceUpdate = true;
-                    updateUserList();
-                });
-                i++;
-
-                timerDisposables.add(delay(50).observeOn(FX_SCHEDULER).subscribe(t -> {
-                    if (stamp != taskStamp) {
-                        return;
-                    }
-                    subControllers.add(controller);
-                    friendList.getChildren().add(controller.render());
-                }));
+                loadNextUser(i, size, stamp, timerDisposables, users);
             }
         };
         timer.scheduleAtFixedRate(currentTask, 0, 100);
+    }
+
+    private void loadNextUser(AtomicInteger i, int size, long stamp, CompositeDisposable timerDisposables, List<User> users) {
+        if (i == null) {
+            return;
+        }
+
+        if (i.get() >= size || stamp != taskStamp) {
+            timerDisposables.add(delay(500).observeOn(FX_SCHEDULER).subscribe(t -> timerDisposables.dispose()));
+            stopTask();
+            return;
+        }
+
+        FriendController controller = createFriendController(users, i);
+        i.set(i.get() + 1);
+
+        timerDisposables.add(delay(50).observeOn(FX_SCHEDULER).subscribe(t -> {
+            if (stamp != taskStamp) {
+                return;
+            }
+            subControllers.add(controller);
+            friendList.getChildren().add(controller.render());
+        }));
+    }
+
+    private FriendController createFriendController(List<User> users, AtomicInteger i) {
+        User user = users.get(i.get());
+        FriendController controller = friendControllerProvider.get();
+        controller.setUser(user, prefs.isPinned(user));
+        controller.checkFriend(friendListService.isFriend(user));
+        controller.init();
+        controller.setOnFriendChanged(u -> {
+            searchName.setText("");
+            forceUpdate = true;
+            updateUserList();
+        });
+        controller.setOnPinChanged(u -> {
+            forceUpdate = true;
+            updateUserList();
+        });
+        return controller;
     }
 
     private List<User> sortByPin(List<User> users) {

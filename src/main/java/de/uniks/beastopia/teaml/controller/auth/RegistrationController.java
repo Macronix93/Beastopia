@@ -44,7 +44,6 @@ public class RegistrationController extends Controller {
     public RadioButton selectEnglishLanguage;
     @FXML
     public RadioButton selectGermanLanguage;
-
     @Inject
     Provider<ResourceBundle> resourcesProvider;
     @Inject
