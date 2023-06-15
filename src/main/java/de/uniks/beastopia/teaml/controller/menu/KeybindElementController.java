@@ -38,6 +38,7 @@ public class KeybindElementController extends Controller {
     }
 
     @FXML
+    @SuppressWarnings("EmptyMethod")
     public void changeKey() {
         //ToDo change key
     }

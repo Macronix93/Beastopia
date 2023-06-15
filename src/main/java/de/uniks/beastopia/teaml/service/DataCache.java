@@ -27,7 +27,6 @@ import java.util.Objects;
 @Singleton
 public class DataCache {
     private List<User> users = new ArrayList<>();
-    private List<Region> regions = new ArrayList<>();
     private List<Area> areas = new ArrayList<>();
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     private final List<Trainer> trainers = new ArrayList<>();
@@ -65,21 +64,6 @@ public class DataCache {
     public User getUser(String id) {
         return users.stream()
                 .filter(user -> user._id().equals(id))
-                .findFirst()
-                .orElse(null);
-    }
-
-    public List<Region> getRegions() {
-        return regions;
-    }
-
-    public void setRegions(List<Region> regions) {
-        this.regions = new ArrayList<>(regions);
-    }
-
-    public Region getRegion(String id) {
-        return regions.stream()
-                .filter(region -> region._id().equals(id))
                 .findFirst()
                 .orElse(null);
     }

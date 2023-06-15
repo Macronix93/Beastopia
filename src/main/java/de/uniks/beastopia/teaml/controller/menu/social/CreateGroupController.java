@@ -3,7 +3,6 @@ package de.uniks.beastopia.teaml.controller.menu.social;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.DataCache;
-import de.uniks.beastopia.teaml.service.FriendListService;
 import de.uniks.beastopia.teaml.service.GroupListService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.utils.Dialog;
@@ -42,11 +41,7 @@ public class CreateGroupController extends Controller {
     @Inject
     Provider<UserController> userControllerProvider;
     @Inject
-    Provider<CreateGroupController> createGroupControllerProvider;
-    @Inject
     GroupListService groupListService;
-    @Inject
-    FriendListService friendListService;
     @Inject
     TokenStorage tokenStorage;
     @Inject

@@ -8,6 +8,7 @@ import javax.inject.Singleton;
 import java.util.prefs.Preferences;
 
 @Module
+@SuppressWarnings("unused")
 public class PrefModule {
 
     @Provides

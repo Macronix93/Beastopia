@@ -161,8 +161,4 @@ public class MessageBubbleController extends Controller {
                         msg -> onDelete.accept(new Pair<>(parent, this)),
                         error -> Dialog.error(error, "Problem while deleting message")));
     }
-
-    public Message getMessage() {
-        return message;
-    }
 }

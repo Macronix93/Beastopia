@@ -13,6 +13,7 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 @Module
+@SuppressWarnings("unused")
 public class MainModule {
     @Provides
     ResourceBundle bundle(Prefs prefs) {
