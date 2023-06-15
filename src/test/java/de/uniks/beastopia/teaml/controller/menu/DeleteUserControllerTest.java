@@ -2,10 +2,10 @@ package de.uniks.beastopia.teaml.controller.menu;
 
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.AppPreparer;
-import de.uniks.beastopia.teaml.controller.auth.LoginController;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.AuthService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
+import io.reactivex.rxjava3.core.Observable;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,7 +20,9 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class DeleteUserControllerTest extends ApplicationTest {
@@ -33,8 +35,6 @@ class DeleteUserControllerTest extends ApplicationTest {
     AuthService authService;
     @Mock
     TokenStorage tokenStorage;
-    @Mock
-    Provider<LoginController> loginControllerProvider;
     @Mock
     Provider<EditProfileController> editProfileControllerProvider;
     @Spy
@@ -49,7 +49,6 @@ class DeleteUserControllerTest extends ApplicationTest {
 
         when(tokenStorage.getCurrentUser()).thenReturn(user);
 
-
         app.start(stage);
         app.show(deleteUserController);
         stage.requestFocus();
@@ -57,10 +56,20 @@ class DeleteUserControllerTest extends ApplicationTest {
 
     @Test
     public void deleteUser() {
+        when(authService.login(any(), any(), anyBoolean())).thenReturn(Observable.empty());
         clickOn("#passwordField");
         write("12345678");
         clickOn("#deleteUserButton");
         verify(authService, times(1)).login(any(), any(), anyBoolean());
+    }
+
+    @Test
+    public void cancel() {
+        EditProfileController mocked = mock(EditProfileController.class);
+        when(editProfileControllerProvider.get()).thenReturn(mocked);
+        clickOn("#cancelButton");
+        verify(editProfileControllerProvider, times(1)).get();
+        verify(mocked, times(1)).backController(any());
     }
 
 
