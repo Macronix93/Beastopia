@@ -43,15 +43,30 @@ public class DataCache {
         users.add(user);
     }
 
+    /**
+     * Sets the list of all users the server is aware of
+     *
+     * @param users The list of all users
+     */
     public void setAllUsers(List<User> users) {
         this.users = new ArrayList<>(users);
     }
 
+    /**
+     * Adds a range of user to the list of all users the server is aware of
+     *
+     * @param users The list of all users
+     */
     @SuppressWarnings("unused")
     public void addUsers(List<User> users) {
         this.users.addAll(users);
     }
 
+    /**
+     * Removes a user from the list of all users the server is aware of
+     *
+     * @param user The user to remove
+     */
     @SuppressWarnings("unused")
     public void removeUser(User user) {
         users.remove(user);

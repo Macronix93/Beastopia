@@ -91,6 +91,9 @@ public class IngameController extends Controller {
         }, 0, 100);
     }
 
+    /**
+     * Initializes the controller by Creating the main player and assigning its callback functions
+     */
     @Override
     public void init() {
         super.init();
@@ -112,6 +115,11 @@ public class IngameController extends Controller {
         });
     }
 
+    /**
+     * Sets the region this controller should load into
+     *
+     * @param region The region of the current trainer
+     */
     public void setRegion(Region region) {
         prefs.setCurrentRegion(region);
         this.region = region;
@@ -175,6 +183,12 @@ public class IngameController extends Controller {
         }
     }
 
+    /**
+     * Looks for the current trainer in the list and initializes the player controller
+     *
+     * @param trainers The list of all trainers of the current region
+     * @return Our current trainer
+     */
     private Trainer loadMyTrainer(List<Trainer> trainers) {
         Trainer myTrainer = trainers.stream().filter(t -> t.user().equals(tokenStorage.getCurrentUser()._id())).findFirst().orElseThrow();
 
