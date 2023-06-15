@@ -10,7 +10,6 @@ import de.uniks.beastopia.teaml.sockets.UDPEventListener;
 import de.uniks.beastopia.teaml.utils.PlayerState;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import io.reactivex.rxjava3.core.Observable;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -66,8 +65,6 @@ class IngameControllerTest extends ApplicationTest {
     @Mock
     final
     ScoreboardController scoreboardController = mock();
-    @Mock
-    ObjectProperty<PlayerState> state;
     @Mock
     TokenStorage tokenStorage;
     @Spy
@@ -160,7 +157,7 @@ class IngameControllerTest extends ApplicationTest {
         press(KeyCode.D);
         sleep(300);
         release(KeyCode.D);
-        verify(state, atLeast(4)).setValue(PlayerState.WALKING);
+        verify(udpEventListener, atLeast(4)).send(anyString());
     }
 
     @SuppressWarnings("SameParameterValue")
