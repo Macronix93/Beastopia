@@ -1,6 +1,7 @@
 package de.uniks.beastopia.teaml.controller.menu;
 
 import de.uniks.beastopia.teaml.controller.Controller;
+import de.uniks.beastopia.teaml.controller.ingame.SoundController;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import de.uniks.beastopia.teaml.utils.ThemeSettings;
 import javafx.fxml.FXML;
@@ -53,14 +54,18 @@ public class SettingsController extends Controller {
     Provider<PauseController> pauseControllerProvider;
     @Inject
     Provider<KeybindElementController> keybindElementControllerProvider;
+    @Inject
+    Provider<SoundController> soundControllerProvider;
     private String backController;
+    double debounceDelay = 500; // Delay in milliseconds
+    long lastValueChangeTime = 0;
 
 
     @Inject
     public SettingsController() {
     }
 
-    public SettingsController backController (String controller) {
+    public SettingsController backController(String controller) {
         this.backController = controller;
         return this;
     }
@@ -127,7 +132,15 @@ public class SettingsController extends Controller {
 
     @FXML
     public void changeSoundVolume() {
-        prefs.setSoundVolume(soundVolumeSlider.getValue());
+        soundVolumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            prefs.setSoundVolume(soundVolumeSlider.getValue());
+
+            long currentTime = System.currentTimeMillis();
+            if (currentTime - lastValueChangeTime > debounceDelay) {
+                soundControllerProvider.get().play("sfx_good.mp3");
+                lastValueChangeTime = currentTime;
+            }
+        });
     }
 
     @FXML
