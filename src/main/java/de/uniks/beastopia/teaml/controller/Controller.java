@@ -37,6 +37,7 @@ public abstract class Controller {
 
     public void destroy() {
         disposables.dispose();
+        FX_SCHEDULER.shutdown();
     }
 
     public String getTitle() {
@@ -46,6 +47,10 @@ public abstract class Controller {
     @SuppressWarnings("unused")
     public void onDestroy(Runnable action) {
         disposables.add(Disposable.fromRunnable(action));
+    }
+
+    public void onUI(Runnable action) {
+        disposables.add(Observable.just(action).observeOn(FX_SCHEDULER).subscribe(Runnable::run));
     }
 
     public Parent render() {

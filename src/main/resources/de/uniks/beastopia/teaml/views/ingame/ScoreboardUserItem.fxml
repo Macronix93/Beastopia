@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+<HBox alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" onMouseClicked="#toggleAchievements"
+      prefHeight="75.0" prefWidth="204.0" spacing="10.0" style="-fx-border-color: black;"
+      xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="de.uniks.beastopia.teaml.controller.ingame.ScoreboardUserItemController">
+    <Separator layoutX="186.0" layoutY="49.0" prefWidth="200.0" visible="false"/>
+    <!--suppress JavaFxUnresolvedFxIdReference -->
+    <ImageView fx:id="avatarImageView" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true"/>
+    <Separator prefWidth="200.0" visible="false" HBox.hgrow="ALWAYS"/>
+    <VBox alignment="CENTER">
+        <Text fx:id="nameText" strokeType="OUTSIDE" strokeWidth="0.0" text="Name">
+            <font>
+                <Font name="System Bold" size="12.0"/>
+            </font>
+        </Text>
+        <Text fx:id="achievementsText" layoutX="10.0" layoutY="214.0" strokeType="OUTSIDE" strokeWidth="0.0"
+              text="6/6 Achievements">
+            <font>
+                <Font size="8.0"/>
+            </font>
+        </Text>
+    </VBox>
+    <Separator layoutX="53.0" layoutY="49.0" prefWidth="200.0" visible="false"/>
+</HBox>

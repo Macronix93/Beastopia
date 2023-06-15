@@ -53,6 +53,7 @@ public class DirectMessageController extends Controller {
     private Node rightSide;
     private Group currentGroup;
     ChatWindowController controller;
+    private boolean preventDefaultGroupLoading = false;
 
     @Inject
     public DirectMessageController() {
@@ -60,6 +61,8 @@ public class DirectMessageController extends Controller {
     }
 
     public DirectMessageController setupDirectMessageController(User user) {
+        preventDefaultGroupLoading = true;
+
         // check if group already exists
         disposables.add(groupListService.getGroups()
                 .observeOn(FX_SCHEDULER)
@@ -102,6 +105,9 @@ public class DirectMessageController extends Controller {
     public void init() {
         super.init();
         chatListController.setOnGroupClicked(this::loadGroup);
+        if (preventDefaultGroupLoading) {
+            chatListController.preventFirstUpdate();
+        }
         chatListController.init();
     }
 

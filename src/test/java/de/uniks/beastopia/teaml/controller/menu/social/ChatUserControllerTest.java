@@ -5,7 +5,6 @@ import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.rest.Group;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.DataCache;
-import de.uniks.beastopia.teaml.service.FriendListService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.scene.text.Text;
@@ -35,13 +34,8 @@ class ChatUserControllerTest extends ApplicationTest {
     @SuppressWarnings("unused")
     @Mock
     TokenStorage tokenStorage;
-    @SuppressWarnings("unused")
-    @Mock
-    FriendListService friendListService;
-    @SuppressWarnings("unused")
     @Mock
     Prefs prefs;
-    @SuppressWarnings("unused")
     @Mock
     DataCache cache;
     @Spy
@@ -76,6 +70,7 @@ class ChatUserControllerTest extends ApplicationTest {
     @Test
     public void render() {
         assertEquals(other._id(), lookup("#name").queryAs(Text.class).getText());
+        sleep(5000);
     }
 
     @Test

@@ -57,7 +57,7 @@ class MapControllerTest extends ApplicationTest {
     @Mock
     RegionInfoController regionInfoController;
 
-    TileSetDescription tileSetDescription = new TileSetDescription(null, "SOURCE");
+    TileSetDescription tileSetDescription = new TileSetDescription(0, "SOURCE");
     TileSet tileSet = new TileSet(2, "IMAGE", 2, 2, 0, "NAME", 0, 4, 1);
     Chunk chunk = new Chunk(List.of(0, 1, 2, 3), 2, 2, 0, 0);
     Layer tilelayer = new Layer(List.of(chunk), null, null, 1, 0, 0, "tilelayer", true, 2, 2, 0, 0);

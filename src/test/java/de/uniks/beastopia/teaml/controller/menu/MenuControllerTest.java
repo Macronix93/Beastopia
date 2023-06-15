@@ -27,11 +27,8 @@ import java.util.ResourceBundle;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -43,6 +40,10 @@ class MenuControllerTest extends ApplicationTest {
     Provider<FriendListController> friendListControllerProvider;
     @Mock
     Provider<LoginController> loginControllerProvider;
+    @Mock
+    Provider<EditProfileController> editProfileControllerProvider;
+    @Mock
+    Provider<SettingsController> settingsControllerProvider;
     @Mock
     AuthService authService;
     @Mock
@@ -116,5 +117,25 @@ class MenuControllerTest extends ApplicationTest {
     @Test
     void title() {
         assertEquals(app.getStage().getTitle(), resources.getString("titleMenu"));
+    }
+
+    @Test
+    public void editProfileButtonPressed() {
+        EditProfileController mocked = mock(EditProfileController.class);
+        when(editProfileControllerProvider.get()).thenReturn(mocked);
+        when(editProfileControllerProvider.get().backController(any())).thenReturn(mocked);
+        when(mocked.render()).thenReturn(new Label());
+        clickOn("#editProfileBtn");
+        verify(app).show(mocked);
+    }
+
+    @Test
+    public void settingsButtonPressed() {
+        SettingsController mocked = mock(SettingsController.class);
+        when(settingsControllerProvider.get()).thenReturn(mocked);
+        when(settingsControllerProvider.get().backController(any())).thenReturn(mocked);
+        when(mocked.render()).thenReturn(new Label());
+        clickOn("#settingsBtn");
+        verify(app).show(mocked);
     }
 }

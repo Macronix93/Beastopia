@@ -22,6 +22,8 @@
             </Button>
          <HBox fx:id="beastListLayout" alignment="CENTER" layoutX="497.0" layoutY="14.0" prefHeight="533.0" prefWidth="200.0" AnchorPane.bottomAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="25.0" />
          <HBox fx:id="beastDetailLayout" alignment="CENTER" layoutX="495.0" layoutY="35.0" prefHeight="200.0" prefWidth="300.0" AnchorPane.rightAnchor="250.0" AnchorPane.topAnchor="25.0" />
+            <HBox fx:id="scoreBoardLayout" prefWidth="450.0" AnchorPane.bottomAnchor="25.0"
+                  AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="25.0"/>
         </AnchorPane>
     </StackPane>
     <padding>

@@ -3,6 +3,7 @@ package de.uniks.beastopia.teaml.controller.auth;
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.rest.User;
+import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.RegistrationService;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import io.reactivex.rxjava3.core.Observable;
@@ -39,8 +40,10 @@ class RegistrationControllerTest extends ApplicationTest {
     @Mock
     Provider<LoginController> loginControllerProvider;
     @Mock
-    @SuppressWarnings("unused")
     Prefs prefs;
+
+    @Mock
+    DataCache cache;
 
     @Spy
     @SuppressWarnings("unused")
@@ -56,7 +59,6 @@ class RegistrationControllerTest extends ApplicationTest {
     @Override
     public void start(Stage stage) {
         AppPreparer.prepare(app, prefs);
-
         app.start(stage);
         app.show(registrationController);
         stage.requestFocus();
@@ -69,6 +71,7 @@ class RegistrationControllerTest extends ApplicationTest {
         when(registrationService.createUser(anyString(), anyString(), anyString())).thenReturn(Observable.just(mockedUser));
         when(mockedLoginController.render()).thenReturn(new Label());
         when(loginControllerProvider.get()).thenReturn(mockedLoginController);
+        when(cache.getAvatarDataUrl(any())).thenReturn("");
 
         clickOn("#usernameInput");
         write("Lonartie");
@@ -106,6 +109,7 @@ class RegistrationControllerTest extends ApplicationTest {
     void signUpWrongAlreadyExists() {
         ResponseBody body = ResponseBody.create(MediaType.get("application/json"), "{\"message\":\"User already exists\"}");
         when(registrationService.createUser(anyString(), anyString(), anyString())).thenReturn(Observable.error(new HttpException(Response.error(409, body))));
+        when(cache.getAvatarDataUrl(any())).thenReturn("");
 
         clickOn("#usernameInput");
         write("Lonartie");
