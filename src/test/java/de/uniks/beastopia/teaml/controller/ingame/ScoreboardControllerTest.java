@@ -63,9 +63,8 @@ class ScoreboardControllerTest extends ApplicationTest {
         onUserClickedCaptor = ArgumentCaptor.forClass(Consumer.class);
 
         ScoreboardUserItemController controller = mock();
-        when(controller.setName(any())).thenReturn(controller);
+        when(controller.setUser(any())).thenReturn(controller);
         when(controller.setAchievements(anyInt())).thenReturn(controller);
-        when(controller.setUserId(any())).thenReturn(controller);
         when(controller.setOnUserClicked(onUserClickedCaptor.capture())).thenReturn(controller);
         when(controller.setTotalAchievements(anyInt())).thenReturn(controller);
         when(controller.render()).thenReturn(pane);

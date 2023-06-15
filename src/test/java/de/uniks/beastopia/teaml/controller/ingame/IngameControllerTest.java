@@ -146,11 +146,19 @@ class IngameControllerTest extends ApplicationTest {
     void movePlayer() {
         when(cache.getTrainer()).thenReturn(trainer);
         doNothing().when(udpEventListener).send(anyString());
-        type(KeyCode.W);
-        type(KeyCode.S);
-        type(KeyCode.A);
-        type(KeyCode.D);
-        verify(state, times(4)).setValue(PlayerState.WALKING);
+        press(KeyCode.W);
+        sleep(200);
+        release(KeyCode.W);
+        press(KeyCode.S);
+        sleep(200);
+        release(KeyCode.S);
+        press(KeyCode.A);
+        sleep(200);
+        release(KeyCode.A);
+        press(KeyCode.D);
+        sleep(200);
+        release(KeyCode.D);
+        verify(state, atLeast(4)).setValue(PlayerState.WALKING);
     }
 
     @SuppressWarnings("SameParameterValue")
