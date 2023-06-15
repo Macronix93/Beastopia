@@ -24,7 +24,6 @@ import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -56,7 +55,7 @@ class ChatWindowControllerTest extends ApplicationTest {
 
     private Group group;
 
-    List<Message> messages = List.of(
+    final List<Message> messages = List.of(
             new Message(null, null, "0", null, "hey"),
             new Message(null, null, "1", null, "du")
     );

@@ -27,9 +27,9 @@ class PresetsServiceTest {
     @InjectMocks
     PresetsService presetsService;
 
-    List<String> allSprites = List.of("A.png", "B.png");
+    final List<String> allSprites = List.of("A.png", "B.png");
 
-    ResponseBody responseBody = ResponseBody.create(MediaType.parse("text/html"), "<h1>Fake</h1>");
+    final ResponseBody responseBody = ResponseBody.create(MediaType.parse("text/html"), "<h1>Fake</h1>");
 
     @Test
     void getCharacters() {

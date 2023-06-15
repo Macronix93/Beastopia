@@ -1,8 +1,11 @@
 package de.uniks.beastopia.teaml.controller.ingame;
 
 import de.uniks.beastopia.teaml.controller.Controller;
+import de.uniks.beastopia.teaml.rest.User;
+import de.uniks.beastopia.teaml.service.DataCache;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
+import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
 
 import javax.inject.Inject;
@@ -14,8 +17,11 @@ public class ScoreboardUserItemController extends Controller {
     private Text nameText;
     @FXML
     private Text achievementsText;
-    private String name;
-    private String userId;
+    @FXML
+    private ImageView avatarImageView;
+    @Inject
+    DataCache cache;
+    private User user;
     private int achievements;
     private int totalAchievements;
     Consumer<String> onUserClicked;
@@ -34,8 +40,8 @@ public class ScoreboardUserItemController extends Controller {
         return this;
     }
 
-    public ScoreboardUserItemController setUserId(String userId) {
-        this.userId = userId;
+    public ScoreboardUserItemController setUser(User user) {
+        this.user = user;
         return this;
     }
 
@@ -44,25 +50,19 @@ public class ScoreboardUserItemController extends Controller {
         return this;
     }
 
-    public ScoreboardUserItemController setName(String name) {
-        this.name = name;
-        return this;
-    }
-
     @Override
     public Parent render() {
         Parent parent = super.render();
 
-        nameText.setText(name);
+        nameText.setText(user.name());
         achievementsText.setText(achievements + "/" + totalAchievements + " Achievements");
-
-        // TODO: load avatar
+        avatarImageView.setImage(cache.getImageAvatar(user));
         return parent;
     }
 
     public void toggleAchievements() {
         if (onUserClicked != null) {
-            onUserClicked.accept(userId);
+            onUserClicked.accept(user._id());
         }
     }
 }

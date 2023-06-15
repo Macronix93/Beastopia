@@ -24,14 +24,10 @@ public class ChatWindowController extends Controller {
     EventListener eventListener;
     @FXML
     public VBox msgList;
-
     @Inject
     Provider<MessageBubbleController> messageBubbleControllerProvider;
-
     @Inject
     MessageService messageService;
-
-    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     private final List<MessageBubbleController> subControllers = new ArrayList<>();
     private Group group;
     private LoadingPage loadingPage;

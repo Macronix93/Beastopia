@@ -27,7 +27,6 @@ import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,6 +35,7 @@ class EditGroupControllerTest extends ApplicationTest {
     App app;
     @Spy
     @SuppressWarnings("unused")
+    final
     ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang");
     @SuppressWarnings("unused")
     @Mock
@@ -59,13 +59,13 @@ class EditGroupControllerTest extends ApplicationTest {
             new User(null, null, "ID1", "user2", "online", null, List.of()),
             new User(null, null, "ID2", "user3", "offline", null, List.of())
     ));
-    Group group = new Group(null, null, "ID0", "group1", List.of("ID0", "ID1", "ID2"));
-    UserController mockedUserController1 = mock();
-    UserController mockedUserController2 = mock();
-    UserController mockedUserController3 = mock();
+    final Group group = new Group(null, null, "ID0", "group1", List.of("ID0", "ID1", "ID2"));
+    final UserController mockedUserController1 = mock();
+    final UserController mockedUserController2 = mock();
+    final UserController mockedUserController3 = mock();
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
         AppPreparer.prepare(app);
 
         Label testLabel1 = new Label("Label1");

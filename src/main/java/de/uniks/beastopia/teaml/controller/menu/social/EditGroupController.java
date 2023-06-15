@@ -24,7 +24,6 @@ public class EditGroupController extends Controller {
     private final List<User> addedUsersList = new ArrayList<>();
     private final List<Controller> addedUserControllers = new ArrayList<>();
     private final List<Controller> availableUserControllers = new ArrayList<>();
-
     @FXML
     public TextField usernameField;
     @FXML
@@ -45,7 +44,6 @@ public class EditGroupController extends Controller {
     Prefs prefs;
     @Inject
     DataCache cache;
-
     private Group group;
 
     @Inject
@@ -84,17 +82,21 @@ public class EditGroupController extends Controller {
                 continue;
             }
 
-            UserController controller = userControllerProvider.get()
-                    .setIsAdded(false);
-            controller.setUser(user);
-            controller.setOnUserToggled(this::toggleUser);
-            controller.setOnUserPinToggled(u -> {
-                prefs.setPinned(u, !prefs.isPinned(u));
-                updateLists();
-            });
-            controller.init();
-            users.getChildren().add(0, controller.render());
+            users.getChildren().add(0, showUser(user));
         }
+    }
+
+    private Parent showUser(User user) {
+        UserController controller = userControllerProvider.get()
+                .setIsAdded(true);
+        controller.setUser(user);
+        controller.setOnUserToggled(this::toggleUser);
+        controller.setOnUserPinToggled(u -> {
+            prefs.setPinned(u, !prefs.isPinned(u));
+            updateLists();
+        });
+        controller.init();
+        return controller.render();
     }
 
     @FXML
@@ -103,16 +105,7 @@ public class EditGroupController extends Controller {
         addedUsers.getChildren().clear();
 
         for (User user : reverse(sortByPin(addedUsersList))) {
-            UserController controller = userControllerProvider.get()
-                    .setIsAdded(true);
-            controller.setUser(user);
-            controller.setOnUserToggled(this::toggleUser);
-            controller.setOnUserPinToggled(u -> {
-                prefs.setPinned(u, !prefs.isPinned(u));
-                updateLists();
-            });
-            controller.init();
-            addedUsers.getChildren().add(0, controller.render());
+            addedUsers.getChildren().add(0, showUser(user));
         }
     }
 
@@ -153,13 +146,13 @@ public class EditGroupController extends Controller {
         app.show(directMessageControllerProvider.get());
     }
 
-
     @Override
     public void destroy() {
         super.destroy();
         addedUserControllers.forEach(Controller::destroy);
         availableUserControllers.forEach(Controller::destroy);
     }
+
     public EditGroupController setGroup(Group group) {
         this.group = group;
         return this;

@@ -27,7 +27,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,12 +41,12 @@ class EntityControllerTest extends ApplicationTest {
     @Spy
     App app;
 
-    ObjectProperty<PlayerState> state = new SimpleObjectProperty<>(PlayerState.IDLE);
-    Image image = createImage(List.of(new Color(255, 0, 255), new Color(0, 255, 0), new Color(0, 0, 255), new Color(255, 255, 0)));
-    Trainer trainer = new Trainer(null, null, "ID_TRAINER", "ID_REGION", "ID_USER", "TRAINER_NAME", "TRAINER_IMAGE", 0, "ID_AREA", 0, 0, 0, new NPCInfo(false));
+    final ObjectProperty<PlayerState> state = new SimpleObjectProperty<>(PlayerState.IDLE);
+    final Image image = createImage(List.of(new Color(255, 0, 255), new Color(0, 255, 0), new Color(0, 0, 255), new Color(255, 255, 0)));
+    final Trainer trainer = new Trainer(null, null, "ID_TRAINER", "ID_REGION", "ID_USER", "TRAINER_NAME", "TRAINER_IMAGE", 0, "ID_AREA", 0, 0, 0, new NPCInfo(false));
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
         AppPreparer.prepare(app);
         when(presetsService.getCharacterSprites(any())).thenReturn(Observable.just(image));
         when(udpEventListener.listen(any(), any())).thenReturn(Observable.empty());

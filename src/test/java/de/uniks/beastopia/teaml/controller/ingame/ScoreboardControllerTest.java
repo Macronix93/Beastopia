@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -57,15 +56,14 @@ class ScoreboardControllerTest extends ApplicationTest {
     private ArgumentCaptor<Consumer<String>> onUserClickedCaptor;
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
         AppPreparer.prepare(app);
         //noinspection unchecked
         onUserClickedCaptor = ArgumentCaptor.forClass(Consumer.class);
 
         ScoreboardUserItemController controller = mock();
-        when(controller.setName(any())).thenReturn(controller);
+        when(controller.setUser(any())).thenReturn(controller);
         when(controller.setAchievements(anyInt())).thenReturn(controller);
-        when(controller.setUserId(any())).thenReturn(controller);
         when(controller.setOnUserClicked(onUserClickedCaptor.capture())).thenReturn(controller);
         when(controller.setTotalAchievements(anyInt())).thenReturn(controller);
         when(controller.render()).thenReturn(pane);
