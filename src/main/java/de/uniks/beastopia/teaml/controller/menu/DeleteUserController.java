@@ -7,6 +7,7 @@ import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.utils.Dialog;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
@@ -19,6 +20,10 @@ public class DeleteUserController extends Controller {
     public TextField usernameField;
     @FXML
     public PasswordField passwordField;
+    @FXML
+    Button deleteUserButton;
+    @FXML
+    Button cancelButton;
     @Inject
     AuthService authService;
     @Inject

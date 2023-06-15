@@ -59,7 +59,8 @@ class DeleteUserControllerTest extends ApplicationTest {
     public void deleteUser() {
         clickOn("#passwordField");
         write("12345678");
-        clickOn("#deleteUserTestId");
+        clickOn("#deleteUserButton");
+        verify(authService, times(1)).login(any(), any(), anyBoolean());
     }
 
 
