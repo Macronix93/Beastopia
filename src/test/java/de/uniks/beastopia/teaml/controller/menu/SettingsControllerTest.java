@@ -3,11 +3,10 @@ package de.uniks.beastopia.teaml.controller.menu;
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.rest.User;
-import de.uniks.beastopia.teaml.service.AuthService;
-import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import de.uniks.beastopia.teaml.utils.ThemeSettings;
 import javafx.scene.control.Label;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -48,13 +47,14 @@ class SettingsControllerTest extends ApplicationTest {
     @InjectMocks
     SettingsController settingsController;
 
-    User user;
-
-
     @Override
     public void start(Stage stage) {
         AppPreparer.prepare(app, prefs);
         when(prefs.getTheme()).thenReturn("dark");
+        KeybindElementController mockedKeyBindController = mock(KeybindElementController.class);
+        doNothing().when(mockedKeyBindController).setKeyAndAction(anyString(), anyString());
+        when(keybindElementControllerProvider.get()).thenReturn(mockedKeyBindController);
+        when(mockedKeyBindController.render()).thenAnswer(e -> new Pane());
 
         app.start(stage);
         app.show(settingsController);
