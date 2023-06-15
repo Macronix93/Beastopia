@@ -23,13 +23,13 @@ import java.util.function.Consumer;
 public class ChatUserController extends Controller {
 
     @FXML
+    public ImageView chatAvatar;
+    @FXML
     HBox _rootElement;
     @FXML
     Button pinGroupBtn;
-    @SuppressWarnings("unused")
     @FXML
     Button deleteGroupBtn;
-    @SuppressWarnings("unused")
     @FXML
     Button editGroupBtn;
     @FXML
@@ -90,7 +90,10 @@ public class ChatUserController extends Controller {
         cache.getAllUsers().stream()
                 .filter(user -> user._id().equals(otherID))
                 .findFirst()
-                .ifPresent(user -> name.setText(user.name()));
+                .ifPresent(user -> {
+                    name.setText(user.name());
+                    chatAvatar.setImage(cache.getImageAvatar(user));
+                });
 
         if (prefs.isPinned(this.group)) {
             this.pinGroupBtn.setGraphic(pinnedImg);
@@ -136,5 +139,11 @@ public class ChatUserController extends Controller {
         if (onPinChanged != null) {
             onPinChanged.accept(group);
         }
+    }
+
+    @Override
+    public void destroy() {
+        chatAvatar = null;
+        super.destroy();
     }
 }
