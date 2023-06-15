@@ -28,10 +28,10 @@ import javax.inject.Provider;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -106,7 +106,15 @@ class CreateGroupControllerTest extends ApplicationTest {
         write(userOne.name());
 
         // select user one
-        Platform.runLater(() -> captor.getValue().accept(userOne));
+        AtomicBoolean done = new AtomicBoolean(false);
+        Platform.runLater(() -> {
+            captor.getValue().accept(userOne);
+            done.set(true);
+        });
+
+        while (!done.get()) {
+            sleep(100);
+        }
 
         // set group name
         clickOn("#groupNameField");

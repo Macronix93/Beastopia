@@ -3,7 +3,6 @@ package de.uniks.beastopia.teaml.controller.auth;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.menu.MenuController;
 import de.uniks.beastopia.teaml.service.AuthService;
-import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.utils.Dialog;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.beans.binding.BooleanBinding;
@@ -37,10 +36,6 @@ public class LoginController extends Controller {
     Provider<MenuController> menuControllerProvider;
     @Inject
     AuthService authService;
-    @SuppressWarnings("unused")
-    @Inject
-    TokenStorage tokenStorage;
-    @SuppressWarnings("unused")
     @Inject
     Prefs prefs;
     @Inject

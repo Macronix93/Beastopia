@@ -19,8 +19,6 @@ import javafx.scene.text.Text;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import java.io.FileNotFoundException;
-import java.net.URISyntaxException;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -41,17 +39,8 @@ public class FriendController extends Controller {
     Button pin;
     @FXML
     HBox _rootElement;
-
-    private User user;
-
     @Inject
     Provider<DirectMessageController> directMessageControllerProvider;
-
-    private Boolean friendPin;
-    private ImageView pinned;
-    private ImageView notPinned;
-    private ImageView addImage;
-    private ImageView removeImage;
     @Inject
     FriendListService friendListService;
     @Inject
@@ -60,7 +49,12 @@ public class FriendController extends Controller {
     EventListener eventListener;
     @Inject
     DataCache cache;
-
+    private User user;
+    private Boolean friendPin;
+    private ImageView pinned;
+    private ImageView notPinned;
+    private ImageView addImage;
+    private ImageView removeImage;
     private Consumer<User> onFriendChanged = null;
     private Consumer<User> onPinChanged = null;
     private boolean friend;
@@ -79,14 +73,10 @@ public class FriendController extends Controller {
                     updateOnlineStatus(user);
                 }));
 
-        try {
-            pinned = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/filled_pin.png")).toString());
-            notPinned = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/pin.png")).toString());
-            addImage = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/plus.png")).toString());
-            removeImage = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/minus.png")).toString());
-        } catch (URISyntaxException | FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        pinned = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/filled_pin.png")).toString());
+        notPinned = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/pin.png")).toString());
+        addImage = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/plus.png")).toString());
+        removeImage = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/minus.png")).toString());
     }
 
     public void setOnFriendChanged(Consumer<User> onFriendChanged) {
@@ -143,7 +133,7 @@ public class FriendController extends Controller {
         }
     }
 
-    private ImageView createImage(String imageUrl) throws URISyntaxException, FileNotFoundException {
+    private ImageView createImage(String imageUrl) {
         ImageView imageView = new ImageView(imageUrl);
         imageView.setCache(false);
         imageView.setFitHeight(25.0);

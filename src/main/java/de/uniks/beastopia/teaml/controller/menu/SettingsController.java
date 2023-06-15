@@ -60,7 +60,7 @@ public class SettingsController extends Controller {
     public SettingsController() {
     }
 
-    public SettingsController backController (String controller) {
+    public SettingsController backController(String controller) {
         this.backController = controller;
         return this;
     }
@@ -80,6 +80,12 @@ public class SettingsController extends Controller {
         musicVolumeSlider.setValue(prefs.getMusicVolume());
         soundVolumeSlider.setValue(prefs.getSoundVolume());
 
+        showKeyBindings();
+
+        return parent;
+    }
+
+    private void showKeyBindings() {
         vboxKeybindings.getChildren().clear();
         vboxKeybindings.getChildren().add(createController("ESC", "OpensPauseMenu").render());
         vboxKeybindings.getChildren().add(createController("W", "MoveUp").render());
@@ -88,8 +94,6 @@ public class SettingsController extends Controller {
         vboxKeybindings.getChildren().add(createController("D", "MoveRight").render());
         vboxKeybindings.getChildren().add(createController("B", "OpensBeastList").render());
         vboxKeybindings.getChildren().add(createController("M", "OpenMap").render());
-
-        return parent;
     }
 
     @FXML

@@ -27,7 +27,6 @@ public class DeleteUserController extends Controller {
     Provider<LoginController> loginControllerProvider;
     @Inject
     Provider<EditProfileController> editProfileControllerProvider;
-
     private String backController;
 
     @Inject

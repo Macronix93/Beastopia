@@ -83,10 +83,6 @@ public class Prefs {
         return preferences.get("region", null);
     }
 
-    public Region getRegion() {
-        return cache.getRegion(preferences.get("region", null));
-    }
-
     public void setArea(Area area) {
         preferences.put("area", area._id());
     }
@@ -98,13 +94,6 @@ public class Prefs {
     public void setPosition(Point2D position) {
         preferences.putDouble("positionX", position.getX());
         preferences.putDouble("positionY", position.getY());
-    }
-
-    public Point2D getPosition() {
-        return new Point2D(
-                preferences.getDouble("positionX", 0),
-                preferences.getDouble("positionY", 0)
-        );
     }
 
     public void setMusicVolume(double volume) {

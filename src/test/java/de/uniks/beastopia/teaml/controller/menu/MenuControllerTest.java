@@ -27,7 +27,6 @@ import java.util.ResourceBundle;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 
@@ -48,6 +47,7 @@ class MenuControllerTest extends ApplicationTest {
     AuthService authService;
     @Mock
     TokenStorage tokenStorage;
+    @SuppressWarnings("unused")
     @Mock
     DataCache cache;
     @Spy
@@ -57,6 +57,7 @@ class MenuControllerTest extends ApplicationTest {
     MenuController menuController;
     @Spy
     @SuppressWarnings("unused")
+    final
     ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang");
 
     RegionController mockedRegionController;

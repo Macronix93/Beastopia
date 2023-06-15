@@ -49,7 +49,7 @@ public class DirectMessageController extends Controller {
     @FXML
     public TextField chatInput;
     @FXML
-    public Label chatName; //this label shows the name of the person/group you are chatting with
+    public Label chatName;
     private Node rightSide;
     private Group currentGroup;
     ChatWindowController controller;
@@ -70,17 +70,7 @@ public class DirectMessageController extends Controller {
                     if (groups == null) {
                         return;
                     }
-                    //noinspection ReassignedVariable
-                    Group existing = null;
-                    for (Group group : groups) {
-                        if (group.members().size() == 2 &&
-                                group.members().contains(user._id()) &&
-                                group.members().contains(tokenStorage.getCurrentUser()._id())) {
-                            existing = group;
-                            break;
-                        }
-                    }
-
+                    Group existing = getExistingGroup(groups, user);
                     if (existing != null) {
                         loadGroup(existing);
                     } else {
@@ -101,6 +91,17 @@ public class DirectMessageController extends Controller {
         return this;
     }
 
+    private Group getExistingGroup(List<Group> groups, User user) {
+        for (Group group : groups) {
+            if (group.members().size() == 2 &&
+                    group.members().contains(user._id()) &&
+                    group.members().contains(tokenStorage.getCurrentUser()._id())) {
+                return group;
+            }
+        }
+        return null;
+    }
+
     @Override
     public void init() {
         super.init();
@@ -117,7 +118,6 @@ public class DirectMessageController extends Controller {
         rightSide = chatScrollPane;
         grid.add(chatListController.render(), 0, 1);
 
-        //TODO: show chatBox label
         return parent;
     }
 

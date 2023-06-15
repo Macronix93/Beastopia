@@ -15,8 +15,10 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.*;
-import java.net.URISyntaxException;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -25,7 +27,6 @@ import java.util.Objects;
 @Singleton
 public class DataCache {
     private List<User> users = new ArrayList<>();
-    private List<Region> regions = new ArrayList<>();
     private List<Area> areas = new ArrayList<>();
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     private final List<Trainer> trainers = new ArrayList<>();
@@ -42,15 +43,30 @@ public class DataCache {
         users.add(user);
     }
 
+    /**
+     * Sets the list of all users the server is aware of
+     *
+     * @param users The list of all users
+     */
     public void setAllUsers(List<User> users) {
         this.users = new ArrayList<>(users);
     }
 
+    /**
+     * Adds a range of user to the list of all users the server is aware of
+     *
+     * @param users The list of all users
+     */
     @SuppressWarnings("unused")
     public void addUsers(List<User> users) {
         this.users.addAll(users);
     }
 
+    /**
+     * Removes a user from the list of all users the server is aware of
+     *
+     * @param user The user to remove
+     */
     @SuppressWarnings("unused")
     public void removeUser(User user) {
         users.remove(user);
@@ -63,21 +79,6 @@ public class DataCache {
     public User getUser(String id) {
         return users.stream()
                 .filter(user -> user._id().equals(id))
-                .findFirst()
-                .orElse(null);
-    }
-
-    public List<Region> getRegions() {
-        return regions;
-    }
-
-    public void setRegions(List<Region> regions) {
-        this.regions = new ArrayList<>(regions);
-    }
-
-    public Region getRegion(String id) {
-        return regions.stream()
-                .filter(region -> region._id().equals(id))
                 .findFirst()
                 .orElse(null);
     }
@@ -152,25 +153,21 @@ public class DataCache {
 
     public Image getImageAvatar(User user) {
         Image imageAvatar;
-        try {
-            if (user.avatar() != null && user.avatar().contains("data:image/png;base64,")) {
-                String avatar = user.avatar().replace("data:image/png;base64,", "").trim();
-                byte[] imageData = Base64.getDecoder().decode(avatar);
-                imageAvatar = new Image(new ByteArrayInputStream(imageData));
-            } else if (user.avatar() != null && user.avatar().contains("https://")) {
-                imageAvatar = loadImage(user.avatar(), 40.0, 40.0, false, false);
-            } else {
-                imageAvatar = loadImage(Objects.requireNonNull(Main.class.getResource("assets/user.png")).toString(),
-                        40.0, 40.0, false, false);
-            }
-        } catch (FileNotFoundException | URISyntaxException e) {
-            throw new RuntimeException(e);
+        if (user.avatar() != null && user.avatar().contains("data:image/png;base64,")) {
+            String avatar = user.avatar().replace("data:image/png;base64,", "").trim();
+            byte[] imageData = Base64.getDecoder().decode(avatar);
+            imageAvatar = new Image(new ByteArrayInputStream(imageData));
+        } else if (user.avatar() != null && user.avatar().contains("https://")) {
+            imageAvatar = loadImage(user.avatar(), 40.0, 40.0, false, false);
+        } else {
+            imageAvatar = loadImage(Objects.requireNonNull(Main.class.getResource("assets/user.png")).toString(),
+                    40.0, 40.0, false, false);
         }
         return imageAvatar;
     }
 
     @SuppressWarnings("SameParameterValue")
-    private static Image loadImage(String imageUrl, double width, double height, boolean preserveRatio, boolean smooth) throws FileNotFoundException, URISyntaxException {
+    private static Image loadImage(String imageUrl, double width, double height, boolean preserveRatio, boolean smooth) {
         return new Image(imageUrl, width, height, preserveRatio, smooth);
     }
 
@@ -189,7 +186,7 @@ public class DataCache {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Choose Avatar");
         fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg"));
         return fileChooser.showOpenDialog(app.getStage());
     }
 
@@ -205,9 +202,9 @@ public class DataCache {
     }
 
     private BufferedImage resizeImage(BufferedImage bufferedImage) {
-        BufferedImage resized = new BufferedImage(128, 128, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage resized = new BufferedImage(64, 64, BufferedImage.TYPE_INT_ARGB);
         Graphics2D graphics = resized.createGraphics();
-        graphics.drawImage(bufferedImage, 0, 0, 128, 128, null);
+        graphics.drawImage(bufferedImage, 0, 0, 64, 64, null);
         graphics.dispose();
         return resized;
     }

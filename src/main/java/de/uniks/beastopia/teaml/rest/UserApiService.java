@@ -6,8 +6,8 @@ import retrofit2.http.*;
 import java.util.List;
 
 public interface UserApiService {
-    public static final String STATUS_ONLINE = "online";
-    public static final String STATUS_OFFLINE = "offline";
+    String STATUS_ONLINE = "online";
+    String STATUS_OFFLINE = "offline";
 
     @POST("users")
     Observable<User> createUser(@Body CreateUserDto userDto);

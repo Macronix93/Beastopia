@@ -12,8 +12,6 @@ import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 
 import javax.inject.Inject;
-import java.io.FileNotFoundException;
-import java.net.URISyntaxException;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -32,7 +30,6 @@ public class UserController extends Controller {
     Prefs prefs;
     @Inject
     DataCache cache;
-
     private User user;
     private ImageView pinned;
     private ImageView notPinned;
@@ -47,13 +44,11 @@ public class UserController extends Controller {
 
     }
 
-    @SuppressWarnings("UnusedReturnValue")
     public UserController setOnUserToggled(Consumer<User> onUserToggled) {
         this.onUserToggled = onUserToggled;
         return this;
     }
 
-    @SuppressWarnings("UnusedReturnValue")
     public UserController setOnUserPinToggled(Consumer<User> onUserPinToggled) {
         this.onUserPinToggled = onUserPinToggled;
         return this;
@@ -87,14 +82,10 @@ public class UserController extends Controller {
 
     @Override
     public void init() {
-        try {
-            pinned = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/filled_pin.png")).toString());
-            notPinned = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/pin.png")).toString());
-            add = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/plus.png")).toString());
-            remove = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/minus.png")).toString());
-        } catch (URISyntaxException | FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        pinned = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/filled_pin.png")).toString());
+        notPinned = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/pin.png")).toString());
+        add = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/plus.png")).toString());
+        remove = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/minus.png")).toString());
     }
 
     public void setUser(User user) {
@@ -111,7 +102,7 @@ public class UserController extends Controller {
         onUserPinToggled.accept(user);
     }
 
-    private ImageView createImage(String imageUrl) throws URISyntaxException, FileNotFoundException {
+    private ImageView createImage(String imageUrl) {
         ImageView imageView = new ImageView(imageUrl);
         imageView.setFitHeight(20.0);
         imageView.setFitWidth(20.0);

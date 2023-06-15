@@ -67,11 +67,9 @@ class FriendListControllerTest extends ApplicationTest {
     FriendController mockedFriendController1;
     FriendController mockedFriendController2;
     DirectMessageController mockedDirectMessageController;
-    Stage stage;
 
     @Override
     public void start(Stage stage) {
-        this.stage = stage;
         AppPreparer.prepare(app);
 
         mockedFriendController1 = mock();
