@@ -56,8 +56,9 @@ public class SettingsController extends Controller {
     Provider<KeybindElementController> keybindElementControllerProvider;
     @Inject
     Provider<SoundController> soundControllerProvider;
+    SoundController soundController;
     private String backController;
-    double debounceDelay = 500; // Delay in milliseconds
+    double debounceDelay = 250; // Delay in milliseconds
     long lastValueChangeTime = 0;
 
 
@@ -86,6 +87,8 @@ public class SettingsController extends Controller {
         soundVolumeSlider.setValue(prefs.getSoundVolume());
 
         showKeyBindings();
+
+        soundController = soundControllerProvider.get();
 
         return parent;
     }
@@ -131,7 +134,15 @@ public class SettingsController extends Controller {
 
     @FXML
     public void changeMusicVolume() {
-        prefs.setMusicVolume(musicVolumeSlider.getValue());
+        musicVolumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            prefs.setMusicVolume(musicVolumeSlider.getValue());
+
+            long currentTime = System.currentTimeMillis();
+            if (currentTime - lastValueChangeTime > debounceDelay) {
+                soundController.play("bgm:kof");
+                lastValueChangeTime = currentTime;
+            }
+        });
     }
 
     @FXML
@@ -141,7 +152,7 @@ public class SettingsController extends Controller {
 
             long currentTime = System.currentTimeMillis();
             if (currentTime - lastValueChangeTime > debounceDelay) {
-                soundControllerProvider.get().play("sfx_good.mp3");
+                soundController.play("sfx:good");
                 lastValueChangeTime = currentTime;
             }
         });
