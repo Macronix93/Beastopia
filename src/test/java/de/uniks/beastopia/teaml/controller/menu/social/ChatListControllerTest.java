@@ -24,8 +24,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -60,6 +60,7 @@ class ChatListControllerTest extends ApplicationTest {
 
     ChatGroupController mockedChatGroupController1;
     ChatGroupController mockedChatGroupController2;
+    final Consumer<Group> onGroupClicked = mock();
 
     @Override
     public void start(Stage stage) {
@@ -82,7 +83,9 @@ class ChatListControllerTest extends ApplicationTest {
         doNothing().when(mockedChatGroupController2).setOnPinChanged(any());
         when(mockedChatGroupController1.render()).thenReturn(new Label(groups.get(0).name()));
         when(mockedChatGroupController2.render()).thenReturn(new Label(groups.get(1).name()));
+        doNothing().when(onGroupClicked).accept(any());
 
+        chatListController.setOnGroupClicked(onGroupClicked);
         AtomicInteger call = new AtomicInteger(0);
         when(chatGroupControllerProvider.get()).thenAnswer(invocation -> {
             if (call.getAndIncrement() % 2 == 0) {

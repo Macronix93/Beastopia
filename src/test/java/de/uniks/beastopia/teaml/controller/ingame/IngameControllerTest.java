@@ -3,30 +3,22 @@ package de.uniks.beastopia.teaml.controller.ingame;
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
-import de.uniks.beastopia.teaml.rest.Area;
-import de.uniks.beastopia.teaml.rest.Chunk;
-import de.uniks.beastopia.teaml.rest.Layer;
-import de.uniks.beastopia.teaml.rest.Map;
-import de.uniks.beastopia.teaml.rest.NPCInfo;
-import de.uniks.beastopia.teaml.rest.Region;
-import de.uniks.beastopia.teaml.rest.Spawn;
-import de.uniks.beastopia.teaml.rest.TileSet;
-import de.uniks.beastopia.teaml.rest.TileSetDescription;
-import de.uniks.beastopia.teaml.rest.Trainer;
-import de.uniks.beastopia.teaml.service.AreaService;
-import de.uniks.beastopia.teaml.service.DataCache;
-import de.uniks.beastopia.teaml.service.PresetsService;
+import de.uniks.beastopia.teaml.rest.*;
+import de.uniks.beastopia.teaml.service.*;
+import de.uniks.beastopia.teaml.sockets.EventListener;
+import de.uniks.beastopia.teaml.sockets.UDPEventListener;
+import de.uniks.beastopia.teaml.utils.PlayerState;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import io.reactivex.rxjava3.core.Observable;
-import javafx.geometry.Point2D;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import javafx.util.Pair;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -39,17 +31,11 @@ import org.testfx.framework.junit5.ApplicationTest;
 import javax.inject.Provider;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class IngameControllerTest extends ApplicationTest {
@@ -57,13 +43,30 @@ class IngameControllerTest extends ApplicationTest {
     @Mock
     Provider<PauseController> pauseControllerProvider;
     @Mock
+    Provider<EntityController> entityControllerProvider;
+    @Mock
+    Provider<MapController> mapControllerProvider;
+    @Mock
+    EntityController playerController;
+    @Mock
     AreaService areaService;
     @Mock
+    TrainerService trainerService;
+    @Mock
     PresetsService presetsService;
+    @Mock
+    UDPEventListener udpEventListener;
+    @Mock
+    EventListener eventListener;
     @Mock
     DataCache cache;
     @Mock
     Prefs prefs;
+    @Mock
+    final
+    ScoreboardController scoreboardController = mock();
+    @Mock
+    TokenStorage tokenStorage;
     @Spy
     App app;
     @Spy
@@ -71,37 +74,47 @@ class IngameControllerTest extends ApplicationTest {
     ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang");
     @InjectMocks
     IngameController ingameController;
-    TileSetDescription tileSetDescription = new TileSetDescription(null, "SOURCE");
-    TileSet tileSet = new TileSet(2, "IMAGE", 2, 2, 0, "NAME", 0, 4, 1);
-    Chunk chunk = new Chunk(List.of(0, 1, 2, 3), 2, 2, 0, 0);
-    Layer layer = new Layer(List.of(chunk), null, 1, 0, 0, null, true, 2, 2, 0, 0);
-    Map map = new Map(List.of(tileSetDescription), List.of(layer), 2, 24, 4);
-    Area area = new Area(null, null, "ID_AREA", "ID_REGION", "AREA_NAME", map);
-    Spawn spawn = new Spawn("ID_AREA", 0, 0);
-    Region region = new Region(null, null, "ID", "NAME", spawn);
-    Image image = createImage(2, 2, List.of(new Color(255, 0, 255), new Color(0, 255, 0), new Color(0, 0, 255), new Color(255, 255, 0)));
-    Trainer trainer = new Trainer(null, null, "ID_TRAINER", "ID_REGION", "ID_USER", "TRAINER_NAME", "TRAINER_IMAGE", 0, "ID_AREA", 0, 0, 0, new NPCInfo(false));
-    List<Pair<String, Image>> charList = new ArrayList<>() {{
-        add(new Pair<>("TRAINER_IMAGE", image));
-    }};
+    final TileSetDescription tileSetDescription = new TileSetDescription(0, "SOURCE");
+    final TileSet tileSet = new TileSet(2, "IMAGE", 2, 2, 0, "NAME", 0, 4, 1);
+    final Chunk chunk = new Chunk(List.of(0, 1, 2, 3), 2, 2, 0, 0);
+    final Layer layer = new Layer(List.of(chunk), null, null, 1, 0, 0, null, true, 2, 2, 0, 0);
+    final Map map = new Map(List.of(tileSetDescription), List.of(layer), 2, 24, 4);
+    final Area area = new Area(null, null, "ID_AREA", "ID_REGION", "AREA_NAME", map);
+    final Spawn spawn = new Spawn("ID_AREA", 0, 0);
+    final Region region = new Region(null, null, "ID", "NAME", spawn, null);
+    final Image image = createImage(2, 2, List.of(new Color(255, 0, 255), new Color(0, 255, 0), new Color(0, 0, 255), new Color(255, 255, 0)));
+    final Trainer trainer = new Trainer(null, null, "ID_TRAINER", "ID_REGION", "ID_USER", "TRAINER_NAME", "TRAINER_IMAGE", 0, "ID_AREA", 0, 0, 0, new NPCInfo(false));
+    final User user = new User(null, null, "ID_USER", "USER_NAME", "USER_STATUS", "USER_AVATAR", List.of());
 
     @Override
     public void start(Stage stage) {
         AppPreparer.prepare(app);
-        doNothing().when(prefs).setRegion(any());
+
+        when(tokenStorage.getCurrentUser()).thenReturn(user);
+        when(trainerService.getAllTrainer(any())).thenReturn(Observable.just(List.of(trainer)));
+        doNothing().when(scoreboardController).init();
+        when(scoreboardController.render()).thenReturn(new Pane());
+        when(eventListener.listen(any(), any())).thenReturn(Observable.empty());
+        doNothing().when(prefs).setCurrentRegion(any());
         doNothing().when(prefs).setArea(any());
         when(areaService.getAreas(anyString())).thenReturn(Observable.just(List.of(area)));
         doNothing().when(cache).setAreas(any());
         when(presetsService.getTileset(tileSetDescription)).thenReturn(Observable.just(tileSet));
         when(presetsService.getImage(tileSet)).thenReturn(Observable.just(image));
         when(cache.getTrainer()).thenReturn(trainer);
-        when(cache.getCharacterImage("TRAINER_IMAGE")).thenReturn(charList.get(0));
-
+        when(entityControllerProvider.get()).thenReturn(playerController);
+        doNothing().when(playerController).setTrainer(any());
+        when(playerController.playerState()).thenReturn(new SimpleObjectProperty<>(PlayerState.IDLE));
+        doNothing().when(playerController).setOnTrainerUpdate(any());
+        doNothing().when(playerController).init();
+        when(playerController.render()).thenReturn(new Pane());
         ingameController.setRegion(region);
 
         app.start(stage);
         app.show(ingameController);
         stage.requestFocus();
+
+        sleep(1000);
     }
 
     @Test
@@ -115,25 +128,36 @@ class IngameControllerTest extends ApplicationTest {
     }
 
     @Test
+    void openMapTest() {
+        final MapController mock = Mockito.mock(MapController.class);
+        when(mapControllerProvider.get()).thenReturn(mock);
+        when(mock.render()).thenReturn(new Label());
+        type(KeyCode.M);
+        verify(mock).render();
+    }
+
+    @Test
     void title() {
         assertEquals(app.getStage().getTitle(), resources.getString("titleIngame"));
     }
 
     @Test
     void movePlayer() {
-        doNothing().when(prefs).setPosition(any());
-
-        type(KeyCode.W);
-        verify(prefs, atLeastOnce()).setPosition(new Point2D(0, -1));
-
-        type(KeyCode.S);
-        verify(prefs, atLeastOnce()).setPosition(new Point2D(0, 0));
-
-        type(KeyCode.A);
-        verify(prefs, atLeastOnce()).setPosition(new Point2D(-1, 0));
-
-        type(KeyCode.D);
-        verify(prefs, atLeastOnce()).setPosition(new Point2D(0, 0));
+        when(cache.getTrainer()).thenReturn(trainer);
+        doNothing().when(udpEventListener).send(anyString());
+        press(KeyCode.W);
+        sleep(300);
+        release(KeyCode.W);
+        press(KeyCode.S);
+        sleep(300);
+        release(KeyCode.S);
+        press(KeyCode.A);
+        sleep(300);
+        release(KeyCode.A);
+        press(KeyCode.D);
+        sleep(300);
+        release(KeyCode.D);
+        verify(udpEventListener, atLeast(4)).send(anyString());
     }
 
     @SuppressWarnings("SameParameterValue")

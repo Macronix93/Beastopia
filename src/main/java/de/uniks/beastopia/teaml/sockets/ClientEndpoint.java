@@ -45,6 +45,7 @@ public class ClientEndpoint {
 
     @OnClose
     public void onClose(Session userSession, CloseReason reason) {
+        this.messageHandlers.clear();
         this.userSession = null;
     }
 

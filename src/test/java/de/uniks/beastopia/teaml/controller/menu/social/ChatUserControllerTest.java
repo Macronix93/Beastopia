@@ -5,7 +5,6 @@ import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.rest.Group;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.DataCache;
-import de.uniks.beastopia.teaml.service.FriendListService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.scene.text.Text;
@@ -35,13 +34,8 @@ class ChatUserControllerTest extends ApplicationTest {
     @SuppressWarnings("unused")
     @Mock
     TokenStorage tokenStorage;
-    @SuppressWarnings("unused")
-    @Mock
-    FriendListService friendListService;
-    @SuppressWarnings("unused")
     @Mock
     Prefs prefs;
-    @SuppressWarnings("unused")
     @Mock
     DataCache cache;
     @Spy
@@ -52,8 +46,8 @@ class ChatUserControllerTest extends ApplicationTest {
     final User me = new User(null, null, "1", "1", null, null, null);
     final User other = new User(null, null, "2", "2", null, null, null);
     final Group testGrp = new Group(null, null, "1", "1", List.of(me._id(), other._id()));
-    Consumer<Group> onGroupClicked = mock();
-    Consumer<Group> onPinChanged = mock();
+    final Consumer<Group> onGroupClicked = mock();
+    final Consumer<Group> onPinChanged = mock();
 
     @Override
     public void start(Stage stage) {
@@ -76,6 +70,7 @@ class ChatUserControllerTest extends ApplicationTest {
     @Test
     public void render() {
         assertEquals(other._id(), lookup("#name").queryAs(Text.class).getText());
+        sleep(5000);
     }
 
     @Test

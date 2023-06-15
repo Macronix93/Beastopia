@@ -3,12 +3,15 @@ package de.uniks.beastopia.teaml.controller.menu.social;
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.rest.User;
+import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.FriendListService;
 import de.uniks.beastopia.teaml.sockets.EventListener;
+import de.uniks.beastopia.teaml.utils.Prefs;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -20,7 +23,7 @@ import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static de.uniks.beastopia.teaml.rest.UserApiService.STATUS_OFFLINE;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -28,13 +31,15 @@ class FriendControllerTest extends ApplicationTest {
 
     @Spy
     App app;
-
     @Mock
     FriendListService friendListService;
-
     @Mock
     EventListener eventListener;
-
+    @Mock
+    Prefs prefs;
+    @SuppressWarnings("unused")
+    @Mock
+    DataCache cache;
     @InjectMocks
     FriendController friendController;
 
@@ -70,7 +75,7 @@ class FriendControllerTest extends ApplicationTest {
 
         clickOn("#addRemoveFriendButton");
 
-        verify(friendListService, times(2)).isFriend(testUser);
+        verify(friendListService, times(3)).isFriend(testUser);
         verify(friendListService).addFriend(testUser);
         assertEquals(testUser, changedUser.get());
     }
@@ -84,7 +89,7 @@ class FriendControllerTest extends ApplicationTest {
 
         clickOn("#addRemoveFriendButton");
 
-        verify(friendListService, times(2)).isFriend(testUser);
+        verify(friendListService, times(3)).isFriend(testUser);
         verify(friendListService).removeFriend(testUser);
         assertEquals(testUser, changedUser.get());
     }
@@ -98,5 +103,20 @@ class FriendControllerTest extends ApplicationTest {
         friendController.openFriendChat();
 
         verify(mock).setupDirectMessageController(testUser);
+    }
+
+    @Test
+    public void pinFriendTest() {
+        final ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+        final ArgumentCaptor<Boolean> booleanCaptor = ArgumentCaptor.forClass(Boolean.class);
+        doNothing().when(prefs).setPinned(userCaptor.capture(), booleanCaptor.capture());
+
+        clickOn("#pin");
+        assertTrue(booleanCaptor.getValue());
+        verify(prefs, times(1)).setPinned(userCaptor.getValue(), booleanCaptor.getValue());
+
+        clickOn("#pin");
+        assertFalse(booleanCaptor.getValue());
+        verify(prefs, times(1)).setPinned(userCaptor.getValue(), booleanCaptor.getValue());
     }
 }

@@ -4,6 +4,7 @@ import java.util.List;
 
 public record Layer(
         List<Chunk> chunks,
+        List<MapObject> objects,
         String id,
         int opacity,
         int startx,

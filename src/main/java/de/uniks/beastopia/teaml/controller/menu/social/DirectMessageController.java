@@ -28,27 +28,20 @@ public class DirectMessageController extends Controller {
 
     @FXML
     public Button backButton;
-
     @Inject
     Provider<MenuController> menuControllerProvider;
-
     @Inject
     Provider<ChatWindowController> chatWindowControllerProvider;
-    @Inject
-    Provider<EditGroupController> editGroupControllerProvider;
     @Inject
     Provider<CreateGroupController> createGroupControllerProvider;
     @Inject
     MessageService messageService;
-
     @Inject
     GroupListService groupListService;
-
     @Inject
     ChatListController chatListController;
     @Inject
     TokenStorage tokenStorage;
-
     @FXML
     public GridPane grid;
     @FXML
@@ -56,9 +49,11 @@ public class DirectMessageController extends Controller {
     @FXML
     public TextField chatInput;
     @FXML
-    public Label chatName; //this label shows the name of the person/group you are chatting with
+    public Label chatName;
     private Node rightSide;
     private Group currentGroup;
+    ChatWindowController controller;
+    private boolean preventDefaultGroupLoading = false;
 
     @Inject
     public DirectMessageController() {
@@ -66,21 +61,16 @@ public class DirectMessageController extends Controller {
     }
 
     public DirectMessageController setupDirectMessageController(User user) {
+        preventDefaultGroupLoading = true;
+
         // check if group already exists
         disposables.add(groupListService.getGroups()
                 .observeOn(FX_SCHEDULER)
                 .subscribe(groups -> {
-                    //noinspection ReassignedVariable
-                    Group existing = null;
-                    for (Group group : groups) {
-                        if (group.members().size() == 2 &&
-                                group.members().contains(user._id()) &&
-                                group.members().contains(tokenStorage.getCurrentUser()._id())) {
-                            existing = group;
-                            break;
-                        }
+                    if (groups == null) {
+                        return;
                     }
-
+                    Group existing = getExistingGroup(groups, user);
                     if (existing != null) {
                         loadGroup(existing);
                     } else {
@@ -89,6 +79,9 @@ public class DirectMessageController extends Controller {
                         disposables.add(groupListService.addGroup(groupName, List.of(tokenStorage.getCurrentUser()._id(), user._id()))
                                 .observeOn(FX_SCHEDULER)
                                 .subscribe(group -> {
+                                    if (group == null) {
+                                        return;
+                                    }
                                     chatListController.reload();
                                     loadGroup(group);
                                 }));
@@ -98,10 +91,24 @@ public class DirectMessageController extends Controller {
         return this;
     }
 
+    private Group getExistingGroup(List<Group> groups, User user) {
+        for (Group group : groups) {
+            if (group.members().size() == 2 &&
+                    group.members().contains(user._id()) &&
+                    group.members().contains(tokenStorage.getCurrentUser()._id())) {
+                return group;
+            }
+        }
+        return null;
+    }
+
     @Override
     public void init() {
         super.init();
         chatListController.setOnGroupClicked(this::loadGroup);
+        if (preventDefaultGroupLoading) {
+            chatListController.preventFirstUpdate();
+        }
         chatListController.init();
     }
 
@@ -111,7 +118,6 @@ public class DirectMessageController extends Controller {
         rightSide = chatScrollPane;
         grid.add(chatListController.render(), 0, 1);
 
-        //TODO: show chatBox label
         return parent;
     }
 
@@ -141,13 +147,25 @@ public class DirectMessageController extends Controller {
         }
 
         String message = chatInput.getText();
-        disposables.add(messageService.sendMessageToGroup(currentGroup, message).subscribe(r -> chatInput.setText("")));
+        disposables.add(messageService
+                .sendMessageToGroup(currentGroup, message)
+                .observeOn(FX_SCHEDULER)
+                .subscribe(r -> {
+                            if (r == null) {
+                                return;
+                            }
+                            chatInput.setText("");
+                        }
+                ));
     }
 
     private void loadGroup(Group group) {
         currentGroup = group;
         grid.getChildren().remove(rightSide);
-        ChatWindowController controller = chatWindowControllerProvider.get().setupChatWindowController(group);
+        if (controller != null) {
+            controller.destroy();
+        }
+        controller = chatWindowControllerProvider.get().setupChatWindowController(group);
         controller.init();
         rightSide = controller.render();
         grid.add(rightSide, 1, 1);

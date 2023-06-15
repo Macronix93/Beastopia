@@ -13,9 +13,6 @@ public interface MessageApiService {
     @GET("{namespace}/{parent}/messages")
     Observable<List<Message>> getMessages(@Path("namespace") String namespace, @Path("parent") String parent, @Query("createdAfter") Date createdAfter, @Query("createdBefore") Date createdBefore, @Query("limit") Integer limit);
 
-    @GET("{namespace}/{parent}/messages/{id}")
-    Observable<Message> getMessage(@Path("namespace") String namespace, @Path("parent") String parent, @Path("id") String id);
-
     @PATCH("{namespace}/{parent}/messages/{id}")
     Observable<Message> updateMessage(@Path("namespace") String namespace, @Path("parent") String parent, @Path("id") String id, @Body UpdateMessageDto messageDto);
 

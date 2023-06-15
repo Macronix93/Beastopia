@@ -36,7 +36,6 @@ class AuthServiceTest {
     void login() {
         // define mocks:
         doNothing().when(tokenStorage).setAccessToken("123");
-        doNothing().when(tokenStorage).setRefreshToken("abc");
         doNothing().when(tokenStorage).setCurrentUser(any());
         User mocked = mock(User.class);
         when(userApiService.updateUser(anyString(), any())).thenReturn(Observable.just(mocked));
@@ -60,7 +59,6 @@ class AuthServiceTest {
         // check mocks
         verify(authApiService).login(new LoginDto("string", "stringst"));
         verify(tokenStorage).setAccessToken("123");
-        verify(tokenStorage).setRefreshToken("abc");
         verify(tokenStorage).setCurrentUser(any(User.class));
     }
 
@@ -68,7 +66,6 @@ class AuthServiceTest {
     void refresh() {
         // define mocks:
         doNothing().when(tokenStorage).setAccessToken("123");
-        doNothing().when(tokenStorage).setRefreshToken("abc");
         doNothing().when(tokenStorage).setCurrentUser(any());
         when(prefs.isRememberMe()).thenReturn(true);
         when(prefs.getRememberMeToken()).thenReturn("abc");
@@ -94,7 +91,6 @@ class AuthServiceTest {
         // check mocks
         verify(authApiService).refresh(new RefreshDto("abc"));
         verify(tokenStorage).setAccessToken("123");
-        verify(tokenStorage).setRefreshToken("abc");
         verify(tokenStorage).setCurrentUser(any(User.class));
     }
 

@@ -20,7 +20,7 @@
     -fx-effect: dropshadow(gaussian, #E7F6F2, 5, 0, 0, 1);
 }
 
-.button {
+.button, .radio-button .radio, .slider .track, .scroll-bar .track, .scroll-bar .increment-button, .scroll-bar .decrement-button {
     -fx-background-color: #395B64;
     -fx-border-color: #162326;
     -fx-border-width: 1px;
@@ -75,6 +75,8 @@
 #friendList,
 #_rootElement,
 #friendList,
+#scoreBoard,
+#achievements,
 #scrollFriends {
     -fx-background-color: #4C5250;
     -fx-border-color: #262928;
@@ -83,14 +85,40 @@
     -fx-background-radius: 5px;
 }
 
+#scoreBoard,
+#achievements {
+    -fx-background-color: #4C5250CF;
+}
+
 #msgList,
 #chatList,
 #regionList,
 .region-cell,
+#vboxKeybindings,
 #chatScrollPane .viewport {
     -fx-background-color: #666666;
 }
 
 * {
     -fx-text-fill: #C7C7C7;
+}
+
+.regionInfo {
+    -fx-background-color: linear-gradient(to bottom, #808C89, #395B64);
+    -fx-border-color: #162326;
+    -fx-font-family: Happy Monkey;
+    -fx-opacity: 0.7;
+}
+
+Text {
+    -fx-fill: #C7C7C7;
+}
+
+.radio-button .dot {
+    -fx-mark-highlight-color: white;
+    -fx-mark-color: white;
+}
+
+.scroll-pane .viewport {
+       -fx-background-color: transparent;
 }

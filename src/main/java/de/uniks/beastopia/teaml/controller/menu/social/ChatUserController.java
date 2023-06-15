@@ -4,8 +4,9 @@ import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Group;
 import de.uniks.beastopia.teaml.service.DataCache;
-import de.uniks.beastopia.teaml.service.FriendListService;
+import de.uniks.beastopia.teaml.service.GroupListService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
+import de.uniks.beastopia.teaml.utils.Dialog;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -15,35 +16,32 @@ import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 
 import javax.inject.Inject;
-import java.io.FileNotFoundException;
-import java.net.URISyntaxException;
+import javax.inject.Provider;
 import java.util.Objects;
 import java.util.function.Consumer;
 
 public class ChatUserController extends Controller {
 
     @FXML
+    public ImageView chatAvatar;
+    @FXML
     HBox _rootElement;
     @FXML
     Button pinGroupBtn;
-    @SuppressWarnings("unused")
     @FXML
     Button deleteGroupBtn;
-    @SuppressWarnings("unused")
-    @FXML
-    Button editGroupBtn;
     @FXML
     Text name;
-
     @Inject
     TokenStorage tokenStorage;
-    @Inject
-    FriendListService friendListService;
     @Inject
     Prefs prefs;
     @Inject
     DataCache cache;
-
+    @Inject
+    GroupListService groupListService;
+    @Inject
+    Provider<DirectMessageController> directMessageControllerProvider;
     private Group group;
     private ImageView pinnedImg;
     private ImageView notPinnedImg;
@@ -57,27 +55,20 @@ public class ChatUserController extends Controller {
 
     @Override
     public void init() {
-        try {
-            pinnedImg = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/filled_pin.png")).toString());
-            notPinnedImg = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/pin.png")).toString());
-        } catch (URISyntaxException | FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        pinnedImg = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/filled_pin.png")).toString());
+        notPinnedImg = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/pin.png")).toString());
     }
 
     public void setOnGroupClicked(Consumer<Group> onGroupClicked) {
         this.onGroupClicked = onGroupClicked;
     }
 
-
     public void setOnPinChanged(Consumer<Group> onPinChanged) {
         this.onPinChanged = onPinChanged;
     }
 
-    @SuppressWarnings("UnusedReturnValue")
-    public ChatUserController setGroup(Group group) {
+    public void setGroup(Group group) {
         this.group = group;
-        return this;
     }
 
     @Override
@@ -90,7 +81,10 @@ public class ChatUserController extends Controller {
         cache.getAllUsers().stream()
                 .filter(user -> user._id().equals(otherID))
                 .findFirst()
-                .ifPresent(user -> name.setText(user.name()));
+                .ifPresent(user -> {
+                    name.setText(user.name());
+                    chatAvatar.setImage(cache.getImageAvatar(user));
+                });
 
         if (prefs.isPinned(this.group)) {
             this.pinGroupBtn.setGraphic(pinnedImg);
@@ -101,29 +95,31 @@ public class ChatUserController extends Controller {
         return parent;
     }
 
-    @SuppressWarnings("unused")
     public void mouseClicked() {
         onGroupClicked.accept(group);
     }
 
-    private ImageView createImage(String imageUrl) throws URISyntaxException, FileNotFoundException {
+    private ImageView createImage(String imageUrl) {
         ImageView imageView = new ImageView(imageUrl);
         imageView.setFitHeight(25.0);
         imageView.setFitWidth(25.0);
         return imageView;
     }
 
-    @SuppressWarnings("unused")
-    public void editGroup() {
-        //TODO: show edit group dialog
-    }
-
-    @SuppressWarnings("unused")
     public void deleteGroup() {
-        //TODO: delete group
+        if (group.members().size() < 2) {
+            disposables.add(groupListService.deleteGroup(group).observeOn(FX_SCHEDULER).subscribe(
+                    lr -> app.show(directMessageControllerProvider.get()),
+                    error -> Dialog.error(error, resources.getString("deleteFailed")
+                    )));
+        } else {
+            disposables.add(groupListService.removeMember(group, tokenStorage.getCurrentUser()._id()).observeOn(FX_SCHEDULER).subscribe(
+                    lr -> app.show(directMessageControllerProvider.get()),
+                    error -> Dialog.error(error, resources.getString("deleteFailed")
+                    )));
+        }
     }
 
-    @SuppressWarnings("unused")
     @FXML
     public void pinGroup() {
         if (!prefs.isPinned(this.group)) {
@@ -136,5 +132,11 @@ public class ChatUserController extends Controller {
         if (onPinChanged != null) {
             onPinChanged.accept(group);
         }
+    }
+
+    @Override
+    public void destroy() {
+        chatAvatar = null;
+        super.destroy();
     }
 }

@@ -5,10 +5,8 @@ import de.uniks.beastopia.teaml.controller.ingame.IngameController;
 import de.uniks.beastopia.teaml.controller.ingame.TrainerController;
 import de.uniks.beastopia.teaml.controller.menu.social.FriendListController;
 import de.uniks.beastopia.teaml.rest.Region;
-import de.uniks.beastopia.teaml.rest.Trainer;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
@@ -21,8 +19,6 @@ import java.util.List;
 public class PauseController extends Controller {
 
     private final List<Controller> subControllers = new ArrayList<>();
-    @FXML
-    public Button editProfileButton;
     @Inject
     Provider<FriendListController> friendListControllerProvider;
     @Inject
@@ -33,12 +29,10 @@ public class PauseController extends Controller {
     Provider<EditProfileController> editProfileControllerProvider;
     @Inject
     Provider<SettingsController> settingsControllerProvider;
-    @FXML
-    private VBox friendListContainer;
     @Inject
     Provider<TrainerController> trainerControllerProvider;
-
-    private Trainer trainer;
+    @FXML
+    private VBox friendListContainer;
     private Region region;
 
     @Inject

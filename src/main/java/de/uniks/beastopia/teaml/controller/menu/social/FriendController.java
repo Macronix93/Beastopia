@@ -4,13 +4,13 @@ package de.uniks.beastopia.teaml.controller.menu.social;
 import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.User;
+import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.FriendListService;
 import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Paint;
@@ -19,8 +19,6 @@ import javafx.scene.text.Text;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import java.io.FileNotFoundException;
-import java.net.URISyntaxException;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -41,24 +39,22 @@ public class FriendController extends Controller {
     Button pin;
     @FXML
     HBox _rootElement;
-
-    private User user;
-
     @Inject
     Provider<DirectMessageController> directMessageControllerProvider;
-
-    private Boolean friendPin;
-    private ImageView pinned;
-    private ImageView notPinned;
-    private ImageView addImage;
-    private ImageView removeImage;
     @Inject
     FriendListService friendListService;
     @Inject
     Prefs prefs;
     @Inject
     EventListener eventListener;
-
+    @Inject
+    DataCache cache;
+    private User user;
+    private Boolean friendPin;
+    private ImageView pinned;
+    private ImageView notPinned;
+    private ImageView addImage;
+    private ImageView removeImage;
     private Consumer<User> onFriendChanged = null;
     private Consumer<User> onPinChanged = null;
     private boolean friend;
@@ -77,14 +73,10 @@ public class FriendController extends Controller {
                     updateOnlineStatus(user);
                 }));
 
-        try {
-            pinned = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/filled_pin.png")).toString());
-            notPinned = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/pin.png")).toString());
-            addImage = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/plus.png")).toString());
-            removeImage = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/minus.png")).toString());
-        } catch (URISyntaxException | FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        pinned = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/filled_pin.png")).toString());
+        notPinned = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/pin.png")).toString());
+        addImage = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/plus.png")).toString());
+        removeImage = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/minus.png")).toString());
     }
 
     public void setOnFriendChanged(Consumer<User> onFriendChanged) {
@@ -108,27 +100,18 @@ public class FriendController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
-
-        //TODO change avatar URL when avatar upload is implemented to individual link
-        try {
-            Image image = loadImage(Objects.requireNonNull(Main.class.getResource("assets/Lumnix_Logo_tr.png")).toString(),
-                    40.0, 40.0, false, false);
-            friendAvatar.setImage(image);
-        } catch (FileNotFoundException | URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-
+        friendAvatar.setImage(cache.getImageAvatar(user));
         name.setText(user.name());
         updateOnlineStatus(user);
 
-        if (friend) {
+        if (friendListService.isFriend(user) || friend) {
             if (this.friendPin) {
                 this.pin.setGraphic(pinned);
             } else {
                 this.pin.setGraphic(notPinned);
             }
         } else {
-            this.pin.setGraphic(notPinned); //that buttons align
+            this.pin.setGraphic(notPinned);
             this.pin.setVisible(false);
             this.pin.setDisable(true);
         }
@@ -150,17 +133,12 @@ public class FriendController extends Controller {
         }
     }
 
-    private ImageView createImage(String imageUrl) throws URISyntaxException, FileNotFoundException {
+    private ImageView createImage(String imageUrl) {
         ImageView imageView = new ImageView(imageUrl);
         imageView.setCache(false);
         imageView.setFitHeight(25.0);
         imageView.setFitWidth(25.0);
         return imageView;
-    }
-
-    @SuppressWarnings("SameParameterValue")
-    private static Image loadImage(String imageUrl, double width, double height, boolean preserveRatio, boolean smooth) throws FileNotFoundException, URISyntaxException {
-        return new Image(imageUrl, width, height, preserveRatio, smooth);
     }
 
     @FXML
@@ -209,9 +187,9 @@ public class FriendController extends Controller {
         notPinned = null;
         addImage = null;
         removeImage = null;
-
         onPinChanged = null;
         onFriendChanged = null;
+        friendAvatar = null;
 
         super.destroy();
     }

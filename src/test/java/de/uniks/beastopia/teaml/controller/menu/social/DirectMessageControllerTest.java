@@ -27,6 +27,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class DirectMessageControllerTest extends ApplicationTest {
     @Spy
+    final
     App app = new App(null);
     @Mock
     Provider<MenuController> menuControllerProvider;
@@ -41,6 +42,7 @@ class DirectMessageControllerTest extends ApplicationTest {
     MessageService messageService;
     @Spy
     @SuppressWarnings("unused")
+    final
     ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang");
     @InjectMocks
     DirectMessageController directMessageController;
@@ -48,7 +50,7 @@ class DirectMessageControllerTest extends ApplicationTest {
     ChatWindowController mocked;
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
         AppPreparer.prepare(app);
         @SuppressWarnings("unchecked")
         ArgumentCaptor<Consumer<Group>> captor = ArgumentCaptor.forClass(Consumer.class);
@@ -78,10 +80,6 @@ class DirectMessageControllerTest extends ApplicationTest {
         clickOn("#backButton");
 
         verify(app).show(mock);
-    }
-
-    @Test
-    void newGroup() {
     }
 
     @Test

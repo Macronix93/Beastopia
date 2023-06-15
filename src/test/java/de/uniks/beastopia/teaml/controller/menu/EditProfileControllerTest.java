@@ -1,12 +1,13 @@
 package de.uniks.beastopia.teaml.controller.menu;
 
 import de.uniks.beastopia.teaml.App;
+import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.AuthService;
+import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.utils.Prefs;
-import de.uniks.beastopia.teaml.utils.ThemeSettings;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -25,9 +26,11 @@ import retrofit2.HttpException;
 import retrofit2.Response;
 
 import javax.inject.Provider;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.ResourceBundle;
-import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -36,6 +39,7 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class EditProfileControllerTest extends ApplicationTest {
+    @SuppressWarnings("unused")
     @Mock
     Prefs prefs;
     @Mock
@@ -50,13 +54,13 @@ class EditProfileControllerTest extends ApplicationTest {
     AuthService authService;
     @Mock
     TokenStorage tokenStorage;
+    @SuppressWarnings("unused")
     @Mock
-    Provider<ResourceBundle> resourcesProvider;
-    @Spy
-    ThemeSettings themeSettings;
+    DataCache cache;
     @Spy
     App app;
     @Spy
+    final
     ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang", Locale.forLanguageTag("en"));
 
     @InjectMocks
@@ -67,8 +71,7 @@ class EditProfileControllerTest extends ApplicationTest {
 
     @Override
     public void start(Stage stage) {
-        AppPreparer.prepare(app, prefs);
-        when(prefs.getTheme()).thenReturn("dark");
+        AppPreparer.prepare(app);
 
         user = new User(null, null, null, "Alice", null, null, null);
         when(tokenStorage.getCurrentUser()).thenReturn(user);
@@ -76,33 +79,6 @@ class EditProfileControllerTest extends ApplicationTest {
         app.start(stage);
         app.show(editProfileController);
         stage.requestFocus();
-    }
-
-    @Test
-    public void setDarkTheme() {
-        doNothing().when(prefs).setTheme(any());
-        Consumer<String> mocked = mock();
-        doNothing().when(mocked).accept(any());
-        themeSettings.updateSceneTheme = mocked;
-
-        clickOn("#summerRadioButton");
-        clickOn("#darkRadioButton");
-
-        verify(prefs, times(1)).setTheme("dark");
-        verify(mocked, times(1)).accept("dark");
-    }
-
-    @Test
-    public void setSummerTheme() {
-        doNothing().when(prefs).setTheme(any());
-        Consumer<String> mocked = mock();
-        doNothing().when(mocked).accept(any());
-        themeSettings.updateSceneTheme = mocked;
-
-        clickOn("#summerRadioButton");
-
-        verify(prefs, times(1)).setTheme("summer");
-        verify(mocked, times(1)).accept("summer");
     }
 
     @Test
@@ -124,7 +100,46 @@ class EditProfileControllerTest extends ApplicationTest {
     }
 
     @Test
+    public void changeUsername() {
+        when(authService.updateUsername("Bob")).thenReturn(Observable.just(user));
+        MenuController mocked = mock();
+        when(menuControllerProvider.get()).thenReturn(mocked);
+        when(mocked.render()).thenReturn(new Label());
+
+        lookup("#usernameInput").queryTextInputControl().clear(); // clear username input (Alice
+        clickOn("#usernameInput");
+        write("Bob");
+        clickOn("#editProfileButton");
+
+        verify(authService).updateUsername("Bob");
+        verify(menuControllerProvider).get();
+        verify(mocked).render();
+    }
+
+    @Test
+    public void changeNameAndPassword() {
+        when(authService.updateUsernameAndPassword("Bob", "12345678")).thenReturn(Observable.just(user));
+        MenuController mocked = mock();
+        when(menuControllerProvider.get()).thenReturn(mocked);
+        when(mocked.render()).thenReturn(new Label());
+
+        lookup("#usernameInput").queryTextInputControl().clear();
+        clickOn("#usernameInput");
+        write("Bob");
+        clickOn("#passwordInput");
+        write("12345678");
+        clickOn("#passwordRepeatInput");
+        write("12345678");
+        clickOn("#editProfileButton");
+
+        verify(authService).updateUsernameAndPassword("Bob", "12345678");
+        verify(menuControllerProvider).get();
+        verify(mocked).render();
+    }
+
+    @Test
     public void changePasswordNotMatching() {
+
         clickOn("#passwordInput");
         write("123456789");
         clickOn("#passwordRepeatInput");
@@ -140,6 +155,7 @@ class EditProfileControllerTest extends ApplicationTest {
     public void changePasswordInvalid() {
         ResponseBody body = ResponseBody.create(MediaType.get("application/json"), "{\"message\":\"At least 8 characters.\"}");
         when(authService.updatePassword(anyString())).thenReturn(Observable.error(new HttpException(Response.error(400, body))));
+
         clickOn("#passwordInput");
         write("1234");
         clickOn("#passwordRepeatInput");
@@ -191,29 +207,22 @@ class EditProfileControllerTest extends ApplicationTest {
     }
 
     @Test
-    void title() {
+    public void title() {
         assertEquals(resources.getString("titleEditProfile"), app.getStage().getTitle());
     }
 
     @Test
-    public void setDe() {
-        when(resourcesProvider.get()).thenReturn(resources);
-        doNothing().when(prefs).setLocale(Locale.GERMAN.toLanguageTag());
+    public void uploadAvatarTest() {
+        final File file = new File(Objects.requireNonNull(Main.class.getResource("assets/user.png")).getFile());
+        final BufferedImage bufferedImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
+        when(cache.provideBufferedImage(any())).thenReturn(bufferedImage);
+        when(cache.provideImageFile(any())).thenReturn(file);
+        when(authService.updateAvatar(any())).thenReturn(Observable.just(user));
 
-        clickOn("#selectGermanLanguage");
-        verify(prefs, times(1)).setLocale(Locale.GERMAN.toLanguageTag());
-    }
+        clickOn("#chooseAvatar");
+        verify(cache, times(1)).provideBufferedImage(any());
 
-    @Test
-    public void setEn() {
-        when(resourcesProvider.get()).thenReturn(resources);
-        doNothing().when(prefs).setLocale(Locale.GERMAN.toLanguageTag());
-        doNothing().when(prefs).setLocale(Locale.ENGLISH.toLanguageTag());
-        when(prefs.getLocale()).thenReturn(Locale.GERMAN.toLanguageTag());
-
-        clickOn("#selectGermanLanguage");
-        clickOn("#selectEnglishLanguage");
-
-        verify(prefs, times(1)).setLocale(Locale.ENGLISH.toLanguageTag());
+        clickOn("#editProfileButton");
+        verify(authService, times(1)).updateAvatar(any());
     }
 }

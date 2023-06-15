@@ -3,12 +3,13 @@ package de.uniks.beastopia.teaml.controller.menu.social;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.DataCache;
-import de.uniks.beastopia.teaml.service.FriendListService;
 import de.uniks.beastopia.teaml.service.GroupListService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.utils.Dialog;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
+import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 
@@ -23,7 +24,6 @@ public class CreateGroupController extends Controller {
     private final List<User> addedUsersList = new ArrayList<>();
     private final List<Controller> addedUserControllers = new ArrayList<>();
     private final List<Controller> availableUserControllers = new ArrayList<>();
-
     @FXML
     public TextField usernameField;
     @FXML
@@ -31,17 +31,17 @@ public class CreateGroupController extends Controller {
     @FXML
     public VBox addedUsers;
     @FXML
+    public Button createGrpButton;
+    @FXML
+    public Button backButton;
+    @FXML
     public TextField groupNameField;
     @Inject
     Provider<DirectMessageController> directMessageControllerProvider;
     @Inject
     Provider<UserController> userControllerProvider;
     @Inject
-    Provider<CreateGroupController> createGroupControllerProvider;
-    @Inject
     GroupListService groupListService;
-    @Inject
-    FriendListService friendListService;
     @Inject
     TokenStorage tokenStorage;
     @Inject
@@ -68,22 +68,24 @@ public class CreateGroupController extends Controller {
         }
 
         for (User user : reverse(sortByPin(cache.getAllUsers()))) {
-            if (addedUsersList.contains(user) ||
-                    !user.name().toLowerCase().startsWith(usernameField.getText().toLowerCase())) {
+            if (addedUsersList.contains(user) || !user.name().toLowerCase().startsWith(usernameField.getText().toLowerCase())) {
                 continue;
             }
-
-            UserController controller = userControllerProvider.get()
-                    .setIsAdded(false);
-            controller.setUser(user);
-            controller.setOnUserToggled(this::toggleUser);
-            controller.setOnUserPinToggled(u -> {
-                prefs.setPinned(u, !prefs.isPinned(u));
-                updateLists();
-            });
-            controller.init();
-            users.getChildren().add(0, controller.render());
+            users.getChildren().add(0, showUser(user));
         }
+    }
+
+    private Parent showUser(User user) {
+        UserController controller = userControllerProvider.get()
+                .setIsAdded(false);
+        controller.setUser(user);
+        controller.setOnUserToggled(this::toggleUser);
+        controller.setOnUserPinToggled(u -> {
+            prefs.setPinned(u, !prefs.isPinned(u));
+            updateLists();
+        });
+        controller.init();
+        return controller.render();
     }
 
     @FXML
@@ -92,16 +94,7 @@ public class CreateGroupController extends Controller {
         addedUsers.getChildren().clear();
 
         for (User user : reverse(sortByPin(addedUsersList))) {
-            UserController controller = userControllerProvider.get()
-                    .setIsAdded(true);
-            controller.setUser(user);
-            controller.setOnUserToggled(this::toggleUser);
-            controller.setOnUserPinToggled(u -> {
-                prefs.setPinned(u, !prefs.isPinned(u));
-                updateLists();
-            });
-            controller.init();
-            addedUsers.getChildren().add(0, controller.render());
+            addedUsers.getChildren().add(0, showUser(user));
         }
     }
 

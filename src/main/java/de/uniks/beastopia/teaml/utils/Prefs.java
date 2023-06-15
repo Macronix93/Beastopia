@@ -1,8 +1,8 @@
 package de.uniks.beastopia.teaml.utils;
 
 import de.uniks.beastopia.teaml.rest.Area;
-import de.uniks.beastopia.teaml.rest.Region;
 import de.uniks.beastopia.teaml.rest.Group;
+import de.uniks.beastopia.teaml.rest.Region;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.DataCache;
 import javafx.geometry.Point2D;
@@ -75,12 +75,12 @@ public class Prefs {
         preferences.put("locale", locale);
     }
 
-    public void setRegion(Region region) {
+    public void setCurrentRegion(Region region) {
         preferences.put("region", region._id());
     }
 
-    public Region getRegion() {
-        return cache.getRegion(preferences.get("region", null));
+    public String getRegionID() {
+        return preferences.get("region", null);
     }
 
     public void setArea(Area area) {
@@ -94,13 +94,6 @@ public class Prefs {
     public void setPosition(Point2D position) {
         preferences.putDouble("positionX", position.getX());
         preferences.putDouble("positionY", position.getY());
-    }
-
-    public Point2D getPosition() {
-        return new Point2D(
-                preferences.getDouble("positionX", 0),
-                preferences.getDouble("positionY", 0)
-        );
     }
 
     public void setMusicVolume(double volume) {

@@ -7,6 +7,7 @@ public record Region(
         Date updatedAt,
         String _id,
         String name,
-        Spawn spawn
+        Spawn spawn,
+        Map map
 ) {
 }

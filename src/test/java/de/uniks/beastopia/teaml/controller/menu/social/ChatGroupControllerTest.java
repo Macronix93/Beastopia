@@ -39,6 +39,7 @@ public class ChatGroupControllerTest extends ApplicationTest {
     Prefs prefs;
 
     @Spy
+    final
     App app = new App(null);
     @Spy
     @SuppressWarnings("unused")
@@ -47,7 +48,7 @@ public class ChatGroupControllerTest extends ApplicationTest {
     Group group;
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
         AppPreparer.prepare(app);
 
         group = new Group(null, null, "id", "test", null);
@@ -87,5 +88,16 @@ public class ChatGroupControllerTest extends ApplicationTest {
         clickOn("#deleteGroupBtn");
 
         verify(app).show(mocked);
+        sleep(5000);
+    }
+
+    @Test
+    void pinGroupTest() {
+        when(prefs.isPinned(any(Group.class))).thenReturn(false, true);
+        doNothing().when(prefs).setPinned(any(Group.class), anyBoolean());
+        clickOn("#pinGroupBtn");
+        verify(prefs, times(1)).setPinned(any(Group.class), eq(true));
+        clickOn("#pinGroupBtn");
+        verify(prefs, times(1)).setPinned(any(Group.class), eq(false));
     }
 }
