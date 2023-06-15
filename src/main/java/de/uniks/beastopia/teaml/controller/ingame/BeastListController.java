@@ -21,6 +21,8 @@ import java.util.function.Consumer;
 
 public class BeastListController extends Controller {
 
+    private final List<Monster> monsters = new ArrayList<>();
+    private final List<Controller> subControllers = new ArrayList<>();
     @FXML
     public VBox VBoxBeasts;
     @Inject
@@ -35,10 +37,7 @@ public class BeastListController extends Controller {
     TrainerService trainerService;
     @Inject
     Prefs prefs;
-
     private Runnable onCloseRequest;
-    private final List<Monster> monsters = new ArrayList<>();
-    private final List<Controller> subControllers = new ArrayList<>();
     private Consumer<Monster> onBeastClicked;
 
     @Inject
@@ -59,7 +58,7 @@ public class BeastListController extends Controller {
                     // TODO: change back to monsters
                     List<Monster> tmpMonsters = List.of(
                             new Monster(null, null, "3", "TR_1", 2, 5, 10,
-                                    new MonsterAttributes(10,10,10,10),
+                                    new MonsterAttributes(10, 10, 10, 10),
                                     new MonsterAttributes(5, 5, 2, 5))
                     );
                     this.monsters.addAll(tmpMonsters);
@@ -93,5 +92,11 @@ public class BeastListController extends Controller {
 
     public void setOnCloseRequest(Runnable onCloseRequest) {
         this.onCloseRequest = onCloseRequest;
+    }
+
+    public void destroy() {
+        for (Controller subController : subControllers) {
+            subController.destroy();
+        }
     }
 }
