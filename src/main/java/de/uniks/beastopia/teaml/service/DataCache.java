@@ -189,7 +189,7 @@ public class DataCache {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Choose Avatar");
         fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg"));
         return fileChooser.showOpenDialog(app.getStage());
     }
 
@@ -205,9 +205,9 @@ public class DataCache {
     }
 
     private BufferedImage resizeImage(BufferedImage bufferedImage) {
-        BufferedImage resized = new BufferedImage(128, 128, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage resized = new BufferedImage(64, 64, BufferedImage.TYPE_INT_ARGB);
         Graphics2D graphics = resized.createGraphics();
-        graphics.drawImage(bufferedImage, 0, 0, 128, 128, null);
+        graphics.drawImage(bufferedImage, 0, 0, 64, 64, null);
         graphics.dispose();
         return resized;
     }

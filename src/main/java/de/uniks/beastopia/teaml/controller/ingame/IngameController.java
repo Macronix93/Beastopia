@@ -5,6 +5,7 @@ import com.google.gson.JsonPrimitive;
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
+import de.uniks.beastopia.teaml.rest.Map;
 import de.uniks.beastopia.teaml.rest.*;
 import de.uniks.beastopia.teaml.service.*;
 import de.uniks.beastopia.teaml.sockets.EventListener;
@@ -26,9 +27,7 @@ import javafx.util.Pair;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class IngameController extends Controller {
     static final double TILE_SIZE = 20;
@@ -63,7 +62,6 @@ public class IngameController extends Controller {
     EventListener eventListener;
     @Inject
     Provider<MapController> mapControllerProvider;
-
     private Region region;
     private Map map;
     private final List<Pair<TileSetDescription, Pair<TileSet, Image>>> tileSets = new ArrayList<>();
@@ -72,7 +70,6 @@ public class IngameController extends Controller {
     private int width;
     private int height;
     private LoadingPage loadingPage;
-
     Direction direction;
     ObjectProperty<PlayerState> state = new SimpleObjectProperty<>();
     Parent player;
@@ -83,9 +80,17 @@ public class IngameController extends Controller {
     Provider<IngameController> ingameControllerProvider;
     Parent scoreBoardParent;
     java.util.Map<EntityController, Parent> otherPlayers = new HashMap<>();
+    private final List<KeyCode> pressedKeys = new ArrayList<>();
 
     @Inject
     public IngameController() {
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                moveLoop();
+            }
+        }, 0, 100);
     }
 
     @Override
@@ -391,7 +396,19 @@ public class IngameController extends Controller {
     }
 
     @FXML
-    public void handleKeyEvent(KeyEvent keyEvent) {
+    public void keyDown(KeyEvent keyEvent) {
+        if (!pressedKeys.contains(keyEvent.getCode())) {
+            if (keyEvent.getCode().equals(KeyCode.UP) || keyEvent.getCode().equals(KeyCode.W)) {
+                pressedKeys.add(keyEvent.getCode());
+            } else if (keyEvent.getCode().equals(KeyCode.DOWN) || keyEvent.getCode().equals(KeyCode.S)) {
+                pressedKeys.add(keyEvent.getCode());
+            } else if (keyEvent.getCode().equals(KeyCode.LEFT) || keyEvent.getCode().equals(KeyCode.A)) {
+                pressedKeys.add(keyEvent.getCode());
+            } else if (keyEvent.getCode().equals(KeyCode.RIGHT) || keyEvent.getCode().equals(KeyCode.D)) {
+                pressedKeys.add(keyEvent.getCode());
+            }
+        }
+
         if (keyEvent.getCode().equals(KeyCode.M)) {
             MapController map = mapControllerProvider.get();
             app.show(map);
@@ -411,30 +428,39 @@ public class IngameController extends Controller {
                 scoreBoardLayout.getChildren().add(scoreBoardParent);
             }
         }
+    }
 
+    public void keyUp(KeyEvent keyEvent) {
+        pressedKeys.removeIf(keyCode -> keyCode.equals(keyEvent.getCode()));
+        setIdleState();
+    }
+
+    public void moveLoop() {
         boolean moved = false;
-        if (keyEvent.getCode().equals(KeyCode.UP) || keyEvent.getCode().equals(KeyCode.W)) {
+        if (pressedKeys.contains(KeyCode.UP) || pressedKeys.contains(KeyCode.W)) {
             posy--;
             direction = Direction.UP;
             moved = true;
-        } else if (keyEvent.getCode().equals(KeyCode.DOWN) || keyEvent.getCode().equals(KeyCode.S)) {
+        } else if (pressedKeys.contains(KeyCode.DOWN) || pressedKeys.contains(KeyCode.S)) {
             posy++;
             direction = Direction.DOWN;
             moved = true;
-        } else if (keyEvent.getCode().equals(KeyCode.LEFT) || keyEvent.getCode().equals(KeyCode.A)) {
+        } else if (pressedKeys.contains(KeyCode.LEFT) || pressedKeys.contains(KeyCode.A)) {
             posx--;
             direction = Direction.LEFT;
             moved = true;
-        } else if (keyEvent.getCode().equals(KeyCode.RIGHT) || keyEvent.getCode().equals(KeyCode.D)) {
+        } else if (pressedKeys.contains(KeyCode.RIGHT) || pressedKeys.contains(KeyCode.D)) {
             posx++;
             direction = Direction.RIGHT;
             moved = true;
         }
 
         if (moved) {
-            state.setValue(PlayerState.WALKING);
-            updateTrainerPos(direction);
-            updateOrigin();
+            onUI(() -> {
+                state.setValue(PlayerState.WALKING);
+                updateTrainerPos(direction);
+                updateOrigin();
+            });
         }
     }
 
