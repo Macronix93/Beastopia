@@ -1,8 +1,12 @@
 package de.uniks.beastopia.teaml.controller.ingame;
 
 import de.uniks.beastopia.teaml.controller.Controller;
+import de.uniks.beastopia.teaml.rest.Monster;
+import de.uniks.beastopia.teaml.rest.MonsterAttributes;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.TokenStorage;
+import de.uniks.beastopia.teaml.service.TrainerService;
+import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.input.KeyCode;
@@ -11,6 +15,9 @@ import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 
 public class BeastListController extends Controller {
 
@@ -24,8 +31,15 @@ public class BeastListController extends Controller {
     TokenStorage tokenStorage;
     @Inject
     DataCache cache;
+    @Inject
+    TrainerService trainerService;
+    @Inject
+    Prefs prefs;
 
     private Runnable onCloseRequest;
+    private final List<Monster> monsters = new ArrayList<>();
+    private final List<Controller> subControllers = new ArrayList<>();
+    private Consumer<Monster> onBeastClicked;
 
     @Inject
     public BeastListController() {
@@ -33,15 +47,20 @@ public class BeastListController extends Controller {
     }
 
     @Override
-    public void init() {
-        super.init();
-
-    }
-
-    @Override
     public Parent render() {
         Parent parent = super.render();
-        VBoxBeasts.getChildren().add(beastControllerProvider.get().render());
+        disposables.add(trainerService.getTrainerMonsters(prefs.getRegionID(), cache.getTrainer()._id())
+                .observeOn(FX_SCHEDULER)
+                .subscribe(monsters -> {
+                    // TODO: change back to monsters
+                    List<Monster> tmpMonsters = List.of(
+                            new Monster(null, null, "ID_1", "TR_1", 2, 5, 10,
+                                    new MonsterAttributes(10,10,10,10),
+                                    new MonsterAttributes(5, 5, 2, 5))
+                    );
+                    this.monsters.addAll(tmpMonsters);
+                    reload();
+                }));
         return parent;
     }
 

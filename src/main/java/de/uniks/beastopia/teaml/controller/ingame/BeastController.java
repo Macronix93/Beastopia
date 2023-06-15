@@ -1,7 +1,7 @@
 package de.uniks.beastopia.teaml.controller.ingame;
 
 import de.uniks.beastopia.teaml.controller.Controller;
-import javafx.event.ActionEvent;
+import de.uniks.beastopia.teaml.rest.Monster;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
@@ -19,16 +19,21 @@ public class BeastController extends Controller {
     public Label hp;
     @FXML
     public Label level;
+    private Monster monster;
+    private Consumer<Monster> onBeastClicked;
 
     @Inject
     public BeastController() {
 
     }
 
-    @Override
-    public void init() {
-        super.init();
+    public void setOnBeastClicked(Consumer<Monster> onBeastClicked) {
+        this.onBeastClicked = onBeastClicked;
+    }
 
+    public BeastController setBeast(Monster monster) {
+        this.monster = monster;
+        return this;
     }
 
     @Override
@@ -37,7 +42,8 @@ public class BeastController extends Controller {
         return parent;
     }
 
-    public void openDetails() {
-
+    @FXML
+    public void toggleDetails() {
+        onBeastClicked.accept(monster);
     }
 }

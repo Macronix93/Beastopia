@@ -1,6 +1,7 @@
 package de.uniks.beastopia.teaml.controller.ingame;
 
 import de.uniks.beastopia.teaml.controller.Controller;
+import de.uniks.beastopia.teaml.rest.Monster;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
@@ -28,15 +29,21 @@ public class BeastDetailController extends Controller {
     public Label defense;
     @FXML
     public TextArea description;
+    private Monster monster;
 
     @Inject
     public BeastDetailController() {
 
     }
 
+    public void setBeast(Monster monster) {
+        this.monster = monster;
+    }
+
     @Override
     public Parent render() {
         Parent parent = super.render();
+//        name.setText(monster.name());
         return parent;
     }
 }

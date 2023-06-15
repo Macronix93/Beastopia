@@ -155,7 +155,6 @@ public class IngameController extends Controller {
                         drawMap();
                         scoreBoardParent = scoreBoardController.render();
                         beastListParent = beastListController.render();
-                        beastDetailParent = beastDetailController.render();
 
                         for (Trainer trainer : trainers) {
                             if (trainer._id().equals(cache.getTrainer()._id())) {
@@ -453,13 +452,15 @@ public class IngameController extends Controller {
             updateOrigin();
         }
 
-        if (keyEvent.getCode().equals(KeyCode.B)) {
-            if (beastListLayout.getChildren().contains(beastListParent)) {
-                beastListLayout.getChildren().remove(beastListParent);
-                beastDetailLayout.getChildren().remove(beastDetailParent);
+        if (keyEvent.getCode().equals(KeyCode.B) && (currentMenu == MENU_NONE || currentMenu == MENU_BEASTLIST)) {
+            if (scoreBoardLayout.getChildren().contains(beastListParent)) {
+                scoreBoardLayout.getChildren().remove(beastListParent);
+                scoreBoardLayout.getChildren().remove(beastDetailParent);
+                lastMonster = null;
+                currentMenu = MENU_NONE;
             } else {
-                beastListLayout.getChildren().add(beastListParent);
-                beastDetailLayout.getChildren().add(beastDetailParent);
+                scoreBoardLayout.getChildren().add(beastListParent);
+                currentMenu = MENU_BEASTLIST;
             }
         }
     }
