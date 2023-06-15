@@ -23,7 +23,6 @@ public class AuthService {
     public Observable<LoginResult> login(String username, String password, boolean rememberMe) {
         return authApiService.login(new LoginDto(username, password)).map(lr -> {
             tokenStorage.setAccessToken(lr.accessToken());
-            tokenStorage.setRefreshToken(lr.refreshToken());
             tokenStorage.setCurrentUser(userApiService.updateUser(lr._id(), new UpdateUserDto(null,
                     UserApiService.STATUS_ONLINE, null, null, null)).blockingFirst());
             if (rememberMe) {
@@ -40,7 +39,6 @@ public class AuthService {
 
         return authApiService.refresh(new RefreshDto(prefs.getRememberMeToken())).map(lr -> {
             tokenStorage.setAccessToken(lr.accessToken());
-            tokenStorage.setRefreshToken(lr.refreshToken());
             tokenStorage.setCurrentUser(userApiService.updateUser(lr._id(), new UpdateUserDto(null,
                     UserApiService.STATUS_ONLINE, null, null, null)).blockingFirst());
             return lr;
