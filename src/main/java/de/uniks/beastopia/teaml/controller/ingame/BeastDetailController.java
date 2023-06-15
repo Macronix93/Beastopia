@@ -2,6 +2,8 @@ package de.uniks.beastopia.teaml.controller.ingame;
 
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Monster;
+import de.uniks.beastopia.teaml.rest.PresetsApiService;
+import de.uniks.beastopia.teaml.service.PresetsService;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
@@ -29,6 +31,8 @@ public class BeastDetailController extends Controller {
     public Label defense;
     @FXML
     public TextArea description;
+    @Inject
+    PresetsService presetsService;
     private Monster monster;
 
     @Inject
@@ -43,7 +47,16 @@ public class BeastDetailController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
-//        name.setText(monster.name());
+        level.setText(String.valueOf(monster.level()));
+
+        disposables.add(presetsService.getMonsterType(monster._id())
+                .observeOn(FX_SCHEDULER)
+                .subscribe(monsterType -> {
+                    name.setText(monsterType.name());
+                    type.setText(monsterType.type().get(0));
+                    description.setText(monsterType.description());
+                }));
+
         return parent;
     }
 }

@@ -5,6 +5,7 @@ import de.uniks.beastopia.teaml.rest.Monster;
 import de.uniks.beastopia.teaml.rest.PresetsApiService;
 import de.uniks.beastopia.teaml.rest.TileSet;
 import de.uniks.beastopia.teaml.rest.TileSetDescription;
+import de.uniks.beastopia.teaml.rest.MonsterTypeDto;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
@@ -51,6 +52,10 @@ public class PresetsService {
 
     public Observable<List<Monster>> getMonsters() {
         return presetsApiService.getMonsters();
+    }
+
+    public Observable<MonsterTypeDto>  getMonsterType(String name) {
+        return presetsApiService.getMonsterType(name);
     }
 
 }

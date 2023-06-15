@@ -58,7 +58,7 @@ public class BeastListController extends Controller {
                 .subscribe(monsters -> {
                     // TODO: change back to monsters
                     List<Monster> tmpMonsters = List.of(
-                            new Monster(null, null, "ID_1", "TR_1", 2, 5, 10,
+                            new Monster(null, null, "3", "TR_1", 2, 5, 10,
                                     new MonsterAttributes(10,10,10,10),
                                     new MonsterAttributes(5, 5, 2, 5))
                     );

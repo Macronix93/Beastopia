@@ -20,4 +20,7 @@ public interface PresetsApiService {
 
     @GET("presets/monsters")
     Observable<List<Monster>> getMonsters();
+
+    @GET("presets/monsters/{name}")
+    Observable<MonsterTypeDto> getMonsterType(@Path("name") String name);
 }

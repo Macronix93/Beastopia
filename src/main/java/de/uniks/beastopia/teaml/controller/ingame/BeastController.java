@@ -38,7 +38,6 @@ public class BeastController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
-
         hp.setText(monster.currentAttributes().health() + " / " + monster.attributes().health());
         level.setText(String.valueOf(monster.level()));
 
