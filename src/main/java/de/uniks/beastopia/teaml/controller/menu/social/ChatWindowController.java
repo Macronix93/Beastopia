@@ -31,7 +31,6 @@ public class ChatWindowController extends Controller {
     @Inject
     MessageService messageService;
 
-    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     private final List<MessageBubbleController> subControllers = new ArrayList<>();
     private Group group;
     private LoadingPage loadingPage;

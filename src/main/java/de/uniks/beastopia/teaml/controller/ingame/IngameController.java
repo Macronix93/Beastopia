@@ -71,7 +71,7 @@ public class IngameController extends Controller {
     private int height;
     private LoadingPage loadingPage;
     Direction direction;
-    ObjectProperty<PlayerState> state = new SimpleObjectProperty<>();
+    final ObjectProperty<PlayerState> state = new SimpleObjectProperty<>();
     Parent player;
     EntityController playerController;
     @Inject
@@ -79,7 +79,7 @@ public class IngameController extends Controller {
     @Inject
     Provider<IngameController> ingameControllerProvider;
     Parent scoreBoardParent;
-    java.util.Map<EntityController, Parent> otherPlayers = new HashMap<>();
+    final java.util.Map<EntityController, Parent> otherPlayers = new HashMap<>();
     private final List<KeyCode> pressedKeys = new ArrayList<>();
 
     @Inject
@@ -468,11 +468,6 @@ public class IngameController extends Controller {
     public void setIdleState() {
         state.setValue(PlayerState.IDLE);
         drawPlayer(posx, posy);
-    }
-
-    @SuppressWarnings("unused")
-    private void updateRemoteTrainerPos(Direction direction) {
-
     }
 
 

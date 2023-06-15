@@ -37,7 +37,6 @@ public class ScoreboardController extends Controller {
     Provider<ScoreboardUserItemController> scoreBoardUserItemControllerProvider;
     @Inject
     Provider<UserInfoController> userInfoControllerProvider;
-    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     private final List<Controller> subControllers = new ArrayList<>();
     private Runnable onCloseRequested;
     private boolean clicked = false;

@@ -64,6 +64,7 @@ class IngameControllerTest extends ApplicationTest {
     @Mock
     Prefs prefs;
     @Mock
+    final
     ScoreboardController scoreboardController = mock();
     @Mock
     ObjectProperty<PlayerState> state;
@@ -76,17 +77,17 @@ class IngameControllerTest extends ApplicationTest {
     ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang");
     @InjectMocks
     IngameController ingameController;
-    TileSetDescription tileSetDescription = new TileSetDescription(0, "SOURCE");
-    TileSet tileSet = new TileSet(2, "IMAGE", 2, 2, 0, "NAME", 0, 4, 1);
-    Chunk chunk = new Chunk(List.of(0, 1, 2, 3), 2, 2, 0, 0);
-    Layer layer = new Layer(List.of(chunk), null, null, 1, 0, 0, null, true, 2, 2, 0, 0);
-    Map map = new Map(List.of(tileSetDescription), List.of(layer), 2, 24, 4);
-    Area area = new Area(null, null, "ID_AREA", "ID_REGION", "AREA_NAME", map);
-    Spawn spawn = new Spawn("ID_AREA", 0, 0);
-    Region region = new Region(null, null, "ID", "NAME", spawn, null);
-    Image image = createImage(2, 2, List.of(new Color(255, 0, 255), new Color(0, 255, 0), new Color(0, 0, 255), new Color(255, 255, 0)));
-    Trainer trainer = new Trainer(null, null, "ID_TRAINER", "ID_REGION", "ID_USER", "TRAINER_NAME", "TRAINER_IMAGE", 0, "ID_AREA", 0, 0, 0, new NPCInfo(false));
-    User user = new User(null, null, "ID_USER", "USER_NAME", "USER_STATUS", "USER_AVATAR", List.of());
+    final TileSetDescription tileSetDescription = new TileSetDescription(0, "SOURCE");
+    final TileSet tileSet = new TileSet(2, "IMAGE", 2, 2, 0, "NAME", 0, 4, 1);
+    final Chunk chunk = new Chunk(List.of(0, 1, 2, 3), 2, 2, 0, 0);
+    final Layer layer = new Layer(List.of(chunk), null, null, 1, 0, 0, null, true, 2, 2, 0, 0);
+    final Map map = new Map(List.of(tileSetDescription), List.of(layer), 2, 24, 4);
+    final Area area = new Area(null, null, "ID_AREA", "ID_REGION", "AREA_NAME", map);
+    final Spawn spawn = new Spawn("ID_AREA", 0, 0);
+    final Region region = new Region(null, null, "ID", "NAME", spawn, null);
+    final Image image = createImage(2, 2, List.of(new Color(255, 0, 255), new Color(0, 255, 0), new Color(0, 0, 255), new Color(255, 255, 0)));
+    final Trainer trainer = new Trainer(null, null, "ID_TRAINER", "ID_REGION", "ID_USER", "TRAINER_NAME", "TRAINER_IMAGE", 0, "ID_AREA", 0, 0, 0, new NPCInfo(false));
+    final User user = new User(null, null, "ID_USER", "USER_NAME", "USER_STATUS", "USER_AVATAR", List.of());
 
     @Override
     public void start(Stage stage) {
@@ -104,7 +105,6 @@ class IngameControllerTest extends ApplicationTest {
         when(presetsService.getTileset(tileSetDescription)).thenReturn(Observable.just(tileSet));
         when(presetsService.getImage(tileSet)).thenReturn(Observable.just(image));
         when(cache.getTrainer()).thenReturn(trainer);
-        //when(cache.getCharacterImage("TRAINER_IMAGE")).thenReturn(charList.get(0));
         when(entityControllerProvider.get()).thenReturn(playerController);
         doNothing().when(playerController).setTrainer(any());
         when(playerController.playerState()).thenReturn(new SimpleObjectProperty<>(PlayerState.IDLE));
@@ -116,6 +116,8 @@ class IngameControllerTest extends ApplicationTest {
         app.start(stage);
         app.show(ingameController);
         stage.requestFocus();
+
+        sleep(1000);
     }
 
     @Test
@@ -147,16 +149,16 @@ class IngameControllerTest extends ApplicationTest {
         when(cache.getTrainer()).thenReturn(trainer);
         doNothing().when(udpEventListener).send(anyString());
         press(KeyCode.W);
-        sleep(200);
+        sleep(300);
         release(KeyCode.W);
         press(KeyCode.S);
-        sleep(200);
+        sleep(300);
         release(KeyCode.S);
         press(KeyCode.A);
-        sleep(200);
+        sleep(300);
         release(KeyCode.A);
         press(KeyCode.D);
-        sleep(200);
+        sleep(300);
         release(KeyCode.D);
         verify(state, atLeast(4)).setValue(PlayerState.WALKING);
     }

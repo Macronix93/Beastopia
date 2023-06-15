@@ -25,16 +25,16 @@ import java.util.function.Consumer;
 
 public class EntityController extends Controller {
     private static final Map<String, Image> SPRITESHEET = new HashMap<>();
-    int PORT_WIDTH = 16;
-    int PORT_HEIGHT = 32;
-    int SPRITE_STEP = 16;
-    int STATE_STEP = 32;
-    int DIRECTION_STEP = 96;
+    final int PORT_WIDTH = 16;
+    final int PORT_HEIGHT = 32;
+    final int SPRITE_STEP = 16;
+    final int STATE_STEP = 32;
+    final int DIRECTION_STEP = 96;
     int index = 0;
     Trainer trainer;
     Parent parent;
     Direction direction;
-    ObjectProperty<PlayerState> state = new SimpleObjectProperty<>();
+    final ObjectProperty<PlayerState> state = new SimpleObjectProperty<>();
     Consumer<MoveTrainerDto> onTrainerUpdate;
 
     @FXML

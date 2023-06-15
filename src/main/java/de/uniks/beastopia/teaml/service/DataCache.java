@@ -15,8 +15,10 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.*;
-import java.net.URISyntaxException;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -152,25 +154,21 @@ public class DataCache {
 
     public Image getImageAvatar(User user) {
         Image imageAvatar;
-        try {
-            if (user.avatar() != null && user.avatar().contains("data:image/png;base64,")) {
-                String avatar = user.avatar().replace("data:image/png;base64,", "").trim();
-                byte[] imageData = Base64.getDecoder().decode(avatar);
-                imageAvatar = new Image(new ByteArrayInputStream(imageData));
-            } else if (user.avatar() != null && user.avatar().contains("https://")) {
-                imageAvatar = loadImage(user.avatar(), 40.0, 40.0, false, false);
-            } else {
-                imageAvatar = loadImage(Objects.requireNonNull(Main.class.getResource("assets/user.png")).toString(),
-                        40.0, 40.0, false, false);
-            }
-        } catch (FileNotFoundException | URISyntaxException e) {
-            throw new RuntimeException(e);
+        if (user.avatar() != null && user.avatar().contains("data:image/png;base64,")) {
+            String avatar = user.avatar().replace("data:image/png;base64,", "").trim();
+            byte[] imageData = Base64.getDecoder().decode(avatar);
+            imageAvatar = new Image(new ByteArrayInputStream(imageData));
+        } else if (user.avatar() != null && user.avatar().contains("https://")) {
+            imageAvatar = loadImage(user.avatar(), 40.0, 40.0, false, false);
+        } else {
+            imageAvatar = loadImage(Objects.requireNonNull(Main.class.getResource("assets/user.png")).toString(),
+                    40.0, 40.0, false, false);
         }
         return imageAvatar;
     }
 
     @SuppressWarnings("SameParameterValue")
-    private static Image loadImage(String imageUrl, double width, double height, boolean preserveRatio, boolean smooth) throws FileNotFoundException, URISyntaxException {
+    private static Image loadImage(String imageUrl, double width, double height, boolean preserveRatio, boolean smooth) {
         return new Image(imageUrl, width, height, preserveRatio, smooth);
     }
 

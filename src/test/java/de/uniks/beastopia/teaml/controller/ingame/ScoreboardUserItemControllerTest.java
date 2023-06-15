@@ -30,7 +30,7 @@ class ScoreboardUserItemControllerTest extends ApplicationTest {
     private final User user = new User(null, null, "123", "Leon", "status", "avatar", null);
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
         AppPreparer.prepare(app);
         doNothing().when(onUserClicked).accept(Mockito.anyString());
         when(cache.getImageAvatar(any())).thenReturn(null);

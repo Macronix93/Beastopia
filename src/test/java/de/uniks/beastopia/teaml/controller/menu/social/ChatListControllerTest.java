@@ -26,7 +26,6 @@ import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -61,7 +60,7 @@ class ChatListControllerTest extends ApplicationTest {
 
     ChatGroupController mockedChatGroupController1;
     ChatGroupController mockedChatGroupController2;
-    Consumer<Group> onGroupClicked = mock();
+    final Consumer<Group> onGroupClicked = mock();
 
     @Override
     public void start(Stage stage) {

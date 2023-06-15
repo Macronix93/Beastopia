@@ -181,11 +181,6 @@ public class MapController extends Controller {
         }
     }
 
-    @Override
-    public void destroy() {
-        super.destroy();
-    }
-
     public void closeMap() {
         IngameController ingameController = ingameControllerProvider.get();
         ingameController.setRegion(region);

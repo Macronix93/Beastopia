@@ -59,6 +59,7 @@ dependencies {
     implementation group: 'com.squareup.retrofit2', name: 'retrofit', version: '2.9.0'
 
     // https://mvnrepository.com/artifact/com.squareup.retrofit2/converter-jackson
+    //noinspection VulnerableLibrariesLocal
     implementation group: 'com.squareup.retrofit2', name: 'converter-jackson', version: '2.9.0'
 
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
@@ -104,6 +105,7 @@ jacoco {
 }
 
 jacocoTestReport {
+    //noinspection GrUnresolvedAccess
     reports.xml.required = true
 }
 

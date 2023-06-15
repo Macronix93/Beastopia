@@ -40,14 +40,8 @@ public class RegionInfoController extends Controller {
         return parent;
     }
 
-    @Override
-    public void destroy() {
-        super.destroy();
-    }
-
-    public RegionInfoController setText(String name, String description) {
+    public void setText(String name, String description) {
         this.name = name;
         this.information = description;
-        return this;
     }
 }

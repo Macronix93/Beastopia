@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -57,28 +56,28 @@ class MapControllerTest extends ApplicationTest {
     @Mock
     RegionInfoController regionInfoController;
 
-    TileSetDescription tileSetDescription = new TileSetDescription(0, "SOURCE");
-    TileSet tileSet = new TileSet(2, "IMAGE", 2, 2, 0, "NAME", 0, 4, 1);
-    Chunk chunk = new Chunk(List.of(0, 1, 2, 3), 2, 2, 0, 0);
-    Layer tilelayer = new Layer(List.of(chunk), null, null, 1, 0, 0, "tilelayer", true, 2, 2, 0, 0);
-    Trainer trainer = new Trainer(null, null, "1", "A", "1", "A", null, 0, "1", 0, 0, 0, null);
-    Image image = createImage(2, 2, List.of(new Color(255, 0, 255), new Color(0, 255, 0), new Color(0, 0, 255), new Color(255, 255, 0)));
-    List<HashMap<String, Double>> polygon = List.of(new HashMap<>() {{
+    final TileSetDescription tileSetDescription = new TileSetDescription(0, "SOURCE");
+    final TileSet tileSet = new TileSet(2, "IMAGE", 2, 2, 0, "NAME", 0, 4, 1);
+    final Chunk chunk = new Chunk(List.of(0, 1, 2, 3), 2, 2, 0, 0);
+    final Layer tilelayer = new Layer(List.of(chunk), null, null, 1, 0, 0, "tilelayer", true, 2, 2, 0, 0);
+    final Trainer trainer = new Trainer(null, null, "1", "A", "1", "A", null, 0, "1", 0, 0, 0, null);
+    final Image image = createImage(2, 2, List.of(new Color(255, 0, 255), new Color(0, 255, 0), new Color(0, 0, 255), new Color(255, 255, 0)));
+    final List<HashMap<String, Double>> polygon = List.of(new HashMap<>() {{
         put("x", 0.0);
         put("y", 0.0);
     }});
-    List<HashMap<String, String>> properties = List.of(new HashMap<>() {{
+    final List<HashMap<String, String>> properties = List.of(new HashMap<>() {{
         put("value", "AREA_NAME");
     }});
-    MapObject rectObject = new MapObject(50, 0, "AREA_NAME", properties, null, 0, "RECT", true, 50, 100, 100);
-    MapObject polyObject = new MapObject(50, 0, "POLY", null, polygon, 0, "POLY", true, 50, 60, 60);
-    Layer objectgroup = new Layer(null, List.of(rectObject, polyObject), null, 1, 20, 20, "objectgroup", true, 2, 2, 0, 0);
-    Map map = new Map(List.of(tileSetDescription), List.of(tilelayer, objectgroup), 2, 24, 4);
-    Area area = new Area(null, null, "ID_AREA", "ID_REGION", "AREA_NAME", map);
-    Region region = new Region(null, null, "ID_REGION", "REGION_NAME", null, map);
+    final MapObject rectObject = new MapObject(50, 0, "AREA_NAME", properties, null, 0, "RECT", true, 50, 100, 100);
+    final MapObject polyObject = new MapObject(50, 0, "POLY", null, polygon, 0, "POLY", true, 50, 60, 60);
+    final Layer objectgroup = new Layer(null, List.of(rectObject, polyObject), null, 1, 20, 20, "objectgroup", true, 2, 2, 0, 0);
+    final Map map = new Map(List.of(tileSetDescription), List.of(tilelayer, objectgroup), 2, 24, 4);
+    final Area area = new Area(null, null, "ID_AREA", "ID_REGION", "AREA_NAME", map);
+    final Region region = new Region(null, null, "ID_REGION", "REGION_NAME", null, map);
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
         AppPreparer.prepare(app);
         when(cache.getTrainer()).thenReturn(trainer);
         when(cache.getArea(any())).thenReturn(area);

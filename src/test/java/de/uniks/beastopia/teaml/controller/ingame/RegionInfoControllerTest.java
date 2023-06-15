@@ -23,7 +23,7 @@ class RegionInfoControllerTest extends ApplicationTest {
     RegionInfoController regionInfoController;
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
         AppPreparer.prepare(app);
         regionInfoController.setText("Text", "Text");
         app.start(stage);

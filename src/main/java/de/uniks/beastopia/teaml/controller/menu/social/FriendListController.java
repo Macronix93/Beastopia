@@ -48,7 +48,7 @@ public class FriendListController extends Controller {
     @Inject
     @SuppressWarnings("unused")
     EventListener eventListener;
-    Timer timer = new Timer();
+    final Timer timer = new Timer();
     TimerTask currentTask;
     long taskStamp;
     String lastSearch = null;

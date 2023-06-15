@@ -3,16 +3,8 @@ package de.uniks.beastopia.teaml.controller.ingame;
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.controller.menu.MenuController;
-import de.uniks.beastopia.teaml.rest.Chunk;
-import de.uniks.beastopia.teaml.rest.Layer;
 import de.uniks.beastopia.teaml.rest.Map;
-import de.uniks.beastopia.teaml.rest.MapObject;
-import de.uniks.beastopia.teaml.rest.NPCInfo;
-import de.uniks.beastopia.teaml.rest.Region;
-import de.uniks.beastopia.teaml.rest.Spawn;
-import de.uniks.beastopia.teaml.rest.TileSetDescription;
-import de.uniks.beastopia.teaml.rest.Trainer;
-import de.uniks.beastopia.teaml.rest.User;
+import de.uniks.beastopia.teaml.rest.*;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
@@ -40,22 +32,14 @@ import org.testfx.framework.junit5.ApplicationTest;
 import javax.inject.Provider;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import static javafx.scene.input.KeyCode.BACK_SPACE;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class TrainerControllerTest extends ApplicationTest {
@@ -81,30 +65,30 @@ class TrainerControllerTest extends ApplicationTest {
     @Mock
     TokenStorage tokenStorage;
 
-    Image image = createImage(2, 2, List.of(new Color(255, 0, 255), new Color(0, 255, 0), new Color(0, 0, 255), new Color(255, 255, 0)));
-    List<Pair<String, Image>> allCharacters = List.of(
+    final Image image = createImage(2, 2, List.of(new Color(255, 0, 255), new Color(0, 255, 0), new Color(0, 0, 255), new Color(255, 255, 0)));
+    final List<Pair<String, Image>> allCharacters = List.of(
             new Pair<>("A.png", image),
             new Pair<>("B.png", image),
             new Pair<>("C.png", image)
     );
-    List<String> characters = List.of("A.png", "B.png", "C.png");
-    User user = new User(null, null, "ID", "123", "ONLINE", null, List.of());
-    TileSetDescription tileSetDescription = new TileSetDescription(0, "SOURCE");
-    List<HashMap<String, Double>> polygon = List.of(new HashMap<>() {{
+    final List<String> characters = List.of("A.png", "B.png", "C.png");
+    final User user = new User(null, null, "ID", "123", "ONLINE", null, List.of());
+    final TileSetDescription tileSetDescription = new TileSetDescription(0, "SOURCE");
+    final List<HashMap<String, Double>> polygon = List.of(new HashMap<>() {{
         put("x", 0.0);
         put("y", 0.0);
     }});
-    List<HashMap<String, String>> properties = List.of(new HashMap<>() {{
+    final List<HashMap<String, String>> properties = List.of(new HashMap<>() {{
         put("value", "AREA_NAME");
     }});
-    MapObject rectObject = new MapObject(50, 0, "AREA_NAME", properties, null, 0, "RECT", true, 50, 100, 100);
-    MapObject polyObject = new MapObject(50, 0, "POLY", null, polygon, 0, "POLY", true, 50, 60, 60);
-    Layer objectGroup = new Layer(null, List.of(rectObject, polyObject), null, 1, 20, 20, "objectgroup", true, 2, 2, 0, 0);
-    Chunk chunk = new Chunk(List.of(0, 1, 2, 3), 2, 2, 0, 0);
-    Layer tilelayer = new Layer(List.of(chunk), null, null, 1, 0, 0, "tilelayer", true, 2, 2, 0, 0);
-    Map map = new Map(List.of(tileSetDescription), List.of(tilelayer, objectGroup), 2, 24, 4);
-    Region region = new Region(null, null, "ID", "NAME", new Spawn(null, 0, 0), map);
-    List<Trainer> allTrainer = List.of(
+    final MapObject rectObject = new MapObject(50, 0, "AREA_NAME", properties, null, 0, "RECT", true, 50, 100, 100);
+    final MapObject polyObject = new MapObject(50, 0, "POLY", null, polygon, 0, "POLY", true, 50, 60, 60);
+    final Layer objectGroup = new Layer(null, List.of(rectObject, polyObject), null, 1, 20, 20, "objectgroup", true, 2, 2, 0, 0);
+    final Chunk chunk = new Chunk(List.of(0, 1, 2, 3), 2, 2, 0, 0);
+    final Layer tilelayer = new Layer(List.of(chunk), null, null, 1, 0, 0, "tilelayer", true, 2, 2, 0, 0);
+    final Map map = new Map(List.of(tileSetDescription), List.of(tilelayer, objectGroup), 2, 24, 4);
+    final Region region = new Region(null, null, "ID", "NAME", new Spawn(null, 0, 0), map);
+    final List<Trainer> allTrainer = List.of(
             new Trainer(null, null, "123", "A", "123", "A", "A.png", 0, null, 0, 0, 0, null),
             new Trainer(null, null, "456", "B", "456", "B", "B.png", 1, null, 0, 0, 0, null)
     );

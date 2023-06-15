@@ -14,6 +14,7 @@ import java.util.prefs.Preferences;
 
 import static org.mockito.Mockito.mock;
 
+@SuppressWarnings({"SameReturnValue", "unused"})
 @Module
 public class TestModule {
 

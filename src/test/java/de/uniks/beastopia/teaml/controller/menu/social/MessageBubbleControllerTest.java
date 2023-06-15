@@ -37,7 +37,6 @@ import java.util.function.Consumer;
 import static java.util.Calendar.JANUARY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -59,12 +58,12 @@ public class MessageBubbleControllerTest extends ApplicationTest {
     @InjectMocks
     MessageBubbleController messageBubbleController;
 
-    Date created = new GregorianCalendar(2022, JANUARY, 1).getTime();
-    Date updated = new GregorianCalendar(2022, JANUARY, 2).getTime();
-    User user = new User(created, updated, "USER", "User", "online", null, null);
-    Group group = new Group(created, updated, "GROUP", "Group", List.of(user._id()));
-    Message message = new Message(created, updated, "MESSAGE", user._id(), "Message");
-    Consumer<Pair<Parent, MessageBubbleController>> onDelete = mock();
+    final Date created = new GregorianCalendar(2022, JANUARY, 1).getTime();
+    final Date updated = new GregorianCalendar(2022, JANUARY, 2).getTime();
+    final User user = new User(created, updated, "USER", "User", "online", null, null);
+    final Group group = new Group(created, updated, "GROUP", "Group", List.of(user._id()));
+    final Message message = new Message(created, updated, "MESSAGE", user._id(), "Message");
+    final Consumer<Pair<Parent, MessageBubbleController>> onDelete = mock();
 
     @Override
     public void start(Stage stage) {

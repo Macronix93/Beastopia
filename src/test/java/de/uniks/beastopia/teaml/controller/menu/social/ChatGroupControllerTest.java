@@ -39,6 +39,7 @@ public class ChatGroupControllerTest extends ApplicationTest {
     Prefs prefs;
 
     @Spy
+    final
     App app = new App(null);
     @Spy
     @SuppressWarnings("unused")
@@ -47,7 +48,7 @@ public class ChatGroupControllerTest extends ApplicationTest {
     Group group;
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
         AppPreparer.prepare(app);
 
         group = new Group(null, null, "id", "test", null);
