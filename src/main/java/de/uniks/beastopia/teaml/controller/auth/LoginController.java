@@ -1,5 +1,6 @@
 package de.uniks.beastopia.teaml.controller.auth;
 
+import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.menu.MenuController;
 import de.uniks.beastopia.teaml.service.AuthService;
@@ -10,10 +11,13 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class LoginController extends Controller {
@@ -29,6 +33,8 @@ public class LoginController extends Controller {
     public RadioButton selectEnglishLanguage;
     @FXML
     public RadioButton selectGermanLanguage;
+    @FXML
+    public ImageView banner;
 
     @Inject
     Provider<RegistrationController> registrationControllerProvider;
@@ -66,6 +72,7 @@ public class LoginController extends Controller {
     @Override
     public Parent render() {
         final Parent parent = super.render();
+        banner.setImage(new Image(Objects.requireNonNull(Main.class.getResourceAsStream("assets/beastopia_banner.png"))));
 
         if (prefs.getLocale().contains("de")) {
             selectGermanLanguage.setSelected(true);
