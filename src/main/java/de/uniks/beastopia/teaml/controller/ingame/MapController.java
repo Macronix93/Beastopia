@@ -101,29 +101,36 @@ public class MapController extends Controller {
                 markOwnPlayer(object);
             }
             if (object.polygon() == null) {
-                Rectangle r = new Rectangle();
-                r.setX(object.x());
-                r.setY(object.y());
-                r.setWidth(object.width());
-                r.setHeight(object.height());
-                r.setFill(Color.TRANSPARENT);
-                r.setOnMouseEntered(event -> setRegionInfo(object, regionInfo, event));
-                r.setOnMouseExited(event -> anchorPane.getChildren().remove(anchorPane.getChildren().size() - 1));
-                anchorPane.getChildren().add(r);
+                drawRectangle(object, regionInfo);
             } else {
-                Polygon p = new Polygon();
-                for (HashMap<String, Double> point : object.polygon()) {
-                    double x = point.get("x") + object.x();
-                    double y = point.get("y") + object.y();
-                    p.getPoints().addAll(x, y);
-                }
-                p.setFill(Color.TRANSPARENT);
-                p.setOnMouseEntered(event -> setRegionInfo(object, regionInfo, event));
-                p.setOnMouseExited(event -> anchorPane.getChildren().remove(anchorPane.getChildren().size() - 1));
-                anchorPane.getChildren().add(p);
+                drawPolygon(object, regionInfo);
             }
-
         }
+    }
+
+    private void drawRectangle(MapObject object, RegionInfoController regionInfo) {
+        Rectangle r = new Rectangle();
+        r.setX(object.x());
+        r.setY(object.y());
+        r.setWidth(object.width());
+        r.setHeight(object.height());
+        r.setFill(Color.TRANSPARENT);
+        r.setOnMouseEntered(event -> setRegionInfo(object, regionInfo, event));
+        r.setOnMouseExited(event -> anchorPane.getChildren().remove(anchorPane.getChildren().size() - 1));
+        anchorPane.getChildren().add(r);
+    }
+
+    private void drawPolygon(MapObject object, RegionInfoController regionInfo) {
+        Polygon p = new Polygon();
+        for (HashMap<String, Double> point : object.polygon()) {
+            double x = point.get("x") + object.x();
+            double y = point.get("y") + object.y();
+            p.getPoints().addAll(x, y);
+        }
+        p.setFill(Color.TRANSPARENT);
+        p.setOnMouseEntered(event -> setRegionInfo(object, regionInfo, event));
+        p.setOnMouseExited(event -> anchorPane.getChildren().remove(anchorPane.getChildren().size() - 1));
+        anchorPane.getChildren().add(p);
     }
 
     private void markOwnPlayer(MapObject object) {
