@@ -139,7 +139,12 @@ public class SettingsController extends Controller {
 
             long currentTime = System.currentTimeMillis();
             if (currentTime - lastValueChangeTime > debounceDelay) {
-                soundController.play("bgm:kof");
+                if (soundController.getBgmPlayer() != null) {
+                    soundController.updateVolume();
+                } else {
+                    soundController.play("bgm:city");
+                }
+
                 lastValueChangeTime = currentTime;
             }
         });
@@ -152,7 +157,7 @@ public class SettingsController extends Controller {
 
             long currentTime = System.currentTimeMillis();
             if (currentTime - lastValueChangeTime > debounceDelay) {
-                soundController.play("sfx:good");
+                soundController.play("sfx:bump");
                 lastValueChangeTime = currentTime;
             }
         });
@@ -162,6 +167,10 @@ public class SettingsController extends Controller {
     public void back() {
         if (this.backController.equals("menu")) {
             app.show(menuControllerProvider.get());
+
+            if (soundController.getBgmPlayer() != null) {
+                soundController.stopBGM();
+            }
         } else {
             app.show(pauseControllerProvider.get());
         }
