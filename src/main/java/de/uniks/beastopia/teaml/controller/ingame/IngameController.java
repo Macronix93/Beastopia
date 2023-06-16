@@ -23,7 +23,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
 import javafx.util.Pair;
 import java.util.Objects;
 
@@ -569,6 +568,9 @@ public class IngameController extends Controller {
         playerController.destroy();
         scoreBoardController.destroy();
         beastListController.destroy();
+        for (Controller controller : subControllers) {
+            controller.destroy();
+        }
         for (EntityController controller : otherPlayers.keySet()) {
             controller.destroy();
         }

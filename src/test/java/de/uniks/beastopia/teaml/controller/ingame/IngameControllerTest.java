@@ -59,6 +59,8 @@ class IngameControllerTest extends ApplicationTest {
     @Mock
     EventListener eventListener;
     @Mock
+    BeastListController beastListController;
+    @Mock
     DataCache cache;
     @Mock
     Prefs prefs;
@@ -108,6 +110,10 @@ class IngameControllerTest extends ApplicationTest {
         doNothing().when(playerController).setOnTrainerUpdate(any());
         doNothing().when(playerController).init();
         when(playerController.render()).thenReturn(new Pane());
+        doNothing().when(beastListController).setOnCloseRequest(any());
+        doNothing().when(beastListController).setOnBeastClicked(any());
+        doNothing().when(beastListController).init();
+        when(beastListController.render()).thenReturn(new Pane());
         ingameController.setRegion(region);
 
         app.start(stage);
