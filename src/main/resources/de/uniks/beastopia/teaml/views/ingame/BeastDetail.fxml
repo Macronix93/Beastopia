@@ -38,7 +38,7 @@
             <Label fx:id="defense" text="Defense: 10" GridPane.columnIndex="2" GridPane.rowIndex="2" />
         </GridPane>
     </HBox>
-    <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: transparent;">
-        <TextArea fx:id="description" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: transparent;" text="Flamander is a small, agile monster that lives in the hot deserts of the world." wrapText="true" />
+    <ScrollPane fitToHeight="true" fitToWidth="true" style="-fx-background-color: transparent;">
+        <TextArea fx:id="description" style="-fx-background-color: transparent; -fx-border-color: black;" text="Flamander is a small, agile monster that lives in the hot deserts of the world." wrapText="true" />
     </ScrollPane>
 </VBox>
