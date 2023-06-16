@@ -19,5 +19,5 @@
             </padding>
          </VBox>
       </ScrollPane>
-   <Button mnemonicParsing="false" onAction="#close" text="Close" />
+   <Button mnemonicParsing="false" onAction="#close" text="%Close" />
 </VBox>
