@@ -28,17 +28,17 @@
             <padding>
                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
             </padding>
-            <Label fx:id="name" text="Flamander" />
-            <Label fx:id="hp" text="HP: 10/30" GridPane.rowIndex="1" />
-            <Label fx:id="speed" text="Speed: 5" GridPane.rowIndex="2" />
-            <Label fx:id="level" text="Level: 3" GridPane.columnIndex="1" />
-            <Label fx:id="type" text="Type: Fire" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <Label fx:id="attack" text="Attack: 10" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-            <Label fx:id="experience" text="EXP: 27/100" GridPane.columnIndex="2" />
-            <Label fx:id="defense" text="Defense: 10" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+            <Label fx:id="name" />
+            <Label fx:id="hp" GridPane.rowIndex="1" />
+            <Label fx:id="speed" GridPane.rowIndex="2" />
+            <Label fx:id="level" GridPane.columnIndex="1" />
+            <Label fx:id="type" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Label fx:id="attack" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <Label fx:id="experience" GridPane.columnIndex="2" />
+            <Label fx:id="defense" GridPane.columnIndex="2" GridPane.rowIndex="2" />
         </GridPane>
     </HBox>
     <ScrollPane fitToHeight="true" fitToWidth="true" style="-fx-background-color: transparent;">
-        <TextArea fx:id="description" style="-fx-background-color: transparent; -fx-border-color: black;" text="Flamander is a small, agile monster that lives in the hot deserts of the world." wrapText="true" />
+        <TextArea fx:id="description" style="-fx-background-color: transparent; -fx-border-color: black;" wrapText="true" />
     </ScrollPane>
 </VBox>
