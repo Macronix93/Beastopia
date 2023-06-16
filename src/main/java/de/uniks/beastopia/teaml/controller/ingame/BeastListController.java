@@ -2,7 +2,6 @@ package de.uniks.beastopia.teaml.controller.ingame;
 
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Monster;
-import de.uniks.beastopia.teaml.rest.MonsterAttributes;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.service.TrainerService;
@@ -57,13 +56,7 @@ public class BeastListController extends Controller {
         disposables.add(trainerService.getTrainerMonsters(prefs.getRegionID(), cache.getTrainer()._id())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(monsters -> {
-                    // TODO: change back to monsters
-                    List<Monster> tmpMonsters = List.of(
-                            new Monster(null, null, "3", "TR_1", 2, 5, 10,
-                                    new MonsterAttributes(10, 10, 10, 10),
-                                    new MonsterAttributes(5, 5, 2, 5))
-                    );
-                    this.monsters.addAll(tmpMonsters);
+                    this.monsters.addAll(monsters);
                     reload();
                 }));
         return parent;
