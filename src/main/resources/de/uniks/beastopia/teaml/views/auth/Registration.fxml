@@ -5,11 +5,11 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-<GridPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
+<GridPane prefHeight="650.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
           fx:controller="de.uniks.beastopia.teaml.controller.auth.RegistrationController">
     <columnConstraints>
-        <ColumnConstraints hgrow="SOMETIMES" maxWidth="446.0" minWidth="10.0" percentWidth="30.0" prefWidth="235.0"/>
-        <ColumnConstraints hgrow="SOMETIMES" maxWidth="549.0" minWidth="10.0" percentWidth="50.0" prefWidth="199.0"/>
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="446.0" minWidth="10.0" percentWidth="29.0" prefWidth="235.0"/>
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="549.0" minWidth="10.0" percentWidth="51.0" prefWidth="199.0"/>
         <ColumnConstraints hgrow="SOMETIMES" maxWidth="549.0" minWidth="10.0" percentWidth="20.0" prefWidth="549.0"/>
     </columnConstraints>
     <rowConstraints>
@@ -22,11 +22,16 @@
         <ImageView fitHeight="177.0" fitWidth="200.0">
             <Image url="@../../assets/DeadBirdsSociety_Logo_tr.PNG"/>
         </ImageView>
-        <ImageView fitHeight="62.0" fitWidth="200.0">
+        <ImageView fitHeight="41.0" fitWidth="159.0">
             <Image url="@../../assets/Lumnix_Logo_tr.png"/>
         </ImageView>
     </VBox>
-    <VBox alignment="CENTER" spacing="20.0" GridPane.columnIndex="1">
+    <VBox alignment="TOP_CENTER" spacing="10.0" GridPane.columnIndex="1">
+        <ImageView fx:id="banner" fitHeight="57.0" fitWidth="318.0" pickOnBounds="true" preserveRatio="true">
+            <VBox.margin>
+                <Insets top="10.0"/>
+            </VBox.margin>
+        </ImageView>
         <VBox spacing="15.0">
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%Language">
                 <font>
@@ -76,15 +81,14 @@
             </Text>
             <PasswordField fx:id="passwordRepeatInput"/>
         </VBox>
-        <HBox alignment="CENTER" prefHeight="128.0" spacing="45.0">
+        <HBox alignment="CENTER" prefHeight="119.0" prefWidth="398.0" spacing="45.0">
             <Button defaultButton="true" mnemonicParsing="false" onAction="#uploadAvatar" prefHeight="29.0"
                     prefWidth="138.0" style="-fx-background-radius: 20;" text="%UploadAvatar">
                 <font>
                     <Font size="18.0"/>
                 </font>
             </Button>
-            <ImageView fx:id="avatarPreview" fitHeight="128.0" fitWidth="128.0" pickOnBounds="true"
-                       preserveRatio="true">
+            <ImageView fx:id="avatarPreview" fitHeight="59.0" fitWidth="151.0" pickOnBounds="true" preserveRatio="true">
                 <Image url="@../../assets/Lumnix_Logo_tr.png"/>
             </ImageView>
         </HBox>
@@ -110,5 +114,8 @@
                 </Button>
             </VBox>
         </HBox>
+        <GridPane.margin>
+            <Insets left="10.0"/>
+        </GridPane.margin>
     </VBox>
 </GridPane>
