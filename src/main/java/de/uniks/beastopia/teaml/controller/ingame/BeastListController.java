@@ -25,6 +25,8 @@ public class BeastListController extends Controller {
     private final List<Controller> subControllers = new ArrayList<>();
     @FXML
     public VBox VBoxBeasts;
+    @FXML
+    public VBox VBoxBeastList;
     @Inject
     Provider<IngameController> ingameControllerProvider;
     @Inject

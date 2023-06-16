@@ -8,6 +8,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
 
@@ -33,6 +34,8 @@ public class BeastDetailController extends Controller {
     public TextArea description;
     @FXML
     public ImageView ImageViewAvatar;
+    @FXML
+    public VBox VBoxBeastDetail;
     @Inject
     PresetsService presetsService;
     private Monster monster;
