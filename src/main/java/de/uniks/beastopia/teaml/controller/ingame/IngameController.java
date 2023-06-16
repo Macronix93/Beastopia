@@ -5,12 +5,27 @@ import com.google.gson.JsonPrimitive;
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
+import de.uniks.beastopia.teaml.rest.Area;
+import de.uniks.beastopia.teaml.rest.Chunk;
+import de.uniks.beastopia.teaml.rest.Layer;
 import de.uniks.beastopia.teaml.rest.Map;
-import de.uniks.beastopia.teaml.rest.*;
-import de.uniks.beastopia.teaml.service.*;
+import de.uniks.beastopia.teaml.rest.Monster;
+import de.uniks.beastopia.teaml.rest.Region;
+import de.uniks.beastopia.teaml.rest.TileSet;
+import de.uniks.beastopia.teaml.rest.TileSetDescription;
+import de.uniks.beastopia.teaml.rest.Trainer;
+import de.uniks.beastopia.teaml.service.AreaService;
+import de.uniks.beastopia.teaml.service.DataCache;
+import de.uniks.beastopia.teaml.service.PresetsService;
+import de.uniks.beastopia.teaml.service.TokenStorage;
+import de.uniks.beastopia.teaml.service.TrainerService;
 import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.sockets.UDPEventListener;
-import de.uniks.beastopia.teaml.utils.*;
+import de.uniks.beastopia.teaml.utils.Dialog;
+import de.uniks.beastopia.teaml.utils.Direction;
+import de.uniks.beastopia.teaml.utils.LoadingPage;
+import de.uniks.beastopia.teaml.utils.PlayerState;
+import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
@@ -24,11 +39,15 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.util.Pair;
-import java.util.Objects;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class IngameController extends Controller {
     static final double TILE_SIZE = 20;
@@ -78,6 +97,8 @@ public class IngameController extends Controller {
     private final List<Pair<TileSetDescription, Pair<TileSet, Image>>> tileSets = new ArrayList<>();
     private int posx = 0;
     private int posy = 0;
+    private int lastposx = 0;
+    private int lastposy = 0;
     private int width;
     private int height;
     private LoadingPage loadingPage;
@@ -91,10 +112,6 @@ public class IngameController extends Controller {
     Parent beastListParent;
     Parent beastDetailParent;
     EntityController playerController;
-    @Inject
-    ScoreboardController scoreBoardController;
-    @Inject
-    Provider<IngameController> ingameControllerProvider;
     @Inject
     Provider<SoundController> soundControllerProvider;
     SoundController soundController;
@@ -221,9 +238,10 @@ public class IngameController extends Controller {
             tileSets.add(new Pair<>(tileSetDesc, new Pair<>(tileSet, image)));
         }
 
-        soundController.stopBGM();
         if (area.name().contains("Route")) {
             soundController.play("bgm:route");
+        } else if (area.name().contains("House")) {
+            soundController.play("bgm:house");
         } else {
             soundController.play("bgm:city");
         }
@@ -389,6 +407,10 @@ public class IngameController extends Controller {
 
     public void updateOrigin() {
         setOrigin(posx, posy);
+
+        if (lastposx == posx && lastposy == posy) {
+            soundController.play("sfx:bump");
+        }
     }
 
     private void drawPlayer(int posx, int posy) {
@@ -539,6 +561,10 @@ public class IngameController extends Controller {
 
     public void moveLoop() {
         boolean moved = false;
+
+        lastposx = posx;
+        lastposy = posy;
+
         if (pressedKeys.contains(KeyCode.UP) || pressedKeys.contains(KeyCode.W)) {
             posy--;
             direction = Direction.UP;

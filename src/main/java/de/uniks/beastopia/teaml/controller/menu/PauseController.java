@@ -2,6 +2,7 @@ package de.uniks.beastopia.teaml.controller.menu;
 
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.ingame.IngameController;
+import de.uniks.beastopia.teaml.controller.ingame.SoundController;
 import de.uniks.beastopia.teaml.controller.ingame.TrainerController;
 import de.uniks.beastopia.teaml.controller.menu.social.FriendListController;
 import de.uniks.beastopia.teaml.rest.Region;
@@ -31,6 +32,9 @@ public class PauseController extends Controller {
     Provider<SettingsController> settingsControllerProvider;
     @Inject
     Provider<TrainerController> trainerControllerProvider;
+    @Inject
+    Provider<SoundController> soundControllerProvider;
+
     @FXML
     private VBox friendListContainer;
     private Region region;
@@ -66,11 +70,17 @@ public class PauseController extends Controller {
 
     @FXML
     public void settingsButtonPressed() {
-        app.show(settingsControllerProvider.get().backController("pause"));
+        SettingsController controller = settingsControllerProvider.get();
+        controller.backController("pause");
+        controller.setRegion(region);
+        app.show(controller);
     }
 
     @FXML
     public void mainMenuButtonPressed() {
+        if (soundControllerProvider.get().getBgmPlayer() != null) {
+            soundControllerProvider.get().stopBGM();
+        }
         app.show(menuControllerProvider.get());
     }
 

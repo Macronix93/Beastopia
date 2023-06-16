@@ -2,6 +2,7 @@ package de.uniks.beastopia.teaml.controller.menu;
 
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.ingame.SoundController;
+import de.uniks.beastopia.teaml.rest.Region;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import de.uniks.beastopia.teaml.utils.ThemeSettings;
 import javafx.fxml.FXML;
@@ -60,6 +61,7 @@ public class SettingsController extends Controller {
     private String backController;
     double debounceDelay = 250; // Delay in milliseconds
     long lastValueChangeTime = 0;
+    Region region;
 
 
     @Inject
@@ -134,7 +136,15 @@ public class SettingsController extends Controller {
 
     @FXML
     public void changeMusicVolume() {
-        musicVolumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+        prefs.setMusicVolume(musicVolumeSlider.getValue());
+
+        if (soundController.getBgmPlayer() != null) {
+            soundController.updateVolume();
+        } else {
+            soundController.play("bgm:city");
+        }
+
+        /*musicVolumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             prefs.setMusicVolume(musicVolumeSlider.getValue());
 
             long currentTime = System.currentTimeMillis();
@@ -147,7 +157,7 @@ public class SettingsController extends Controller {
 
                 lastValueChangeTime = currentTime;
             }
-        });
+        });*/
     }
 
     @FXML
@@ -172,7 +182,9 @@ public class SettingsController extends Controller {
                 soundController.stopBGM();
             }
         } else {
-            app.show(pauseControllerProvider.get());
+            PauseController controller = pauseControllerProvider.get();
+            controller.setRegion(region);
+            app.show(controller);
         }
     }
 
@@ -192,5 +204,9 @@ public class SettingsController extends Controller {
     public void destroy() {
         super.destroy();
         subControllers.forEach(Controller::destroy);
+    }
+
+    public void setRegion(Region region) {
+        this.region = region;
     }
 }

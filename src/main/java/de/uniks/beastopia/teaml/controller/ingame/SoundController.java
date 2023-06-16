@@ -23,6 +23,7 @@ public class SoundController extends Controller {
 
     private AudioClip sfxPlayer;
     private MediaPlayer bgmPlayer;
+    private String currentTrack = "";
 
     @Inject
     public SoundController() {
@@ -31,6 +32,10 @@ public class SoundController extends Controller {
     public void play(String fileName) {
         try {
             if (fileName.startsWith("bgm:")) {
+                if (currentTrack.equals(fileName)) {
+                    return;
+                }
+
                 if (bgmPlayer != null) {
                     bgmPlayer.stop();
                 }
@@ -40,6 +45,8 @@ public class SoundController extends Controller {
                 bgmPlayer.setCycleCount(MediaPlayer.INDEFINITE);
                 bgmPlayer.setVolume(prefs.getMusicVolume() / 100.0);
                 bgmPlayer.play();
+
+                currentTrack = fileName;
             } else if (fileName.startsWith("sfx:")) {
                 sfxPlayer = new AudioClip(Objects.requireNonNull(Main.class.getResource("assets/sounds/sfx_" + fileName.substring(4) + ".mp3")).toURI().toString());
 
@@ -55,6 +62,8 @@ public class SoundController extends Controller {
         if (bgmPlayer != null) {
             bgmPlayer.stop();
             bgmPlayer = null;
+
+            currentTrack = "";
         }
     }
 
