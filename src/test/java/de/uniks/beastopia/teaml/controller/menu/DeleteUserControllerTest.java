@@ -61,6 +61,7 @@ class DeleteUserControllerTest extends ApplicationTest {
         write("12345678");
         clickOn("#deleteUserButton");
         verify(authService, times(1)).login(any(), any(), anyBoolean());
+        verify(authService, times(1)).deleteUser();
     }
 
     @Test

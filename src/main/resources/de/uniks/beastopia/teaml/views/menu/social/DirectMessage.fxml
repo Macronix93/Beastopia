@@ -31,12 +31,14 @@
     <HBox alignment="CENTER" GridPane.columnIndex="1">
         <Label fx:id="chatName" text="ChatName">
             <font>
-                <Font size="18.0" />
+                <Font size="18.0"/>
             </font>
         </Label>
     </HBox>
-    <ScrollPane fx:id="chatScrollPane" prefHeight="600.0" prefWidth="500.0" style="-fx-border-color: green;" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
-        <VBox spacing="10.0" />
+    <ScrollPane fx:id="chatScrollPane" fitToHeight="true" fitToWidth="true" prefHeight="600.0" prefWidth="500.0"
+                style="-fx-border-color: green;" GridPane.columnIndex="1"
+                GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
+        <VBox opacity="0.0" spacing="10.0"/>
     </ScrollPane>
     <HBox alignment="TOP_CENTER" spacing="10.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2">
         <padding>
