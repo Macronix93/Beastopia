@@ -25,4 +25,7 @@ public interface TrainerApiService {
 
     @PATCH("regions/{regionId}/trainers/{id}")
     Observable<Trainer> updateTrainer(@Path("regionId") String regionId, @Path("id") String trainerId, @Body UpdateTrainerDto updateTrainerDto);
+
+    @GET("regions/{regionId}/trainers/{trainerId}/monsters")
+    Observable<List<Monster>> getTrainerMonsters(@Path("regionId") String regionId, @Path("trainerId") String trainerId);
 }

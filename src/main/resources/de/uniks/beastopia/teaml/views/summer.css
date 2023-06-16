@@ -76,6 +76,8 @@
 #friendList,
 #scoreBoard,
 #achievements,
+#VBoxBeastList,
+#VBoxBeastDetail,
 #scrollFriends {
     -fx-background-color: #FFD4B2;
     -fx-border-color: #D79B00;
@@ -85,7 +87,9 @@
 }
 
 #scoreBoard,
-#achievements {
+#achievements,
+#VBoxBeastList,
+#VBoxBeastDetail {
     -fx-background-color: #FFD4B2CF;
 }
 
@@ -106,4 +110,12 @@
 
 .scroll-pane .viewport {
        -fx-background-color: transparent;
+}
+
+.text-area {
+    text-area-background: transparent ;
+}
+
+.text-area .content {
+    -fx-background-color: text-area-background ;
 }

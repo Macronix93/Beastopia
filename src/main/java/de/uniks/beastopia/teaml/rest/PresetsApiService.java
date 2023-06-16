@@ -17,4 +17,13 @@ public interface PresetsApiService {
 
     @GET("presets/characters/{filename}")
     Observable<ResponseBody> getCharacterSprites(@Path("filename") String fileName);
+
+    @GET("presets/monsters")
+    Observable<List<Monster>> getMonsters();
+
+    @GET("presets/monsters/{name}")
+    Observable<MonsterTypeDto> getMonsterType(@Path("name") String name);
+
+    @GET("presets/monsters/{name}/image")
+    Observable<ResponseBody> getMonsterImage(@Path("name") String name);
 }
