@@ -24,6 +24,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.util.Pair;
+import java.util.Objects;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -31,6 +32,9 @@ import java.util.*;
 
 public class IngameController extends Controller {
     static final double TILE_SIZE = 20;
+    static final int MENU_NONE = 0;
+    static final int MENU_SCOREBOARD = 1;
+    static final int MENU_BEASTLIST = 2;
 
     @FXML
     public Pane tilePane;
@@ -47,6 +51,10 @@ public class IngameController extends Controller {
     @Inject
     Provider<PauseController> pauseControllerProvider;
     @Inject
+    BeastListController beastListController;
+    @Inject
+    Provider<BeastDetailController> beastDetailControllerProvider;
+    @Inject
     Prefs prefs;
     @Inject
     DataCache cache;
@@ -60,6 +68,11 @@ public class IngameController extends Controller {
     EventListener eventListener;
     @Inject
     Provider<MapController> mapControllerProvider;
+    @Inject
+    ScoreboardController scoreBoardController;
+    @Inject
+    Provider<IngameController> ingameControllerProvider;
+
     private Region region;
     private Map map;
     private final List<Pair<TileSetDescription, Pair<TileSet, Image>>> tileSets = new ArrayList<>();
@@ -68,14 +81,16 @@ public class IngameController extends Controller {
     private int width;
     private int height;
     private LoadingPage loadingPage;
+    private final List<Controller> subControllers = new ArrayList<>();
+    private Monster lastMonster;
+    private int currentMenu = MENU_NONE;
+
     Direction direction;
     final ObjectProperty<PlayerState> state = new SimpleObjectProperty<>();
     Parent player;
+    Parent beastListParent;
+    Parent beastDetailParent;
     EntityController playerController;
-    @Inject
-    ScoreboardController scoreBoardController;
-    @Inject
-    Provider<IngameController> ingameControllerProvider;
     Parent scoreBoardParent;
     final java.util.Map<EntityController, Parent> otherPlayers = new HashMap<>();
     private final List<KeyCode> pressedKeys = new ArrayList<>();
@@ -97,8 +112,22 @@ public class IngameController extends Controller {
     @Override
     public void init() {
         super.init();
-        scoreBoardController.setOnCloseRequested(() -> scoreBoardLayout.getChildren().remove(scoreBoardParent));
+
+        scoreBoardController.setOnCloseRequested(() -> {
+            scoreBoardLayout.getChildren().remove(scoreBoardParent);
+            currentMenu = MENU_NONE;
+        });
         scoreBoardController.init();
+
+        beastListController.setOnCloseRequest(() -> {
+            scoreBoardLayout.getChildren().remove(beastListParent);
+            scoreBoardLayout.getChildren().remove(beastDetailParent);
+            lastMonster = null;
+            currentMenu = MENU_NONE;
+        });
+        beastListController.setOnBeastClicked(this::toggleBeastDetails);
+        beastListController.init();
+
         state.setValue(PlayerState.IDLE);
         playerController = entityControllerProvider.get();
         playerController.playerState().bind(state);
@@ -141,6 +170,7 @@ public class IngameController extends Controller {
             cache.setAreas(areas);
             loadMap(areas, myTrainer);
             drawMap();
+            beastListParent = beastListController.render();
             scoreBoardParent = scoreBoardController.render();
             loadRemoteTrainer(trainers);
             listenToTrainerEvents();
@@ -387,6 +417,25 @@ public class IngameController extends Controller {
         }
     }
 
+    private void toggleBeastDetails(Monster monster) {
+        if (Objects.equals(lastMonster, monster)) {
+            scoreBoardLayout.getChildren().remove(beastDetailParent);
+            lastMonster = null;
+            return;
+        }
+
+        lastMonster = monster;
+
+        BeastDetailController controller = beastDetailControllerProvider.get();
+        subControllers.add(controller);
+        controller.setBeast(monster);
+        controller.init();
+
+        scoreBoardLayout.getChildren().remove(beastDetailParent);
+        beastDetailParent = controller.render();
+        scoreBoardLayout.getChildren().add(0, beastDetailParent);
+    }
+
     private void updateTrainerPos(Direction direction) {
         Trainer trainer = cache.getTrainer();
         JsonObject data = new JsonObject();
@@ -409,14 +458,31 @@ public class IngameController extends Controller {
         handleMap(keyEvent);
         handlePauseMenu(keyEvent);
         handleScoreboard(keyEvent);
+        handleBeastList(keyEvent);
+    }
+
+    public void handleBeastList(KeyEvent keyEvent) {
+        if (keyEvent.getCode().equals(KeyCode.B) && (currentMenu == MENU_NONE || currentMenu == MENU_BEASTLIST)) {
+            if (scoreBoardLayout.getChildren().contains(beastListParent)) {
+                scoreBoardLayout.getChildren().remove(beastListParent);
+                scoreBoardLayout.getChildren().remove(beastDetailParent);
+                lastMonster = null;
+                currentMenu = MENU_NONE;
+            } else {
+                scoreBoardLayout.getChildren().add(beastListParent);
+                currentMenu = MENU_BEASTLIST;
+            }
+        }
     }
 
     private void handleScoreboard(KeyEvent keyEvent) {
-        if (keyEvent.getCode().equals(KeyCode.N)) {
+        if (keyEvent.getCode().equals(KeyCode.N) && (currentMenu == MENU_NONE || currentMenu == MENU_SCOREBOARD)) {
             if (scoreBoardLayout.getChildren().contains(scoreBoardParent)) {
                 scoreBoardLayout.getChildren().remove(scoreBoardParent);
+                currentMenu = MENU_NONE;
             } else {
                 scoreBoardLayout.getChildren().add(scoreBoardParent);
+                currentMenu = MENU_SCOREBOARD;
             }
         }
     }
@@ -501,6 +567,10 @@ public class IngameController extends Controller {
         super.destroy();
         playerController.destroy();
         scoreBoardController.destroy();
+        beastListController.destroy();
+        for (Controller controller : subControllers) {
+            controller.destroy();
+        }
         for (EntityController controller : otherPlayers.keySet()) {
             controller.destroy();
         }
