@@ -119,6 +119,9 @@ Text {
     -fx-mark-color: white;
 }
 
+.scroll-pane,
 .scroll-pane .viewport {
-       -fx-background-color: transparent;
+    -fx-background-color: transparent;
+    -fx-border-color: #4C5250CF;
+    -fx-border-width: 1;
 }

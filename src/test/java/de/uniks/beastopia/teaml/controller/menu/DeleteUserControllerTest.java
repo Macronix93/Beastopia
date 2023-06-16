@@ -2,6 +2,7 @@ package de.uniks.beastopia.teaml.controller.menu;
 
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.AppPreparer;
+import de.uniks.beastopia.teaml.rest.LoginResult;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.AuthService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
@@ -56,7 +57,9 @@ class DeleteUserControllerTest extends ApplicationTest {
 
     @Test
     public void deleteUser() {
-        when(authService.login(any(), any(), anyBoolean())).thenReturn(Observable.empty());
+        when(authService.login(anyString(), anyString(), anyBoolean()))
+                .thenReturn(Observable.just(new LoginResult(null, null, "1", "1", null, null, null, null, null)));
+        when(authService.deleteUser()).thenReturn(Observable.just(user));
         clickOn("#passwordField");
         write("12345678");
         clickOn("#deleteUserButton");
