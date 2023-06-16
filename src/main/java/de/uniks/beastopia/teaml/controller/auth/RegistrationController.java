@@ -33,6 +33,8 @@ public class RegistrationController extends Controller {
     @FXML
     public ImageView avatarPreview;
     @FXML
+    public ImageView banner;
+    @FXML
     private TextField usernameInput;
     @FXML
     private PasswordField passwordInput;
@@ -83,7 +85,7 @@ public class RegistrationController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
-
+        banner.setImage(new Image(Objects.requireNonNull(Main.class.getResourceAsStream("assets/beastopia_banner.png"))));
         avatarPreview.setImage(new Image(Objects.requireNonNull(Main.class.getResourceAsStream("assets/user.png"))));
 
         if (prefs.getLocale().contains("de")) {
