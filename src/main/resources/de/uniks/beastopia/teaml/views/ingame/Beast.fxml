@@ -20,7 +20,7 @@
         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
     </padding>
     <HBox alignment="CENTER">
-        <ImageView fx:id="avatar" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" />
+        <ImageView fx:id="avatar" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" />
     </HBox>
     <GridPane GridPane.columnIndex="1">
         <columnConstraints>

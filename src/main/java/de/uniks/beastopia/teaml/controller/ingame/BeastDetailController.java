@@ -39,7 +39,7 @@ public class BeastDetailController extends Controller {
     @Inject
     PresetsService presetsService;
     private Monster monster;
-    private String image;
+
     @Inject
     public BeastDetailController() {
 
@@ -53,8 +53,7 @@ public class BeastDetailController extends Controller {
     public Parent render() {
         Parent parent = super.render();
         level.setText("Level: " + (monster.level()));
-        //ToDo Rechnung anpassen
-        int maxExp = monster.level() ^ 3 - ((monster.level() - 1) ^ 3);
+        int maxExp = (int) Math.round(Math.pow(monster.level(), 3) - Math.pow((monster.level() - 1), 3));
         experience.setText("EXP: " + monster.experience() + " / " + maxExp);
         speed.setText("Speed: " + monster.currentAttributes().speed());
         attack.setText("Attack: " + monster.currentAttributes().attack());
@@ -71,9 +70,7 @@ public class BeastDetailController extends Controller {
 
         disposables.add(presetsService.getMonsterImage(monster._id())
                 .observeOn(FX_SCHEDULER)
-                .subscribe(monsterImage -> {
-                    ImageViewAvatar.setImage(monsterImage);
-                }));
+                .subscribe(monsterImage -> ImageViewAvatar.setImage(monsterImage)));
 
         return parent;
     }

@@ -71,9 +71,10 @@ public class BeastListController extends Controller {
 
     private void reload() {
         for (Monster monster : monsters) {
-            BeastController beastController = new BeastController()
+            BeastController beastController = beastControllerProvider.get()
                     .setBeast(monster);
             beastController.setOnBeastClicked(onBeastClicked);
+            beastController.init();
             subControllers.add(beastController);
             Parent parent = beastController.render();
             VBoxBeasts.getChildren().add(parent);
