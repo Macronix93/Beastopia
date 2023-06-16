@@ -2,6 +2,7 @@ package de.uniks.beastopia.teaml.controller.ingame;
 
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Monster;
+import de.uniks.beastopia.teaml.service.PresetsService;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
@@ -11,6 +12,8 @@ import javax.inject.Inject;
 import java.util.function.Consumer;
 
 public class BeastController extends Controller {
+    @Inject
+    PresetsService presetsService;
     @FXML
     public ImageView avatar;
     @FXML
@@ -38,10 +41,15 @@ public class BeastController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
-        hp.setText(monster.currentAttributes().health() + " / " + monster.attributes().health());
-        level.setText(String.valueOf(monster.level()));
+        /*disposables.add(presetsService.getMonsterType(monster._id())
+                .observeOn(FX_SCHEDULER)
+                .subscribe(monsterType -> {
+                    name.setText(monsterType.name());
 
-        // TODO: show monster name / image
+                }));*/
+
+        hp.setText("HP: " + monster.currentAttributes().health() + " / " + monster.attributes().health());
+        level.setText(String.valueOf(monster.level()));
 
         return parent;
     }

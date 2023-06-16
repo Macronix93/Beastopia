@@ -1,6 +1,7 @@
 package de.uniks.beastopia.teaml.rest;
 
 import io.reactivex.rxjava3.core.Observable;
+import javafx.scene.image.Image;
 import okhttp3.ResponseBody;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
@@ -23,4 +24,7 @@ public interface PresetsApiService {
 
     @GET("presets/monsters/{name}")
     Observable<MonsterTypeDto> getMonsterType(@Path("name") String name);
+
+    @GET("presets/monsters/{name}/image")
+    Observable<Image> getMonsterImage(@Path("name") String name);
 }

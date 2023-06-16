@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.image.ImageView;
 
 import javax.inject.Inject;
 
@@ -30,10 +31,12 @@ public class BeastDetailController extends Controller {
     public Label defense;
     @FXML
     public TextArea description;
+    @FXML
+    public ImageView ImageViewAvatar;
     @Inject
     PresetsService presetsService;
     private Monster monster;
-
+    private String image;
     @Inject
     public BeastDetailController() {
 
@@ -46,14 +49,27 @@ public class BeastDetailController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
-        level.setText(String.valueOf(monster.level()));
+        level.setText("Level: " + (monster.level()));
+        //ToDo Rechnung anpassen
+        int maxExp = monster.level() ^ 3 - ((monster.level() - 1) ^ 3);
+        experience.setText("EXP: " + monster.experience() + " / " + maxExp);
+        speed.setText("Speed: " + monster.currentAttributes().speed());
+        attack.setText("Attack: " + monster.currentAttributes().attack());
+        defense.setText("Defense: " + monster.currentAttributes().defense());
+        hp.setText("HP: " + monster.currentAttributes().health() + " / " + monster.attributes().health());
 
         disposables.add(presetsService.getMonsterType(monster._id())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(monsterType -> {
                     name.setText(monsterType.name());
-                    type.setText(monsterType.type().get(0));
+                    type.setText("Type: " + monsterType.type().get(0));
                     description.setText(monsterType.description());
+                }));
+
+        disposables.add(presetsService.getMonsterImage(monster._id())
+                .observeOn(FX_SCHEDULER)
+                .subscribe(monsterImage -> {
+                    ImageViewAvatar.setImage(monsterImage);
                 }));
 
         return parent;

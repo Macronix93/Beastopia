@@ -58,4 +58,7 @@ public class PresetsService {
         return presetsApiService.getMonsterType(name);
     }
 
+    public Observable<Image> getMonsterImage(String name) {
+        return presetsApiService.getMonsterImage(name);
+    }
 }
