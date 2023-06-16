@@ -25,16 +25,16 @@ import java.util.function.Consumer;
 
 public class EntityController extends Controller {
     private static final Map<String, Image> SPRITESHEET = new HashMap<>();
-    int PORT_WIDTH = 16;
-    int PORT_HEIGHT = 32;
-    int SPRITE_STEP = 16;
-    int STATE_STEP = 32;
-    int DIRECTION_STEP = 96;
+    final int PORT_WIDTH = 16;
+    final int PORT_HEIGHT = 32;
+    final int SPRITE_STEP = 16;
+    final int STATE_STEP = 32;
+    final int DIRECTION_STEP = 96;
     int index = 0;
     Trainer trainer;
     Parent parent;
     Direction direction;
-    ObjectProperty<PlayerState> state = new SimpleObjectProperty<>();
+    final ObjectProperty<PlayerState> state = new SimpleObjectProperty<>();
     Consumer<MoveTrainerDto> onTrainerUpdate;
 
     @FXML
@@ -74,24 +74,29 @@ public class EntityController extends Controller {
             if (event.data() == null) {
                 return;
             }
-
-            switch (event.data().direction()) {
-                case 0 -> direction = Direction.RIGHT;
-                case 1 -> direction = Direction.UP;
-                case 2 -> direction = Direction.LEFT;
-                case 3 -> direction = Direction.DOWN;
-            }
-            index = (index + 1) % 6;
-            updateViewPort();
-            if (!event.data().area().equals(trainer.area())) {
-                trainer = new Trainer(trainer.createdAt(), trainer.updatedAt(), trainer._id(), trainer.region(), trainer.user(), trainer.name(), trainer.image(), trainer.coins(), event.data().area(), trainer.x(), trainer.y(), trainer.direction(), trainer.npc());
-                listenToMovements();
-            }
-            onTrainerUpdate.accept(event.data());
+            updateTrainer(event.data());
         }, error -> {
             throw new RuntimeException(error);
         });
         resetUpdateTimer();
+    }
+
+    private void updateTrainer(MoveTrainerDto data) {
+        switch (data.direction()) {
+            case 0 -> direction = Direction.RIGHT;
+            case 1 -> direction = Direction.UP;
+            case 2 -> direction = Direction.LEFT;
+            case 3 -> direction = Direction.DOWN;
+        }
+        index = (index + 1) % 6;
+        updateViewPort();
+        if (!data.area().equals(trainer.area())) {
+            trainer = new Trainer(trainer.createdAt(), trainer.updatedAt(), trainer._id(), trainer.region(),
+                    trainer.user(), trainer.name(), trainer.image(), trainer.coins(), data.area(), trainer.x(),
+                    trainer.y(), trainer.direction(), trainer.npc());
+            listenToMovements();
+        }
+        onTrainerUpdate.accept(data);
     }
 
     private void resetUpdateTimer() {

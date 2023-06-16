@@ -46,8 +46,8 @@ class ChatUserControllerTest extends ApplicationTest {
     final User me = new User(null, null, "1", "1", null, null, null);
     final User other = new User(null, null, "2", "2", null, null, null);
     final Group testGrp = new Group(null, null, "1", "1", List.of(me._id(), other._id()));
-    Consumer<Group> onGroupClicked = mock();
-    Consumer<Group> onPinChanged = mock();
+    final Consumer<Group> onGroupClicked = mock();
+    final Consumer<Group> onPinChanged = mock();
 
     @Override
     public void start(Stage stage) {

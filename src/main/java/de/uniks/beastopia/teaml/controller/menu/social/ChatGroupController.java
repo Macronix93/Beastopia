@@ -17,11 +17,8 @@ import javafx.scene.text.Text;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import java.io.FileNotFoundException;
-import java.net.URISyntaxException;
 import java.util.Objects;
 import java.util.function.Consumer;
-import java.util.prefs.Preferences;
 
 public class ChatGroupController extends Controller {
 
@@ -37,9 +34,6 @@ public class ChatGroupController extends Controller {
     Button editGroupBtn;
     @FXML
     Text name;
-
-    @Inject
-    Preferences preferences;
     @Inject
     GroupListService groupListService;
     @Inject
@@ -50,7 +44,6 @@ public class ChatGroupController extends Controller {
     TokenStorage tokenStorage;
     @Inject
     Prefs prefs;
-
     private Group group;
     private ImageView pinnedImg;
     private ImageView notPinnedImg;
@@ -64,12 +57,8 @@ public class ChatGroupController extends Controller {
 
     @Override
     public void init() {
-        try {
-            pinnedImg = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/filled_pin.png")).toString());
-            notPinnedImg = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/pin.png")).toString());
-        } catch (URISyntaxException | FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        pinnedImg = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/filled_pin.png")).toString());
+        notPinnedImg = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/pin.png")).toString());
     }
 
     public void setOnGroupClicked(Consumer<Group> onGroupClicked) {
@@ -105,7 +94,7 @@ public class ChatGroupController extends Controller {
         onGroupClicked.accept(group);
     }
 
-    private ImageView createImage(String imageUrl) throws URISyntaxException, FileNotFoundException {
+    private ImageView createImage(String imageUrl) {
         ImageView imageView = new ImageView(imageUrl);
         imageView.setFitHeight(25.0);
         imageView.setFitWidth(25.0);

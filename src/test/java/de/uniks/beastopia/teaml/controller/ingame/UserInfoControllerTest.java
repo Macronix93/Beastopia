@@ -18,7 +18,7 @@ class UserInfoControllerTest extends ApplicationTest {
     private final App app = new App();
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
         AppPreparer.prepare(app);
 
         userInfoController

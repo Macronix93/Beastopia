@@ -7,7 +7,6 @@ import de.uniks.beastopia.teaml.controller.menu.social.FriendListController;
 import de.uniks.beastopia.teaml.rest.Region;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
@@ -20,8 +19,6 @@ import java.util.List;
 public class PauseController extends Controller {
 
     private final List<Controller> subControllers = new ArrayList<>();
-    @FXML
-    public Button editProfileButton;
     @Inject
     Provider<FriendListController> friendListControllerProvider;
     @Inject

@@ -59,10 +59,6 @@ public class HttpModule {
                         SEMAPHORE.acquire();
                         if (getRequestsLastTimeFrame() >= MAX_REQUESTS) {
                             long timeToSleep = getRequiredDelay();
-//                            System.out.println("Sleeping for " + timeToSleep + "ms");
-//                            for (Pair<Date, String> pair : LAST_REQUESTS) {
-//                                System.out.println("\t" + pair.getKey() + " " + pair.getValue());
-//                            }
                             if (timeToSleep > 0) {
                                 Thread.sleep(timeToSleep);
                             } else {

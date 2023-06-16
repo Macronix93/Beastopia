@@ -8,7 +8,6 @@ import javax.inject.Singleton;
 @Singleton
 public class TokenStorage {
     private String accessToken;
-    private String refreshToken;
     private User currentUser;
 
     @Inject
@@ -22,14 +21,6 @@ public class TokenStorage {
 
     public void setAccessToken(String accessToken) {
         this.accessToken = accessToken;
-    }
-
-    public String getRefreshToken() {
-        return refreshToken;
-    }
-
-    public void setRefreshToken(String token) {
-        this.refreshToken = token;
     }
 
     public User getCurrentUser() {

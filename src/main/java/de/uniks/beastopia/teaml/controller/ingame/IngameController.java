@@ -5,6 +5,7 @@ import com.google.gson.JsonPrimitive;
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
+import de.uniks.beastopia.teaml.rest.Map;
 import de.uniks.beastopia.teaml.rest.*;
 import de.uniks.beastopia.teaml.service.*;
 import de.uniks.beastopia.teaml.sockets.EventListener;
@@ -28,9 +29,7 @@ import java.util.Objects;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class IngameController extends Controller {
     static final double TILE_SIZE = 20;
@@ -38,8 +37,6 @@ public class IngameController extends Controller {
     static final int MENU_SCOREBOARD = 1;
     static final int MENU_BEASTLIST = 2;
 
-    @FXML
-    public HBox ingame;
     @FXML
     public Pane tilePane;
     @FXML
@@ -90,18 +87,29 @@ public class IngameController extends Controller {
     private int currentMenu = MENU_NONE;
 
     Direction direction;
-    ObjectProperty<PlayerState> state = new SimpleObjectProperty<>();
+    final ObjectProperty<PlayerState> state = new SimpleObjectProperty<>();
     Parent player;
     Parent beastListParent;
     Parent beastDetailParent;
     EntityController playerController;
     Parent scoreBoardParent;
-    java.util.Map<EntityController, Parent> otherPlayers = new HashMap<>();
+    final java.util.Map<EntityController, Parent> otherPlayers = new HashMap<>();
+    private final List<KeyCode> pressedKeys = new ArrayList<>();
 
     @Inject
     public IngameController() {
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                moveLoop();
+            }
+        }, 0, 100);
     }
 
+    /**
+     * Initializes the controller by Creating the main player and assigning its callback functions
+     */
     @Override
     public void init() {
         super.init();
@@ -137,6 +145,11 @@ public class IngameController extends Controller {
         });
     }
 
+    /**
+     * Sets the region this controller should load into
+     *
+     * @param region The region of the current trainer
+     */
     public void setRegion(Region region) {
         prefs.setCurrentRegion(region);
         this.region = region;
@@ -147,57 +160,80 @@ public class IngameController extends Controller {
         loadingPage = LoadingPage.makeLoadingPage(super.render());
 
         disposables.add(trainerService.getAllTrainer(this.region._id())
-                .subscribe(trainers -> {
-                    Trainer myTrainer = trainers.stream().filter(t -> t.user().equals(tokenStorage.getCurrentUser()._id())).findFirst().orElseThrow();
-
-                    playerController.setTrainer(myTrainer);
-                    playerController.init();
-
-                    cache.setTrainer(myTrainer);
-                    posx = myTrainer.x();
-                    posy = myTrainer.y();
-                    disposables.add(areaService.getAreas(this.region._id()).observeOn(FX_SCHEDULER).subscribe(areas -> {
-                        cache.setAreas(areas);
-                        Area area = areas.stream().filter(a -> a._id().equals(myTrainer.area())).findFirst().orElseThrow();
-                        prefs.setArea(area);
-                        this.map = area.map();
-                        for (TileSetDescription tileSetDesc : map.tilesets()) {
-                            TileSet tileSet = presetsService.getTileset(tileSetDesc).blockingFirst();
-                            Image image = presetsService.getImage(tileSet).blockingFirst();
-                            tileSets.add(new Pair<>(tileSetDesc, new Pair<>(tileSet, image)));
-                        }
-                        drawMap();
-                        scoreBoardParent = scoreBoardController.render();
-                        beastListParent = beastListController.render();
-
-                        for (Trainer trainer : trainers) {
-                            if (trainer._id().equals(cache.getTrainer()._id())) {
-                                continue;
-                            }
-                            createRemotePlayer(trainer);
-                        }
-                        disposables.add(eventListener.listen(
-                                        "regions." + this.region._id() + ".trainers.*.created",
-                                        Trainer.class)
-                                .observeOn(FX_SCHEDULER)
-                                .subscribe(event -> this.createRemotePlayer(event.data()),
-                                        error -> Dialog.error(error, resources.getString("getAllTrainerError"))));
-                        disposables.add(eventListener.listen(
-                                        "regions." + this.region._id() + ".trainers.*.deleted",
-                                        Trainer.class)
-                                .observeOn(FX_SCHEDULER)
-                                .subscribe(event -> this.removeRemotePlayer(event.data()),
-                                        error -> Dialog.error(error, resources.getString("getAllTrainerError"))));
-
-                        loadingPage.setDone();
-                    }));
-                }));
+                .subscribe(this::loadTrainers));
 
         return loadingPage.parent();
     }
 
+    private void loadTrainers(List<Trainer> trainers) {
+        Trainer myTrainer = loadMyTrainer(trainers);
+        disposables.add(areaService.getAreas(this.region._id()).observeOn(FX_SCHEDULER).subscribe(areas -> {
+            cache.setAreas(areas);
+            loadMap(areas, myTrainer);
+            drawMap();
+            beastListParent = beastListController.render();
+            scoreBoardParent = scoreBoardController.render();
+            loadRemoteTrainer(trainers);
+            listenToTrainerEvents();
+            loadingPage.setDone();
+        }));
+    }
+
+    private void listenToTrainerEvents() {
+        disposables.add(eventListener.listen(
+                        "regions." + this.region._id() + ".trainers.*.created",
+                        Trainer.class)
+                .observeOn(FX_SCHEDULER)
+                .subscribe(event -> this.createRemotePlayer(event.data()),
+                        error -> Dialog.error(error, resources.getString("getAllTrainerError"))));
+        disposables.add(eventListener.listen(
+                        "regions." + this.region._id() + ".trainers.*.deleted",
+                        Trainer.class)
+                .observeOn(FX_SCHEDULER)
+                .subscribe(event -> this.removeRemotePlayer(event.data()),
+                        error -> Dialog.error(error, resources.getString("getAllTrainerError"))));
+    }
+
+    private void loadRemoteTrainer(List<Trainer> trainers) {
+        for (Trainer trainer : trainers) {
+            if (trainer._id().equals(cache.getTrainer()._id())) {
+                continue;
+            }
+            createRemotePlayer(trainer);
+        }
+    }
+
+    private void loadMap(List<Area> areas, Trainer myTrainer) {
+        Area area = areas.stream().filter(a -> a._id().equals(myTrainer.area())).findFirst().orElseThrow();
+        prefs.setArea(area);
+        this.map = area.map();
+        for (TileSetDescription tileSetDesc : map.tilesets()) {
+            TileSet tileSet = presetsService.getTileset(tileSetDesc).blockingFirst();
+            Image image = presetsService.getImage(tileSet).blockingFirst();
+            tileSets.add(new Pair<>(tileSetDesc, new Pair<>(tileSet, image)));
+        }
+    }
+
+    /**
+     * Looks for the current trainer in the list and initializes the player controller
+     *
+     * @param trainers The list of all trainers of the current region
+     * @return Our current trainer
+     */
+    private Trainer loadMyTrainer(List<Trainer> trainers) {
+        Trainer myTrainer = trainers.stream().filter(t -> t.user().equals(tokenStorage.getCurrentUser()._id())).findFirst().orElseThrow();
+
+        playerController.setTrainer(myTrainer);
+        playerController.init();
+
+        cache.setTrainer(myTrainer);
+        posx = myTrainer.x();
+        posy = myTrainer.y();
+
+        return myTrainer;
+    }
+
     private void createRemotePlayer(Trainer trainer) {
-//        System.out.println("trainer at pos: " + trainer.x() + " " + trainer.y());
         EntityController controller = entityControllerProvider.get();
         ObjectProperty<PlayerState> ps = new SimpleObjectProperty<>();
         controller.playerState().bind(ps);
@@ -215,13 +251,12 @@ public class IngameController extends Controller {
         controller.init();
         Parent parent = drawRemotePlayer(controller, trainer.x(), trainer.y());
         otherPlayers.put(controller, parent);
-
         if (prefs.getArea() != null && !prefs.getArea()._id().equals(trainer.area())) {
             hideRemotePlayer(trainer);
         }
     }
 
-    private void removeRemotePlayer(Trainer trainer) {
+    private EntityController getEntityController(Trainer trainer) {
         EntityController trainerController = null;
         for (EntityController controller : otherPlayers.keySet()) {
             if (controller.getTrainer()._id().equals(trainer._id())) {
@@ -229,11 +264,14 @@ public class IngameController extends Controller {
                 break;
             }
         }
+        return trainerController;
+    }
 
+    private void removeRemotePlayer(Trainer trainer) {
+        EntityController trainerController = getEntityController(trainer);
         if (trainerController == null) {
             return;
         }
-
         tilePane.getChildren().remove(otherPlayers.get(trainerController));
         trainerController.destroy();
         otherPlayers.remove(trainerController);
@@ -243,19 +281,10 @@ public class IngameController extends Controller {
         if (trainer == null) {
             return;
         }
-
-        EntityController trainerController = null;
-        for (EntityController controller : otherPlayers.keySet()) {
-            if (controller.getTrainer()._id().equals(trainer._id())) {
-                trainerController = controller;
-                break;
-            }
-        }
-
+        EntityController trainerController = getEntityController(trainer);
         if (trainerController == null) {
             return;
         }
-
         tilePane.getChildren().remove(otherPlayers.get(trainerController));
     }
 
@@ -263,19 +292,10 @@ public class IngameController extends Controller {
         if (trainer == null) {
             return;
         }
-
-        EntityController trainerController = null;
-        for (EntityController controller : otherPlayers.keySet()) {
-            if (controller.getTrainer()._id().equals(trainer._id())) {
-                trainerController = controller;
-                break;
-            }
-        }
-
+        EntityController trainerController = getEntityController(trainer);
         if (trainerController == null) {
             return;
         }
-
         tilePane.getChildren().add(otherPlayers.get(trainerController));
     }
 
@@ -294,7 +314,6 @@ public class IngameController extends Controller {
             if (layer.chunks() == null) {
                 continue;
             }
-
             for (Chunk chunk : layer.chunks()) {
                 int chunkX = chunk.x();
                 int chunkY = chunk.y();
@@ -343,16 +362,12 @@ public class IngameController extends Controller {
     public void setOrigin(int tilex, int tiley) {
         double parentWidth = width;
         double parentHeight = height;
-
         double originX = parentWidth / 2 - TILE_SIZE / 2;
         double originY = parentHeight / 2 - TILE_SIZE / 2;
-
         double tilePaneTranslationX = originX - tilex * TILE_SIZE;
         double tilePaneTranslationY = originY - tiley * TILE_SIZE;
-
         tilePane.setTranslateX(tilePaneTranslationX);
         tilePane.setTranslateY(tilePaneTranslationY);
-
         movePlayer(tilex, tiley);
         prefs.setPosition(new Point2D(tilex, tiley));
     }
@@ -439,54 +454,15 @@ public class IngameController extends Controller {
     }
 
     @FXML
-    public void handleKeyEvent(KeyEvent keyEvent) {
-        if (keyEvent.getCode().equals(KeyCode.M)) {
-            MapController map = mapControllerProvider.get();
-            app.show(map);
-        }
+    public void keyDown(KeyEvent keyEvent) {
+        handlePlayerMovement(keyEvent);
+        handleMap(keyEvent);
+        handlePauseMenu(keyEvent);
+        handleScoreboard(keyEvent);
+        handleBeastList(keyEvent);
+    }
 
-        if (keyEvent.getCode().equals(KeyCode.ESCAPE)) {
-            PauseController controller = pauseControllerProvider.get();
-            controller.setRegion(region);
-            app.show(controller);
-            return;
-        }
-
-        if (keyEvent.getCode().equals(KeyCode.N) && (currentMenu == MENU_NONE || currentMenu == MENU_SCOREBOARD)) {
-            if (scoreBoardLayout.getChildren().contains(scoreBoardParent)) {
-                scoreBoardLayout.getChildren().remove(scoreBoardParent);
-                currentMenu = MENU_NONE;
-            } else {
-                scoreBoardLayout.getChildren().add(scoreBoardParent);
-                currentMenu = MENU_SCOREBOARD;
-            }
-        }
-
-        boolean moved = false;
-        if (keyEvent.getCode().equals(KeyCode.UP) || keyEvent.getCode().equals(KeyCode.W)) {
-            posy--;
-            direction = Direction.UP;
-            moved = true;
-        } else if (keyEvent.getCode().equals(KeyCode.DOWN) || keyEvent.getCode().equals(KeyCode.S)) {
-            posy++;
-            direction = Direction.DOWN;
-            moved = true;
-        } else if (keyEvent.getCode().equals(KeyCode.LEFT) || keyEvent.getCode().equals(KeyCode.A)) {
-            posx--;
-            direction = Direction.LEFT;
-            moved = true;
-        } else if (keyEvent.getCode().equals(KeyCode.RIGHT) || keyEvent.getCode().equals(KeyCode.D)) {
-            posx++;
-            direction = Direction.RIGHT;
-            moved = true;
-        }
-
-        if (moved) {
-            state.setValue(PlayerState.WALKING);
-            updateTrainerPos(direction);
-            updateOrigin();
-        }
-
+    public void handleBeastList(KeyEvent keyEvent) {
         if (keyEvent.getCode().equals(KeyCode.B) && (currentMenu == MENU_NONE || currentMenu == MENU_BEASTLIST)) {
             if (scoreBoardLayout.getChildren().contains(beastListParent)) {
                 scoreBoardLayout.getChildren().remove(beastListParent);
@@ -500,15 +476,85 @@ public class IngameController extends Controller {
         }
     }
 
+    private void handleScoreboard(KeyEvent keyEvent) {
+        if (keyEvent.getCode().equals(KeyCode.N) && (currentMenu == MENU_NONE || currentMenu == MENU_SCOREBOARD)) {
+            if (scoreBoardLayout.getChildren().contains(scoreBoardParent)) {
+                scoreBoardLayout.getChildren().remove(scoreBoardParent);
+                currentMenu = MENU_NONE;
+            } else {
+                scoreBoardLayout.getChildren().add(scoreBoardParent);
+                currentMenu = MENU_SCOREBOARD;
+            }
+        }
+    }
+
+    private void handlePauseMenu(KeyEvent keyEvent) {
+        if (keyEvent.getCode().equals(KeyCode.ESCAPE)) {
+            PauseController controller = pauseControllerProvider.get();
+            controller.setRegion(region);
+            app.show(controller);
+        }
+    }
+
+    private void handleMap(KeyEvent keyEvent) {
+        if (keyEvent.getCode().equals(KeyCode.M)) {
+            MapController map = mapControllerProvider.get();
+            app.show(map);
+        }
+    }
+
+    private void handlePlayerMovement(KeyEvent keyEvent) {
+        if (!pressedKeys.contains(keyEvent.getCode())) {
+            if (keyEvent.getCode().equals(KeyCode.UP) || keyEvent.getCode().equals(KeyCode.W)) {
+                pressedKeys.add(keyEvent.getCode());
+            } else if (keyEvent.getCode().equals(KeyCode.DOWN) || keyEvent.getCode().equals(KeyCode.S)) {
+                pressedKeys.add(keyEvent.getCode());
+            } else if (keyEvent.getCode().equals(KeyCode.LEFT) || keyEvent.getCode().equals(KeyCode.A)) {
+                pressedKeys.add(keyEvent.getCode());
+            } else if (keyEvent.getCode().equals(KeyCode.RIGHT) || keyEvent.getCode().equals(KeyCode.D)) {
+                pressedKeys.add(keyEvent.getCode());
+            }
+        }
+    }
+
+    public void keyUp(KeyEvent keyEvent) {
+        pressedKeys.removeIf(keyCode -> keyCode.equals(keyEvent.getCode()));
+        setIdleState();
+    }
+
+    public void moveLoop() {
+        boolean moved = false;
+        if (pressedKeys.contains(KeyCode.UP) || pressedKeys.contains(KeyCode.W)) {
+            posy--;
+            direction = Direction.UP;
+            moved = true;
+        } else if (pressedKeys.contains(KeyCode.DOWN) || pressedKeys.contains(KeyCode.S)) {
+            posy++;
+            direction = Direction.DOWN;
+            moved = true;
+        } else if (pressedKeys.contains(KeyCode.LEFT) || pressedKeys.contains(KeyCode.A)) {
+            posx--;
+            direction = Direction.LEFT;
+            moved = true;
+        } else if (pressedKeys.contains(KeyCode.RIGHT) || pressedKeys.contains(KeyCode.D)) {
+            posx++;
+            direction = Direction.RIGHT;
+            moved = true;
+        }
+
+        if (moved) {
+            onUI(() -> {
+                state.setValue(PlayerState.WALKING);
+                updateTrainerPos(direction);
+                updateOrigin();
+            });
+        }
+    }
+
     @FXML
     public void setIdleState() {
         state.setValue(PlayerState.IDLE);
         drawPlayer(posx, posy);
-    }
-
-    @SuppressWarnings("unused")
-    private void updateRemoteTrainerPos(Direction direction) {
-
     }
 
 

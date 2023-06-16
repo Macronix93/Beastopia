@@ -11,9 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GroupListService {
-
-    @Inject
-    TokenStorage tokenStorage;
     @Inject
     GroupApiService groupApiService;
 
@@ -67,9 +64,6 @@ public class GroupListService {
         if (group.name().equals(getGroupName(group.members().get(0), group.members().get(1)))) {
             return true;
         }
-        if (group.name().equals(getGroupName(group.members().get(1), group.members().get(0)))) {
-            return true;
-        }
-        return false;
+        return group.name().equals(getGroupName(group.members().get(1), group.members().get(0)));
     }
 }

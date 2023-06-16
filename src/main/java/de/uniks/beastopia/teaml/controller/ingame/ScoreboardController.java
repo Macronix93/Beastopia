@@ -37,7 +37,6 @@ public class ScoreboardController extends Controller {
     Provider<ScoreboardUserItemController> scoreBoardUserItemControllerProvider;
     @Inject
     Provider<UserInfoController> userInfoControllerProvider;
-    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     private final List<Controller> subControllers = new ArrayList<>();
     private Runnable onCloseRequested;
     private boolean clicked = false;
@@ -76,9 +75,8 @@ public class ScoreboardController extends Controller {
                                     .observeOn(FX_SCHEDULER)
                                     .subscribe(achievementList -> {
                                         ScoreboardUserItemController controller = scoreBoardUserItemControllerProvider.get()
-                                                .setName(user.name())
+                                                .setUser(user)
                                                 .setAchievements(achievementList.size())
-                                                .setUserId(user._id())
                                                 .setOnUserClicked(u -> onUserClicked(u, achievementList.size(), allAchievements.size()))
                                                 .setTotalAchievements(allAchievements.size());
                                         Parent parent = controller.render();
