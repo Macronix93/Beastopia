@@ -50,8 +50,6 @@ class MapControllerTest extends ApplicationTest {
     @Mock
     RegionService regionService;
     @Mock
-    Provider<IngameController> ingameControllerProvider;
-    @Mock
     Provider<RegionInfoController> regionInfoControllerProvider;
     @Mock
     RegionInfoController regionInfoController;
@@ -117,6 +115,7 @@ class MapControllerTest extends ApplicationTest {
     void closeMapTest() {
         final IngameController mock = Mockito.mock(IngameController.class);
         when(mock.render()).thenReturn(new Label());
+        doNothing().when(mock).init();
 
         app.setHistory(List.of(mock));
 

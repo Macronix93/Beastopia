@@ -30,8 +30,6 @@ class DirectMessageControllerTest extends ApplicationTest {
     final
     App app = new App(null);
     @Mock
-    Provider<MenuController> menuControllerProvider;
-    @Mock
     Provider<ChatWindowController> chatWindowControllerProvider;
     @Mock
     ChatListController chatListController;
@@ -74,13 +72,14 @@ class DirectMessageControllerTest extends ApplicationTest {
     @Test
     void back() {
         final MenuController mock = Mockito.mock(MenuController.class);
-        doNothing().when(app).show(mock);
+        when(mock.render()).thenReturn(new Label("IngameController"));
+        doNothing().when(mock).init();
 
         app.setHistory(List.of(mock));
 
         clickOn("#backButton");
 
-        verify(app).show(mock);
+        verify(mock).render();
     }
 
     @Test

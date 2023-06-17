@@ -32,8 +32,6 @@ class PauseControllerTest extends ApplicationTest {
     Provider<FriendListController> friendListControllerProvider;
 
     @Mock
-    Provider<IngameController> ingameControllerProvider;
-    @Mock
     Provider<MenuController> menuControllerProvider;
     @Spy
     App app;
@@ -88,13 +86,14 @@ class PauseControllerTest extends ApplicationTest {
     @Test
     void pauseMenu() {
         final IngameController mock = Mockito.mock(IngameController.class);
-        doNothing().when(app).show(mock);
+        when(mock.render()).thenReturn(new Label("IngameController"));
+        doNothing().when(mock).init();
 
         app.setHistory(List.of(mock));
 
         press(KeyCode.ESCAPE);
         sleep(1000);
 
-        verify(app).show(mock);
+        verify(mock).render();
     }
 }

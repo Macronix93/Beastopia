@@ -89,6 +89,7 @@ class SettingsControllerTest extends ApplicationTest {
     public void backMenu() {
         MenuController mocked = mock();
         when(mocked.render()).thenReturn(new Label());
+        doNothing().when(mocked).init();
 
         app.setHistory(List.of(mocked));
 
@@ -101,6 +102,7 @@ class SettingsControllerTest extends ApplicationTest {
     public void backPause() {
         PauseController mocked = mock();
         when(mocked.render()).thenReturn(new Label());
+        doNothing().when(mocked).init();
 
         app.setHistory(List.of(mocked));
 
