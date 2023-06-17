@@ -25,8 +25,6 @@ public class DeleteUserController extends Controller {
     TokenStorage tokenStorage;
     @Inject
     Provider<LoginController> loginControllerProvider;
-    @Inject
-    Provider<EditProfileController> editProfileControllerProvider;
 
     @Inject
     public DeleteUserController() {

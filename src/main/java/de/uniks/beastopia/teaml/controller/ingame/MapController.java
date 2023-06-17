@@ -37,9 +37,8 @@ public class MapController extends Controller {
     @Inject
     RegionService regionService;
     @Inject
-    Provider<IngameController> ingameControllerProvider;
-    @Inject
     Provider<RegionInfoController> regionInfoControllerProvider;
+    @SuppressWarnings("unused")
     private Region region;
     private LoadingPage loadingPage;
     private TileSet tileSet;
@@ -166,9 +165,7 @@ public class MapController extends Controller {
 
     private void drawTileLayer(Layer layer) {
         int TILE_SIZE = 16;
-        if (layer.chunks() == null && layer.data() == null) {
-            return;
-        } else if (layer.chunks() != null) {
+        if (layer.chunks() != null) {
             for (Chunk chunk : layer.chunks()) {
                 int chunkX = chunk.x();
                 int chunkY = chunk.y();
@@ -189,7 +186,7 @@ public class MapController extends Controller {
                     anchorPane.getChildren().add(view);
                 }
             }
-        } else {
+        } else if (layer.data() != null) {
             int chunkX = layer.x();
             int chunkY = layer.y();
             int index = 0;

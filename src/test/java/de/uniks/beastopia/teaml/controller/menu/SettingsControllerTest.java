@@ -38,7 +38,7 @@ class SettingsControllerTest extends ApplicationTest {
     @Spy
     App app;
     @Spy
-    ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang", Locale.forLanguageTag("en"));
+    final ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang", Locale.forLanguageTag("en"));
 
     @InjectMocks
     SettingsController settingsController;

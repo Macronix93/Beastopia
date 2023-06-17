@@ -310,9 +310,7 @@ public class IngameController extends Controller {
     private void drawMap() {
         drawPlayer(posx, posy);
         for (Layer layer : map.layers()) {
-            if (layer.chunks() == null && layer.data() == null) {
-                continue;
-            } else if (layer.chunks() != null) {
+            if (layer.chunks() != null) {
                 for (Chunk chunk : layer.chunks()) {
                     int chunkX = chunk.x();
                     int chunkY = chunk.y();
@@ -329,7 +327,7 @@ public class IngameController extends Controller {
                         drawTile(x, y, tileSet.getKey().getValue(), presetsService.getTileViewPort(tileSet.getValue(), tileSet.getKey().getKey()));
                     }
                 }
-            } else {
+            } else if (layer.data() != null) {
                 int chunkX = layer.x();
                 int chunkY = layer.y();
                 int index = 0;
