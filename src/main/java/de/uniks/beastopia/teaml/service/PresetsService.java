@@ -49,12 +49,12 @@ public class PresetsService {
         return new Rectangle2D(x * tileSize, y * tileSize, tileSize, tileSize);
     }
 
-    public Observable<MonsterTypeDto> getMonsterType(String name) {
-        return presetsApiService.getMonsterType(name);
+    public Observable<MonsterTypeDto> getMonsterType(int type) {
+        return presetsApiService.getMonsterType(type);
     }
 
-    public Observable<Image> getMonsterImage(String name) {
-        return presetsApiService.getMonsterImage(name)
+    public Observable<Image> getMonsterImage(int type) {
+        return presetsApiService.getMonsterImage(type)
                 .map((ResponseBody body) -> new Image(body.byteStream()));
     }
 }
