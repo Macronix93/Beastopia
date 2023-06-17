@@ -1,7 +1,6 @@
 package de.uniks.beastopia.teaml.controller.menu.social;
 
 import de.uniks.beastopia.teaml.controller.Controller;
-import de.uniks.beastopia.teaml.controller.menu.MenuController;
 import de.uniks.beastopia.teaml.rest.Group;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.GroupListService;
@@ -28,8 +27,6 @@ public class DirectMessageController extends Controller {
 
     @FXML
     public Button backButton;
-    @Inject
-    Provider<MenuController> menuControllerProvider;
     @Inject
     Provider<ChatWindowController> chatWindowControllerProvider;
     @Inject
