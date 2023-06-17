@@ -166,13 +166,36 @@ public class MapController extends Controller {
 
     private void drawTileLayer(Layer layer) {
         int TILE_SIZE = 16;
-        for (Chunk chunk : layer.chunks()) {
-            int chunkX = chunk.x();
-            int chunkY = chunk.y();
+        if (layer.chunks() == null && layer.data() == null) {
+            return;
+        } else if (layer.chunks() != null) {
+            for (Chunk chunk : layer.chunks()) {
+                int chunkX = chunk.x();
+                int chunkY = chunk.y();
+                int index = 0;
+                for (int id : chunk.data()) {
+                    int x = index % chunk.width() + chunkX;
+                    int y = index / chunk.height() + chunkY;
+                    index++;
+                    ImageView view = new ImageView();
+                    view.setPreserveRatio(true);
+                    view.setSmooth(true);
+                    view.setImage(image);
+                    view.setFitWidth(TILE_SIZE + 1);
+                    view.setFitHeight(TILE_SIZE + 1);
+                    view.setViewport(presetsService.getTileViewPort(id, tileSet));
+                    view.setTranslateX(x * TILE_SIZE);
+                    view.setTranslateY(y * TILE_SIZE);
+                    anchorPane.getChildren().add(view);
+                }
+            }
+        } else {
+            int chunkX = layer.x();
+            int chunkY = layer.y();
             int index = 0;
-            for (int id : chunk.data()) {
-                int x = index % chunk.width() + chunkX;
-                int y = index / chunk.height() + chunkY;
+            for (int id : layer.data()) {
+                int x = index % layer.width() + chunkX;
+                int y = index / layer.height() + chunkY;
                 index++;
                 ImageView view = new ImageView();
                 view.setPreserveRatio(true);
@@ -189,8 +212,6 @@ public class MapController extends Controller {
     }
 
     public void closeMap() {
-        IngameController ingameController = ingameControllerProvider.get();
-        ingameController.setRegion(region);
-        app.show(ingameController);
+        app.showPrevious();
     }
 }

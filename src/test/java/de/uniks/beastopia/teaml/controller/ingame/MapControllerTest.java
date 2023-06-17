@@ -59,7 +59,7 @@ class MapControllerTest extends ApplicationTest {
     final TileSetDescription tileSetDescription = new TileSetDescription(0, "SOURCE");
     final TileSet tileSet = new TileSet(2, "IMAGE", 2, 2, 0, "NAME", 0, 4, 1);
     final Chunk chunk = new Chunk(List.of(0, 1, 2, 3), 2, 2, 0, 0);
-    final Layer tilelayer = new Layer(List.of(chunk), null, null, 1, 0, 0, "tilelayer", true, 2, 2, 0, 0);
+    final Layer tilelayer = new Layer(List.of(chunk), List.of(), null, null, 1, 0, 0, "tilelayer", true, 2, 2, 0, 0);
     final Trainer trainer = new Trainer(null, null, "1", "A", "1", "A", null, 0, "1", 0, 0, 0, null);
     final Image image = createImage(2, 2, List.of(new Color(255, 0, 255), new Color(0, 255, 0), new Color(0, 0, 255), new Color(255, 255, 0)));
     final List<HashMap<String, Double>> polygon = List.of(new HashMap<>() {{
@@ -71,7 +71,7 @@ class MapControllerTest extends ApplicationTest {
     }});
     final MapObject rectObject = new MapObject(50, 0, "AREA_NAME", properties, null, 0, "RECT", true, 50, 100, 100);
     final MapObject polyObject = new MapObject(50, 0, "POLY", null, polygon, 0, "POLY", true, 50, 60, 60);
-    final Layer objectgroup = new Layer(null, List.of(rectObject, polyObject), null, 1, 20, 20, "objectgroup", true, 2, 2, 0, 0);
+    final Layer objectgroup = new Layer(null, List.of(), List.of(rectObject, polyObject), null, 1, 20, 20, "objectgroup", true, 2, 2, 0, 0);
     final Map map = new Map(List.of(tileSetDescription), List.of(tilelayer, objectgroup), 2, 24, 4);
     final Area area = new Area(null, null, "ID_AREA", "ID_REGION", "AREA_NAME", map);
     final Region region = new Region(null, null, "ID_REGION", "REGION_NAME", null, map);
@@ -116,9 +116,9 @@ class MapControllerTest extends ApplicationTest {
     @Test
     void closeMapTest() {
         final IngameController mock = Mockito.mock(IngameController.class);
-        when(ingameControllerProvider.get()).thenReturn(mock);
-        doNothing().when(mock).setRegion(any());
         when(mock.render()).thenReturn(new Label());
+
+        app.setHistory(List.of(mock));
 
         clickOn("#closeMapButton");
 

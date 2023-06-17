@@ -3,7 +3,6 @@ package de.uniks.beastopia.teaml.controller.ingame;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Monster;
 import de.uniks.beastopia.teaml.service.DataCache;
-import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.service.TrainerService;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
@@ -27,11 +26,7 @@ public class BeastListController extends Controller {
     @FXML
     public VBox VBoxBeastList;
     @Inject
-    Provider<IngameController> ingameControllerProvider;
-    @Inject
     Provider<BeastController> beastControllerProvider;
-    @Inject
-    TokenStorage tokenStorage;
     @Inject
     DataCache cache;
     @Inject
@@ -91,6 +86,7 @@ public class BeastListController extends Controller {
     }
 
     public void destroy() {
+        super.destroy();
         for (Controller subController : subControllers) {
             subController.destroy();
         }

@@ -1,7 +1,6 @@
 package de.uniks.beastopia.teaml.controller.menu;
 
 import de.uniks.beastopia.teaml.controller.Controller;
-import de.uniks.beastopia.teaml.controller.ingame.IngameController;
 import de.uniks.beastopia.teaml.controller.ingame.TrainerController;
 import de.uniks.beastopia.teaml.controller.menu.social.FriendListController;
 import de.uniks.beastopia.teaml.rest.Region;
@@ -23,8 +22,6 @@ public class PauseController extends Controller {
     Provider<FriendListController> friendListControllerProvider;
     @Inject
     Provider<MenuController> menuControllerProvider;
-    @Inject
-    Provider<IngameController> ingameControllerProvider;
     @Inject
     Provider<EditProfileController> editProfileControllerProvider;
     @Inject
@@ -61,12 +58,12 @@ public class PauseController extends Controller {
 
     @FXML
     public void editProfileButtonPressed() {
-        app.show(editProfileControllerProvider.get().backController("pause"));
+        app.show(editProfileControllerProvider.get());
     }
 
     @FXML
     public void settingsButtonPressed() {
-        app.show(settingsControllerProvider.get().backController("pause"));
+        app.show(settingsControllerProvider.get());
     }
 
     @FXML
@@ -85,9 +82,7 @@ public class PauseController extends Controller {
     @FXML
     public void pauseMenu(KeyEvent keyEvent) {
         if (keyEvent.getCode().equals(KeyCode.ESCAPE)) {
-            IngameController controller = ingameControllerProvider.get();
-            controller.setRegion(region);
-            app.show(controller);
+            app.showPrevious();
         }
     }
 

@@ -74,8 +74,9 @@ class DirectMessageControllerTest extends ApplicationTest {
     @Test
     void back() {
         final MenuController mock = Mockito.mock(MenuController.class);
-        when(menuControllerProvider.get()).thenReturn(mock);
         doNothing().when(app).show(mock);
+
+        app.setHistory(List.of(mock));
 
         clickOn("#backButton");
 

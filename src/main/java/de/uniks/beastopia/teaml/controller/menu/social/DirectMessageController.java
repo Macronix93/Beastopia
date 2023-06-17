@@ -133,7 +133,7 @@ public class DirectMessageController extends Controller {
     }
 
     public void back() {
-        app.show(menuControllerProvider.get());
+        app.showPrevious();
     }
 
     @FXML

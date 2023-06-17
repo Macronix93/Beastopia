@@ -52,6 +52,7 @@ public class HttpModule {
         return new OkHttpClient.Builder()
                 .addInterceptor(chain -> {
                     if (RATE_LIMIT_FREE_ENDPOINTS.stream().anyMatch(chain.request().url().toString()::contains)) {
+                        System.out.println("Request: " + chain.request().url().toString());
                         return chain.proceed(chain.request());
                     }
 
@@ -71,6 +72,7 @@ public class HttpModule {
 
                         final String token = tokenStorage.getAccessToken();
                         if (token == null) {
+                            System.out.println("Request: " + chain.request().url().toString());
                             return chain.proceed(chain.request());
                         }
                         final Request newRequest = chain
@@ -79,6 +81,7 @@ public class HttpModule {
                                 .addHeader("Authorization", "Bearer " + token)
                                 .build();
 
+                        System.out.println("Request: " + chain.request().url().toString());
                         Response response = chain.proceed(newRequest);
                         if (response.code() == 429) {
                             System.out.println("RATE LIMIT EXCEEDED\nLast 15 seconds requests were:");

@@ -24,7 +24,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.util.Pair;
-import java.util.Objects;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -170,6 +169,7 @@ public class IngameController extends Controller {
             cache.setAreas(areas);
             loadMap(areas, myTrainer);
             drawMap();
+
             beastListParent = beastListController.render();
             scoreBoardParent = scoreBoardController.render();
             loadRemoteTrainer(trainers);
@@ -310,16 +310,32 @@ public class IngameController extends Controller {
     private void drawMap() {
         drawPlayer(posx, posy);
         for (Layer layer : map.layers()) {
-            if (layer.chunks() == null) {
+            if (layer.chunks() == null && layer.data() == null) {
                 continue;
-            }
-            for (Chunk chunk : layer.chunks()) {
-                int chunkX = chunk.x();
-                int chunkY = chunk.y();
+            } else if (layer.chunks() != null) {
+                for (Chunk chunk : layer.chunks()) {
+                    int chunkX = chunk.x();
+                    int chunkY = chunk.y();
+                    int index = 0;
+                    for (int id : chunk.data()) {
+                        int x = index % chunk.width() + chunkX;
+                        int y = index / chunk.width() + chunkY;
+                        index++;
+                        Pair<Pair<TileSet, Image>, Integer> tileSet = findTileSet(id);
+                        if (tileSet == null) {
+                            continue;
+                        }
+
+                        drawTile(x, y, tileSet.getKey().getValue(), presetsService.getTileViewPort(tileSet.getValue(), tileSet.getKey().getKey()));
+                    }
+                }
+            } else {
+                int chunkX = layer.x();
+                int chunkY = layer.y();
                 int index = 0;
-                for (int id : chunk.data()) {
-                    int x = index % chunk.width() + chunkX;
-                    int y = index / chunk.width() + chunkY;
+                for (int id : layer.data()) {
+                    int x = index % layer.width() + chunkX;
+                    int y = index / layer.width() + chunkY;
                     index++;
                     Pair<Pair<TileSet, Image>, Integer> tileSet = findTileSet(id);
                     if (tileSet == null) {

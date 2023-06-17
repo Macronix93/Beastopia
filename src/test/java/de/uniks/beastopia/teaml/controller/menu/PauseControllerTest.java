@@ -17,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
 
 import javax.inject.Provider;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -87,10 +88,12 @@ class PauseControllerTest extends ApplicationTest {
     @Test
     void pauseMenu() {
         final IngameController mock = Mockito.mock(IngameController.class);
-        when(ingameControllerProvider.get()).thenReturn(mock);
         doNothing().when(app).show(mock);
 
+        app.setHistory(List.of(mock));
+
         press(KeyCode.ESCAPE);
+        sleep(1000);
 
         verify(app).show(mock);
     }
