@@ -31,10 +31,10 @@
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
-        <Label fx:id="name" text="beastname" />
-      <Label fx:id="hp" layoutX="10.0" layoutY="13.0" text="HP: 10/30" GridPane.rowIndex="1" />
+        <Label fx:id="name" />
+      <Label fx:id="hp" layoutX="10.0" layoutY="13.0" GridPane.rowIndex="1" />
       <HBox alignment="TOP_RIGHT" GridPane.columnIndex="1">
-        <Label fx:id="level" alignment="CENTER" text="10" />
+        <Label fx:id="level" alignment="CENTER" />
       </HBox>
       <HBox alignment="TOP_RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="1" />
     </GridPane>
