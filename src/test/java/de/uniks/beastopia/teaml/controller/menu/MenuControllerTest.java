@@ -124,7 +124,6 @@ class MenuControllerTest extends ApplicationTest {
     public void editProfileButtonPressed() {
         EditProfileController mocked = mock(EditProfileController.class);
         when(editProfileControllerProvider.get()).thenReturn(mocked);
-        when(editProfileControllerProvider.get().backController(any())).thenReturn(mocked);
         when(mocked.render()).thenReturn(new Label());
         clickOn("#editProfileBtn");
         verify(app).show(mocked);
@@ -134,7 +133,6 @@ class MenuControllerTest extends ApplicationTest {
     public void settingsButtonPressed() {
         SettingsController mocked = mock(SettingsController.class);
         when(settingsControllerProvider.get()).thenReturn(mocked);
-        when(settingsControllerProvider.get().backController(any())).thenReturn(mocked);
         when(mocked.render()).thenReturn(new Label());
         clickOn("#settingsBtn");
         verify(app).show(mocked);

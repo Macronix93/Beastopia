@@ -25,18 +25,10 @@ public class DeleteUserController extends Controller {
     TokenStorage tokenStorage;
     @Inject
     Provider<LoginController> loginControllerProvider;
-    @Inject
-    Provider<EditProfileController> editProfileControllerProvider;
-    private String backController;
 
     @Inject
     public DeleteUserController() {
 
-    }
-
-    public DeleteUserController backController (String controller) {
-        this.backController = controller;
-        return this;
     }
 
     @Override
@@ -68,7 +60,7 @@ public class DeleteUserController extends Controller {
     }
 
     public void cancel() {
-        app.show(editProfileControllerProvider.get().backController(backController));
+        app.showPrevious();
     }
 }
 

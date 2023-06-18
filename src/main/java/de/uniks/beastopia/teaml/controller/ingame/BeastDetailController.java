@@ -60,7 +60,7 @@ public class BeastDetailController extends Controller {
         defense.setText("Defense: " + monster.currentAttributes().defense());
         hp.setText("HP: " + monster.currentAttributes().health() + " / " + monster.attributes().health());
 
-        disposables.add(presetsService.getMonsterType(monster._id())
+        disposables.add(presetsService.getMonsterType(monster.type())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(monsterType -> {
                     name.setText(monsterType.name());
@@ -68,7 +68,7 @@ public class BeastDetailController extends Controller {
                     description.setText(monsterType.description());
                 }));
 
-        disposables.add(presetsService.getMonsterImage(monster._id())
+        disposables.add(presetsService.getMonsterImage(monster.type())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(monsterImage -> ImageViewAvatar.setImage(monsterImage)));
 

@@ -52,17 +52,11 @@ public class EditProfileController extends Controller {
     DataCache cache;
     @FXML
     private TextField usernameInput;
-    private String backController;
     private BufferedImage bufferedImage = null;
 
     @Inject
     public EditProfileController() {
 
-    }
-
-    public EditProfileController backController(String controller) {
-        this.backController = controller;
-        return this;
     }
 
     @Override
@@ -96,16 +90,11 @@ public class EditProfileController extends Controller {
     }
 
     public void deleteUser() {
-        app.show(deleteUserControllerProvider.get().backController(backController));
+        app.show(deleteUserControllerProvider.get());
     }
 
     public void back() {
-        if (this.backController.equals("menu")) {
-            app.show(menuControllerProvider.get());
-        } else {
-            app.show(pauseControllerProvider.get());
-        }
-
+        app.showPrevious();
     }
 
     @FXML

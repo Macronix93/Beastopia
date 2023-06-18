@@ -1,6 +1,7 @@
 package de.uniks.beastopia.teaml;
 
 import de.uniks.beastopia.teaml.controller.Controller;
+import de.uniks.beastopia.teaml.utils.RingBuffer;
 import fr.brouillard.oss.cssfx.CSSFX;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class App extends Application {
+    private final static int MAX_SUB_MENUS = 6;
     private MainComponent mainComponent;
     private Stage stage;
     private Controller controller;
@@ -21,6 +23,7 @@ public class App extends Application {
     private int windowSizeX = 800;
     private int windowSizeY = 600;
     private final List<Runnable> cleanupTasks = new ArrayList<>();
+    private final RingBuffer<Controller> history = new RingBuffer<>(MAX_SUB_MENUS);
 
     public App() {
         this.mainComponent = de.uniks.beastopia.teaml.DaggerMainComponent.builder().mainApp(this).build();
@@ -28,6 +31,13 @@ public class App extends Application {
 
     public App(MainComponent mainComponent) {
         this.mainComponent = mainComponent;
+    }
+
+    public void setHistory(List<Controller> controllers) {
+        history.clear();
+        for (Controller controller : controllers) {
+            history.push(controller);
+        }
     }
 
     public void setMainComponent(MainComponent mainComponent) {
@@ -98,11 +108,26 @@ public class App extends Application {
     @Override
     public void stop() {
         cleanupTasks.forEach(Runnable::run);
-        cleanup();
+        history.clear();
+    }
+
+    public void showPrevious() {
+        if (!history.isEmpty()) {
+            controller.destroy();
+
+            controller = history.peek();
+            history.pop();
+
+            initAndRender();
+        }
     }
 
     public void show(Controller controller) {
-        cleanup();
+        if (this.controller != null) {
+            this.controller.destroy();
+            history.push(this.controller);
+        }
+
         this.controller = controller;
         initAndRender();
     }
@@ -114,13 +139,6 @@ public class App extends Application {
 
         controller.init();
         update();
-    }
-
-    private void cleanup() {
-        if (controller != null) {
-            controller.destroy();
-            controller = null;
-        }
     }
 
     public void update() {

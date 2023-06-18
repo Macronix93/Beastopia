@@ -28,6 +28,7 @@ import retrofit2.Response;
 import javax.inject.Provider;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.ResourceBundle;
@@ -172,7 +173,6 @@ class EditProfileControllerTest extends ApplicationTest {
         DeleteUserController mocked = mock();
         when(deleteUserControllerProvider.get()).thenReturn(mocked);
         when(mocked.render()).thenReturn(new Label());
-        when(mocked.backController(any())).thenReturn(mocked);
 
         clickOn("#deleteUserButton");
 
@@ -182,27 +182,27 @@ class EditProfileControllerTest extends ApplicationTest {
 
     @Test
     public void backMenu() {
-        editProfileController.backController("menu");
         MenuController mocked = mock();
-        when(menuControllerProvider.get()).thenReturn(mocked);
         when(mocked.render()).thenReturn(new Label());
+        doNothing().when(mocked).init();
+
+        app.setHistory(List.of(mocked));
 
         clickOn("#backButton");
 
-        verify(menuControllerProvider).get();
         verify(mocked).render();
     }
 
     @Test
     public void backPause() {
-        editProfileController.backController("pause");
         PauseController mocked = mock();
-        when(pauseControllerProvider.get()).thenReturn(mocked);
         when(mocked.render()).thenReturn(new Label());
+        doNothing().when(mocked).init();
+
+        app.setHistory(List.of(mocked));
 
         clickOn("#backButton");
 
-        verify(pauseControllerProvider).get();
         verify(mocked).render();
     }
 
