@@ -43,6 +43,7 @@ import javafx.util.Pair;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -118,6 +119,7 @@ public class IngameController extends Controller {
     Parent scoreBoardParent;
     final java.util.Map<EntityController, Parent> otherPlayers = new HashMap<>();
     private final List<KeyCode> pressedKeys = new ArrayList<>();
+    String[] locationStrings = {"Moncenter", "House", "Store"};
 
     @Inject
     public IngameController() {
@@ -157,6 +159,10 @@ public class IngameController extends Controller {
         playerController.playerState().bind(state);
         playerController.setOnTrainerUpdate(trainer -> {
             if (!trainer.area().equals(prefs.getArea()._id())) {
+                if (Arrays.stream(locationStrings).anyMatch(cache.getArea(trainer.area()).name()::contains)) {
+                    soundController.play("sfx:opendoor");
+                }
+
                 IngameController controller = ingameControllerProvider.get();
                 controller.setRegion(region);
                 app.show(controller);
@@ -164,6 +170,8 @@ public class IngameController extends Controller {
             }
             posx = trainer.x();
             posy = trainer.y();
+            lastposx = posx;
+            lastposy = posy;
             updateOrigin();
         });
 
@@ -263,6 +271,8 @@ public class IngameController extends Controller {
         cache.setTrainer(myTrainer);
         posx = myTrainer.x();
         posy = myTrainer.y();
+        lastposx = posx;
+        lastposy = posy;
 
         return myTrainer;
     }
@@ -423,7 +433,7 @@ public class IngameController extends Controller {
     public void updateOrigin() {
         setOrigin(posx, posy);
 
-        if (lastposx == posx && lastposy == posy) {
+        if (posx != lastposx && posy != lastposy) {
             soundController.play("sfx:bump");
         }
     }

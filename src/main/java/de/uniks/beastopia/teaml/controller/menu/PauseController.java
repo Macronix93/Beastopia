@@ -1,7 +1,6 @@
 package de.uniks.beastopia.teaml.controller.menu;
 
 import de.uniks.beastopia.teaml.controller.Controller;
-import de.uniks.beastopia.teaml.controller.ingame.IngameController;
 import de.uniks.beastopia.teaml.controller.ingame.SoundController;
 import de.uniks.beastopia.teaml.controller.ingame.TrainerController;
 import de.uniks.beastopia.teaml.controller.menu.social.FriendListController;
@@ -81,6 +80,10 @@ public class PauseController extends Controller {
 
     @FXML
     public void trainerMenuButtonPressed() {
+        if (soundControllerProvider.get().getBgmPlayer() != null) {
+            soundControllerProvider.get().stopBGM();
+        }
+
         TrainerController controller = trainerControllerProvider.get();
         controller.setRegion(region);
         controller.backController("pause");
