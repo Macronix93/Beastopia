@@ -79,7 +79,7 @@ class IngameControllerTest extends ApplicationTest {
     final TileSetDescription tileSetDescription = new TileSetDescription(0, "SOURCE");
     final TileSet tileSet = new TileSet(2, "IMAGE", 2, 2, 0, "NAME", 0, 4, 1);
     final Chunk chunk = new Chunk(List.of(0, 1, 2, 3), 2, 2, 0, 0);
-    final Layer layer = new Layer(List.of(chunk), null, null, 1, 0, 0, null, true, 2, 2, 0, 0);
+    final Layer layer = new Layer(List.of(chunk), List.of(), null, null, 1, 0, 0, null, true, 2, 2, 0, 0);
     final Map map = new Map(List.of(tileSetDescription), List.of(layer), 2, 24, 4);
     final Area area = new Area(null, null, "ID_AREA", "ID_REGION", "AREA_NAME", map);
     final Spawn spawn = new Spawn("ID_AREA", 0, 0);

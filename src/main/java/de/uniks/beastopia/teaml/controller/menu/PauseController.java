@@ -25,8 +25,6 @@ public class PauseController extends Controller {
     @Inject
     Provider<MenuController> menuControllerProvider;
     @Inject
-    Provider<IngameController> ingameControllerProvider;
-    @Inject
     Provider<EditProfileController> editProfileControllerProvider;
     @Inject
     Provider<SettingsController> settingsControllerProvider;
@@ -65,15 +63,12 @@ public class PauseController extends Controller {
 
     @FXML
     public void editProfileButtonPressed() {
-        app.show(editProfileControllerProvider.get().backController("pause"));
+        app.show(editProfileControllerProvider.get());
     }
 
     @FXML
     public void settingsButtonPressed() {
-        SettingsController controller = settingsControllerProvider.get();
-        controller.backController("pause");
-        controller.setRegion(region);
-        app.show(controller);
+        app.show(settingsControllerProvider.get());
     }
 
     @FXML
@@ -95,9 +90,7 @@ public class PauseController extends Controller {
     @FXML
     public void pauseMenu(KeyEvent keyEvent) {
         if (keyEvent.getCode().equals(KeyCode.ESCAPE)) {
-            IngameController controller = ingameControllerProvider.get();
-            controller.setRegion(region);
-            app.show(controller);
+            app.showPrevious();
         }
     }
 
