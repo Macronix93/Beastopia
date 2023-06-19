@@ -121,7 +121,6 @@ public class IngameController extends Controller {
     final java.util.Map<EntityController, Parent> otherPlayers = new HashMap<>();
     private final List<KeyCode> pressedKeys = new ArrayList<>();
     private final String[] locationStrings = {"Moncenter", "House", "Store"};
-    private final double debounceDelay = 250; // Delay in milliseconds
     private long lastValueChangeTime = 0;
 
     @Inject
@@ -432,6 +431,8 @@ public class IngameController extends Controller {
 
         if (spawned) {
             long currentTime = System.currentTimeMillis();
+            // Delay in milliseconds
+            double debounceDelay = 250;
             if (currentTime - lastValueChangeTime > debounceDelay) {
                 if (lastposx == posx && lastposy == posy) {
                     soundController.play("sfx:bump");
