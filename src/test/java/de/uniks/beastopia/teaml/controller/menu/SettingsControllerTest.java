@@ -68,7 +68,7 @@ class SettingsControllerTest extends ApplicationTest {
         clickOn("#summerRadioButton");
         clickOn("#darkRadioButton");
 
-//        verify(prefs, times(1)).setTheme("dark");
+        verify(prefs, times(1)).setTheme("dark");
         verify(mocked, times(1)).accept("dark");
     }
 
@@ -81,7 +81,7 @@ class SettingsControllerTest extends ApplicationTest {
 
         clickOn("#summerRadioButton");
 
-//        verify(prefs, times(1)).setTheme("summer");
+        verify(prefs, times(1)).setTheme("summer");
         verify(mocked, times(1)).accept("summer");
     }
 
