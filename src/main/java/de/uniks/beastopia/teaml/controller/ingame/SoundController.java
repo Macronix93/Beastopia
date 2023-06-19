@@ -21,7 +21,6 @@ public class SoundController extends Controller {
     @Inject
     Prefs prefs;
 
-    private AudioClip sfxPlayer;
     private MediaPlayer bgmPlayer;
     private String currentTrack = "";
 
@@ -48,7 +47,7 @@ public class SoundController extends Controller {
 
                 currentTrack = fileName;
             } else if (fileName.startsWith("sfx:")) {
-                sfxPlayer = new AudioClip(Objects.requireNonNull(Main.class.getResource("assets/sounds/sfx_" + fileName.substring(4) + ".mp3")).toURI().toString());
+                AudioClip sfxPlayer = new AudioClip(Objects.requireNonNull(Main.class.getResource("assets/sounds/sfx_" + fileName.substring(4) + ".mp3")).toURI().toString());
 
                 sfxPlayer.setVolume(prefs.getSoundVolume() / 100.0);
                 sfxPlayer.play();

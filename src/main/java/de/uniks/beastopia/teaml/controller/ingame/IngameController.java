@@ -92,6 +92,8 @@ public class IngameController extends Controller {
     ScoreboardController scoreBoardController;
     @Inject
     Provider<IngameController> ingameControllerProvider;
+    @Inject
+    Provider<SoundController> soundControllerProvider;
 
     private Region region;
     private Map map;
@@ -114,8 +116,6 @@ public class IngameController extends Controller {
     Parent beastListParent;
     Parent beastDetailParent;
     EntityController playerController;
-    @Inject
-    Provider<SoundController> soundControllerProvider;
     SoundController soundController;
     Parent scoreBoardParent;
     final java.util.Map<EntityController, Parent> otherPlayers = new HashMap<>();
