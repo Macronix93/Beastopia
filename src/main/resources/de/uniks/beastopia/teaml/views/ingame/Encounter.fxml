@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0"
+      prefWidth="800.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="de.uniks.beastopia.teaml.controller.ingame.EncounterController">
+   <VBox prefHeight="600.0" prefWidth="400.0">
+      <VBox prefHeight="300.0" prefWidth="400.0"/>
+      <VBox prefHeight="300.0" prefWidth="400.0">
+         <HBox alignment="CENTER" prefHeight="150.0" prefWidth="400.0">
+            <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true"/>
+            <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true"/>
+         </HBox>
+         <VBox>
+            <VBox prefHeight="30.0" prefWidth="400.0"/>
+            <HBox>
+               <VBox prefHeight="90.0" prefWidth="400.0"/>
+            </HBox>
+            <VBox prefHeight="30.0" prefWidth="400.0"/>
+         </VBox>
+      </VBox>
+   </VBox>
+   <VBox prefHeight="600.0" prefWidth="400.0">
+      <VBox prefHeight="300.0" prefWidth="400.0">
+         <HBox alignment="CENTER" prefHeight="300.0" prefWidth="400.0">
+            <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true"/>
+            <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true"/>
+         </HBox>
+      </VBox>
+      <VBox prefHeight="300.0" prefWidth="400.0"/>
+   </VBox>
+</HBox>
