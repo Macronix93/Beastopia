@@ -100,6 +100,7 @@ public class IngameController extends Controller {
     private int posy = 0;
     private int lastposx = 0;
     private int lastposy = 0;
+    private boolean spawned = false;
     private int width;
     private int height;
     private LoadingPage loadingPage;
@@ -119,7 +120,9 @@ public class IngameController extends Controller {
     Parent scoreBoardParent;
     final java.util.Map<EntityController, Parent> otherPlayers = new HashMap<>();
     private final List<KeyCode> pressedKeys = new ArrayList<>();
-    String[] locationStrings = {"Moncenter", "House", "Store"};
+    private final String[] locationStrings = {"Moncenter", "House", "Store"};
+    private final double debounceDelay = 250; // Delay in milliseconds
+    private long lastValueChangeTime = 0;
 
     @Inject
     public IngameController() {
@@ -170,9 +173,9 @@ public class IngameController extends Controller {
             }
             posx = trainer.x();
             posy = trainer.y();
-            lastposx = posx;
-            lastposy = posy;
             updateOrigin();
+
+            spawned = true;
         });
 
         soundController = soundControllerProvider.get();
@@ -271,8 +274,6 @@ public class IngameController extends Controller {
         cache.setTrainer(myTrainer);
         posx = myTrainer.x();
         posy = myTrainer.y();
-        lastposx = posx;
-        lastposy = posy;
 
         return myTrainer;
     }
@@ -428,14 +429,20 @@ public class IngameController extends Controller {
         tilePane.setTranslateY(tilePaneTranslationY);
         movePlayer(tilex, tiley);
         prefs.setPosition(new Point2D(tilex, tiley));
+
+        if (spawned) {
+            long currentTime = System.currentTimeMillis();
+            if (currentTime - lastValueChangeTime > debounceDelay) {
+                if (lastposx == posx && lastposy == posy) {
+                    soundController.play("sfx:bump");
+                    lastValueChangeTime = currentTime;
+                }
+            }
+        }
     }
 
     public void updateOrigin() {
         setOrigin(posx, posy);
-
-        if (posx != lastposx && posy != lastposy) {
-            soundController.play("sfx:bump");
-        }
     }
 
     private void drawPlayer(int posx, int posy) {
