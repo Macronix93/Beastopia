@@ -77,7 +77,9 @@
 #friendList,
 #scoreBoard,
 #achievements,
-#scrollFriends {
+#VBoxBeastList,
+#scrollFriends,
+#VBoxBeastDetail {
     -fx-background-color: #4C5250;
     -fx-border-color: #262928;
     -fx-border-width: 1px;
@@ -86,7 +88,9 @@
 }
 
 #scoreBoard,
-#achievements {
+#achievements,
+#VBoxBeastList,
+#VBoxBeastDetail {
     -fx-background-color: #4C5250CF;
 }
 
@@ -124,4 +128,12 @@ Text {
     -fx-background-color: transparent;
     -fx-border-color: #4C5250CF;
     -fx-border-width: 1;
+}
+
+.text-area {
+    text-area-background: transparent ;
+}
+
+.text-area .content {
+    -fx-background-color: text-area-background ;
 }

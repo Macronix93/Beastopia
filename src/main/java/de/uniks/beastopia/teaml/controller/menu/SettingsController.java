@@ -48,21 +48,11 @@ public class SettingsController extends Controller {
     @Inject
     Provider<ResourceBundle> resourcesProvider;
     @Inject
-    Provider<MenuController> menuControllerProvider;
-    @Inject
-    Provider<PauseController> pauseControllerProvider;
-    @Inject
     Provider<KeybindElementController> keybindElementControllerProvider;
-    private String backController;
 
 
     @Inject
     public SettingsController() {
-    }
-
-    public SettingsController backController(String controller) {
-        this.backController = controller;
-        return this;
     }
 
     @Override
@@ -136,11 +126,7 @@ public class SettingsController extends Controller {
 
     @FXML
     public void back() {
-        if (this.backController.equals("menu")) {
-            app.show(menuControllerProvider.get());
-        } else {
-            app.show(pauseControllerProvider.get());
-        }
+        app.showPrevious();
     }
 
     @Override

@@ -105,7 +105,7 @@ public class EntityController extends Controller {
             timer.purge();
         }
         timer = new Timer();
-        System.out.println("Resetting timer for trainer: " + trainer._id() + " in area: " + trainer.area());
+//        System.out.println("Resetting timer for trainer: " + trainer._id() + " in area: " + trainer.area());
         timer.schedule(createUpdateTimerTask(), 3000);
     }
 
@@ -123,7 +123,7 @@ public class EntityController extends Controller {
             @Override
             public void run() {
                 self.onUI(() -> {
-                    System.out.println("Reconnecting to trainer update for: " + trainer._id() + " in area: " + trainer.area());
+//                    System.out.println("Reconnecting to trainer update for: " + trainer._id() + " in area: " + trainer.area());
                     listenToMovements();
                 });
             }
