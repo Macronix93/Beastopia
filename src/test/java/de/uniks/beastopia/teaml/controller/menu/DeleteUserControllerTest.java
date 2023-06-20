@@ -7,6 +7,7 @@ import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.AuthService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import io.reactivex.rxjava3.core.Observable;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
 
 import javax.inject.Provider;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -70,10 +72,11 @@ class DeleteUserControllerTest extends ApplicationTest {
     @Test
     public void cancel() {
         EditProfileController mocked = mock(EditProfileController.class);
-        when(editProfileControllerProvider.get()).thenReturn(mocked);
+        when(mocked.render()).thenReturn(new Pane());
+        doNothing().when(mocked).init();
+        app.setHistory(List.of(mocked));
         clickOn("#cancelButton");
-        verify(editProfileControllerProvider, times(1)).get();
-        verify(mocked, times(1)).backController(any());
+        verify(mocked, times(1)).render();
     }
 
 
