@@ -2,6 +2,7 @@ package de.uniks.beastopia.teaml.controller.menu;
 
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.ingame.TrainerController;
+import de.uniks.beastopia.teaml.controller.ingame.beast.EditBeastTeamController;
 import de.uniks.beastopia.teaml.controller.menu.social.FriendListController;
 import de.uniks.beastopia.teaml.rest.Region;
 import javafx.fxml.FXML;
@@ -28,6 +29,8 @@ public class PauseController extends Controller {
     Provider<SettingsController> settingsControllerProvider;
     @Inject
     Provider<TrainerController> trainerControllerProvider;
+    @Inject
+    Provider<EditBeastTeamController> editBeastTeamControllerProvider;
     @FXML
     private VBox friendListContainer;
     private Region region;
@@ -91,6 +94,7 @@ public class PauseController extends Controller {
     }
 
     public void beastTeamButtonPressed() {
-        System.out.println("beastTeamButtonPressed");
+        EditBeastTeamController beastTeam = editBeastTeamControllerProvider.get();
+        app.show(beastTeam);
     }
 }

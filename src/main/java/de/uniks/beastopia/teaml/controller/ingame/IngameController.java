@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.Controller;
+import de.uniks.beastopia.teaml.controller.ingame.beast.EditBeastTeamController;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
 import de.uniks.beastopia.teaml.rest.Map;
 import de.uniks.beastopia.teaml.rest.*;
@@ -35,8 +36,6 @@ public class IngameController extends Controller {
     static final int MENU_SCOREBOARD = 1;
     static final int MENU_BEASTLIST = 2;
 
-    static final int MENU_BEASTTEAM = 3;
-
     @FXML
     public Pane tilePane;
     @FXML
@@ -52,9 +51,13 @@ public class IngameController extends Controller {
     @Inject
     Provider<PauseController> pauseControllerProvider;
     @Inject
-    BeastListController beastListController;
-    @Inject
     Provider<BeastDetailController> beastDetailControllerProvider;
+    @Inject
+    Provider<EditBeastTeamController> editBeastTeamControllerProvider;
+    @Inject
+    Provider<EntityController> entityControllerProvider;
+    @Inject
+    Provider<MapController> mapControllerProvider;
     @Inject
     Prefs prefs;
     @Inject
@@ -62,13 +65,11 @@ public class IngameController extends Controller {
     @Inject
     TokenStorage tokenStorage;
     @Inject
-    Provider<EntityController> entityControllerProvider;
-    @Inject
     UDPEventListener udpEventListener;
     @Inject
     EventListener eventListener;
     @Inject
-    Provider<MapController> mapControllerProvider;
+    BeastListController beastListController;
     @Inject
     ScoreboardController scoreBoardController;
     @Inject
@@ -520,7 +521,8 @@ public class IngameController extends Controller {
 
     private void handleBeastTeam(KeyEvent keyEvent) {
         if (keyEvent.getCode().equals(KeyCode.X)) {
-            System.out.println("Beast Team");
+            EditBeastTeamController beastTeam = editBeastTeamControllerProvider.get();
+            app.show(beastTeam);
         }
     }
 
