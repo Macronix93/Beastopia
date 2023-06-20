@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-
-<?import javafx.geometry.Insets?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
@@ -45,6 +44,21 @@
                 </font>
             </Label>
             <ListView fx:id="beastTeam" prefHeight="344.0" prefWidth="255.0"/>
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="40.0">
+                <Button fx:id="beastTeamBack" mnemonicParsing="false" onAction="#backToPrevious" text="\%BeastTeamBack">
+                    <HBox.margin>
+                        <Insets left="20.0"/>
+                    </HBox.margin>
+                </Button>
+                <Button fx:id="editBeastTeam" mnemonicParsing="false" onAction="#saveBeastTeam" text="\%EditBeastTeam">
+                    <opaqueInsets>
+                        <Insets/>
+                    </opaqueInsets>
+                    <HBox.margin>
+                        <Insets right="20.0"/>
+                    </HBox.margin>
+                </Button>
+            </HBox>
         </VBox>
     </GridPane>
 </VBox>
