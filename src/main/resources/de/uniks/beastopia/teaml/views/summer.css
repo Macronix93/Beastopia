@@ -108,8 +108,11 @@
     -fx-opacity: 0.7;
 }
 
+.scroll-pane,
 .scroll-pane .viewport {
-       -fx-background-color: transparent;
+    -fx-background-color: transparent;
+    -fx-border-color: #82B366;
+    -fx-border-width: 1;
 }
 
 .text-area {
