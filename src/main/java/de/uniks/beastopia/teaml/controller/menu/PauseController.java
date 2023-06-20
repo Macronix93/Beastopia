@@ -89,4 +89,8 @@ public class PauseController extends Controller {
     public void setRegion(Region region) {
         this.region = region;
     }
+
+    public void beastTeamButtonPressed() {
+        System.out.println("beastTeamButtonPressed");
+    }
 }
