@@ -35,6 +35,8 @@ public class IngameController extends Controller {
     static final int MENU_SCOREBOARD = 1;
     static final int MENU_BEASTLIST = 2;
 
+    static final int MENU_BEASTTEAM = 3;
+
     @FXML
     public Pane tilePane;
     @FXML
@@ -473,8 +475,8 @@ public class IngameController extends Controller {
         handlePauseMenu(keyEvent);
         handleScoreboard(keyEvent);
         handleBeastList(keyEvent);
+        handleBeastTeam(keyEvent);
     }
-
     public void handleBeastList(KeyEvent keyEvent) {
         if (keyEvent.getCode().equals(KeyCode.B) && (currentMenu == MENU_NONE || currentMenu == MENU_BEASTLIST)) {
             if (scoreBoardLayout.getChildren().contains(beastListParent)) {
@@ -515,6 +517,13 @@ public class IngameController extends Controller {
             app.show(map);
         }
     }
+
+    private void handleBeastTeam(KeyEvent keyEvent) {
+        if (keyEvent.getCode().equals(KeyCode.X)) {
+            System.out.println("Beast Team");
+        }
+    }
+
 
     private void handlePlayerMovement(KeyEvent keyEvent) {
         if (!pressedKeys.contains(keyEvent.getCode())) {
