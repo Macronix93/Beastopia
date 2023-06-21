@@ -1,4 +1,4 @@
-package de.uniks.beastopia.teaml.controller.ingame;
+package de.uniks.beastopia.teaml.controller.ingame.encounter;
 
 import de.uniks.beastopia.teaml.controller.Controller;
 import javafx.scene.control.Label;
@@ -6,14 +6,14 @@ import javafx.scene.control.Label;
 import javax.inject.Inject;
 
 @SuppressWarnings("unused")
-public class EncounterActionController extends Controller {
+public class ActionInfoController extends Controller {
 
     private String attackerBeastName;
     private String defenderBeastName;
     public Label actionLabel;
 
     @Inject
-    public EncounterActionController() {
+    public ActionInfoController() {
     }
 
     public void setAttackerBeastName(String attackerBeastName) {

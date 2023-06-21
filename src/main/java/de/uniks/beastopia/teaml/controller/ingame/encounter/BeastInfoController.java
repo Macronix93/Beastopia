@@ -1,11 +1,11 @@
-package de.uniks.beastopia.teaml.controller.ingame;
+package de.uniks.beastopia.teaml.controller.ingame.encounter;
 
 import de.uniks.beastopia.teaml.controller.Controller;
 
 import javax.inject.Inject;
 
 @SuppressWarnings("unused")
-public class EncounterBeastInfoController extends Controller {
+public class BeastInfoController extends Controller {
 
     private String beastName;
     private String beastType;
@@ -14,7 +14,7 @@ public class EncounterBeastInfoController extends Controller {
     private int beastXp;
 
     @Inject
-    public EncounterBeastInfoController() {
+    public BeastInfoController() {
     }
 
 

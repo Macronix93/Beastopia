@@ -1,4 +1,4 @@
-package de.uniks.beastopia.teaml.controller.ingame;
+package de.uniks.beastopia.teaml.controller.ingame.encounter;
 
 import de.uniks.beastopia.teaml.controller.Controller;
 import javafx.scene.control.Label;
@@ -6,7 +6,7 @@ import javafx.scene.control.Label;
 import javax.inject.Inject;
 
 @SuppressWarnings("unused")
-public class EncounterAttackController extends Controller {
+public class AttackButtonController extends Controller {
 
     private String attackName;
     private String attackType;
@@ -18,7 +18,7 @@ public class EncounterAttackController extends Controller {
     public Label powerLabel;
 
     @Inject
-    public EncounterAttackController() {
+    public AttackButtonController() {
     }
 
     public void setAttackName(String attackName) {
