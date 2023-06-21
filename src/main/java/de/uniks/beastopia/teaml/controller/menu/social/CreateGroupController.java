@@ -37,8 +37,6 @@ public class CreateGroupController extends Controller {
     @FXML
     public TextField groupNameField;
     @Inject
-    Provider<DirectMessageController> directMessageControllerProvider;
-    @Inject
     Provider<UserController> userControllerProvider;
     @Inject
     GroupListService groupListService;
@@ -132,7 +130,7 @@ public class CreateGroupController extends Controller {
 
     @FXML
     public void back() {
-        app.show(directMessageControllerProvider.get());
+        app.showPrevious();
     }
 
     public void createGroup() {
@@ -149,11 +147,8 @@ public class CreateGroupController extends Controller {
 
         disposables.add(groupListService.addGroup(groupNameField.getText(), userIds)
                 .observeOn(FX_SCHEDULER)
-                .subscribe(group -> {
-                    DirectMessageController directMessageController = directMessageControllerProvider.get();
-                    app.show(directMessageController);
-                }, error -> Dialog.error(error, "error")));
-
+                .subscribe(group -> app.showPrevious(),
+                        error -> Dialog.error(error, "error")));
     }
 
     @Override
