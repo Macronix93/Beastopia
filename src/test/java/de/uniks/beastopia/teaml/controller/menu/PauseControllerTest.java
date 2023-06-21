@@ -1,11 +1,15 @@
 package de.uniks.beastopia.teaml.controller.menu;
 
 import de.uniks.beastopia.teaml.App;
+import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.controller.ingame.IngameController;
+import de.uniks.beastopia.teaml.controller.ingame.SoundController;
 import de.uniks.beastopia.teaml.controller.menu.social.FriendListController;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,13 +21,19 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
 
 import javax.inject.Provider;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class PauseControllerTest extends ApplicationTest {
@@ -33,6 +43,10 @@ class PauseControllerTest extends ApplicationTest {
 
     @Mock
     Provider<MenuController> menuControllerProvider;
+    @Mock
+    Provider<SoundController> soundControllerProvider;
+    @Mock
+    SoundController soundController;
     @Spy
     App app;
     @InjectMocks
@@ -42,12 +56,13 @@ class PauseControllerTest extends ApplicationTest {
     @SuppressWarnings("unused")
     final
     ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang", Locale.forLanguageTag("en"));
+    MediaPlayer bgmPlayer;
 
     FriendListController mockedFriendListController;
     MenuController mockedMenuController;
 
     @Override
-    public void start(Stage stage) {
+    public void start(Stage stage) throws URISyntaxException, MalformedURLException {
         AppPreparer.prepare(app);
 
         mockedFriendListController = mock();
@@ -56,6 +71,8 @@ class PauseControllerTest extends ApplicationTest {
         when(mockedFriendListController.render()).thenReturn(new Label("FriendListController"));
 
         when(friendListControllerProvider.get()).thenReturn(mockedFriendListController);
+        final Media bgmMedia = new Media(Objects.requireNonNull(Main.class.getResource("assets/sounds/bgm_city.mp3")).toURI().toURL().toString());
+        bgmPlayer = new MediaPlayer(bgmMedia);
 
         app.start(stage);
         app.show(pauseController);
@@ -71,6 +88,8 @@ class PauseControllerTest extends ApplicationTest {
 
     @Test
     void openMenu() {
+        when(soundControllerProvider.get()).thenReturn(soundController);
+        when(soundControllerProvider.get().getBgmPlayer()).thenReturn(bgmPlayer);
         when(mockedMenuController.render()).thenReturn(new Label("MenuController"));
         when(menuControllerProvider.get()).thenReturn(mockedMenuController);
         clickOn("#mainMenuButton");
