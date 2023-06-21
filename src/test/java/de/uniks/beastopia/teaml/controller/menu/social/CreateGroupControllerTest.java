@@ -129,7 +129,12 @@ class CreateGroupControllerTest extends ApplicationTest {
 
     @Test
     void back() {
+        DirectMessageController mocked = mock(DirectMessageController.class);
+        when(mocked.render()).thenReturn(new Pane());
+        doNothing().when(mocked).init();
+        app.setHistory(List.of(mocked));
         clickOn("#backButton");
+        verify(mocked, times(1)).render();
     }
 
     @Test

@@ -143,7 +143,7 @@ public class EditGroupController extends Controller {
 
     @FXML
     public void back() {
-        app.show(directMessageControllerProvider.get());
+        app.showPrevious();
     }
 
     @Override

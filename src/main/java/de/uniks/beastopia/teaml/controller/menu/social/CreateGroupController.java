@@ -132,7 +132,7 @@ public class CreateGroupController extends Controller {
 
     @FXML
     public void back() {
-        app.show(directMessageControllerProvider.get());
+        app.showPrevious();
     }
 
     public void createGroup() {
