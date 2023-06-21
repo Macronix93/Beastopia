@@ -1,7 +1,7 @@
-package de.uniks.beastopia.teaml.controller.ingame.encouter;
+package de.uniks.beastopia.teaml.controller.ingame.encounter;
 
 import de.uniks.beastopia.teaml.controller.Controller;
-import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -11,11 +11,11 @@ import javax.inject.Inject;
 
 public class FightWildBeastController extends Controller {
 
-    @Inject
+    @FXML
     public Label headline;
-    @Inject
+    @FXML
     public ImageView image;
-    @Inject
+    @FXML
     public Button startFight;
 
     @Inject
@@ -34,7 +34,7 @@ public class FightWildBeastController extends Controller {
         return parent;
     }
 
-    @Inject
+    @FXML
     public void startFight() {
         //TODO show Encounter screen
     }
