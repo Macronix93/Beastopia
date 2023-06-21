@@ -21,11 +21,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
 
 import javax.inject.Provider;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.ResourceBundle;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -56,13 +54,13 @@ class PauseControllerTest extends ApplicationTest {
     @SuppressWarnings("unused")
     final
     ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang", Locale.forLanguageTag("en"));
-    MediaPlayer bgmPlayer;
+    Media bgmMedia;
 
     FriendListController mockedFriendListController;
     MenuController mockedMenuController;
 
     @Override
-    public void start(Stage stage) throws URISyntaxException, MalformedURLException {
+    public void start(Stage stage) {
         AppPreparer.prepare(app);
 
         mockedFriendListController = mock();
@@ -71,8 +69,6 @@ class PauseControllerTest extends ApplicationTest {
         when(mockedFriendListController.render()).thenReturn(new Label("FriendListController"));
 
         when(friendListControllerProvider.get()).thenReturn(mockedFriendListController);
-        final Media bgmMedia = new Media(Objects.requireNonNull(Main.class.getResource("assets/sounds/bgm_city.mp3")).toURI().toURL().toString());
-        bgmPlayer = new MediaPlayer(bgmMedia);
 
         app.start(stage);
         app.show(pauseController);
@@ -88,8 +84,15 @@ class PauseControllerTest extends ApplicationTest {
 
     @Test
     void openMenu() {
+        URL resourceUrl = Main.class.getResource("assets/sounds/bgm_city.mp3");
+        assertNotNull(resourceUrl);
+
+        String mediaUrl = resourceUrl.toExternalForm();
+        bgmMedia = new Media(mediaUrl);
+
         when(soundControllerProvider.get()).thenReturn(soundController);
-        when(soundControllerProvider.get().getBgmPlayer()).thenReturn(bgmPlayer);
+        when(soundController.getBgmPlayer()).thenReturn(new MediaPlayer(bgmMedia));
+
         when(mockedMenuController.render()).thenReturn(new Label("MenuController"));
         when(menuControllerProvider.get()).thenReturn(mockedMenuController);
         clickOn("#mainMenuButton");
