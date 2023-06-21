@@ -10,6 +10,7 @@ import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.scene.control.Label;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
@@ -40,8 +41,6 @@ class EditGroupControllerTest extends ApplicationTest {
     @SuppressWarnings("unused")
     @Mock
     Prefs prefs;
-    @Mock
-    Provider<DirectMessageController> directMessageControllerProvider;
     @Mock
     Provider<UserController> userControllerProvider;
     @Mock
@@ -130,10 +129,11 @@ class EditGroupControllerTest extends ApplicationTest {
     @Test
     void backTest() {
         DirectMessageController mocked = mock(DirectMessageController.class);
-        when(directMessageControllerProvider.get()).thenReturn(mocked);
-        doNothing().when(app).show(mocked);
+        when(mocked.render()).thenReturn(new Pane());
+        doNothing().when(mocked).init();
+        app.setHistory(List.of(mocked));
         clickOn("#testBack");
-        verify(directMessageControllerProvider, times(1)).get();
+        verify(mocked, times(1)).render();
     }
 
 
