@@ -6,7 +6,8 @@ import de.uniks.beastopia.teaml.rest.Monster;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.TrainerService;
 import de.uniks.beastopia.teaml.utils.Prefs;
-import javafx.event.ActionEvent;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -15,17 +16,15 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.InputMethodEvent;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
 
 public class EditBeastTeamController extends Controller {
 
     @FXML
-    public ListView beastList;
+    public ListView<Monster> beastList;
     @FXML
     public TextField filterBar;
     @FXML
-    public ListView beastTeam;
+    public ListView<Monster> beastTeam;
     @FXML
     public Button beastTeamBack;
     @FXML
@@ -39,7 +38,8 @@ public class EditBeastTeamController extends Controller {
     @Inject
     DataCache cache;
 
-    List<Monster> allMonster = new ArrayList<>();
+    ObservableList<Monster> allBeast = FXCollections.observableArrayList();
+    ObservableList<Monster> team = FXCollections.observableArrayList();
 
     @Inject
     public EditBeastTeamController() {
@@ -61,9 +61,24 @@ public class EditBeastTeamController extends Controller {
         disposables.add(trainerService.getTrainerMonsters(prefs.getRegionID(), cache.getTrainer()._id())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(monsters -> {
-                    this.allMonster.addAll(monsters);
-                    beastList.getItems().addAll(monsters);
-                    System.out.println("allMonster: " + allMonster.size());
+                    this.allBeast.addAll(monsters);
+                    this.beastList.setItems(allBeast);
+                    this.beastTeam.setItems(team);
+                    this.beastList.setCellFactory(param -> new BeastListElementController());
+                    this.beastTeam.setCellFactory(param -> new BeastListElementController());
+                    filterBar.textProperty().addListener((observable, oldValue, newValue) -> {
+                        if (newValue.isEmpty()) {
+                            beastList.setItems(allBeast);
+                        } else {
+                            ObservableList<Monster> filtered = FXCollections.observableArrayList();
+                            for (Monster monster : allBeast) {
+                                if (monster.level() == Integer.parseInt(newValue)) {
+                                    filtered.add(monster);
+                                }
+                            }
+                            beastList.setItems(filtered);
+                        }
+                    });
                 }));
         return parent;
     }
@@ -71,11 +86,12 @@ public class EditBeastTeamController extends Controller {
     public void filterMonster(InputMethodEvent inputMethodEvent) {
     }
 
-    public void backToPrevious(ActionEvent actionEvent) {
+    public void backToPrevious() {
         app.showPrevious();
     }
 
-    public void saveBeastTeam(ActionEvent actionEvent) {
+    public void saveBeastTeam() {
+        team.add(allBeast.remove(0));
     }
 
     @Override
