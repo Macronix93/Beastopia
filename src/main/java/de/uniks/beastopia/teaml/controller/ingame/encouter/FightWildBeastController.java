@@ -24,12 +24,18 @@ public class FightWildBeastController extends Controller {
     }
 
     @Override
+    public String getTitle() {
+        return resources.getString("titleEncounter");
+    }
+
+    @Override
     public Parent render() {
         Parent parent = super.render();
         return parent;
     }
 
     @Inject
-    public void startFight(ActionEvent actionEvent) {
+    public void startFight() {
+        //TODO show Encounter screen
     }
 }
