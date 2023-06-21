@@ -53,14 +53,16 @@ public class LevelUpController extends Controller {
 
     private Monster beast;
 
+    private boolean newAbility;
+
     @Inject
     public LevelUpController() {
 
     }
 
-    public void setBeast(Monster beast) {
-        this.beast = beast; //TODO von dem wieder Type und bild und name bekommen
-        //TODO über attributes
+    public void setBeast(Monster beast, boolean newAbility) {
+        this.newAbility = newAbility;
+        this.beast = beast;
     }
 
     @Override
@@ -73,19 +75,41 @@ public class LevelUpController extends Controller {
         Parent parent = super.render();
         headline.setText("Level up!");
 
-        disposables.add(trainerService.getTrainerMonster(prefs.getRegionID(), trainerId, beastId)
+        disposables.add(presetsService.getMonsterType(beast.type())
                 .observeOn(FX_SCHEDULER)
-                .concatMap(b -> { //Nacheinander ausführen
-                    this.type = b.type();
-                    return presetsService.getMonsterType(this.type);
-                }).observeOn(FX_SCHEDULER)
                 .subscribe(type -> {
+                    up_text_bottom.setText(type.name() + " (" + type.type() + ") Lvl. " + beast.level());
                     if (prefs.getLocale().contains("de")) {
-                        headline.setText("Ein wildes " + type.name() + " erscheint!");
+                        if (this.newAbility) {
+                            up_text.setText(type.name() + " ist ein Level aufgestiegen und erlernt die Fähigkeit " + "FÄHIGKEIT");
+                        } else {
+                            up_text.setText(type.name() + " ist ein Level aufgestiegen!");
+                        }
                     } else {
-                        headline.setText("A wild " + type.name() + " appears!");
+                        if (this.newAbility) {
+                            up_text.setText(type.name() + " levelled up and unlocked the new ability " + "FÄHIGKEIT");
+                        } else {
+                            up_text.setText(type.name() + " levelled up!");
+                        }
                     }
                 }));
+
+        disposables.add(presetsService.getMonsterImage(beast.type())
+                .observeOn(FX_SCHEDULER)
+                .subscribe(monsterImage -> image.setImage(monsterImage))); //TODO fade
+
+        if (this.newAbility) {
+            //TODO wenn neue nicht hinten ist
+            disposables.add(presetsService.getAbility(beast.abilities().get(beast.abilities().size()-1))
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe(abilityDto -> {
+                        attack.setText(abilityDto.name());
+                        accuracy.setText("Accuracy: " + abilityDto.accuracy());
+                        type.setText("Type: " + abilityDto.type());
+                        power.setText("Power: " + abilityDto.power());
+                    }));
+        }
+
         return parent;
     }
 

@@ -1,7 +1,9 @@
 package de.uniks.beastopia.teaml.service;
 
+import de.uniks.beastopia.teaml.rest.Encounter;
 import de.uniks.beastopia.teaml.rest.EncounterOpponentsApiService;
 import de.uniks.beastopia.teaml.rest.Opponent;
+import de.uniks.beastopia.teaml.rest.RegionEncountersApiService;
 import io.reactivex.rxjava3.core.Observable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

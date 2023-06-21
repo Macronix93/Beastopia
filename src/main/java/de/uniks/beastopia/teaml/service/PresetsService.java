@@ -1,10 +1,7 @@
 package de.uniks.beastopia.teaml.service;
 
 import com.google.gson.Gson;
-import de.uniks.beastopia.teaml.rest.MonsterTypeDto;
-import de.uniks.beastopia.teaml.rest.PresetsApiService;
-import de.uniks.beastopia.teaml.rest.TileSet;
-import de.uniks.beastopia.teaml.rest.TileSetDescription;
+import de.uniks.beastopia.teaml.rest.*;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
@@ -56,5 +53,9 @@ public class PresetsService {
     public Observable<Image> getMonsterImage(int type) {
         return presetsApiService.getMonsterImage(type)
                 .map((ResponseBody body) -> new Image(body.byteStream()));
+    }
+
+    public Observable<AbilityDto> getAbility(int id) {
+        return presetsApiService.getAbility(id);
     }
 }
