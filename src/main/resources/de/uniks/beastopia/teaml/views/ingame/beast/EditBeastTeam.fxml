@@ -25,7 +25,7 @@
             <padding>
                 <Insets left="50.0" right="50.0"/>
             </padding>
-            <Label text="Label">
+            <Label text="%YourBeasts">
                 <font>
                     <Font size="16.0"/>
                 </font>
@@ -38,19 +38,21 @@
             <padding>
                 <Insets left="50.0" right="50.0"/>
             </padding>
-            <Label text="Label">
+            <Label text="%YourTeam">
                 <font>
                     <Font size="16.0"/>
                 </font>
             </Label>
             <ListView fx:id="beastTeam" prefHeight="344.0" prefWidth="255.0"/>
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="40.0">
-                <Button fx:id="beastTeamBack" mnemonicParsing="false" onAction="#backToPrevious" text="\%BeastTeamBack">
+                <Button fx:id="beastTeamBack" mnemonicParsing="false" onAction="#backToPrevious" prefWidth="100.0"
+                        text="%Back">
                     <HBox.margin>
                         <Insets left="20.0"/>
                     </HBox.margin>
                 </Button>
-                <Button fx:id="editBeastTeam" mnemonicParsing="false" onAction="#saveBeastTeam" text="\%EditBeastTeam">
+                <Button fx:id="editBeastTeam" mnemonicParsing="false" onAction="#saveBeastTeam" prefWidth="100.0"
+                        text="%EditBeastTeam" wrapText="true">
                     <opaqueInsets>
                         <Insets/>
                     </opaqueInsets>

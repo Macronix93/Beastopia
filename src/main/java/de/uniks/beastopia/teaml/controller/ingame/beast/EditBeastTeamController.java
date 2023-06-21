@@ -51,6 +51,11 @@ public class EditBeastTeamController extends Controller {
     }
 
     @Override
+    public String getTitle() {
+        return resources.getString("TitelBeastTeam");
+    }
+
+    @Override
     public Parent render() {
         Parent parent = super.render();
         disposables.add(trainerService.getTrainerMonsters(prefs.getRegionID(), cache.getTrainer()._id())
