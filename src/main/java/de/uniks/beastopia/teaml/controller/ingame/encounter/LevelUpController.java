@@ -1,7 +1,10 @@
 package de.uniks.beastopia.teaml.controller.ingame.encounter;
 
 import de.uniks.beastopia.teaml.controller.Controller;
-import javafx.event.ActionEvent;
+import de.uniks.beastopia.teaml.rest.Monster;
+import de.uniks.beastopia.teaml.service.PresetsService;
+import de.uniks.beastopia.teaml.service.TrainerService;
+import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -39,10 +42,25 @@ public class LevelUpController extends Controller {
     public Label maxXpLabel;
     @FXML
     public Button continueBtn;
+    @Inject
+    TrainerService trainerService;
+
+    @Inject
+    PresetsService presetsService;
+
+    @Inject
+    Prefs prefs;
+
+    private Monster beast;
 
     @Inject
     public LevelUpController() {
 
+    }
+
+    public void setBeast(Monster beast) {
+        this.beast = beast; //TODO von dem wieder Type und bild und name bekommen
+        //TODO über attributes
     }
 
     @Override
@@ -53,6 +71,21 @@ public class LevelUpController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
+        headline.setText("Level up!");
+
+        disposables.add(trainerService.getTrainerMonster(prefs.getRegionID(), trainerId, beastId)
+                .observeOn(FX_SCHEDULER)
+                .concatMap(b -> { //Nacheinander ausführen
+                    this.type = b.type();
+                    return presetsService.getMonsterType(this.type);
+                }).observeOn(FX_SCHEDULER)
+                .subscribe(type -> {
+                    if (prefs.getLocale().contains("de")) {
+                        headline.setText("Ein wildes " + type.name() + " erscheint!");
+                    } else {
+                        headline.setText("A wild " + type.name() + " appears!");
+                    }
+                }));
         return parent;
     }
 

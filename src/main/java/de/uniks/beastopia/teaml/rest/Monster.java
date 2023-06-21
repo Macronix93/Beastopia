@@ -1,6 +1,7 @@
 package de.uniks.beastopia.teaml.rest;
 
 import java.util.Date;
+import java.util.List;
 
 public record Monster(
         Date createdAt,
@@ -10,6 +11,7 @@ public record Monster(
         int type,
         int level,
         int experience,
+        List<Integer> abilities,
         MonsterAttributes attributes,
         MonsterAttributes currentAttributes
 ) {
