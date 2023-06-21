@@ -46,8 +46,6 @@ class CreateGroupControllerTest extends ApplicationTest {
     @InjectMocks
     CreateGroupController createGroupController;
     @Mock
-    Provider<DirectMessageController> directMessageControllerProvider;
-    @Mock
     Provider<UserController> userControllerProvider;
     @Mock
     GroupListService groupListService;
@@ -97,9 +95,6 @@ class CreateGroupControllerTest extends ApplicationTest {
         when(cache.getAllUsers()).thenReturn(List.of(userOne, userTwo));
         when(tokenStorage.getCurrentUser()).thenReturn(userTwo);
         when(groupListService.addGroup(any(), any())).thenReturn(Observable.just(new Group(null, null, "GROUP_ID", "TestGroup", List.of(userOne._id(), userTwo._id()))));
-        DirectMessageController mockedMessageController = mock();
-        when(directMessageControllerProvider.get()).thenReturn(mockedMessageController);
-        when(mockedMessageController.render()).thenReturn(new Pane());
 
         // search user one
         clickOn("#usernameField");
@@ -124,7 +119,6 @@ class CreateGroupControllerTest extends ApplicationTest {
         clickOn("#createGrpButton");
 
         verify(groupListService).addGroup("TestGroup", List.of(userOne._id(), userTwo._id()));
-        verify(mockedMessageController).render();
     }
 
     @Test

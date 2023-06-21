@@ -33,8 +33,6 @@ public class EditGroupController extends Controller {
     @FXML
     public TextField groupNameField;
     @Inject
-    Provider<DirectMessageController> directMessageControllerProvider;
-    @Inject
     Provider<UserController> userControllerProvider;
     @Inject
     GroupListService groupListService;
@@ -174,10 +172,7 @@ public class EditGroupController extends Controller {
 
         disposables.add(groupListService.updateGroup(updatedGroup)
                 .observeOn(FX_SCHEDULER)
-                .subscribe(group -> {
-                    DirectMessageController directMessageController = directMessageControllerProvider.get();
-                    app.show(directMessageController);
-                }, error -> Dialog.error(error, "error")));
-
+                .subscribe(group -> app.showPrevious(),
+                        error -> Dialog.error(error, "error")));
     }
 }
