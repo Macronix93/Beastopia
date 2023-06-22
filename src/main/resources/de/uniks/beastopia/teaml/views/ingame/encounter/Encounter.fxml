@@ -29,49 +29,91 @@
                 <HBox prefHeight="100.0" prefWidth="400.0">
                     <VBox prefHeight="50.0" prefWidth="80.0"/>
                     <VBox fx:id="leftAttackBox" alignment="CENTER" prefHeight="50.0" prefWidth="150.0" spacing="5.0">
-                        <Label text="Tackle">
+                        <Label fx:id="leftAttackLabel" text="Tackle">
                             <font>
                                 <Font size="14.0"/>
                             </font>
                         </Label>
-                        <Label text="Type: normal">
-                            <font>
-                                <Font size="14.0"/>
-                            </font>
-                        </Label>
-                        <Label text="Accuracy: 1">
-                            <font>
-                                <Font size="14.0"/>
-                            </font>
-                        </Label>
-                        <Label text="Power: 2">
-                            <font>
-                                <Font size="14.0"/>
-                            </font>
-                        </Label>
+                        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+                            <Label text="Type: ">
+                                <font>
+                                    <Font size="14.0"/>
+                                </font>
+                            </Label>
+                            <Label fx:id="leftAttackTypeLabel" text="normal">
+                                <font>
+                                    <Font size="14.0"/>
+                                </font>
+                            </Label>
+                        </HBox>
+                        <HBox alignment="CENTER">
+                            <Label text="Accuracy: ">
+                                <font>
+                                    <Font size="14.0"/>
+                                </font>
+                            </Label>
+                            <Label fx:id="leftAccLabel" text="value">
+                                <font>
+                                    <Font size="14.0"/>
+                                </font>
+                            </Label>
+                        </HBox>
+                        <HBox alignment="CENTER">
+                            <Label text="Power: ">
+                                <font>
+                                    <Font size="14.0"/>
+                                </font>
+                            </Label>
+                            <Label fx:id="leftPowerLabel" text="value">
+                                <font>
+                                    <Font size="14.0"/>
+                                </font>
+                            </Label>
+                        </HBox>
                     </VBox>
                     <VBox prefHeight="50.0" prefWidth="80.0"/>
                     <VBox fx:id="rightAttackBox" alignment="CENTER" prefHeight="50.0" prefWidth="150.0" spacing="5.0">
-                        <Label text="Take Down">
+                        <Label fx:id="rightAttackLabel" text="Take Down">
                             <font>
                                 <Font size="14.0"/>
                             </font>
                         </Label>
-                        <Label text="Type: normal">
-                            <font>
-                                <Font size="14.0"/>
-                            </font>
-                        </Label>
-                        <Label text="Accuracy: 1">
-                            <font>
-                                <Font size="14.0"/>
-                            </font>
-                        </Label>
-                        <Label text="Power: 2">
-                            <font>
-                                <Font size="14.0"/>
-                            </font>
-                        </Label>
+                        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+                            <Label text="Type: ">
+                                <font>
+                                    <Font size="14.0"/>
+                                </font>
+                            </Label>
+                            <Label fx:id="rightAttackTypeLabel" text="normal">
+                                <font>
+                                    <Font size="14.0"/>
+                                </font>
+                            </Label>
+                        </HBox>
+                        <HBox alignment="CENTER">
+                            <Label text="Accuracy: ">
+                                <font>
+                                    <Font size="14.0"/>
+                                </font>
+                            </Label>
+                            <Label fx:id="rightAccLabel" text="value">
+                                <font>
+                                    <Font size="14.0"/>
+                                </font>
+                            </Label>
+                        </HBox>
+                        <HBox alignment="CENTER">
+                            <Label text="Power: ">
+                                <font>
+                                    <Font size="14.0"/>
+                                </font>
+                            </Label>
+                            <Label fx:id="rightPowerLabel" text="value">
+                                <font>
+                                    <Font size="14.0"/>
+                                </font>
+                            </Label>
+                        </HBox>
                     </VBox>
                     <VBox prefHeight="50.0" prefWidth="80.0"/>
                 </HBox>

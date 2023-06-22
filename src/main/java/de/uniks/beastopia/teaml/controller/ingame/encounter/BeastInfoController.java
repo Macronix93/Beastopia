@@ -12,6 +12,10 @@ import javax.inject.Inject;
 @SuppressWarnings("unused")
 public class BeastInfoController extends Controller {
 
+    //TODO: add hp and xp
+    Label hp;
+    Label xp;
+
     @FXML
     Label name;
     @FXML
