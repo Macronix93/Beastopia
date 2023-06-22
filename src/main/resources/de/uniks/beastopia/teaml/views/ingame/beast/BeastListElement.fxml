@@ -25,9 +25,9 @@
         </rowConstraints>
         <Label fx:id="beastLabel" text="Label"/>
         <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.rowIndex="1">
-            <ProgressBar fx:id="expProgress" prefHeight="20.0" prefWidth="105.0" progress="0.0"/>
-            <Button fx:id="addBeast" minHeight="25.0" minWidth="25.0" mnemonicParsing="false"/>
-            <Button fx:id="removeBeast" minHeight="25.0" minWidth="25.0" mnemonicParsing="false"/>
+            <ProgressBar fx:id="expProgress" prefHeight="20.0" prefWidth="68.0" progress="0.0"/>
+            <Button fx:id="upButton" mnemonicParsing="false" text="up"/>
+            <Button fx:id="downButton" mnemonicParsing="false" text="do"/>
         </HBox>
     </GridPane>
 </GridPane>
