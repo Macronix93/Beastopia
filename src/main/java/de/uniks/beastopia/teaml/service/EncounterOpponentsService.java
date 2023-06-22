@@ -1,6 +1,7 @@
 package de.uniks.beastopia.teaml.service;
 
 import de.uniks.beastopia.teaml.rest.*;
+import de.uniks.beastopia.teaml.utils.Variant;
 import io.reactivex.rxjava3.core.Observable;
 
 import javax.inject.Inject;
