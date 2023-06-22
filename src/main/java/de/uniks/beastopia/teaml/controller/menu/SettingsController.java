@@ -29,7 +29,7 @@ public class SettingsController extends Controller {
     @FXML
     public RadioButton darkRadioButton;
     @FXML
-    public RadioButton summerRadioButton;
+    public RadioButton lightRadioButton;
     @FXML
     public ToggleGroup theme;
     @FXML
@@ -65,7 +65,7 @@ public class SettingsController extends Controller {
         }
 
         darkRadioButton.setSelected(prefs.getTheme().equals("dark"));
-        summerRadioButton.setSelected(!prefs.getTheme().equals("dark"));
+        lightRadioButton.setSelected(!prefs.getTheme().equals("dark"));
 
         musicVolumeSlider.setValue(prefs.getMusicVolume());
         soundVolumeSlider.setValue(prefs.getSoundVolume());
@@ -109,9 +109,9 @@ public class SettingsController extends Controller {
     }
 
     @FXML
-    public void setSummerTheme() {
-        prefs.setTheme("summer");
-        themeSettings.updateSceneTheme.accept("summer");
+    public void setLightTheme() {
+        prefs.setTheme("light");
+        themeSettings.updateSceneTheme.accept("light");
     }
 
     @FXML
