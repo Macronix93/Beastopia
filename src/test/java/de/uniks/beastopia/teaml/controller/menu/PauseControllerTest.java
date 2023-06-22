@@ -1,15 +1,12 @@
 package de.uniks.beastopia.teaml.controller.menu;
 
 import de.uniks.beastopia.teaml.App;
-import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.controller.ingame.IngameController;
 import de.uniks.beastopia.teaml.controller.ingame.SoundController;
 import de.uniks.beastopia.teaml.controller.menu.social.FriendListController;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,7 +18,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
 
 import javax.inject.Provider;
-import java.net.URL;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -54,7 +50,6 @@ class PauseControllerTest extends ApplicationTest {
     @SuppressWarnings("unused")
     final
     ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang", Locale.forLanguageTag("en"));
-    Media bgmMedia;
 
     FriendListController mockedFriendListController;
     MenuController mockedMenuController;
@@ -84,14 +79,8 @@ class PauseControllerTest extends ApplicationTest {
 
     @Test
     void openMenu() {
-        URL resourceUrl = Main.class.getResource("assets/sounds/bgm_city.mp3");
-        assertNotNull(resourceUrl);
-
-        String mediaUrl = resourceUrl.toExternalForm();
-        bgmMedia = new Media(mediaUrl);
-
         when(soundControllerProvider.get()).thenReturn(soundController);
-        when(soundController.getBgmPlayer()).thenReturn(new MediaPlayer(bgmMedia));
+        when(soundController.getBgmPlayer()).thenReturn(null);
 
         when(mockedMenuController.render()).thenReturn(new Label("MenuController"));
         when(menuControllerProvider.get()).thenReturn(mockedMenuController);
