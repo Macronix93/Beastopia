@@ -48,3 +48,8 @@ perfect - Flaticon</a>
 <a href="https://www.flaticon.com/de/kostenlose-icons/gruppe" title="gruppe Icons">Gruppe Icons erstellt von Pixel
 perfect - Flaticon</a>
 
+<a target="_blank" href="https://icons8.com/icon/8ggStxqyboK5/star">Star</a> icon
+by <a target="_blank" href="https://icons8.com">Icons8</a>
+
+<a target="_blank" href="https://icons8.com/icon/4DpNVfpKdNK1/heart">Heart</a> icon
+by <a target="_blank" href="https://icons8.com">Icons8</a>
