@@ -28,8 +28,7 @@
                 <HBox prefHeight="25.0" prefWidth="400.0"/>
                 <HBox prefHeight="100.0" prefWidth="400.0">
                     <VBox prefHeight="50.0" prefWidth="80.0"/>
-                    <VBox fx:id="leftAttackBox" alignment="CENTER" prefHeight="50.0" prefWidth="150.0"
-                          spacing="5.0">
+                    <VBox fx:id="leftAttackBox" alignment="CENTER" prefHeight="50.0" prefWidth="150.0" spacing="5.0">
                         <Label text="Tackle">
                             <font>
                                 <Font size="14.0"/>
@@ -52,8 +51,7 @@
                         </Label>
                     </VBox>
                     <VBox prefHeight="50.0" prefWidth="80.0"/>
-                    <VBox fx:id="rightAttackBox" alignment="CENTER" prefHeight="50.0" prefWidth="150.0"
-                          spacing="5.0">
+                    <VBox fx:id="rightAttackBox" alignment="CENTER" prefHeight="50.0" prefWidth="150.0" spacing="5.0">
                         <Label text="Take Down">
                             <font>
                                 <Font size="14.0"/>
@@ -89,6 +87,6 @@
             </HBox>
         </VBox>
         <VBox fx:id="actionInfoBox" prefHeight="100.0" prefWidth="400.0"/>
-        <VBox prefHeight="250.0" prefWidth="400.0"/>
+        <VBox fx:id="beastInfoBox" prefHeight="250.0" prefWidth="400.0"/>
     </VBox>
 </HBox>

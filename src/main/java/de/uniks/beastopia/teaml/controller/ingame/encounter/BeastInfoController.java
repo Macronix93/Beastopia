@@ -1,40 +1,42 @@
 package de.uniks.beastopia.teaml.controller.ingame.encounter;
 
 import de.uniks.beastopia.teaml.controller.Controller;
+import de.uniks.beastopia.teaml.rest.Monster;
+import de.uniks.beastopia.teaml.service.PresetsService;
+import javafx.fxml.FXML;
+import javafx.scene.Parent;
+import javafx.scene.control.Label;
 
 import javax.inject.Inject;
 
 @SuppressWarnings("unused")
 public class BeastInfoController extends Controller {
 
-    private String beastName;
-    private String beastType;
-    private int beastLvl;
-    private int beastHp;
-    private int beastXp;
+    @FXML
+    Label name;
+    @FXML
+    Label type;
+    @FXML
+    Label level;
+    @Inject
+    PresetsService presetsService;
+    private Monster monster;
 
     @Inject
     public BeastInfoController() {
     }
 
-
-    public void setBeastName(String beastName) {
-        this.beastName = beastName;
+    public void setBeast(Monster monster) {
+        this.monster = monster;
     }
 
-    public void setBeastType(String beastType) {
-        this.beastType = beastType;
+    @Override
+    public Parent render() {
+        Parent parent = super.render();
+
+
+        return parent;
     }
 
-    public void setBeastLvl(int beastLvl) {
-        this.beastLvl = beastLvl;
-    }
 
-    public void setBeastHp(int beastHp) {
-        this.beastHp = beastHp;
-    }
-
-    public void setBeastXp(int beastXp) {
-        this.beastXp = beastXp;
-    }
 }

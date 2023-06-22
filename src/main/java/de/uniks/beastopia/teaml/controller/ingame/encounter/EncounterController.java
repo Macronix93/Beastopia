@@ -20,6 +20,8 @@ public class EncounterController extends Controller {
     Button changeMonster;
     @FXML
     VBox actionInfoBox;
+    @FXML
+    VBox beastInfoBox;
 
     @Inject
     public EncounterController() {
