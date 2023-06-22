@@ -23,6 +23,7 @@ import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.sockets.UDPEventListener;
 import de.uniks.beastopia.teaml.utils.PlayerState;
 import de.uniks.beastopia.teaml.utils.Prefs;
+import de.uniks.beastopia.teaml.utils.SoundController;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.Label;

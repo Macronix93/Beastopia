@@ -1,8 +1,8 @@
 package de.uniks.beastopia.teaml.controller.menu;
 
 import de.uniks.beastopia.teaml.controller.Controller;
-import de.uniks.beastopia.teaml.controller.ingame.SoundController;
 import de.uniks.beastopia.teaml.utils.Prefs;
+import de.uniks.beastopia.teaml.utils.SoundController;
 import de.uniks.beastopia.teaml.utils.ThemeSettings;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;

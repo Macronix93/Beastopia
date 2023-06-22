@@ -1,9 +1,6 @@
-package de.uniks.beastopia.teaml.controller.ingame;
+package de.uniks.beastopia.teaml.utils;
 
 import de.uniks.beastopia.teaml.Main;
-import de.uniks.beastopia.teaml.controller.Controller;
-import de.uniks.beastopia.teaml.service.DataCache;
-import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.scene.media.AudioClip;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -15,9 +12,7 @@ import java.net.URISyntaxException;
 import java.util.Objects;
 
 @Singleton
-public class SoundController extends Controller {
-    @Inject
-    DataCache cache;
+public class SoundController {
     @Inject
     Prefs prefs;
 
