@@ -1,8 +1,8 @@
 package de.uniks.beastopia.teaml.rest;
 
-public record Result(
+public record AbilityMove(
         String type,
         int ability,
-        String effectiveness
+        String target
 ) {
 }

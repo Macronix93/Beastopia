@@ -175,4 +175,18 @@ public class HttpModule {
     AchievementsApiService achievements(Retrofit retrofit) {
         return retrofit.create(AchievementsApiService.class);
     }
+
+    @Provides
+    @Singleton
+    @SuppressWarnings("unused")
+    RegionEncountersApiService regionEncounters(Retrofit retrofit) {
+        return retrofit.create(RegionEncountersApiService.class);
+    }
+
+    @Provides
+    @Singleton
+    @SuppressWarnings("unused")
+    EncounterOpponentsApiService encounterOpponents(Retrofit retrofit) {
+        return retrofit.create(EncounterOpponentsApiService.class);
+    }
 }

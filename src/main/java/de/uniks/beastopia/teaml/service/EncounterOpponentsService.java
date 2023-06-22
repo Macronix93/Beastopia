@@ -27,7 +27,19 @@ public class EncounterOpponentsService {
         return encounterOpponentsApiService.getEncounterOpponent(region_id, encounter_id, opponent_id);
     }
 
-    // TODO updateEncounterOpponent
+    Observable<Opponent> updateEncounterOpponent(String region_id, String encounter_id, String opponent_id, String monster, AbilityMove abilityMove) {
+        Variant<AbilityMove, ChangeMonsterMove> move = new Variant<>();
+        move.setT(abilityMove);
+        return encounterOpponentsApiService.updateEncounterOpponent(region_id, encounter_id, opponent_id,
+                new UpdateOpponentDto(monster, move));
+    }
+
+    Observable<Opponent> updateEncounterOpponent(String region_id, String encounter_id, String opponent_id, String monster, ChangeMonsterMove changeMonsterMove) {
+        Variant<AbilityMove, ChangeMonsterMove> move = new Variant<>();
+        move.setU(changeMonsterMove);
+        return encounterOpponentsApiService.updateEncounterOpponent(region_id, encounter_id, opponent_id,
+                new UpdateOpponentDto(monster, move));
+    }
 
     public Observable<Opponent> deleteOpponent(String region_id, String encounter_id, String opponent_id) {
         return encounterOpponentsApiService.deleteOpponent(region_id, encounter_id, opponent_id);
