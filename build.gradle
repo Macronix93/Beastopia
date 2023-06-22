@@ -93,6 +93,9 @@ dependencies {
 
     // https://mvnrepository.com/artifact/org.glassfish.tyrus/tyrus-container-grizzly-client
     implementation group: 'org.glassfish.tyrus', name: 'tyrus-container-grizzly-client', version: '1.20'
+
+    // https://mvnrepository.com/artifact/org.openjfx/javafx-media
+    implementation group: 'org.openjfx', name: 'javafx-media', version: '20'
 }
 
 javafx {
