@@ -5,6 +5,7 @@ import de.uniks.beastopia.teaml.controller.ingame.TrainerController;
 import de.uniks.beastopia.teaml.controller.ingame.beast.EditBeastTeamController;
 import de.uniks.beastopia.teaml.controller.menu.social.FriendListController;
 import de.uniks.beastopia.teaml.rest.Region;
+import de.uniks.beastopia.teaml.utils.SoundController;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.input.KeyCode;
@@ -31,6 +32,9 @@ public class PauseController extends Controller {
     Provider<TrainerController> trainerControllerProvider;
     @Inject
     Provider<EditBeastTeamController> editBeastTeamControllerProvider;
+    @Inject
+    Provider<SoundController> soundControllerProvider;
+
     @FXML
     private VBox friendListContainer;
     private Region region;
@@ -71,11 +75,18 @@ public class PauseController extends Controller {
 
     @FXML
     public void mainMenuButtonPressed() {
+        if (soundControllerProvider.get().getBgmPlayer() != null) {
+            soundControllerProvider.get().stopBGM();
+        }
         app.show(menuControllerProvider.get());
     }
 
     @FXML
     public void trainerMenuButtonPressed() {
+        if (soundControllerProvider.get().getBgmPlayer() != null) {
+            soundControllerProvider.get().stopBGM();
+        }
+
         TrainerController controller = trainerControllerProvider.get();
         controller.setRegion(region);
         controller.backController("pause");

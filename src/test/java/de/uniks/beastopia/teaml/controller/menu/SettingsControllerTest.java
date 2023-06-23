@@ -3,6 +3,7 @@ package de.uniks.beastopia.teaml.controller.menu;
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.utils.Prefs;
+import de.uniks.beastopia.teaml.utils.SoundController;
 import de.uniks.beastopia.teaml.utils.ThemeSettings;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
@@ -22,7 +23,13 @@ import java.util.ResourceBundle;
 import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -31,6 +38,10 @@ class SettingsControllerTest extends ApplicationTest {
     Prefs prefs;
     @Mock
     Provider<ResourceBundle> resourcesProvider;
+    @Mock
+    Provider<SoundController> soundControllerProvider;
+    @Mock
+    SoundController soundController;
     @Mock
     Provider<KeybindElementController> keybindElementControllerProvider;
     @Spy
@@ -51,6 +62,7 @@ class SettingsControllerTest extends ApplicationTest {
         doNothing().when(mockedKeyBindController).setKeyAndAction(anyString(), anyString());
         when(keybindElementControllerProvider.get()).thenReturn(mockedKeyBindController);
         when(mockedKeyBindController.render()).thenAnswer(e -> new Pane());
+        when(soundControllerProvider.get()).thenReturn(soundController);
 
         app.setHistory(List.of());
         app.start(stage);

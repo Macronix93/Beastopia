@@ -6,20 +6,19 @@ short game description
 
 install instructions
 
-## Use of licensed .png files
+## Use of licensed .png files and sounds
 
-We used several .png files for our buttons, such as listed below:
+We used several .png files for our buttons and also sound files, such as listed below:
 
 <a href="https://www.flaticon.com/de/kostenlose-icons/zuruck" title="zurück Icons">Zurück Icons erstellt von Creatype -
 Flaticon</a>
 
 <a href="https://www.flaticon.com/de/kostenlose-icons/schreiben" title="schreiben Icons">Schreiben Icons erstellt von
 
-
-
 Irfansusanto20 - Flaticon</a>
 
-<a href="https://www.flaticon.com/de/kostenlose-icons/ui" title="ui Icons">Ui Icons erstellt von See Icons - Flaticon</a>
+<a href="https://www.flaticon.com/de/kostenlose-icons/ui" title="ui Icons">Ui Icons erstellt von See Icons -
+Flaticon</a>
 
 <a href="https://www.flaticon.com/de/kostenlose-icons/subtraktion" title="subtraktion Icons">Subtraktion Icons erstellt
 von gungyoga04 - Flaticon</a>
@@ -49,3 +48,20 @@ perfect - Flaticon</a>
 perfect - Flaticon</a>
 
 <a href="https://www.flaticon.com/de/kostenlose-icons/ui" title="ui Icons">Ui Icons erstellt von Stasy - Flaticon</a>
+
+Music
+by <a href="https://pixabay.com/users/geoffharvey-9096471/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=150611">
+Geoff Harvey</a>
+from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=150611">
+Pixabay</a>
+
+Sound Effect
+from <a href="https://pixabay.com/sound-effects/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=92964">
+Pixabay</a>
+
+Sound Effect
+by <a href="https://pixabay.com/users/universfield-28281460/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=114615">
+UNIVERSFIELD</a>
+from <a href="https://pixabay.com/sound-effects//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=114615">
+Pixabay</a>
+
