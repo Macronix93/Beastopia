@@ -15,7 +15,7 @@
                 <padding>
                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
                 </padding>
-                <Button fx:id="leaveEncounter" mnemonicParsing="false" onMouseDragged="#leaveEncounter"
+                <Button fx:id="leaveEncounter" mnemonicParsing="false" onMouseClicked="#leaveEncounter"
                         text="Leave Encounter"/>
                 <Button fx:id="changeMonster" mnemonicParsing="false" onMouseClicked="#changeMonster"
                         text="Change Monster"/>
@@ -31,7 +31,7 @@
                 <HBox prefHeight="100.0" prefWidth="400.0">
                     <VBox prefHeight="50.0" prefWidth="80.0"/>
                     <VBox fx:id="leftAttackBox" alignment="CENTER" onMouseClicked="#leftAttack" prefHeight="50.0"
-                          prefWidth="150.0" spacing="5.0">
+                          prefWidth="150.0" spacing="5.0" style="-fx-border-color: black;">
                         <Label fx:id="leftAttackLabel" text="Tackle">
                             <font>
                                 <Font size="14.0"/>
@@ -76,7 +76,7 @@
                     </VBox>
                     <VBox prefHeight="50.0" prefWidth="80.0"/>
                     <VBox fx:id="rightAttackBox" alignment="CENTER" onMouseClicked="#rightAttack" prefHeight="50.0"
-                          prefWidth="150.0" spacing="5.0">
+                          prefWidth="150.0" spacing="5.0" style="-fx-border-color: black;">
                         <Label fx:id="rightAttackLabel" text="Take Down">
                             <font>
                                 <Font size="14.0"/>

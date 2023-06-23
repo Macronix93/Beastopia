@@ -102,7 +102,9 @@ public class App extends Application {
                 mainComponent.prefs().getTheme()
         );
 
-        show(mainComponent.loginController());
+        //TODO: remove this, restore login screen
+        show(mainComponent.encounterController());
+        //show(mainComponent.loginController());
     }
 
     @Override

@@ -64,21 +64,23 @@ public class EncounterController extends Controller {
     //clicked leave encounter button
     public void leaveEncounter() {
         //TODO: switch screen to map
+        System.out.println("leave encounter");
     }
 
     //clicked change monster button
     public void changeMonster() {
         //TODO: switch screen to monster selection
+        System.out.println("change monster");
     }
 
     //clicked left attack VBox
     public void leftAttack() {
-
+        System.out.println("left attack");
     }
 
     //clicked right attack VBox
     public void rightAttack() {
-
+        System.out.println("right attack");
     }
 
     @Override
