@@ -53,7 +53,7 @@ public class IngameController extends Controller {
     @Inject
     BeastListController beastListController;
     @Inject
-    FightWildBeastController fightWildBeastController;
+    Provider<FightWildBeastController> fightWildBeastControllerProvider;
     @Inject
     Provider<BeastDetailController> beastDetailControllerProvider;
     @Inject
@@ -183,21 +183,37 @@ public class IngameController extends Controller {
                                     "encounters.*.opponents.*.created", Opponent.class)
                             .observeOn(FX_SCHEDULER)
                             .subscribe(opponentEvent -> {
-                                Opponent opponent = opponentEvent.data();
-                                System.out.print(opponent._id());
-                                System.out.println("hey");
-                            }));
+                                        Opponent opponent = opponentEvent.data();
+                                        System.out.print(opponent.toString());
+                                        //TODO if trainer
+                                        openFightBeastScreen(opponent.monster(), opponent.trainer());
+                                    },
+                                    error -> {
+                                        System.err.println("Fehler beim Abonnieren der Gegner-Ereignisse: " +
+                                                error.getMessage());
+                                    }));
 
+            //TODO neccesary?
             disposables.add(
                     eventListener.listen(
                                     "regions.*.encounters.*.created", Encounter.class)
                             .observeOn(FX_SCHEDULER)
                             .subscribe(opponentEvent -> {
                                 System.out.println("hey");
-                            }));
+                            },
+                                    error -> {
+                                        System.err.println("Fehler beim Abonnieren der Kampf-Ereignisse: " +
+                                                error.getMessage());
+                                    }));
 
             loadingPage.setDone();
         }));
+    }
+
+    private void openFightBeastScreen(String beast, String trainer) {
+        FightWildBeastController controller = fightWildBeastControllerProvider.get();
+        controller.setWildBeast(beast, trainer);
+        app.show(controller);
     }
 
     private void listenToTrainerEvents() {
@@ -495,6 +511,12 @@ public class IngameController extends Controller {
         handlePauseMenu(keyEvent);
         handleScoreboard(keyEvent);
         handleBeastList(keyEvent);
+
+        if (keyEvent.getCode() == KeyCode.J) {
+            Opponent opponent = new Opponent(null, null, null, null,
+                    "000000000000000000000000", true, true, "648c93c8866ace3595ad3d6d", null, null, 0);
+            openFightBeastScreen(opponent.monster(), opponent.trainer());
+        }
     }
 
     public void handleBeastList(KeyEvent keyEvent) {
