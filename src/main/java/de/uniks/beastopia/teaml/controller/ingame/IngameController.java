@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.Controller;
+import de.uniks.beastopia.teaml.controller.ingame.encounter.FightWildBeastController;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
 import de.uniks.beastopia.teaml.rest.Map;
 import de.uniks.beastopia.teaml.rest.*;
@@ -51,6 +52,8 @@ public class IngameController extends Controller {
     Provider<PauseController> pauseControllerProvider;
     @Inject
     BeastListController beastListController;
+    @Inject
+    FightWildBeastController fightWildBeastController;
     @Inject
     Provider<BeastDetailController> beastDetailControllerProvider;
     @Inject
@@ -174,6 +177,25 @@ public class IngameController extends Controller {
             scoreBoardParent = scoreBoardController.render();
             loadRemoteTrainer(trainers);
             listenToTrainerEvents();
+
+            disposables.add(
+                    eventListener.listen(
+                                    "encounters.*.opponents.*.created", Opponent.class)
+                            .observeOn(FX_SCHEDULER)
+                            .subscribe(opponentEvent -> {
+                                Opponent opponent = opponentEvent.data();
+                                System.out.print(opponent._id());
+                                System.out.println("hey");
+                            }));
+
+            disposables.add(
+                    eventListener.listen(
+                                    "regions.*.encounters.*.created", Encounter.class)
+                            .observeOn(FX_SCHEDULER)
+                            .subscribe(opponentEvent -> {
+                                System.out.println("hey");
+                            }));
+
             loadingPage.setDone();
         }));
     }
