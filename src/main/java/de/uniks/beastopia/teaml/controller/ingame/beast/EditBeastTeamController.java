@@ -16,8 +16,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
-import javafx.scene.input.InputMethodEvent;
-import javafx.scene.input.MouseEvent;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -117,21 +115,18 @@ public class EditBeastTeamController extends Controller {
         super.destroy();
     }
 
-    @FXML
-    public void filterMonster(InputMethodEvent inputMethodEvent) {
+    public void filterMonster() {
         //TODO add filter functionality here instead of in render()
     }
 
-    @FXML
-    public void moveItemToBeasts(MouseEvent mouseEvent) {
+    public void moveItemToBeasts() {
         if (teamList.size() > 0) {
             beastList.add(teamListView.getSelectionModel().getSelectedItem());
             teamListView.getItems().remove(teamListView.getSelectionModel().getSelectedItem());
         }
     }
 
-    @FXML
-    public void moveItemToTeam(MouseEvent mouseEvent) {
+    public void moveItemToTeam() {
         if (teamList.size() < 6) {
             teamList.add(beastListView.getSelectionModel().getSelectedItem());
             beastListView.getItems().remove(beastListView.getSelectionModel().getSelectedItem());
