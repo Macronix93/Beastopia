@@ -47,3 +47,5 @@ perfect - Flaticon</a>
 
 <a href="https://www.flaticon.com/de/kostenlose-icons/gruppe" title="gruppe Icons">Gruppe Icons erstellt von Pixel
 perfect - Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/ui" title="ui Icons">Ui Icons erstellt von Stasy - Flaticon</a>
