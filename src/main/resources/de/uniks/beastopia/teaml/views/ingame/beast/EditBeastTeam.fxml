@@ -52,7 +52,7 @@
                     </HBox.margin>
                 </Button>
                 <Button fx:id="editBeastTeam" mnemonicParsing="false" onAction="#saveBeastTeam" prefWidth="100.0"
-                        text="%EditBeastTeam" wrapText="true">
+                        text="%SetTeam" wrapText="true">
                     <opaqueInsets>
                         <Insets/>
                     </opaqueInsets>
