@@ -50,10 +50,35 @@ public class EncounterController extends Controller {
     }
 
     @Override
+    public void init() {
+        //TODO: set enemyTeam and ownTeam
+    }
+
+    @Override
     public Parent render() {
         Parent parent = super.render();
 
         return parent;
+    }
+
+    //clicked leave encounter button
+    public void leaveEncounter() {
+        //TODO: switch screen to map
+    }
+
+    //clicked change monster button
+    public void changeMonster() {
+        //TODO: switch screen to monster selection
+    }
+
+    //clicked left attack VBox
+    public void leftAttack() {
+
+    }
+
+    //clicked right attack VBox
+    public void rightAttack() {
+
     }
 
     @Override
