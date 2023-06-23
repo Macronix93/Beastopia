@@ -4,6 +4,7 @@ import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.controller.ingame.IngameController;
 import de.uniks.beastopia.teaml.controller.menu.social.FriendListController;
+import de.uniks.beastopia.teaml.utils.SoundController;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
@@ -23,7 +24,10 @@ import java.util.ResourceBundle;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class PauseControllerTest extends ApplicationTest {
@@ -33,6 +37,10 @@ class PauseControllerTest extends ApplicationTest {
 
     @Mock
     Provider<MenuController> menuControllerProvider;
+    @Mock
+    Provider<SoundController> soundControllerProvider;
+    @Mock
+    SoundController soundController;
     @Spy
     App app;
     @InjectMocks
@@ -71,6 +79,9 @@ class PauseControllerTest extends ApplicationTest {
 
     @Test
     void openMenu() {
+        when(soundControllerProvider.get()).thenReturn(soundController);
+        when(soundController.getBgmPlayer()).thenReturn(null);
+
         when(mockedMenuController.render()).thenReturn(new Label("MenuController"));
         when(menuControllerProvider.get()).thenReturn(mockedMenuController);
         clickOn("#mainMenuButton");
