@@ -178,6 +178,7 @@ public class IngameController extends Controller {
             loadRemoteTrainer(trainers);
             listenToTrainerEvents();
 
+            //TODO
             disposables.add(
                     eventListener.listen(
                                     "encounters.*.opponents.*.created", Opponent.class)
@@ -512,6 +513,7 @@ public class IngameController extends Controller {
         handleScoreboard(keyEvent);
         handleBeastList(keyEvent);
 
+        //TODO
         if (keyEvent.getCode() == KeyCode.J) {
             Opponent opponent = new Opponent(null, null, null, null,
                     "000000000000000000000000", true, true, "648c93c8866ace3595ad3d6d", null, null, 0);
