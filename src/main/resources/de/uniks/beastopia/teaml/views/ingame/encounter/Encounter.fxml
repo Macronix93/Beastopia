@@ -126,12 +126,7 @@
         </VBox>
     </VBox>
     <VBox prefHeight="600.0" prefWidth="400.0">
-        <VBox prefHeight="250.0" prefWidth="400.0">
-            <HBox alignment="CENTER" prefHeight="300.0" prefWidth="400.0">
-                <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true"/>
-                <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true"/>
-            </HBox>
-        </VBox>
+        <VBox fx:id="enemyMonsters" prefHeight="250.0" prefWidth="400.0"/>
         <VBox fx:id="actionInfoBox" prefHeight="100.0" prefWidth="400.0"/>
         <VBox fx:id="beastInfoBox" prefHeight="250.0" prefWidth="400.0"/>
     </VBox>

@@ -41,9 +41,15 @@ public class EncounterController extends Controller {
     Label leftAttackLabel;
     @FXML
     Label rightAttackLabel;
+    @FXML
+    VBox enemyMonsters;
+
 
     private ArrayList<Monster> enemyTeam;
     private ArrayList<Monster> ownTeam;
+
+    //TODO: create monster for testing purposes
+    //Monster monster = new Monster();
 
     @Inject
     public EncounterController() {
@@ -57,6 +63,7 @@ public class EncounterController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
+
 
         return parent;
     }
