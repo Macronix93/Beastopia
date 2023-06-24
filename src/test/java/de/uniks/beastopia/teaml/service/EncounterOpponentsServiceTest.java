@@ -1,9 +1,7 @@
 package de.uniks.beastopia.teaml.service;
 
-import de.uniks.beastopia.teaml.rest.Encounter;
-import de.uniks.beastopia.teaml.rest.EncounterOpponentsApiService;
-import de.uniks.beastopia.teaml.rest.Opponent;
-import de.uniks.beastopia.teaml.rest.RegionEncountersApiService;
+import de.uniks.beastopia.teaml.rest.*;
+import de.uniks.beastopia.teaml.utils.Variant;
 import io.reactivex.rxjava3.core.Observable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,11 +11,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.testfx.assertions.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 
@@ -82,5 +80,36 @@ public class EncounterOpponentsServiceTest {
         assertTrue(result.isAttacker());
         assertTrue(result.isNPC());
         verify(encounterOpponentsApiService).deleteOpponent("ID", "ID", "ID");
+    }
+
+    @Test
+    void updateEncounterOpponent() {
+        when(encounterOpponentsApiService.updateEncounterOpponent(anyString(), anyString(), anyString(),
+                any(UpdateOpponentDto.class)))
+                .thenReturn(Observable.just(opponents.get(0)));
+
+        AbilityMove abilityMove = new AbilityMove("ty", 1, "t");
+
+        Opponent result1 = encounterOpponentsService
+                .updateEncounterOpponent("r", "e", "o", "monster", abilityMove)
+                .blockingFirst();
+
+        assertThat(result1.move()).isInstanceOf(AbilityMove.class);
+        assertEquals("monster", result1.monster());
+
+        verify(encounterOpponentsApiService).updateEncounterOpponent(anyString(), anyString(), anyString(),
+                any(UpdateOpponentDto.class));
+
+        ChangeMonsterMove changeMonsterMove = new ChangeMonsterMove("ty", "m");
+
+        Opponent result2 = encounterOpponentsService
+                .updateEncounterOpponent("r", "e", "o", "monster", changeMonsterMove).blockingFirst();
+
+        assertThat(result1.move()).isInstanceOf(ChangeMonsterMove.class);
+        assertEquals("monster", result2.monster());
+
+        verify(encounterOpponentsApiService).updateEncounterOpponent(anyString(), anyString(), anyString(),
+                any(UpdateOpponentDto.class));
+
     }
 }
