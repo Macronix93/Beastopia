@@ -6,11 +6,14 @@ import de.uniks.beastopia.teaml.rest.MonsterTypeDto;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import de.uniks.beastopia.teaml.service.TrainerService;
 import de.uniks.beastopia.teaml.utils.Prefs;
+import io.reactivex.rxjava3.core.Observable;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.util.Pair;
 
 import javax.inject.Inject;
 import java.util.concurrent.atomic.AtomicReference;
@@ -35,9 +38,9 @@ public class FightWildBeastController extends Controller {
     private String beastId;
     private String trainerId;
 
-    private MonsterTypeDto beast;
+    private MonsterTypeDto beasts;
 
-    private Monster beeeast;
+    private int type;
 
     @Inject
     public FightWildBeastController() {
@@ -60,11 +63,10 @@ public class FightWildBeastController extends Controller {
 
         disposables.add(trainerService.getTrainerMonster(prefs.getRegionID(), trainerId, beastId)
                 .observeOn(FX_SCHEDULER)
-                .subscribe(b -> {
-                    beeeast = b;
-                }));
-
-        disposables.add(presetsService.getMonsterType(beeeast.type())
+                .concatMap(b -> { //Nacheinander ausführen
+                    this.type = b.type();
+                    return presetsService.getMonsterType(this.type);
+                })
                 .observeOn(FX_SCHEDULER)
                 .subscribe(type -> {
                     if (prefs.getLocale().contains("de")) {
@@ -72,17 +74,22 @@ public class FightWildBeastController extends Controller {
                     } else {
                         headline.setText("A wild " + type.name() + " appears!");
                     }
+                }, error -> {
+                    System.err.println("Fehler: " + error.getMessage());
                 }));
 
-        disposables.add(presetsService.getMonsterImage(beeeast.type())
+        disposables.add(trainerService.getTrainerMonster(prefs.getRegionID(), trainerId, beastId)
                 .observeOn(FX_SCHEDULER)
-                .subscribe(beastImage -> image.setImage(beastImage)));
-
-        if (prefs.getLocale().contains("de")) {
-            headline.setText("Ein wildes " + beast.name() + " erscheint!");
-        } else {
-            headline.setText("A wild " + beast.name() + " appears!");
-        }
+                .concatMap(b -> { //Nacheinander ausführen
+                    this.type = b.type();
+                    return presetsService.getMonsterImage(this.type);
+                })
+                .observeOn(FX_SCHEDULER)
+                .subscribe(beastImage -> {
+                    image.setImage(beastImage);
+                }, error -> {
+                    System.err.println("Fehler: " + error.getMessage());
+                }));
 
         return parent;
     }
