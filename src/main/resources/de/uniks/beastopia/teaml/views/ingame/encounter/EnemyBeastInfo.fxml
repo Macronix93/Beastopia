@@ -26,11 +26,14 @@
          </font>
       </Label>
    </HBox>
-   <HBox alignment="CENTER" prefHeight="40.0" prefWidth="200.0">
+   <HBox alignment="CENTER_LEFT" prefHeight="40.0" prefWidth="200.0">
       <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
          <Image url="@../../../assets/icons8-heart-32.png"/>
       </ImageView>
       <VBox prefHeight="200.0" prefWidth="100.0"/>
       <VBox prefHeight="200.0" prefWidth="100.0"/>
+      <padding>
+         <Insets left="20.0"/>
+      </padding>
    </HBox>
 </VBox>
