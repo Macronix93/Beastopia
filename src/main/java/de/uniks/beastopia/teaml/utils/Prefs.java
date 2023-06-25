@@ -101,7 +101,7 @@ public class Prefs {
     }
 
     public double getMusicVolume() {
-        return preferences.getDouble("musicVolume", 0);
+        return preferences.getDouble("musicVolume", 50.0);
     }
 
     public void setSoundVolume(double volume) {
@@ -109,6 +109,6 @@ public class Prefs {
     }
 
     public double getSoundVolume() {
-        return preferences.getDouble("soundVolume", 0);
+        return preferences.getDouble("soundVolume", 50.0);
     }
 }

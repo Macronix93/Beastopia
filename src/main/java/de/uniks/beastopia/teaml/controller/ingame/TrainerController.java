@@ -137,12 +137,10 @@ public class TrainerController extends Controller {
         trainerNameInput.textProperty().bindBidirectional(trainerName);
         regionNameDisplay.setText(region.name());
 
-        // Disable trainer deletion button if no trainer present
         if (trainer == null) {
+            // Disable trainer deletion button if no trainer present
             deleteTrainerButton.setDisable(true);
-        }
 
-        if (trainer == null) {
             // Check if current user has a trainer for the specified region
             disposables.add(trainerService.getAllTrainer(region._id())
                     .observeOn(FX_SCHEDULER)
