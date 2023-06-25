@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 <HBox alignment="CENTER_RIGHT" onKeyPressed="#handleKeyEvent" prefHeight="317.0" prefWidth="516.0" spacing="5.0"
@@ -18,11 +20,19 @@
             <padding>
                 <Insets top="5.0"/>
             </padding>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Scoreboard:" underline="true">
-                <font>
-                    <Font size="23.0"/>
-                </font>
-            </Text>
+            <HBox alignment="CENTER" prefHeight="35.0" prefWidth="251.0" spacing="15.0">
+                <children>
+                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Scoreboard:" underline="true">
+                        <font>
+                            <Font size="23.0"/>
+                        </font>
+                        <HBox.margin>
+                            <Insets left="40.0"/>
+                        </HBox.margin>
+                    </Text>
+                    <Button mnemonicParsing="false" text="Filter"/>
+                </children>
+            </HBox>
         </VBox>
     </ScrollPane>
 </HBox>

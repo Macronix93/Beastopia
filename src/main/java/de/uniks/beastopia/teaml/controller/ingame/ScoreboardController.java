@@ -1,6 +1,7 @@
 package de.uniks.beastopia.teaml.controller.ingame;
 
 import de.uniks.beastopia.teaml.controller.Controller;
+import de.uniks.beastopia.teaml.rest.Achievement;
 import de.uniks.beastopia.teaml.rest.Trainer;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.AchievementsService;
@@ -77,7 +78,7 @@ public class ScoreboardController extends Controller {
                                         ScoreboardUserItemController controller = scoreBoardUserItemControllerProvider.get()
                                                 .setUser(user)
                                                 .setAchievements(achievementList.size())
-                                                .setOnUserClicked(u -> onUserClicked(u, achievementList.size(), allAchievements.size()))
+                                                .setOnUserClicked(u -> onUserClicked(u, achievementList.size(), allAchievements.size(), achievementList))
                                                 .setTotalAchievements(allAchievements.size());
                                         Parent parent = controller.render();
                                         scoreBoard.getChildren().add(parent);
@@ -100,7 +101,7 @@ public class ScoreboardController extends Controller {
         this.onCloseRequested = onCloseRequested;
     }
 
-    private void onUserClicked(String userId, int noOfAchievements, int totalAchievements) {
+    private void onUserClicked(String userId, int noOfAchievements, int totalAchievements, List<Achievement> userAchievements) {
         User user = cache.getAllUsers().stream()
                 .filter(u -> u._id().equals(userId))
                 .findFirst()
@@ -123,7 +124,9 @@ public class ScoreboardController extends Controller {
         userInfoController = userInfoControllerProvider.get()
                 .setName(user.name())
                 .setAchievements(noOfAchievements)
-                .setTotalAchievements(totalAchievements);
+                .setTotalAchievements(totalAchievements)
+                .setUserAchievements(userAchievements)
+                .setUserAvatar(cache.getImageAvatar(user));
 
         Parent parent = userInfoController.render();
         achievements.getChildren().clear();
