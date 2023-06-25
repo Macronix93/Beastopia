@@ -2,6 +2,7 @@ package de.uniks.beastopia.teaml.service;
 
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.Main;
+import de.uniks.beastopia.teaml.rest.Achievement;
 import de.uniks.beastopia.teaml.rest.Area;
 import de.uniks.beastopia.teaml.rest.Region;
 import de.uniks.beastopia.teaml.rest.Trainer;
@@ -31,6 +32,7 @@ public class DataCache {
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     private final List<Trainer> trainers = new ArrayList<>();
     private final List<Pair<String, Image>> characters = new ArrayList<>();
+    private List<Achievement> myAchievements = new ArrayList<>();
     Trainer trainer;
     Region joinedRegion;
 
@@ -149,6 +151,18 @@ public class DataCache {
                     .findFirst()
                     .orElse(null);
         }
+    }
+
+    public void addMyAchievement(Achievement achievement) {
+        this.myAchievements.add(achievement);
+    }
+
+    public void setMyAchievements(List<Achievement> achievements) {
+        this.myAchievements = new ArrayList<>(achievements);
+    }
+
+    public List<Achievement> getMyAchievements() {
+        return this.myAchievements;
     }
 
     public Image getImageAvatar(User user) {

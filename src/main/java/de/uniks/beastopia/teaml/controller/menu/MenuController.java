@@ -4,6 +4,7 @@ import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.auth.LoginController;
 import de.uniks.beastopia.teaml.controller.menu.social.FriendListController;
+import de.uniks.beastopia.teaml.service.AchievementsService;
 import de.uniks.beastopia.teaml.service.AuthService;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.TokenStorage;
@@ -46,6 +47,8 @@ public class MenuController extends Controller {
     AuthService authService;
     @Inject
     TokenStorage tokenStorage;
+    @Inject
+    AchievementsService achievementsService;
     @FXML
     private VBox friendListContainer;
     @FXML
@@ -72,6 +75,9 @@ public class MenuController extends Controller {
         if (cache.getTrainer() != null) {
             cache.setTrainer(null);
         }
+
+        disposables.add(achievementsService.getUserAchievements(tokenStorage.getCurrentUser()._id())
+                .subscribe(achievements -> cache.setMyAchievements(achievements)));
     }
 
     @Override
