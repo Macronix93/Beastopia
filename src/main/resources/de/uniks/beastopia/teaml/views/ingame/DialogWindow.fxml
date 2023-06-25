@@ -2,17 +2,21 @@
 
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
-<VBox alignment="CENTER" mouseTransparent="true" xmlns="http://javafx.com/javafx/19"
-      xmlns:fx="http://javafx.com/fxml/1">
+<VBox alignment="CENTER" mouseTransparent="true" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="de.uniks.beastopia.teaml.controller.ingame.DialogWindowController">
     <HBox alignment="CENTER" mouseTransparent="true" spacing="10.0">
-        <VBox alignment="CENTER" mouseTransparent="true" spacing="15.0">
-
+        <VBox fx:id="imageBox" alignment="CENTER" mouseTransparent="true" spacing="15.0">
+            <children>
+                <ImageView fx:id="imageView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true"
+                           preserveRatio="true"/>
+            </children>
         </VBox>
         <VBox alignment="CENTER" mouseTransparent="true">
-            <Text fx:id="dialogText" strokeType="OUTSIDE" strokeWidth="0.0"/>
-            <HBox alignment="CENTER_RIGHT" mouseTransparent="true" prefWidth="200.0" spacing="10.0">
+            <Text fx:id="dialogText" strokeType="OUTSIDE" strokeWidth="0.0" VBox.vgrow="ALWAYS"/>
+            <HBox fx:id="choiceBox" alignment="CENTER_RIGHT" mouseTransparent="true" prefWidth="200.0" spacing="10.0">
                 <Button mnemonicParsing="false" text="Button">
                     <opaqueInsets>
                         <Insets/>
@@ -41,7 +45,7 @@
         </padding>
     </HBox>
     <HBox alignment="BOTTOM_LEFT" mouseTransparent="true" spacing="10.0">
-        <Button mnemonicParsing="false" text="Button"/>
+        <Button mnemonicParsing="false" onAction="#back" text="Button"/>
         <padding>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
         </padding>
