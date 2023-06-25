@@ -9,10 +9,7 @@
       fx:controller="de.uniks.beastopia.teaml.controller.ingame.DialogWindowController">
     <HBox alignment="CENTER" mouseTransparent="true" spacing="10.0">
         <VBox fx:id="imageBox" alignment="CENTER" mouseTransparent="true" spacing="15.0">
-            <children>
-                <ImageView fx:id="imageView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true"
-                           preserveRatio="true"/>
-            </children>
+            <ImageView fx:id="imageView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true"/>
         </VBox>
         <VBox alignment="CENTER" mouseTransparent="true">
             <Text fx:id="dialogText" strokeType="OUTSIDE" strokeWidth="0.0" VBox.vgrow="ALWAYS"/>
