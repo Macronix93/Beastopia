@@ -9,11 +9,15 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 public class DialogWindowController extends Controller {
 
@@ -24,7 +28,7 @@ public class DialogWindowController extends Controller {
     @FXML
     HBox choiceBox;
     @FXML
-    ImageView imageView;
+    ImageView trainerImageView;
     @Inject
     Provider<ResourceBundle> resourcesProvider;
     @Inject
@@ -111,17 +115,6 @@ public class DialogWindowController extends Controller {
         dialogText.setText(text);
 
         return parent;
-    }
-
-    public void setChoices(List<String> choices) {
-        for (String choice : choices) {
-            Button button = new Button(choice);
-            choiceBox.getChildren().add(button);
-        }
-    }
-
-    public void setImage(Image image) {
-        imageView.setImage(image);
     }
 
     @FXML
