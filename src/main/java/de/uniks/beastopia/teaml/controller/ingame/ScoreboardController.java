@@ -37,11 +37,14 @@ public class ScoreboardController extends Controller {
     @Inject
     Provider<ScoreboardUserItemController> scoreBoardUserItemControllerProvider;
     @Inject
+    Provider<ScoreboardFilterController> scoreboardFilterControllerProvider;
+    @Inject
     Provider<UserInfoController> userInfoControllerProvider;
     private final List<Controller> subControllers = new ArrayList<>();
     private Runnable onCloseRequested;
     private boolean clicked = false;
     private UserInfoController userInfoController;
+    private ScoreboardFilterController scoreboardFilterController;
     private String selectedUserID = "";
 
     @Inject
@@ -129,6 +132,20 @@ public class ScoreboardController extends Controller {
                 .setUserAvatar(cache.getImageAvatar(user));
 
         Parent parent = userInfoController.render();
+        achievements.getChildren().clear();
+        achievements.getChildren().add(parent);
+    }
+
+    public void showFilterOptions() {
+        achievements.setVisible(true);
+
+        if (scoreboardFilterController != null) {
+            scoreboardFilterController.destroy();
+        }
+
+        scoreboardFilterController = scoreboardFilterControllerProvider.get();
+
+        Parent parent = scoreboardFilterController.render();
         achievements.getChildren().clear();
         achievements.getChildren().add(parent);
     }
