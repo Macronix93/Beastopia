@@ -3,6 +3,7 @@ package de.uniks.beastopia.teaml.controller.ingame;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import de.uniks.beastopia.teaml.App;
+import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
 import de.uniks.beastopia.teaml.rest.Map;
@@ -34,6 +35,7 @@ public class IngameController extends Controller {
     static final int MENU_NONE = 0;
     static final int MENU_SCOREBOARD = 1;
     static final int MENU_BEASTLIST = 2;
+    static final int MENU_DIALOGWINDOW = 3;
 
     @FXML
     public Pane tilePane;
@@ -53,6 +55,8 @@ public class IngameController extends Controller {
     BeastListController beastListController;
     @Inject
     Provider<BeastDetailController> beastDetailControllerProvider;
+    @Inject
+    Provider<DialogWindowController> dialogWindowControllerProvider;
     @Inject
     Prefs prefs;
     @Inject
@@ -91,8 +95,10 @@ public class IngameController extends Controller {
     Parent beastDetailParent;
     EntityController playerController;
     Parent scoreBoardParent;
+    Parent dialogWindowParent;
     final java.util.Map<EntityController, Parent> otherPlayers = new HashMap<>();
     private final List<KeyCode> pressedKeys = new ArrayList<>();
+    private DialogWindowController dialogWindowController;
 
     @Inject
     public IngameController() {
@@ -473,6 +479,32 @@ public class IngameController extends Controller {
         handlePauseMenu(keyEvent);
         handleScoreboard(keyEvent);
         handleBeastList(keyEvent);
+        handleTalkToTrainer(keyEvent);
+    }
+
+    public void handleTalkToTrainer(KeyEvent keyEvent) {
+        Image i = new Image(Objects.requireNonNull(Main.class.getResourceAsStream("assets/user.png")));
+        if (keyEvent.getCode().equals(KeyCode.T)) {
+            if (scoreBoardLayout.getChildren().contains(dialogWindowParent)) {
+                scoreBoardLayout.getChildren().remove(dialogWindowParent);
+                currentMenu = MENU_NONE;
+            } else {
+                dialogWindowController = dialogWindowControllerProvider.get()
+                        .setChoices(List.of("one", "two"))
+                        .setTrainerImage(i)
+                        .setText("Test")
+                        .setOnButtonClicked(index -> {
+                            Dialog.info("test", "Button index: " + index + " was pressed :)");
+                        });
+
+                scoreBoardLayout.getChildren().add(dialogWindowController.render());
+                currentMenu = MENU_DIALOGWINDOW;
+            }
+            dialogWindowController.setOnCloseRequested(() -> {
+                scoreBoardLayout.getChildren().clear();
+                dialogWindowController.destroy();
+            });
+        }
     }
 
     public void handleBeastList(KeyEvent keyEvent) {
