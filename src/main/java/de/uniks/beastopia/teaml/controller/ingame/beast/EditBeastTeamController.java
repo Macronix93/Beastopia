@@ -18,6 +18,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import java.util.List;
 
 public class EditBeastTeamController extends Controller {
@@ -42,6 +43,8 @@ public class EditBeastTeamController extends Controller {
     DataCache cache;
     @Inject
     PresetsService presetsService;
+    @Inject
+    Provider<BeastListElementController> beastListElementControllerProvider;
 
     MonsterAttributes attributes = new MonsterAttributes(1, 1, 1, 1);
     MonsterAttributes currentAttributes = new MonsterAttributes(0, 0, 0, 0);
@@ -70,6 +73,7 @@ public class EditBeastTeamController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
+        //TODO clean up
         disposables.add(trainerService.getTrainerMonsters(prefs.getRegionID(), cache.getTrainer()._id())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(monsters -> {
@@ -77,12 +81,20 @@ public class EditBeastTeamController extends Controller {
                     label.setText(resources.getString("NoBeasts"));
                     beastListView.setPlaceholder(label);
                     teamListView.setPlaceholder(label);
-                    this.beastList.addAll(monsters);
+                    List<String> prefTeam = prefs.getBeastTeam();
+                    for (Monster monster : monsters) {
+                        if (prefTeam.contains(monster._id())) {
+                            teamList.add(monster);
+                        } else {
+                            beastList.add(monster);
+                        }
+                    }
                     this.beastListView.setItems(beastList);
                     this.teamListView.setItems(teamList);
-                    this.beastListView.setCellFactory(param -> new BeastListElementController());
-                    this.teamListView.setCellFactory(param -> new BeastListElementController());
-                    filterBar.textProperty().addListener((observable, oldValue, newValue) -> {
+                    this.beastListView.setCellFactory(param -> beastListElementControllerProvider.get());
+                    this.teamListView.setCellFactory(param -> beastListElementControllerProvider.get());
+                    // TODO remove
+                    /*filterBar.textProperty().addListener((observable, oldValue, newValue) -> {
                         if (newValue.isEmpty()) {
                             beastListView.setItems(beastList);
                         } else {
@@ -94,7 +106,7 @@ public class EditBeastTeamController extends Controller {
                             }
                             beastListView.setItems(filtered);
                         }
-                    });
+                    });*/
                 }));
         return parent;
     }
@@ -104,10 +116,13 @@ public class EditBeastTeamController extends Controller {
     }
 
     public void saveBeastTeam() {
-        if (beastList.size() == 1) {
-            beastList.addAll(List.of(monster1, monster2, monster3));
+        if (!teamList.isEmpty()) {
+            List<String> beastTeam = teamList.stream().map(Monster::_id).toList();
+            prefs.setBeastTeam(beastTeam);
+        } else {
+            prefs.removeBeastTeam();
         }
-
+        app.showPrevious();
     }
 
     @Override
@@ -117,6 +132,7 @@ public class EditBeastTeamController extends Controller {
 
     public void filterMonster() {
         //TODO add filter functionality here instead of in render()
+        System.out.println("Filter");
     }
 
     public void moveItemToBeasts() {
@@ -131,5 +147,9 @@ public class EditBeastTeamController extends Controller {
             teamList.add(beastListView.getSelectionModel().getSelectedItem());
             beastListView.getItems().remove(beastListView.getSelectionModel().getSelectedItem());
         }
+    }
+
+    public void addFake() {
+        beastList.addAll(List.of(monster1, monster2, monster3));
     }
 }

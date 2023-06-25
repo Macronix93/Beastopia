@@ -30,7 +30,7 @@
                     <Font size="16.0"/>
                 </font>
             </Label>
-            <TextField fx:id="filterBar" onInputMethodTextChanged="#filterMonster"/>
+            <TextField fx:id="filterBar" onKeyPressed="#filterMonster"/>
             <ListView fx:id="beastListView" onMouseClicked="#moveItemToTeam" prefHeight="344.0" prefWidth="255.0"/>
         </VBox>
         <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="2"
@@ -62,5 +62,6 @@
                 </Button>
             </HBox>
         </VBox>
+        <Button mnemonicParsing="false" onAction="#addFake" text="add" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
     </GridPane>
 </VBox>

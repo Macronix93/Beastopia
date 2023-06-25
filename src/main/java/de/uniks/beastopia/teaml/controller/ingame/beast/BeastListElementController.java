@@ -4,6 +4,7 @@ import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.rest.Monster;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
@@ -38,13 +39,6 @@ public class BeastListElementController extends ListCell<Monster> {
 
     @Inject
     public BeastListElementController() {
-        super();
-        /*disposables.add(presetsService.getMonsterImage(0)
-                .subscribe(image -> Platform
-                        .runLater(() -> {
-                            beastImg.setImage(image);
-                            disposables.dispose();
-                        })));*/
     }
 
 
@@ -62,7 +56,18 @@ public class BeastListElementController extends ListCell<Monster> {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            beastLabel.setText("Name (" + "type" + ") Lv. " + item.level());
+
+            disposables.add(presetsService.getMonsterType(item.type())
+                    .subscribe(type -> Platform
+                                    .runLater(() -> beastLabel.setText(type.name() + " (" + type.type().get(0) + ") Lv. " + item.level())),
+                            Throwable::printStackTrace));
+
+            disposables.add(presetsService.getMonsterImage(item.type())
+                    .subscribe(image -> Platform
+                                    .runLater(() -> beastImg.setImage(image)),
+                            Throwable::printStackTrace));
+
+
             int maxExp = (int) Math.round(Math.pow(item.level(), 3) - Math.pow((item.level() - 1), 3));
             expProgress.setProgress((double) item.experience() / maxExp);
             setText(null);
