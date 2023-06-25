@@ -30,22 +30,85 @@ public class DialogWindowController extends Controller {
     @Inject
     Provider<IngameController> ingameControllerProvider;
 
+    private Consumer<Integer> onButtonClicked;
+    private Runnable onCloseRequested;
+    private List<String> choices = new ArrayList<>();
+    private List<Image> buttonImages = new ArrayList<>();
+    private Image trainerImage;
+    private String text;
+
+    @Inject
+    public DialogWindowController() {
+    }
+
+    public void setOnCloseRequested(Runnable onCloseRequested) {
+        this.onCloseRequested = onCloseRequested;
+    }
+
+    public DialogWindowController setOnButtonClicked(Consumer<Integer> onButtonClicked) {
+        this.onButtonClicked = onButtonClicked;
+        return this;
+    }
+
+    public DialogWindowController setChoices(List<String> choices) {
+        this.choices = choices;
+        return this;
+    }
+
+    public DialogWindowController setTrainerImage(Image trainerImage) {
+        this.trainerImage = trainerImage;
+        return this;
+    }
+
+    public DialogWindowController setButtonImages(List<Image> images) {
+        this.buttonImages = images;
+        return this;
+    }
+
+    public DialogWindowController setText(String text) {
+        this.text = text;
+        return this;
+    }
+
     @Override
     public String getTitle() {
         return "titleDialogWindow";
-    }
-
-    public void start() {
-        Image image = new Image("");
-        imageView = new ImageView(image);
-        imageView.fitWidthProperty().bind(imageBox.widthProperty());
-        imageView.fitHeightProperty().bind(imageBox.heightProperty());
     }
 
     @Override
     public Parent render() {
         Parent parent = super.render();
 
+        for (int i = 0; i < choices.size(); i++) {
+            AtomicInteger index = new AtomicInteger(i);
+            if (buttonImages.isEmpty()) {
+                Button choiceButton = new Button(choices.get(i));
+                choiceButton.setOnAction(ev -> {
+                    if (onButtonClicked != null) {
+                        onButtonClicked.accept(index.get());
+                    }
+                });
+                choiceBox.getChildren().add(choiceButton);
+            } else {
+                ImageView buttonImageView = new ImageView(buttonImages.get(i));
+                buttonImageView.setFitWidth(64);
+                buttonImageView.setFitHeight(64);
+                Text choiceButton = new Text(choices.get(i));
+                choiceButton.setTextAlignment(TextAlignment.CENTER);
+                VBox buttonBox = new VBox();
+                buttonBox.setOnMouseClicked(ev -> {
+                    if (onButtonClicked != null) {
+                        onButtonClicked.accept(index.get());
+                    }
+                });
+                buttonBox.getChildren().add(choiceButton);
+                buttonBox.getChildren().add(buttonImageView);
+                choiceBox.getChildren().add(buttonBox);
+            }
+        }
+
+        trainerImageView.setImage(trainerImage);
+        dialogText.setText(text);
 
         return parent;
     }
@@ -62,7 +125,9 @@ public class DialogWindowController extends Controller {
     }
 
     @FXML
-    public void back() {
-        app.show(ingameControllerProvider.get());
+    public void close() {
+        if (onCloseRequested != null) {
+            onCloseRequested.run();
+        }
     }
 }

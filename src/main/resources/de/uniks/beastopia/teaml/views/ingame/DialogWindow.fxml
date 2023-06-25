@@ -1,37 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
-<VBox alignment="CENTER" mouseTransparent="true" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
+<VBox alignment="CENTER" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="de.uniks.beastopia.teaml.controller.ingame.DialogWindowController">
-    <HBox alignment="CENTER" mouseTransparent="true" spacing="10.0">
-        <VBox fx:id="imageBox" alignment="CENTER" mouseTransparent="true" spacing="15.0">
-            <ImageView fx:id="imageView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true"/>
+    <HBox alignment="CENTER" spacing="10.0">
+        <VBox fx:id="imageBox" alignment="CENTER" spacing="15.0">
+            <ImageView fx:id="trainerImageView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true"
+                       preserveRatio="true"/>
         </VBox>
-        <VBox alignment="CENTER" mouseTransparent="true">
+        <VBox alignment="CENTER">
             <Text fx:id="dialogText" strokeType="OUTSIDE" strokeWidth="0.0" VBox.vgrow="ALWAYS"/>
-            <HBox fx:id="choiceBox" alignment="CENTER_RIGHT" mouseTransparent="true" prefWidth="200.0" spacing="10.0">
-                <Button mnemonicParsing="false" text="Button">
-                    <opaqueInsets>
-                        <Insets/>
-                    </opaqueInsets>
-                    <HBox.margin>
-                        <Insets/>
-                    </HBox.margin>
-                </Button>
-                <Button mnemonicParsing="false" text="Button">
-                    <HBox.margin>
-                        <Insets/>
-                    </HBox.margin>
-                </Button>
-                <Button mnemonicParsing="false" text="Button">
-                    <HBox.margin>
-                        <Insets/>
-                    </HBox.margin>
-                </Button>
+            <HBox fx:id="choiceBox" alignment="CENTER_RIGHT" spacing="10.0">
                 <padding>
                     <Insets bottom="10.0" top="10.0"/>
                 </padding>
@@ -41,8 +24,8 @@
             <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
         </padding>
     </HBox>
-    <HBox alignment="BOTTOM_LEFT" mouseTransparent="true" spacing="10.0">
-        <Button mnemonicParsing="false" onAction="#back" text="Button"/>
+    <HBox alignment="BOTTOM_LEFT" spacing="10.0">
+        <Button alignment="BOTTOM_LEFT" contentDisplay="BOTTOM" mnemonicParsing="false" onAction="#close" text="Close"/>
         <padding>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
         </padding>
