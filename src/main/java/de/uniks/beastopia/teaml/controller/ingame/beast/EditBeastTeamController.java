@@ -149,6 +149,7 @@ public class EditBeastTeamController extends Controller {
         }
     }
 
+    //TODO remove function -> only for testing
     public void addFake() {
         beastList.addAll(List.of(monster1, monster2, monster3));
     }
