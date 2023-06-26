@@ -63,3 +63,8 @@ UNIVERSFIELD</a>
 from <a href="https://pixabay.com/sound-effects//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=114615">
 Pixabay</a>
 
+<a href="https://www.flaticon.com/de/kostenlose-icons/filter" title="filter Icons">Filter Icons erstellt von
+Kiranshastry - Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/trichter" title="trichter Icons">Trichter Icons erstellt von
+Freepik - Flaticon</a>

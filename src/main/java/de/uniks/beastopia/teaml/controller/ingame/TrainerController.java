@@ -2,8 +2,10 @@ package de.uniks.beastopia.teaml.controller.ingame;
 
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.menu.MenuController;
+import de.uniks.beastopia.teaml.rest.Achievement;
 import de.uniks.beastopia.teaml.rest.Region;
 import de.uniks.beastopia.teaml.rest.Trainer;
+import de.uniks.beastopia.teaml.service.AchievementsService;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
@@ -26,6 +28,7 @@ import javafx.util.Pair;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+import java.util.Date;
 import java.util.stream.IntStream;
 
 public class TrainerController extends Controller {
@@ -56,6 +59,8 @@ public class TrainerController extends Controller {
     TrainerService trainerService;
     @Inject
     PresetsService presetsService;
+    @Inject
+    AchievementsService achievementsService;
     @Inject
     Provider<IngameController> ingameControllerProvider;
     @Inject
@@ -97,6 +102,8 @@ public class TrainerController extends Controller {
             disposables.add(trainerService.createTrainer(region._id(), nameInput, trainerImage)
                     .observeOn(FX_SCHEDULER)
                     .subscribe(tr -> {
+                        checkTrainerAchievement();
+
                         cache.setTrainer(tr);
                         showIngameController(region);
                     }, error -> Dialog.error(error, "Trainer creation failed!")));
@@ -125,6 +132,8 @@ public class TrainerController extends Controller {
     }
 
     public void showIngameController(Region region) {
+        checkRegionAchievement();
+
         IngameController ingameController = ingameControllerProvider.get();
         ingameController.setRegion(region);
         app.show(ingameController);
@@ -148,6 +157,8 @@ public class TrainerController extends Controller {
                                     .filter(t -> t.user().equals(tokenStorage.getCurrentUser()._id()))
                                     .findFirst()
                                     .ifPresentOrElse(tr -> {
+                                        checkTrainerAchievement();
+
                                         cache.setTrainer(tr);
                                         showIngameController(region);
                                     }, this::loadCharacterSelection),
@@ -263,5 +274,41 @@ public class TrainerController extends Controller {
                 .replace("16x16", "");
         stringToStrip = stringToStrip.substring(0, stringToStrip.lastIndexOf("."));
         return stringToStrip;
+    }
+
+    private void checkTrainerAchievement() {
+        Achievement firstTrainerAchievement = null;
+
+        for (Achievement achievement : cache.getMyAchievements()) {
+            if (achievement.id().equals("FirstTrainer")) {
+                firstTrainerAchievement = achievement;
+                break;
+            }
+        }
+
+        if (firstTrainerAchievement == null) {
+            Date date = new Date();
+
+            disposables.add(achievementsService.updateUserAchievement(tokenStorage.getCurrentUser()._id(), "FirstTrainer", new Achievement(null, null, "FirstTrainer", tokenStorage.getCurrentUser()._id(), date, 100))
+                    .subscribe(a -> cache.addMyAchievement(a)));
+        }
+    }
+
+    private void checkRegionAchievement() {
+        Achievement firstRegionAchievement = null;
+
+        for (Achievement achievement : cache.getMyAchievements()) {
+            if (achievement.id().equals("FirstRegion")) {
+                firstRegionAchievement = achievement;
+                break;
+            }
+        }
+
+        if (firstRegionAchievement == null) {
+            Date date = new Date();
+
+            disposables.add(achievementsService.updateUserAchievement(tokenStorage.getCurrentUser()._id(), "FirstRegion", new Achievement(null, null, "FirstRegion", tokenStorage.getCurrentUser()._id(), date, 100))
+                    .subscribe(a -> cache.addMyAchievement(a)));
+        }
     }
 }
