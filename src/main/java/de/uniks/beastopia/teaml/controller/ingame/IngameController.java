@@ -24,6 +24,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.util.Pair;
 
 import javax.inject.Inject;
@@ -39,6 +40,8 @@ public class IngameController extends Controller {
 
     @FXML
     public Pane tilePane;
+    @FXML
+    public StackPane stackPane;
     @FXML
     private HBox scoreBoardLayout;
     @Inject
@@ -485,23 +488,25 @@ public class IngameController extends Controller {
     public void handleTalkToTrainer(KeyEvent keyEvent) {
         Image i = new Image(Objects.requireNonNull(Main.class.getResourceAsStream("assets/user.png")));
         if (keyEvent.getCode().equals(KeyCode.T)) {
-            if (scoreBoardLayout.getChildren().contains(dialogWindowParent)) {
-                scoreBoardLayout.getChildren().remove(dialogWindowParent);
+            if (stackPane.getChildren().contains(dialogWindowParent)) {
+                stackPane.getChildren().remove(dialogWindowParent);
                 currentMenu = MENU_NONE;
             } else {
                 dialogWindowController = dialogWindowControllerProvider.get()
                         .setChoices(List.of("one", "two"))
                         .setTrainerImage(i)
-                        .setText("Test")
+                        .setText("Dies ist ein Beispieltext.")
                         .setOnButtonClicked(index -> {
                             Dialog.info("test", "Button index: " + index + " was pressed :)");
                         });
 
-                scoreBoardLayout.getChildren().add(dialogWindowController.render());
+                dialogWindowParent = dialogWindowController.render();
+                stackPane.getChildren().add(dialogWindowParent);
+                stackPane.setPrefWidth(600);
                 currentMenu = MENU_DIALOGWINDOW;
             }
             dialogWindowController.setOnCloseRequested(() -> {
-                scoreBoardLayout.getChildren().clear();
+                stackPane.getChildren().clear();
                 dialogWindowController.destroy();
             });
         }

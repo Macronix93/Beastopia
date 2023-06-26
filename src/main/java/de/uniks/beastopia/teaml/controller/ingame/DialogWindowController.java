@@ -6,6 +6,8 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -21,6 +23,10 @@ import java.util.function.Consumer;
 
 public class DialogWindowController extends Controller {
 
+    @FXML
+    VBox dialogWindow;
+    @FXML
+    VBox textBox;
     @FXML
     Text dialogText;
     @FXML
@@ -76,7 +82,7 @@ public class DialogWindowController extends Controller {
 
     @Override
     public String getTitle() {
-        return "titleDialogWindow";
+        return resources.getString("titleDialogWindow");
     }
 
     @Override
@@ -120,6 +126,13 @@ public class DialogWindowController extends Controller {
     @FXML
     public void close() {
         if (onCloseRequested != null) {
+            onCloseRequested.run();
+        }
+    }
+
+    @FXML
+    public void handleKeyEvent(KeyEvent event) {
+        if (event.getCode().equals(KeyCode.T)) {
             onCloseRequested.run();
         }
     }
