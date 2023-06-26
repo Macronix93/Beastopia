@@ -13,16 +13,21 @@ import javax.inject.Inject;
 @SuppressWarnings("unused")
 public class BeastInfoController extends Controller {
 
-    //TODO: add hp and xp
-    Label hp;
-    Label xp;
-
     @FXML
     Label name;
     @FXML
     Label type;
     @FXML
     Label level;
+    @FXML
+    Label lifeValueLabel;
+    @FXML
+    Label maxLifeLabel;
+    @FXML
+    Label xpValueLabel;
+    @FXML
+    Label maxXpLabel;
+
     @FXML
     HBox lifeBar;
     @FXML
@@ -32,14 +37,6 @@ public class BeastInfoController extends Controller {
     @FXML
     HBox xpBarValue;
 
-    @FXML
-    Label lifeValueLabel;
-    @FXML
-    Label maxLifeLabel;
-    @FXML
-    Label xpValueLabel;
-    @FXML
-    Label maxXpLabel;
     @Inject
     PresetsService presetsService;
     private Monster monster;
@@ -60,20 +57,41 @@ public class BeastInfoController extends Controller {
         return parent;
     }
 
-    public void setLifeValueLabel(Label lifeValueLabel) {
-        this.lifeValueLabel = lifeValueLabel;
+
+    public void setLifeValueLabel(String value) {
+        lifeValueLabel.setText(value);
     }
 
-    public void setMaxLifeLabel(Label maxLifeLabel) {
-        this.maxLifeLabel = maxLifeLabel;
+    public void setMaxLifeLabel(String value) {
+        maxLifeLabel.setText(value);
     }
 
-    public void setXpValueLabel(Label xpValueLabel) {
-        this.xpValueLabel = xpValueLabel;
+    public void setXpValueLabel(String value) {
+        xpValueLabel.setText(value);
     }
 
-    public void setMaxXpLabel(Label maxXpLabel) {
-        this.maxXpLabel = maxXpLabel;
+    public void setMaxXpLabel(String value) {
+        maxXpLabel.setText(value);
+    }
+
+    public void setName(String value) {
+        name.setText(value);
+    }
+
+    public void setType(String value) {
+        type.setText(value);
+    }
+
+    public void setLevel(String value) {
+        level.setText(value);
+    }
+
+    public void setLifeBarValue(double value) {
+        lifeBarValue.setPrefWidth(value);
+    }
+
+    public void setXpBarValue(double value) {
+        xpBarValue.setPrefWidth(value);
     }
 
 

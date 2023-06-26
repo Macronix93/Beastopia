@@ -25,6 +25,11 @@
          </font>
       </Label>
       <VBox prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS"/>
+      <Label text="Lvl. ">
+         <font>
+            <Font size="16.0"/>
+         </font>
+      </Label>
       <Label fx:id="level" text="Level">
          <font>
             <Font size="16.0"/>
