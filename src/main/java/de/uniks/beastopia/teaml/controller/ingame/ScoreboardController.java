@@ -2,17 +2,21 @@ package de.uniks.beastopia.teaml.controller.ingame;
 
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Achievement;
+import de.uniks.beastopia.teaml.rest.AchievementsSummary;
 import de.uniks.beastopia.teaml.rest.Trainer;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.AchievementsService;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.TrainerService;
 import de.uniks.beastopia.teaml.utils.Prefs;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
@@ -40,12 +44,14 @@ public class ScoreboardController extends Controller {
     Provider<ScoreboardFilterController> scoreboardFilterControllerProvider;
     @Inject
     Provider<UserInfoController> userInfoControllerProvider;
-    private final List<Controller> subControllers = new ArrayList<>();
+    private final ObservableList<ScoreboardUserItemController> scoreboardControllers = FXCollections.observableArrayList();
     private Runnable onCloseRequested;
     private boolean clicked = false;
+    private boolean clickedFilter = false;
     private UserInfoController userInfoController;
     private ScoreboardFilterController scoreboardFilterController;
     private String selectedUserID = "";
+    private List<AchievementsSummary> currentAchievements;
 
     @Inject
     public ScoreboardController() {
@@ -60,38 +66,73 @@ public class ScoreboardController extends Controller {
     }
 
     private void loadAchievements() {
-        disposables.add(achievementsService.getAchievements().subscribe(allAchievements ->
-                disposables.add(delay().map(t -> disposables.add(trainerService.getAllTrainer(prefs.getRegionID()).subscribe(trainers -> {
-                    for (Trainer trainer : trainers) {
-                        User user = cache.getAllUsers().stream()
-                                .filter(u -> u._id().equals(trainer.user()))
-                                .findFirst()
-                                .orElse(null);
+        disposables.add(achievementsService.getAchievements().subscribe(allAchievements -> {
+            currentAchievements = new ArrayList<>(allAchievements);
 
-                        if (user == null) {
-                            continue;
-                        }
+            for (AchievementsSummary achievement : currentAchievements) {
+                switch (achievement.id()) {
+                    case "FirstTrainer" ->
+                            cache.addAchievementDescription("FirstTrainer", resources.getString("achievementFirstTrainer"));
+                    case "FirstRegion" ->
+                            cache.addAchievementDescription("FirstRegion", resources.getString("achievementFirstRegion"));
+                    case "MoveCharacter" ->
+                            cache.addAchievementDescription("MoveCharacter", resources.getString("achievementMoveCharacter"));
+                    case "MeetPlayer" ->
+                            cache.addAchievementDescription("MeetPlayer", resources.getString("achievementMeetPlayer"));
+                    case "MeetAlbert" ->
+                            cache.addAchievementDescription("MeetAlbert", resources.getString("achievementMeetAlbert"));
+                    case "VisitAllRegions" ->
+                            cache.addAchievementDescription("VisitAllRegions", resources.getString("achievementVisitAllRegions"));
+                    default -> cache.addAchievementDescription("NotFound", "NotFound");
+                }
+            }
 
-                        Thread.sleep(1000);
+            disposables.add(delay().map(t -> disposables.add(trainerService.getAllTrainer(prefs.getRegionID()).subscribe(trainers -> {
+                for (Trainer trainer : trainers) {
+                    User user = cache.getAllUsers().stream()
+                            .filter(u -> u._id().equals(trainer.user()))
+                            .findFirst()
+                            .orElse(null);
 
-                        disposables.add(delay().map(t2 -> {
-                            disposables.add(achievementsService.getUserAchievements(user._id())
-                                    .observeOn(FX_SCHEDULER)
-                                    .subscribe(achievementList -> {
-                                        ScoreboardUserItemController controller = scoreBoardUserItemControllerProvider.get()
-                                                .setUser(user)
-                                                .setAchievements(achievementList.size())
-                                                .setOnUserClicked(u -> onUserClicked(u, achievementList.size(), allAchievements.size(), achievementList))
-                                                .setTotalAchievements(allAchievements.size());
-                                        Parent parent = controller.render();
-                                        scoreBoard.getChildren().add(parent);
-                                        HBox.setHgrow(parent, javafx.scene.layout.Priority.ALWAYS);
-                                        subControllers.add(controller);
-                                    }));
-                            return t;
-                        }).subscribe());
+                    if (user == null) {
+                        continue;
                     }
-                }))).subscribe())));
+
+                    Thread.sleep(1000);
+
+                    disposables.add(delay().map(t2 -> {
+                        disposables.add(achievementsService.getUserAchievements(user._id())
+                                .observeOn(FX_SCHEDULER)
+                                .subscribe(achievementList -> {
+                                    ScoreboardUserItemController controller = scoreBoardUserItemControllerProvider.get()
+                                            .setUser(user)
+                                            .setAchievements(achievementList.size())
+                                            .setOnUserClicked(u -> onUserClicked(u, achievementList.size(), allAchievements.size(), achievementList))
+                                            .setTotalAchievements(allAchievements.size())
+                                            .setUserAchievements(achievementList);
+
+                                    scoreboardControllers.add(controller);
+
+                                    Parent parent = controller.render();
+                                    controller.setParent(parent);
+
+                                    if (scoreboardFilterController != null) {
+                                        if (scoreboardFilterController.isFilterApplied()) {
+                                            scoreboardFilterController.checkCurrentController(controller);
+                                        } else {
+                                            scoreBoard.getChildren().add(parent);
+                                        }
+                                    } else {
+                                        scoreBoard.getChildren().add(parent);
+                                    }
+
+                                    HBox.setHgrow(parent, Priority.ALWAYS);
+                                }));
+                        return t;
+                    }).subscribe());
+                }
+            }))).subscribe());
+        }));
     }
 
     public void handleKeyEvent(KeyEvent event) {
@@ -124,6 +165,11 @@ public class ScoreboardController extends Controller {
             userInfoController.destroy();
         }
 
+        if (scoreboardFilterController != null) {
+            clickedFilter = false;
+            scoreboardFilterController.destroy();
+        }
+
         userInfoController = userInfoControllerProvider.get()
                 .setName(user.name())
                 .setAchievements(noOfAchievements)
@@ -137,13 +183,22 @@ public class ScoreboardController extends Controller {
     }
 
     public void showFilterOptions() {
-        achievements.setVisible(true);
+        achievements.setVisible(!clickedFilter);
+        clickedFilter = !clickedFilter;
+
+        if (userInfoController != null) {
+            userInfoController.destroy();
+            clicked = false;
+        }
 
         if (scoreboardFilterController != null) {
             scoreboardFilterController.destroy();
         }
 
-        scoreboardFilterController = scoreboardFilterControllerProvider.get();
+        scoreboardFilterController = scoreboardFilterControllerProvider.get()
+                .setCurrentAchievements(currentAchievements)
+                .setSubControllers(scoreboardControllers)
+                .setParentPane(scoreBoard);
 
         Parent parent = scoreboardFilterController.render();
         achievements.getChildren().clear();
@@ -153,7 +208,7 @@ public class ScoreboardController extends Controller {
     @Override
     public void destroy() {
         super.destroy();
-        subControllers.forEach(Controller::destroy);
+        scoreboardControllers.forEach(Controller::destroy);
         if (userInfoController != null) {
             userInfoController.destroy();
         }
