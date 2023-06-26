@@ -156,18 +156,6 @@ public class DataCache {
         }
     }
 
-    public void addMyAchievement(Achievement achievement) {
-        this.myAchievements.add(achievement);
-    }
-
-    public void setMyAchievements(List<Achievement> achievements) {
-        this.myAchievements = new ArrayList<>(achievements);
-    }
-
-    public List<Achievement> getMyAchievements() {
-        return this.myAchievements;
-    }
-
     public Image getImageAvatar(User user) {
         Image imageAvatar;
         if (user.avatar() != null && user.avatar().contains("data:image/png;base64,")) {
@@ -224,6 +212,18 @@ public class DataCache {
         graphics.drawImage(bufferedImage, 0, 0, 64, 64, null);
         graphics.dispose();
         return resized;
+    }
+
+    public void addMyAchievement(Achievement achievement) {
+        this.myAchievements.add(achievement);
+    }
+
+    public void setMyAchievements(List<Achievement> achievements) {
+        this.myAchievements = new ArrayList<>(achievements);
+    }
+
+    public List<Achievement> getMyAchievements() {
+        return this.myAchievements;
     }
 
     public void addAchievementDescription(String achievementId, String achievementDescription) {
