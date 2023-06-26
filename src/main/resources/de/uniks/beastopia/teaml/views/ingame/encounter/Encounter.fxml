@@ -126,7 +126,7 @@
         </VBox>
     </VBox>
     <VBox prefHeight="600.0" prefWidth="400.0">
-        <VBox fx:id="enemyMonsters" prefHeight="250.0" prefWidth="400.0"/>
+        <VBox fx:id="enemyMonstersBox" prefHeight="250.0" prefWidth="400.0"/>
         <VBox fx:id="actionInfoBox" prefHeight="100.0" prefWidth="400.0"/>
         <VBox fx:id="beastInfoBox" prefHeight="250.0" prefWidth="400.0"/>
     </VBox>

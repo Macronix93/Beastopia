@@ -2,6 +2,10 @@ package de.uniks.beastopia.teaml.controller.ingame.encounter;
 
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Monster;
+import de.uniks.beastopia.teaml.rest.Trainer;
+import de.uniks.beastopia.teaml.service.DataCache;
+import de.uniks.beastopia.teaml.service.TrainerService;
+import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -10,6 +14,7 @@ import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.List;
 
 public class EncounterController extends Controller {
 
@@ -42,14 +47,29 @@ public class EncounterController extends Controller {
     @FXML
     Label rightAttackLabel;
     @FXML
-    VBox enemyMonsters;
+    VBox enemyMonstersBox;
+    @Inject
+    DataCache cache;
+    @Inject
+    TrainerService trainerService;
+    @Inject
+    Prefs prefs;
 
-
-    private ArrayList<Monster> enemyTeam;
-    private ArrayList<Monster> ownTeam;
-
-    //TODO: create monster for testing purposes
-    //Monster monster = new Monster();
+    private List<Monster> ownMonsters = new ArrayList<>();
+    private List<Monster> allyMonsters = new ArrayList<>();
+    private List<Monster> enemyMonsters = new ArrayList<>();
+    private List<Monster> enemyAllyMonsters = new ArrayList<>();
+    private Monster ownMonster;
+    private Monster allyMonster;
+    private Monster enemyMonster;
+    private Monster enemyAllyMonster;
+    private Trainer allyTrainer;
+    private Trainer enemyTrainer;
+    private Trainer enemyAllyTrainer;
+    private boolean oneVsOneFight = true;
+    private boolean oneVsOneFightMonsterOnly = false;
+    private boolean oneVsTwoFight = false;
+    private boolean twoVsTwoFight = false;
 
     @Inject
     public EncounterController() {
@@ -57,15 +77,55 @@ public class EncounterController extends Controller {
 
     @Override
     public void init() {
-        //TODO: set enemyTeam and ownTeam
+        setFightMode();
     }
 
     @Override
     public Parent render() {
         Parent parent = super.render();
-
-
+        getOwnMonsters();
+        if (enemyTrainer != null) {
+            getEnemyTrainerMonsters();
+        } else {
+            getEnemyMonster();
+        }
         return parent;
+    }
+
+    //TODO: set no of possible attacks dynamically
+    /*
+    leftAttackBox.setVisible(true);
+    rightAttackBox.setVisible(true);
+    */
+
+    private void setFightMode() {
+        if (enemyAllyTrainer != null && allyTrainer != null) {
+            oneVsOneFight = false;
+            twoVsTwoFight = true;
+        } else if (allyTrainer == null && enemyAllyTrainer != null) {
+            oneVsOneFight = false;
+            oneVsTwoFight = true;
+        } else if (allyTrainer == null && enemyTrainer == null) {
+            oneVsOneFight = false;
+            oneVsOneFightMonsterOnly = true;
+        }
+
+    }
+
+    private void getEnemyMonster() {
+        //TODO: get enemy monster
+    }
+
+    private void getEnemyTrainerMonsters() {
+        //TODO: get ID of enemy trainer and enemy trainer monsters
+    }
+
+    public void getOwnMonsters() {
+        disposables.add(trainerService.getTrainerMonsters(prefs.getRegionID(), cache.getTrainer()._id())
+                .observeOn(FX_SCHEDULER)
+                .subscribe(monsters -> {
+                    this.ownMonsters.addAll(monsters);
+                }));
     }
 
     //clicked leave encounter button
@@ -88,6 +148,34 @@ public class EncounterController extends Controller {
     //clicked right attack VBox
     public void rightAttack() {
         System.out.println("right attack");
+    }
+
+    public void setOwnMonsters(List<Monster> ownMonsters) {
+        this.ownMonsters = ownMonsters;
+    }
+
+    public void setAllyMonsters(List<Monster> allyMonsters) {
+        this.allyMonsters = allyMonsters;
+    }
+
+    public void setEnemyMonsters(List<Monster> enemyMonsters) {
+        this.enemyMonsters = enemyMonsters;
+    }
+
+    public void setEnemyAllyMonsters(List<Monster> enemyAllyMonsters) {
+        this.enemyAllyMonsters = enemyAllyMonsters;
+    }
+
+    public void setAllyTrainer(Trainer allyTrainer) {
+        this.allyTrainer = allyTrainer;
+    }
+
+    public void setEnemyTrainer(Trainer enemyTrainer) {
+        this.enemyTrainer = enemyTrainer;
+    }
+
+    public void setEnemyAllyTrainer(Trainer enemyAllyTrainer) {
+        this.enemyAllyTrainer = enemyAllyTrainer;
     }
 
     @Override
