@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.*?>
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="150.0"
       prefWidth="300.0" style="-fx-border-color: black;" xmlns="http://javafx.com/javafx/19"
       xmlns:fx="http://javafx.com/fxml/1"
@@ -31,25 +31,93 @@
          </font>
       </Label>
    </HBox>
-   <HBox alignment="CENTER_LEFT" prefHeight="40.0" prefWidth="200.0">
+   <HBox alignment="CENTER_LEFT" prefHeight="40.0" prefWidth="200.0" spacing="10.0">
       <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
          <Image url="@../../../assets/icons8-heart-32.png"/>
       </ImageView>
-      <StackPane prefHeight="39.0" prefWidth="165.0" HBox.hgrow="ALWAYS"/>
+      <StackPane prefHeight="39.0" prefWidth="165.0" HBox.hgrow="ALWAYS">
+         <HBox.margin>
+            <Insets right="10.0"/>
+         </HBox.margin>
+         <HBox fx:id="lifeBar" maxHeight="25.0" prefHeight="25.0" prefWidth="200.0"
+               style="-fx-border-color: black;"/>
+         <HBox fx:id="lifeBarValue" maxHeight="25.0" prefHeight="25.0" prefWidth="200.0"
+               style="-fx-background-color: red; -fx-border-color: black;"/>
+         <HBox alignment="CENTER_LEFT" maxHeight="25.0" prefHeight="25.0" prefWidth="200.0" spacing="5.0"
+               style="-fx-background-color: transparent;">
+            <StackPane.margin>
+               <Insets left="5.0"/>
+            </StackPane.margin>
+            <Label fx:id="lifeValueLabel" text="lifeValue">
+               <font>
+                  <Font size="14.0"/>
+               </font>
+            </Label>
+            <Label text="/">
+               <font>
+                  <Font size="14.0"/>
+               </font>
+            </Label>
+            <Label fx:id="maxLifeLabel" text="maxLife">
+               <font>
+                  <Font size="14.0"/>
+               </font>
+            </Label>
+            <Label text="(HP)">
+               <font>
+                  <Font size="14.0"/>
+               </font>
+            </Label>
+         </HBox>
+      </StackPane>
       <opaqueInsets>
          <Insets/>
       </opaqueInsets>
-      <padding>
-         <Insets left="20.0"/>
-      </padding>
+      <VBox.margin>
+         <Insets left="10.0"/>
+      </VBox.margin>
    </HBox>
-   <HBox alignment="CENTER_LEFT" prefHeight="40.0" prefWidth="200.0">
+   <HBox alignment="CENTER_LEFT" prefHeight="40.0" prefWidth="200.0" spacing="10.0">
       <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
          <Image url="@../../../assets/icons8-star-48.png"/>
       </ImageView>
-      <StackPane prefHeight="39.0" prefWidth="165.0" HBox.hgrow="ALWAYS"/>
-      <padding>
-         <Insets left="20.0"/>
-      </padding>
+      <StackPane prefHeight="39.0" prefWidth="165.0" HBox.hgrow="ALWAYS">
+         <HBox.margin>
+            <Insets right="10.0"/>
+         </HBox.margin>
+         <HBox maxHeight="25.0" prefHeight="25.0" prefWidth="200.0" style="-fx-border-color: black;" fx:id="xpBar"/>
+         <HBox maxHeight="25.0" prefHeight="25.0" prefWidth="200.0"
+               style="-fx-background-color: yellow; -fx-border-color: black;" fx:id="xpBarValue">
+            <HBox alignment="CENTER_LEFT" maxHeight="25.0" prefHeight="25.0" prefWidth="200.0" spacing="5.0"
+                  style="-fx-background-color: transparent;">
+               <HBox.margin>
+                  <Insets left="5.0"/>
+               </HBox.margin>
+               <Label text="xpValue" fx:id="xpValueLabel">
+                  <font>
+                     <Font size="14.0"/>
+                  </font>
+               </Label>
+               <Label text="/">
+                  <font>
+                     <Font size="14.0"/>
+                  </font>
+               </Label>
+               <Label fx:id="maxXpLabel" text="maxXp">
+                  <font>
+                     <Font size="14.0"/>
+                  </font>
+               </Label>
+               <Label text="(HP)">
+                  <font>
+                     <Font size="14.0"/>
+                  </font>
+               </Label>
+            </HBox>
+         </HBox>
+      </StackPane>
+      <VBox.margin>
+         <Insets left="10.0"/>
+      </VBox.margin>
    </HBox>
 </VBox>

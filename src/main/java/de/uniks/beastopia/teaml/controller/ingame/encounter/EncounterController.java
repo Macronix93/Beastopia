@@ -74,6 +74,7 @@ public class EncounterController extends Controller {
     private boolean oneVsOneFightMonsterOnly = false;
     private boolean oneVsTwoFight = false;
     private boolean twoVsTwoFight = false;
+    private List<Controller> subControllers = new ArrayList<>();
 
     @Inject
     public EncounterController() {
