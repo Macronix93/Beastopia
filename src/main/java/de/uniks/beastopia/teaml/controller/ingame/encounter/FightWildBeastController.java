@@ -66,9 +66,7 @@ public class FightWildBeastController extends Controller {
         disposables.add(trainerService.getTrainerMonster(prefs.getRegionID(), trainerId, beastId).observeOn(FX_SCHEDULER).concatMap(b -> { //Nacheinander ausführen
             this.type = b.type();
             return presetsService.getMonsterImage(this.type);
-        }).observeOn(FX_SCHEDULER).subscribe(beastImage -> {
-            image.setImage(beastImage);
-        }));
+        }).observeOn(FX_SCHEDULER).subscribe(beastImage -> image.setImage(beastImage)));
 
         return parent;
     }

@@ -219,10 +219,8 @@ public class IngameController extends Controller {
                                         //TODO if trainer
                                         openFightBeastScreen(opponent.monster(), opponent.trainer());
                                     },
-                                    error -> {
-                                        System.err.println("Fehler beim Abonnieren der Gegner-Ereignisse: " +
-                                                error.getMessage());
-                                    }));
+                                    error -> System.err.println("Fehler beim Gegner-Ereignis: " +
+                                            error.getMessage())));
 
             loadingPage.setDone();
         }));
