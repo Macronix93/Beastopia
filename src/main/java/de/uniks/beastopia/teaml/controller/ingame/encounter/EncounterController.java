@@ -55,14 +55,18 @@ public class EncounterController extends Controller {
     @Inject
     Prefs prefs;
 
+    //monster on the substitute's bench
     private List<Monster> ownMonsters = new ArrayList<>();
     private List<Monster> allyMonsters = new ArrayList<>();
     private List<Monster> enemyMonsters = new ArrayList<>();
     private List<Monster> enemyAllyMonsters = new ArrayList<>();
+
+    //monsters in the fight
     private Monster ownMonster;
     private Monster allyMonster;
     private Monster enemyMonster;
     private Monster enemyAllyMonster;
+
     private Trainer allyTrainer;
     private Trainer enemyTrainer;
     private Trainer enemyAllyTrainer;
@@ -94,8 +98,13 @@ public class EncounterController extends Controller {
 
     //TODO: set no of possible attacks dynamically
     /*
+    create Vboxes for each attack
+    add them to parent of leftAttackBox and rightAttackBox
     leftAttackBox.setVisible(true);
     rightAttackBox.setVisible(true);
+    .
+    .
+    .
     */
 
     private void setFightMode() {
