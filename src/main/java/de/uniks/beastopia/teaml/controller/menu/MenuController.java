@@ -76,8 +76,10 @@ public class MenuController extends Controller {
             cache.setTrainer(null);
         }
 
-        disposables.add(achievementsService.getUserAchievements(tokenStorage.getCurrentUser()._id())
-                .subscribe(achievements -> cache.setMyAchievements(achievements)));
+        if (cache.getMyAchievements().isEmpty()) {
+            disposables.add(achievementsService.getUserAchievements(tokenStorage.getCurrentUser()._id())
+                    .subscribe(achievements -> cache.setMyAchievements(achievements)));
+        }
     }
 
     @Override
