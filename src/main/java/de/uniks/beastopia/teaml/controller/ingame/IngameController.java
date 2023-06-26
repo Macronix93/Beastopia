@@ -6,12 +6,28 @@ import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
+import de.uniks.beastopia.teaml.rest.Area;
+import de.uniks.beastopia.teaml.rest.Chunk;
+import de.uniks.beastopia.teaml.rest.Layer;
 import de.uniks.beastopia.teaml.rest.Map;
-import de.uniks.beastopia.teaml.rest.*;
-import de.uniks.beastopia.teaml.service.*;
+import de.uniks.beastopia.teaml.rest.Monster;
+import de.uniks.beastopia.teaml.rest.Region;
+import de.uniks.beastopia.teaml.rest.TileSet;
+import de.uniks.beastopia.teaml.rest.TileSetDescription;
+import de.uniks.beastopia.teaml.rest.Trainer;
+import de.uniks.beastopia.teaml.service.AreaService;
+import de.uniks.beastopia.teaml.service.DataCache;
+import de.uniks.beastopia.teaml.service.PresetsService;
+import de.uniks.beastopia.teaml.service.TokenStorage;
+import de.uniks.beastopia.teaml.service.TrainerService;
 import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.sockets.UDPEventListener;
-import de.uniks.beastopia.teaml.utils.*;
+import de.uniks.beastopia.teaml.utils.Dialog;
+import de.uniks.beastopia.teaml.utils.Direction;
+import de.uniks.beastopia.teaml.utils.LoadingPage;
+import de.uniks.beastopia.teaml.utils.PlayerState;
+import de.uniks.beastopia.teaml.utils.Prefs;
+import de.uniks.beastopia.teaml.utils.SoundController;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
@@ -29,7 +45,13 @@ import javafx.util.Pair;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class IngameController extends Controller {
     static final double TILE_SIZE = 20;
@@ -78,12 +100,17 @@ public class IngameController extends Controller {
     ScoreboardController scoreBoardController;
     @Inject
     Provider<IngameController> ingameControllerProvider;
+    @Inject
+    Provider<SoundController> soundControllerProvider;
 
     private Region region;
     private Map map;
     private final List<Pair<TileSetDescription, Pair<TileSet, Image>>> tileSets = new ArrayList<>();
     private int posx = 0;
     private int posy = 0;
+    private int lastposx = 0;
+    private int lastposy = 0;
+    private boolean spawned = false;
     private int width;
     private int height;
     private LoadingPage loadingPage;
@@ -97,10 +124,13 @@ public class IngameController extends Controller {
     Parent beastListParent;
     Parent beastDetailParent;
     EntityController playerController;
+    SoundController soundController;
     Parent scoreBoardParent;
     Parent dialogWindowParent;
     final java.util.Map<EntityController, Parent> otherPlayers = new HashMap<>();
     private final List<KeyCode> pressedKeys = new ArrayList<>();
+    private final String[] locationStrings = {"Moncenter", "House", "Store"};
+    private long lastValueChangeTime = 0;
     private DialogWindowController dialogWindowController;
 
     @Inject
@@ -141,6 +171,10 @@ public class IngameController extends Controller {
         playerController.playerState().bind(state);
         playerController.setOnTrainerUpdate(trainer -> {
             if (!trainer.area().equals(prefs.getArea()._id())) {
+                if (Arrays.stream(locationStrings).anyMatch(cache.getArea(trainer.area()).name()::contains)) {
+                    soundController.play("sfx:opendoor");
+                }
+
                 IngameController controller = ingameControllerProvider.get();
                 controller.setRegion(region);
                 app.show(controller);
@@ -149,7 +183,11 @@ public class IngameController extends Controller {
             posx = trainer.x();
             posy = trainer.y();
             updateOrigin();
+
+            spawned = true;
         });
+
+        soundController = soundControllerProvider.get();
     }
 
     /**
@@ -219,6 +257,14 @@ public class IngameController extends Controller {
             TileSet tileSet = presetsService.getTileset(tileSetDesc).blockingFirst();
             Image image = presetsService.getImage(tileSet).blockingFirst();
             tileSets.add(new Pair<>(tileSetDesc, new Pair<>(tileSet, image)));
+        }
+
+        if (area.name().contains("Route")) {
+            soundController.play("bgm:route");
+        } else if (area.name().contains("House")) {
+            soundController.play("bgm:house");
+        } else {
+            soundController.play("bgm:city");
         }
     }
 
@@ -392,6 +438,18 @@ public class IngameController extends Controller {
         tilePane.setTranslateY(tilePaneTranslationY);
         movePlayer(tilex, tiley);
         prefs.setPosition(new Point2D(tilex, tiley));
+
+        if (spawned) {
+            long currentTime = System.currentTimeMillis();
+            // Delay in milliseconds
+            double debounceDelay = 250;
+            if (currentTime - lastValueChangeTime > debounceDelay) {
+                if (lastposx == posx && lastposy == posy) {
+                    soundController.play("sfx:bump");
+                    lastValueChangeTime = currentTime;
+                }
+            }
+        }
     }
 
     public void updateOrigin() {
@@ -574,6 +632,10 @@ public class IngameController extends Controller {
 
     public void moveLoop() {
         boolean moved = false;
+
+        lastposx = posx;
+        lastposy = posy;
+
         if (pressedKeys.contains(KeyCode.UP) || pressedKeys.contains(KeyCode.W)) {
             posy--;
             direction = Direction.UP;

@@ -3,12 +3,27 @@ package de.uniks.beastopia.teaml.controller.ingame;
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
-import de.uniks.beastopia.teaml.rest.*;
-import de.uniks.beastopia.teaml.service.*;
+import de.uniks.beastopia.teaml.rest.Area;
+import de.uniks.beastopia.teaml.rest.Chunk;
+import de.uniks.beastopia.teaml.rest.Layer;
+import de.uniks.beastopia.teaml.rest.Map;
+import de.uniks.beastopia.teaml.rest.NPCInfo;
+import de.uniks.beastopia.teaml.rest.Region;
+import de.uniks.beastopia.teaml.rest.Spawn;
+import de.uniks.beastopia.teaml.rest.TileSet;
+import de.uniks.beastopia.teaml.rest.TileSetDescription;
+import de.uniks.beastopia.teaml.rest.Trainer;
+import de.uniks.beastopia.teaml.rest.User;
+import de.uniks.beastopia.teaml.service.AreaService;
+import de.uniks.beastopia.teaml.service.DataCache;
+import de.uniks.beastopia.teaml.service.PresetsService;
+import de.uniks.beastopia.teaml.service.TokenStorage;
+import de.uniks.beastopia.teaml.service.TrainerService;
 import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.sockets.UDPEventListener;
 import de.uniks.beastopia.teaml.utils.PlayerState;
 import de.uniks.beastopia.teaml.utils.Prefs;
+import de.uniks.beastopia.teaml.utils.SoundController;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.Label;
@@ -35,7 +50,13 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class IngameControllerTest extends ApplicationTest {
@@ -46,6 +67,10 @@ class IngameControllerTest extends ApplicationTest {
     Provider<EntityController> entityControllerProvider;
     @Mock
     Provider<MapController> mapControllerProvider;
+    @Mock
+    Provider<SoundController> soundControllerProvider;
+    @Mock
+    SoundController soundController;
     @Mock
     EntityController playerController;
     @Mock
@@ -114,6 +139,7 @@ class IngameControllerTest extends ApplicationTest {
         doNothing().when(beastListController).setOnBeastClicked(any());
         doNothing().when(beastListController).init();
         when(beastListController.render()).thenReturn(new Pane());
+        when(soundControllerProvider.get()).thenReturn(soundController);
         ingameController.setRegion(region);
 
         app.start(stage);
