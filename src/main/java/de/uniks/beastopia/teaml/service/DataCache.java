@@ -22,7 +22,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Singleton
@@ -33,6 +35,7 @@ public class DataCache {
     private final List<Trainer> trainers = new ArrayList<>();
     private final List<Pair<String, Image>> characters = new ArrayList<>();
     private List<Achievement> myAchievements = new ArrayList<>();
+    private final Map<String, String> achievementDescriptions = new HashMap<>();
     Trainer trainer;
     Region joinedRegion;
 
@@ -221,5 +224,13 @@ public class DataCache {
         graphics.drawImage(bufferedImage, 0, 0, 64, 64, null);
         graphics.dispose();
         return resized;
+    }
+
+    public void addAchievementDescription(String achievementId, String achievementDescription) {
+        this.achievementDescriptions.put(achievementId, achievementDescription);
+    }
+
+    public Map<String, String> getAchievementDescriptions() {
+        return this.achievementDescriptions;
     }
 }
