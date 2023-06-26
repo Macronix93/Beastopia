@@ -9,14 +9,15 @@ import com.google.gson.JsonSyntaxException;
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 
-public class VariantDeserializer <T,U> extends StdDeserializer<Variant<T,U>> {
+public class VariantDeserializer<T, U> extends StdDeserializer<Variant<T, U>> {
 
     public VariantDeserializer() {
         super(Variant.class);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Variant<T,U> deserialize(JsonParser jsonParser, DeserializationContext context) throws IOException {
+    public Variant<T, U> deserialize(JsonParser jsonParser, DeserializationContext context) throws IOException {
         String json = context.readTree(jsonParser).toString();
         try {
             Class<T> tType = (Class<T>)

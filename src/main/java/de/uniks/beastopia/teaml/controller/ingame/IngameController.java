@@ -224,19 +224,6 @@ public class IngameController extends Controller {
                                                 error.getMessage());
                                     }));
 
-            //TODO neccesary?
-            disposables.add(
-                    eventListener.listen(
-                                    "regions.*.encounters.*.created", Encounter.class)
-                            .observeOn(FX_SCHEDULER)
-                            .subscribe(opponentEvent -> {
-                                        System.out.println("hey");
-                                    },
-                                    error -> {
-                                        System.err.println("Fehler beim Abonnieren der Kampf-Ereignisse: " +
-                                                error.getMessage());
-                                    }));
-
             loadingPage.setDone();
         }));
     }
