@@ -64,7 +64,7 @@ public class ScoreboardFilterController extends Controller {
 
         for (AchievementsSummary achievement : currentAchievements) {
             CheckBox checkBox = new CheckBox(cache.getAchievementDescriptions().get(achievement.id()));
-            checkBox.setStyle("-fx-font-size: 16px;");
+            checkBox.setStyle("-fx-font-size: 14px;");
             checkBox.setOnAction(event -> {
                 checkBoxes.add(new Pair<>(checkBox, achievement));
                 applyFilter();
@@ -75,7 +75,7 @@ public class ScoreboardFilterController extends Controller {
 
         for (int i = 0; i < 5; i++) {
             CheckBox checkBox = new CheckBox("Test " + i);
-            checkBox.setStyle("-fx-font-size: 16px;");
+            checkBox.setStyle("-fx-font-size: 14px;");
 
             achievementPane.getChildren().add(checkBox);
         }
