@@ -3,7 +3,7 @@ package de.uniks.beastopia.teaml.controller.ingame.beast;
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Monster;
-import de.uniks.beastopia.teaml.rest.MonsterAttributes;
+import de.uniks.beastopia.teaml.rest.MonsterTypeDto;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import de.uniks.beastopia.teaml.service.TrainerService;
@@ -45,15 +45,9 @@ public class EditBeastTeamController extends Controller {
     PresetsService presetsService;
     @Inject
     Provider<BeastListElementController> beastListElementControllerProvider;
-
-    MonsterAttributes attributes = new MonsterAttributes(1, 1, 1, 1);
-    MonsterAttributes currentAttributes = new MonsterAttributes(0, 0, 0, 0);
-    Monster monster1 = new Monster(null, null, "MONSTER_1", "TRAINER_ID", 0, 1, 1, attributes, currentAttributes);
-    Monster monster2 = new Monster(null, null, "MONSTER_2", "TRAINER_ID", 0, 2, 5, attributes, currentAttributes);
-    Monster monster3 = new Monster(null, null, "MONSTER_3", "TRAINER_ID", 0, 3, 2, attributes, currentAttributes);
-
     ObservableList<Monster> beastList = FXCollections.observableArrayList();
     ObservableList<Monster> teamList = FXCollections.observableArrayList();
+    List<MonsterTypeDto> allBeasts;
 
     @Inject
     public EditBeastTeamController() {
@@ -61,7 +55,15 @@ public class EditBeastTeamController extends Controller {
 
     @Override
     public void init() {
-        super.init();
+        disposables.add(presetsService.getAllBeasts()
+                .observeOn(FX_SCHEDULER)
+                .subscribe(
+                        beasts -> {
+                            cache.setAllBeasts(beasts);
+                            allBeasts = beasts;
+                        },
+                        error -> System.out.println("Error: " + error)
+                ));
     }
 
     @Override
@@ -69,46 +71,34 @@ public class EditBeastTeamController extends Controller {
         return resources.getString("TitelBeastTeam");
     }
 
-
     @Override
     public Parent render() {
         Parent parent = super.render();
-        //TODO clean up
         disposables.add(trainerService.getTrainerMonsters(prefs.getRegionID(), cache.getTrainer()._id())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(monsters -> {
-                    Label label = new Label();
-                    label.setText(resources.getString("NoBeasts"));
-                    beastListView.setPlaceholder(label);
-                    teamListView.setPlaceholder(label);
-                    List<String> prefTeam = prefs.getBeastTeam();
-                    for (Monster monster : monsters) {
-                        if (prefTeam.contains(monster._id())) {
-                            teamList.add(monster);
-                        } else {
-                            beastList.add(monster);
-                        }
-                    }
-                    this.beastListView.setItems(beastList);
-                    this.teamListView.setItems(teamList);
+                    setupListView(monsters);
                     this.beastListView.setCellFactory(param -> beastListElementControllerProvider.get());
                     this.teamListView.setCellFactory(param -> beastListElementControllerProvider.get());
-                    // TODO remove
-                    /*filterBar.textProperty().addListener((observable, oldValue, newValue) -> {
-                        if (newValue.isEmpty()) {
-                            beastListView.setItems(beastList);
-                        } else {
-                            ObservableList<Monster> filtered = FXCollections.observableArrayList();
-                            for (Monster monster : beastList) {
-                                if (monster.level() == Integer.parseInt(newValue)) {
-                                    filtered.add(monster);
-                                }
-                            }
-                            beastListView.setItems(filtered);
-                        }
-                    });*/
                 }));
         return parent;
+    }
+
+    public void setupListView(List<Monster> monsters) {
+        Label label = new Label();
+        label.setText(resources.getString("NoBeasts"));
+        beastListView.setPlaceholder(label);
+        teamListView.setPlaceholder(label);
+        List<String> prefTeam = prefs.getBeastTeam();
+        for (Monster monster : monsters) {
+            if (prefTeam.contains(monster._id())) {
+                teamList.add(monster);
+            } else {
+                beastList.add(monster);
+            }
+        }
+        this.beastListView.setItems(beastList);
+        this.teamListView.setItems(teamList);
     }
 
     public void backToPrevious() {
@@ -131,11 +121,19 @@ public class EditBeastTeamController extends Controller {
     }
 
     public void filterMonster() {
-        //TODO add filter functionality here instead of in render()
-        System.out.println("Filter");
+        ObservableList<Monster> filtered;
+        if (isInt(filterBar.getText())) {
+            filtered = beastList.filtered(monster -> monster.level() == Integer.parseInt(filterBar.getText()));
+        } else {
+            List<MonsterTypeDto> matchingNames = allBeasts.stream().filter(monsterTypeDto -> monsterTypeDto.name().startsWith(filterBar.getText())).toList();
+            filtered = beastList.filtered(monster -> matchingNames.stream().anyMatch(monsterTypeDto -> monster.type() == monsterTypeDto.id()));
+        }
+        beastListView.setItems(filtered);
     }
 
     public void moveItemToBeasts() {
+        filterBar.clear();
+        beastListView.setItems(beastList);
         if (teamList.size() > 0) {
             beastList.add(teamListView.getSelectionModel().getSelectedItem());
             teamListView.getItems().remove(teamListView.getSelectionModel().getSelectedItem());
@@ -143,14 +141,20 @@ public class EditBeastTeamController extends Controller {
     }
 
     public void moveItemToTeam() {
+        filterBar.clear();
+        beastListView.setItems(beastList);
         if (teamList.size() < 6) {
             teamList.add(beastListView.getSelectionModel().getSelectedItem());
             beastListView.getItems().remove(beastListView.getSelectionModel().getSelectedItem());
         }
     }
 
-    //TODO remove function -> only for testing
-    public void addFake() {
-        beastList.addAll(List.of(monster1, monster2, monster3));
+    private boolean isInt(String s) {
+        try {
+            Integer.parseInt(s);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 }
