@@ -1,10 +1,8 @@
 package de.uniks.beastopia.teaml.controller.ingame.beast;
 
 import de.uniks.beastopia.teaml.App;
-import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.rest.Monster;
 import de.uniks.beastopia.teaml.rest.MonsterAttributes;
-import javafx.scene.Parent;
 import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
@@ -12,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit5.ApplicationTest;
 
 @ExtendWith(MockitoExtension.class)
@@ -31,15 +30,15 @@ class BeastListElementControllerTest extends ApplicationTest {
 
     @Override
     public void start(Stage stage) throws Exception {
-        /*FxToolkit.setupFixture(() -> {
+        FxToolkit.setupFixture(() -> {
             monsterListView = new ListView<>();
             monsterListView.getItems().addAll(monster1);
             monsterListView.setCellFactory(param -> beastListElementController);
         });
-        FxToolkit.showStage();*/
-        AppPreparer.prepare(app);
+        FxToolkit.showStage();
+        /*AppPreparer.prepare(app);
         app.start(stage);
-        Parent showCase = monsterListView.getParent();
+        Parent showCase = monsterListView.getParent();*/
         //app.show();
     }
 
