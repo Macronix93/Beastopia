@@ -10,6 +10,7 @@ import de.uniks.beastopia.teaml.service.FriendListService;
 import de.uniks.beastopia.teaml.service.MessageService;
 import de.uniks.beastopia.teaml.sockets.EventListener;
 import io.reactivex.rxjava3.core.Observable;
+import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.input.KeyCode;
@@ -73,7 +74,7 @@ public class MessageBubbleControllerTest extends ApplicationTest {
         when(messageService.isSentByMe(any())).thenReturn(true);
         when(cache.getAllUsers()).thenReturn(List.of(user));
 
-        messageBubbleController.setMessage(group, message);
+        Platform.runLater(() -> messageBubbleController.setMessage(group, message));
 
         app.start(stage);
         app.show(messageBubbleController);
@@ -120,7 +121,7 @@ public class MessageBubbleControllerTest extends ApplicationTest {
     @Test
     void deleteMessageSuccessful() {
         doNothing().when(onDelete).accept(any());
-        messageBubbleController.setOnDelete(onDelete);
+        Platform.runLater(() -> messageBubbleController.setOnDelete(onDelete));
         when(messageService.deleteMessage(group, message)).thenReturn(Observable.just(message));
 
         clickOn("#deleteButton");
@@ -139,5 +140,10 @@ public class MessageBubbleControllerTest extends ApplicationTest {
         Parent pane = lookup(".dialog-pane").query();
         Node node = from(pane).lookup((Text t) -> t.getText().contains("Attempt to delete")).query();
         assertNotNull(node);
+    }
+
+    @Override
+    public void stop() throws Exception {
+        super.stop();
     }
 }
