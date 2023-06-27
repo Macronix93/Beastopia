@@ -10,7 +10,6 @@ import de.uniks.beastopia.teaml.service.FriendListService;
 import de.uniks.beastopia.teaml.service.MessageService;
 import de.uniks.beastopia.teaml.sockets.EventListener;
 import io.reactivex.rxjava3.core.Observable;
-import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.input.KeyCode;
@@ -74,7 +73,7 @@ public class MessageBubbleControllerTest extends ApplicationTest {
         when(messageService.isSentByMe(any())).thenReturn(true);
         when(cache.getAllUsers()).thenReturn(List.of(user));
 
-        Platform.runLater(() -> messageBubbleController.setMessage(group, message));
+        messageBubbleController.setMessage(group, message);
 
         app.start(stage);
         app.show(messageBubbleController);
@@ -121,7 +120,7 @@ public class MessageBubbleControllerTest extends ApplicationTest {
     @Test
     void deleteMessageSuccessful() {
         doNothing().when(onDelete).accept(any());
-        Platform.runLater(() -> messageBubbleController.setOnDelete(onDelete));
+        messageBubbleController.setOnDelete(onDelete);
         when(messageService.deleteMessage(group, message)).thenReturn(Observable.just(message));
 
         clickOn("#deleteButton");
