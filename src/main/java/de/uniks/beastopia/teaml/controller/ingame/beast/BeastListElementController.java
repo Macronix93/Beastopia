@@ -2,6 +2,8 @@ package de.uniks.beastopia.teaml.controller.ingame.beast;
 
 import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.rest.Monster;
+import de.uniks.beastopia.teaml.rest.MonsterTypeDto;
+import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.application.Platform;
@@ -34,6 +36,8 @@ public class BeastListElementController extends ListCell<Monster> {
     public Button downButton;
     @Inject
     PresetsService presetsService;
+    @Inject
+    DataCache cache;
 
     protected final CompositeDisposable disposables = new CompositeDisposable();
 
@@ -45,8 +49,8 @@ public class BeastListElementController extends ListCell<Monster> {
     @Override
     protected void updateItem(Monster item, boolean empty) {
         super.updateItem(item, empty);
+        setText(null);
         if (empty || item == null) {
-            setText(null);
             setGraphic(null);
         } else {
             FXMLLoader loader = new FXMLLoader(Objects.requireNonNull(Main.class.getResource("views/ingame/beast/BeastListElement.fxml")));
@@ -57,21 +61,15 @@ public class BeastListElementController extends ListCell<Monster> {
                 throw new RuntimeException(e);
             }
 
-            disposables.add(presetsService.getMonsterType(item.type())
-                    .subscribe(type -> Platform
-                                    .runLater(() -> beastLabel.setText(type.name() + " (" + type.type().get(0) + ") Lv. " + item.level())),
-                            Throwable::printStackTrace));
-
             disposables.add(presetsService.getMonsterImage(item.type())
                     .subscribe(image -> Platform
                                     .runLater(() -> beastImg.setImage(image)),
                             Throwable::printStackTrace));
 
-
+            MonsterTypeDto type = cache.getBeastDto(item.type());
+            beastLabel.setText(type.name() + " (" + type.type().get(0) + ") Lv. " + item.level());
             int maxExp = (int) Math.round(Math.pow(item.level(), 3) - Math.pow((item.level() - 1), 3));
             expProgress.setProgress((double) item.experience() / maxExp);
-            setText(null);
-            setGraphic(gridPane);
             upButton.setOnAction(event -> {
                 int index = getListView().getItems().indexOf(item);
                 swap(index, index - 1);
@@ -80,6 +78,7 @@ public class BeastListElementController extends ListCell<Monster> {
                 int index = getListView().getItems().indexOf(item);
                 swap(index, index + 1);
             });
+            setGraphic(gridPane);
         }
     }
 
