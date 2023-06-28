@@ -7,11 +7,7 @@ import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.ingame.encounter.FightWildBeastController;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
 import de.uniks.beastopia.teaml.rest.*;
-import de.uniks.beastopia.teaml.service.AreaService;
-import de.uniks.beastopia.teaml.service.DataCache;
-import de.uniks.beastopia.teaml.service.PresetsService;
-import de.uniks.beastopia.teaml.service.TokenStorage;
-import de.uniks.beastopia.teaml.service.TrainerService;
+import de.uniks.beastopia.teaml.service.*;
 import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.sockets.UDPEventListener;
 import de.uniks.beastopia.teaml.utils.Dialog;
@@ -20,6 +16,7 @@ import de.uniks.beastopia.teaml.utils.LoadingPage;
 import de.uniks.beastopia.teaml.utils.PlayerState;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import de.uniks.beastopia.teaml.utils.SoundController;
+import io.reactivex.rxjava3.core.Observable;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
@@ -90,6 +87,9 @@ public class IngameController extends Controller {
     Provider<IngameController> ingameControllerProvider;
     @Inject
     Provider<SoundController> soundControllerProvider;
+
+    @Inject
+    RegionEncountersService regionEncountersService;
 
     private Region region;
     private Map map;
@@ -209,18 +209,61 @@ public class IngameController extends Controller {
             listenToTrainerEvents();
 
             //TODO
-            disposables.add(
+            /*disposables.add(
                     eventListener.listen(
                                     "encounters.*.opponents.*.created", Opponent.class)
                             .observeOn(FX_SCHEDULER)
                             .subscribe(opponentEvent -> {
                                         Opponent opponent = opponentEvent.data();
-                                        System.out.print(opponent.toString());
-                                        //TODO if trainer
-                                        openFightBeastScreen(opponent.monster(), opponent.trainer());
+                                        System.out.println(opponent.trainer() + " " + cache.getTrainer()._id());
+                                        if (opponent._id().equals(cache.getTrainer()._id())) {
+                                            disposables.add(regionEncountersService.getRegionEncounter
+                                                            (cache.getJoinedRegion()._id(), opponent.encounter())
+                                                    .observeOn(FX_SCHEDULER).subscribe(encounter -> {
+                                                                if (encounter.isWild()) {
+                                                                    openFightBeastScreen(opponent.monster(), opponent.trainer());
+                                                                } else {
+                                                                    //TODO NPC
+
+                                                                }
+                                                            },
+                                                            error -> System.err.println("Fehler beim Encounter-Ereignis: " +
+                                                                    error.getMessage())));
+                                        }
                                     },
                                     error -> System.err.println("Fehler beim Gegner-Ereignis: " +
                                             error.getMessage())));
+
+             */
+            disposables.add(
+                    eventListener.listen("encounters.*.opponents.*.created", Opponent.class)
+                            .observeOn(FX_SCHEDULER)
+                            .concatMap(opponentEvent -> {
+                                Opponent opponent = opponentEvent.data();
+                                System.out.println(opponent.trainer() + " " + cache.getTrainer()._id());
+                                System.out.println(opponent.monster());
+                                if (opponent._id().equals(cache.getTrainer()._id())) {
+                                    return regionEncountersService.getRegionEncounter(cache.getJoinedRegion()._id(), opponent.encounter())
+                                            .observeOn(FX_SCHEDULER)
+                                            .map(encounter -> {
+                                                if (encounter.isWild()) {
+                                                    System.out.println(encounter.isWild());
+                                                    //evtl mit monster vom encounte run dann das mit trainer 0000
+                                                    openFightBeastScreen(opponent.monster(), opponent.trainer());
+                                                } else {
+                                                    // TODO NPC
+                                                }
+                                                return encounter;
+                                            });
+                                } else {
+                                    return Observable.empty(); // Ignoriere den Opponent, wenn die Bedingung nicht erfüllt ist
+                                }
+                            })
+                            .subscribe(
+                                    encounter -> {},
+                                    error -> System.err.println("Fehler beim Encounter-Ereignis: " + error.getMessage())
+                            )
+            );
 
             loadingPage.setDone();
         }));

@@ -52,10 +52,13 @@ public class FightWildBeastController extends Controller {
     public Parent render() {
         Parent parent = super.render();
 
-        disposables.add(trainerService.getTrainerMonster(prefs.getRegionID(), trainerId, beastId).observeOn(FX_SCHEDULER).concatMap(b -> { //Nacheinander ausführen
+        disposables.add(trainerService.getTrainerMonster(prefs.getRegionID(), trainerId, beastId)
+                .observeOn(FX_SCHEDULER)
+                .concatMap(b -> { //Nacheinander ausführen
             this.type = b.type();
             return presetsService.getMonsterType(this.type);
-        }).observeOn(FX_SCHEDULER).subscribe(type -> {
+        }).observeOn(FX_SCHEDULER)
+                .subscribe(type -> {
             if (prefs.getLocale().contains("de")) {
                 headline.setText("Ein wildes " + type.name() + " erscheint!");
             } else {
@@ -63,7 +66,9 @@ public class FightWildBeastController extends Controller {
             }
         }));
 
-        disposables.add(trainerService.getTrainerMonster(prefs.getRegionID(), trainerId, beastId).observeOn(FX_SCHEDULER).concatMap(b -> { //Nacheinander ausführen
+        disposables.add(trainerService.getTrainerMonster(prefs.getRegionID(), trainerId, beastId)
+                .observeOn(FX_SCHEDULER)
+                .concatMap(b -> { //Nacheinander ausführen
             this.type = b.type();
             return presetsService.getMonsterImage(this.type);
         }).observeOn(FX_SCHEDULER).subscribe(beastImage -> image.setImage(beastImage)));

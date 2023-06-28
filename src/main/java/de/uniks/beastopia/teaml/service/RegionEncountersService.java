@@ -20,7 +20,7 @@ public class RegionEncountersService {
         return regionEncountersApiService.getRegionEncounters(region_id);
     }
 
-    public Observable<Encounter> getRegionEncounter(String region_id, String id) {
-        return regionEncountersApiService.getRegionEncounter(region_id, id);
+    public Observable<Encounter> getRegionEncounter(String region_id, String encounter_id) {
+        return regionEncountersApiService.getRegionEncounter(region_id, encounter_id);
     }
 }
