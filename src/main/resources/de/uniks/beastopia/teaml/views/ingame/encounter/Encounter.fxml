@@ -24,8 +24,8 @@
             <HBox alignment="CENTER" prefHeight="150.0" prefWidth="400.0"/>
             <VBox prefHeight="46.0" prefWidth="400.0">
                 <HBox alignment="CENTER" prefHeight="100.0" prefWidth="400.0" spacing="15.0">
-                    <VBox alignment="CENTER" prefHeight="100.0" prefWidth="84.0" spacing="5.0"
-                          style="-fx-border-color: black;">
+                    <VBox fx:id="attackBox4" alignment="CENTER" onMouseClicked="#executeAttack4" prefHeight="100.0"
+                          prefWidth="84.0" spacing="5.0" style="-fx-border-color: black;">
                         <Label fx:id="attackNameLabel4" text="Tackle">
                             <font>
                                 <Font size="14.0"/>
@@ -68,8 +68,8 @@
                             </Label>
                         </HBox>
                     </VBox>
-                    <VBox alignment="CENTER" prefHeight="100.0" prefWidth="84.0" spacing="5.0"
-                          style="-fx-border-color: black;">
+                    <VBox fx:id="attackBox1" alignment="CENTER" onMouseClicked="#executeAttack1" prefHeight="100.0"
+                          prefWidth="84.0" spacing="5.0" style="-fx-border-color: black;">
                         <Label fx:id="attackNameLabel1" text="Tackle">
                             <font>
                                 <Font size="14.0"/>
@@ -112,8 +112,8 @@
                             </Label>
                         </HBox>
                     </VBox>
-                    <VBox alignment="CENTER" prefHeight="100.0" prefWidth="84.0" spacing="5.0"
-                          style="-fx-border-color: black;">
+                    <VBox fx:id="attackBox2" alignment="CENTER" onMouseClicked="#executeAttack2" prefHeight="100.0"
+                          prefWidth="84.0" spacing="5.0" style="-fx-border-color: black;">
                         <Label fx:id="attackNameLabel2" text="Tackle">
                             <font>
                                 <Font size="14.0"/>
@@ -156,8 +156,8 @@
                             </Label>
                         </HBox>
                     </VBox>
-                    <VBox alignment="CENTER" prefHeight="100.0" prefWidth="84.0" spacing="5.0"
-                          style="-fx-border-color: black;">
+                    <VBox fx:id="attackBox3" alignment="CENTER" onMouseClicked="#executeAttack3" prefHeight="100.0"
+                          prefWidth="84.0" spacing="5.0" style="-fx-border-color: black;">
                         <Label fx:id="attackNameLabel3" text="Tackle">
                             <font>
                                 <Font size="14.0"/>

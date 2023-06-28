@@ -19,9 +19,13 @@ import java.util.List;
 public class EncounterController extends Controller {
 
     @FXML
-    private VBox leftAttackBox;
+    private VBox attackBox1;
     @FXML
-    private VBox rightAttackBox;
+    private VBox attackBox2;
+    @FXML
+    private VBox attackBox3;
+    @FXML
+    private VBox attackBox4;
     @FXML
     Button leaveEncounter;
     @FXML
@@ -101,6 +105,7 @@ public class EncounterController extends Controller {
     @Override
     public void init() {
         setFightMode();
+        System.out.println("jor");
     }
 
     @Override
@@ -112,19 +117,14 @@ public class EncounterController extends Controller {
         } else {
             getEnemyMonster();
         }
+
         return parent;
     }
 
-    //TODO: set no of possible attacks dynamically
-    /*
-    create Vboxes for each attack
-    add them to parent of leftAttackBox and rightAttackBox
-    leftAttackBox.setVisible(true);
-    rightAttackBox.setVisible(true);
-    .
-    .
-    .
-    */
+    //TODO: set no of possible attacks according to active monster, unneeded boxes must be set to invisible
+    public void setNumberOfAttacks() {
+
+    }
 
     private void setFightMode() {
         if (enemyAllyTrainer != null && allyTrainer != null) {
@@ -149,11 +149,12 @@ public class EncounterController extends Controller {
     }
 
     public void getOwnMonsters() {
+        /*
         disposables.add(trainerService.getTrainerMonsters(prefs.getRegionID(), cache.getTrainer()._id())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(monsters -> {
                     this.ownMonsters.addAll(monsters);
-                }));
+                }));*/
     }
 
     //clicked leave encounter button
@@ -171,6 +172,23 @@ public class EncounterController extends Controller {
     @Override
     public String getTitle() {
         return resources.getString("titleEncounter");
+    }
+
+    //methods for attack buttons
+    public void executeAttack1() {
+        System.out.println("attack1");
+    }
+
+    public void executeAttack2() {
+        System.out.println("attack2");
+    }
+
+    public void executeAttack3() {
+        System.out.println("attack3");
+    }
+
+    public void executeAttack4() {
+        System.out.println("attack4");
     }
 
     public void setOwnMonsters(List<Monster> ownMonsters) {
@@ -201,68 +219,69 @@ public class EncounterController extends Controller {
         this.enemyAllyTrainer = enemyAllyTrainer;
     }
 
-    public void setAttackNameLabel1(Label attackNameLabel1) {
-        this.attackNameLabel1 = attackNameLabel1;
+    //methods for setting labels in attack boxes
+    public void setAttackNameLabel1(String value) {
+        attackNameLabel1.setText(value);
     }
 
-    public void setAttackTypeLabel1(Label attackTypeLabel1) {
-        this.attackTypeLabel1 = attackTypeLabel1;
+    public void setAttackTypeLabel1(String value) {
+        attackTypeLabel1.setText(value);
     }
 
-    public void setAccLabel1(Label accLabel1) {
-        this.accLabel1 = accLabel1;
+    public void setAccLabel1(String value) {
+        accLabel1.setText(value);
     }
 
-    public void setPowerLabel1(Label powerLabel1) {
-        this.powerLabel1 = powerLabel1;
+    public void setPowerLabel1(String value) {
+        powerLabel1.setText(value);
     }
 
-    public void setAttackNameLabel2(Label attackNameLabel2) {
-        this.attackNameLabel2 = attackNameLabel2;
+    public void setAttackNameLabel2(String value) {
+        attackNameLabel2.setText(value);
     }
 
-    public void setAttackTypeLabel2(Label attackTypeLabel2) {
-        this.attackTypeLabel2 = attackTypeLabel2;
+    public void setAttackTypeLabel2(String value) {
+        attackTypeLabel2.setText(value);
     }
 
-    public void setAccLabel2(Label accLabel2) {
-        this.accLabel2 = accLabel2;
+    public void setAccLabel2(String value) {
+        accLabel2.setText(value);
     }
 
-    public void setPowerLabel2(Label powerLabel2) {
-        this.powerLabel2 = powerLabel2;
+    public void setPowerLabel2(String value) {
+        powerLabel2.setText(value);
     }
 
-    public void setAttackNameLabel3(Label attackNameLabel3) {
-        this.attackNameLabel3 = attackNameLabel3;
+    public void setAttackNameLabel3(String value) {
+        attackNameLabel3.setText(value);
     }
 
-    public void setAttackTypeLabel3(Label attackTypeLabel3) {
-        this.attackTypeLabel3 = attackTypeLabel3;
+    public void setAttackTypeLabel3(String value) {
+        attackTypeLabel3.setText(value);
     }
 
-    public void setAccLabel3(Label accLabel3) {
-        this.accLabel3 = accLabel3;
+    public void setAccLabel3(String value) {
+        accLabel3.setText(value);
     }
 
-    public void setPowerLabel3(Label powerLabel3) {
-        this.powerLabel3 = powerLabel3;
+    public void setPowerLabel3(String value) {
+        powerLabel3.setText(value);
     }
 
-    public void setAttackNameLabel4(Label attackNameLabel4) {
-        this.attackNameLabel4 = attackNameLabel4;
+    public void setAttackNameLabel4(String value) {
+        attackNameLabel4.setText(value);
     }
 
-    public void setAttackTypeLabel4(Label attackTypeLabel4) {
-        this.attackTypeLabel4 = attackTypeLabel4;
+    public void setAttackTypeLabel4(String value) {
+        attackTypeLabel4.setText(value);
     }
 
-    public void setAccLabel4(Label accLabel4) {
-        this.accLabel4 = accLabel4;
+    public void setAccLabel4(String value) {
+        accLabel4.setText(value);
     }
 
-    public void setPowerLabel4(Label powerLabel4) {
-        this.powerLabel4 = powerLabel4;
+    public void setPowerLabel4(String value) {
+        powerLabel4.setText(value);
     }
 
 
