@@ -31,23 +31,41 @@ public class EncounterController extends Controller {
     @FXML
     VBox beastInfoBox;
     @FXML
-    Label leftAttackTypeLabel;
-    @FXML
-    Label rightAttackTypeLabel;
-    @FXML
-    Label leftAccLabel;
-    @FXML
-    Label rightAccLabel;
-    @FXML
-    Label leftPowerLabel;
-    @FXML
-    Label rightPowerLabel;
-    @FXML
-    Label leftAttackLabel;
-    @FXML
-    Label rightAttackLabel;
-    @FXML
     VBox enemyMonstersBox;
+    @FXML
+    Label attackNameLabel1;
+    @FXML
+    Label attackTypeLabel1;
+    @FXML
+    Label accLabel1;
+    @FXML
+    Label powerLabel1;
+    @FXML
+    Label attackNameLabel2;
+    @FXML
+    Label attackTypeLabel2;
+    @FXML
+    Label accLabel2;
+    @FXML
+    Label powerLabel2;
+    @FXML
+    Label attackNameLabel3;
+    @FXML
+    Label attackTypeLabel3;
+    @FXML
+    Label accLabel3;
+    @FXML
+    Label powerLabel3;
+    @FXML
+    Label attackNameLabel4;
+    @FXML
+    Label attackTypeLabel4;
+    @FXML
+    Label accLabel4;
+    @FXML
+    Label powerLabel4;
+
+
     @Inject
     DataCache cache;
     @Inject
@@ -150,14 +168,9 @@ public class EncounterController extends Controller {
         System.out.println("change monster");
     }
 
-    //clicked left attack VBox
-    public void leftAttack() {
-        System.out.println("left attack");
-    }
-
-    //clicked right attack VBox
-    public void rightAttack() {
-        System.out.println("right attack");
+    @Override
+    public String getTitle() {
+        return resources.getString("titleEncounter");
     }
 
     public void setOwnMonsters(List<Monster> ownMonsters) {
@@ -188,9 +201,69 @@ public class EncounterController extends Controller {
         this.enemyAllyTrainer = enemyAllyTrainer;
     }
 
-    @Override
-    public String getTitle() {
-        return resources.getString("titleEncounter");
+    public void setAttackNameLabel1(Label attackNameLabel1) {
+        this.attackNameLabel1 = attackNameLabel1;
     }
+
+    public void setAttackTypeLabel1(Label attackTypeLabel1) {
+        this.attackTypeLabel1 = attackTypeLabel1;
+    }
+
+    public void setAccLabel1(Label accLabel1) {
+        this.accLabel1 = accLabel1;
+    }
+
+    public void setPowerLabel1(Label powerLabel1) {
+        this.powerLabel1 = powerLabel1;
+    }
+
+    public void setAttackNameLabel2(Label attackNameLabel2) {
+        this.attackNameLabel2 = attackNameLabel2;
+    }
+
+    public void setAttackTypeLabel2(Label attackTypeLabel2) {
+        this.attackTypeLabel2 = attackTypeLabel2;
+    }
+
+    public void setAccLabel2(Label accLabel2) {
+        this.accLabel2 = accLabel2;
+    }
+
+    public void setPowerLabel2(Label powerLabel2) {
+        this.powerLabel2 = powerLabel2;
+    }
+
+    public void setAttackNameLabel3(Label attackNameLabel3) {
+        this.attackNameLabel3 = attackNameLabel3;
+    }
+
+    public void setAttackTypeLabel3(Label attackTypeLabel3) {
+        this.attackTypeLabel3 = attackTypeLabel3;
+    }
+
+    public void setAccLabel3(Label accLabel3) {
+        this.accLabel3 = accLabel3;
+    }
+
+    public void setPowerLabel3(Label powerLabel3) {
+        this.powerLabel3 = powerLabel3;
+    }
+
+    public void setAttackNameLabel4(Label attackNameLabel4) {
+        this.attackNameLabel4 = attackNameLabel4;
+    }
+
+    public void setAttackTypeLabel4(Label attackTypeLabel4) {
+        this.attackTypeLabel4 = attackTypeLabel4;
+    }
+
+    public void setAccLabel4(Label accLabel4) {
+        this.accLabel4 = accLabel4;
+    }
+
+    public void setPowerLabel4(Label powerLabel4) {
+        this.powerLabel4 = powerLabel4;
+    }
+
 
 }
