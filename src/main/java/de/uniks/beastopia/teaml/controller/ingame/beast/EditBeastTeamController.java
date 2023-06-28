@@ -125,8 +125,13 @@ public class EditBeastTeamController extends Controller {
         if (isInt(filterBar.getText())) {
             filtered = beastList.filtered(monster -> monster.level() == Integer.parseInt(filterBar.getText()));
         } else {
-            List<MonsterTypeDto> matchingNames = allBeasts.stream().filter(monsterTypeDto -> monsterTypeDto.name().startsWith(filterBar.getText())).toList();
-            filtered = beastList.filtered(monster -> matchingNames.stream().anyMatch(monsterTypeDto -> monster.type() == monsterTypeDto.id()));
+            List<MonsterTypeDto> matchingNames = allBeasts.stream()
+                    .filter(monsterTypeDto ->
+                            monsterTypeDto.name().toLowerCase().startsWith(filterBar.getText().toLowerCase()))
+                    .toList();
+
+            filtered = beastList.filtered(monster
+                    -> matchingNames.stream().anyMatch(monsterTypeDto -> monster.type() == monsterTypeDto.id()));
         }
         beastListView.setItems(filtered);
     }
