@@ -79,7 +79,7 @@ public class App extends Application {
         stage.setScene(scene);
 
         scene.getStylesheets().add(Objects.requireNonNull(Main.class.getResource("views/light.css")).toString());
-        CSSFX.start(scene);
+        CSSFX.start();
         setAppIcon();
 
         stage.show();
