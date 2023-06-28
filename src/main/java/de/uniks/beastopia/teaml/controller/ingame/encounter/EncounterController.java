@@ -4,12 +4,16 @@ import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Monster;
 import de.uniks.beastopia.teaml.rest.Trainer;
 import de.uniks.beastopia.teaml.service.DataCache;
+import de.uniks.beastopia.teaml.service.PresetsService;
 import de.uniks.beastopia.teaml.service.TrainerService;
 import de.uniks.beastopia.teaml.utils.Prefs;
+import io.reactivex.rxjava3.core.Observable;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
@@ -69,11 +73,12 @@ public class EncounterController extends Controller {
     @FXML
     Label powerLabel4;
 
-
     @Inject
     DataCache cache;
     @Inject
     TrainerService trainerService;
+    @Inject
+    PresetsService presetsService;
     @Inject
     Prefs prefs;
 
@@ -98,12 +103,21 @@ public class EncounterController extends Controller {
     private boolean twoVsTwoFight = false;
     private List<Controller> subControllers = new ArrayList<>();
 
+    @FXML
+    ImageView test;
+
+    Trainer trainer = new Trainer(null, null, "1", "1", "user", "name", null,
+            1, null, 1, 1, 1, null);
+    Monster monster = new Monster(null, null,
+            "1", "jor",3, 1, 10, null, null);
+
     @Inject
     public EncounterController() {
     }
 
     @Override
     public void init() {
+
         super.init();
         setFightMode();
         System.out.println("jor");
@@ -112,6 +126,11 @@ public class EncounterController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
+
+        disposables.add(presetsService.getMonsterImage(monster.type())
+                .observeOn(FX_SCHEDULER)
+                .subscribe(monsterImage -> test.setImage(monsterImage)));
+
         getOwnMonsters();
         if (enemyTrainer != null) {
             getEnemyTrainerMonsters();
