@@ -82,6 +82,7 @@ public class EncounterController extends Controller {
 
     @Override
     public void init() {
+        super.init();
         setFightMode();
     }
 
