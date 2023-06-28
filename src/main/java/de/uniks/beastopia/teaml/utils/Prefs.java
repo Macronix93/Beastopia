@@ -8,8 +8,6 @@ import de.uniks.beastopia.teaml.service.DataCache;
 import javafx.geometry.Point2D;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 import java.util.prefs.Preferences;
 
@@ -114,37 +112,4 @@ public class Prefs {
         return preferences.getDouble("soundVolume", 50.0);
     }
 
-    public void setBeastTeam(List<String> beastTeam) {
-        setBeastTeamSize(beastTeam.size());
-        int beastCount = 0;
-        for (String beast : beastTeam) {
-            preferences.put("beast" + beastCount, beast);
-            beastCount++;
-        }
-    }
-
-    public List<String> getBeastTeam() {
-        int beastTeamSize = getBeastTeamSize();
-        List<String> beastTeam = new ArrayList<>();
-        for (int i = 0; i < beastTeamSize; i++) {
-            beastTeam.add(preferences.get("beast" + i, null));
-        }
-        return beastTeam;
-    }
-
-    public void setBeastTeamSize(int size) {
-        preferences.putInt("beastTeamSize", size);
-    }
-
-    public int getBeastTeamSize() {
-        return preferences.getInt("beastTeamSize", 0);
-    }
-
-    public void removeBeastTeam() {
-        int beastTeamSize = getBeastTeamSize();
-        for (int i = 0; i < beastTeamSize; i++) {
-            preferences.remove("beast" + i);
-        }
-        preferences.remove("beastTeamSize");
-    }
 }

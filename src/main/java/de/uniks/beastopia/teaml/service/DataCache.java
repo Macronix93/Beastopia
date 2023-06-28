@@ -211,10 +211,6 @@ public class DataCache {
         this.allBeasts = beasts;
     }
 
-    public List<MonsterTypeDto> getAllBeasts() {
-        return allBeasts;
-    }
-
     public MonsterTypeDto getBeastDto(int id) {
         return allBeasts.stream()
                 .filter(monsterTypeDto -> monsterTypeDto.id() == id)

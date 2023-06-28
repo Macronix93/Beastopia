@@ -58,7 +58,7 @@ class MapControllerTest extends ApplicationTest {
     final TileSet tileSet = new TileSet(2, "IMAGE", 2, 2, 0, "NAME", 0, 4, 1);
     final Chunk chunk = new Chunk(List.of(0, 1, 2, 3), 2, 2, 0, 0);
     final Layer tilelayer = new Layer(List.of(chunk), List.of(), null, null, 1, 0, 0, "tilelayer", true, 2, 2, 0, 0);
-    final Trainer trainer = new Trainer(null, null, "1", "A", "1", "A", null, 0, "1", 0, 0, 0, null);
+    final Trainer trainer = new Trainer(null, null, "1", "A", "1", "A", null, null, 0, "1", 0, 0, 0, null);
     final Image image = createImage(2, 2, List.of(new Color(255, 0, 255), new Color(0, 255, 0), new Color(0, 0, 255), new Color(255, 255, 0)));
     final List<HashMap<String, Double>> polygon = List.of(new HashMap<>() {{
         put("x", 0.0);

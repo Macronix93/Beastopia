@@ -4,9 +4,11 @@ import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Monster;
 import de.uniks.beastopia.teaml.rest.MonsterTypeDto;
+import de.uniks.beastopia.teaml.rest.Trainer;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import de.uniks.beastopia.teaml.service.TrainerService;
+import de.uniks.beastopia.teaml.utils.Dialog;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -62,7 +64,7 @@ public class EditBeastTeamController extends Controller {
                             cache.setAllBeasts(beasts);
                             allBeasts = beasts;
                         },
-                        error -> System.out.println("Error: " + error)
+                        error -> Dialog.error(error.getMessage(), "Error")
                 ));
     }
 
@@ -89,7 +91,7 @@ public class EditBeastTeamController extends Controller {
         label.setText(resources.getString("NoBeasts"));
         beastListView.setPlaceholder(label);
         teamListView.setPlaceholder(label);
-        List<String> prefTeam = prefs.getBeastTeam();
+        List<String> prefTeam = cache.getTrainer().team();
         for (Monster monster : monsters) {
             if (prefTeam.contains(monster._id())) {
                 teamList.add(monster);
@@ -106,13 +108,23 @@ public class EditBeastTeamController extends Controller {
     }
 
     public void saveBeastTeam() {
+        List<String> updatedTeam;
+        Trainer trainer = cache.getTrainer();
+
         if (!teamList.isEmpty()) {
-            List<String> beastTeam = teamList.stream().map(Monster::_id).toList();
-            prefs.setBeastTeam(beastTeam);
+            updatedTeam = teamList.stream().map(Monster::_id).toList();
         } else {
-            prefs.removeBeastTeam();
+            updatedTeam = List.of();
         }
-        app.showPrevious();
+        disposables.add(trainerService.updateTrainer(prefs.getRegionID(), trainer._id(), trainer.name(), trainer.image(), updatedTeam)
+                .observeOn(FX_SCHEDULER)
+                .subscribe(
+                        newTrainer -> {
+                            cache.setTrainer(newTrainer);
+                            app.showPrevious();
+                        },
+                        error -> Dialog.error(error.getMessage(), "Error")
+                ));
     }
 
     @Override

@@ -41,14 +41,15 @@ class EditBeastTeamControllerTest extends ApplicationTest {
     @Spy
     @SuppressWarnings("unused")
     final ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang");
+    @SuppressWarnings("unused")
+    @Mock
+    Prefs prefs;
     @InjectMocks
     EditBeastTeamController editBeastTeamController;
     @Mock
     TrainerService trainerService;
     @Mock
     PresetsService presetsService;
-    @Mock
-    Prefs prefs;
     @Mock
     DataCache cache;
 
@@ -57,7 +58,7 @@ class EditBeastTeamControllerTest extends ApplicationTest {
     Monster monster1 = new Monster(null, null, "MONSTER_1", "TRAINER_ID", 2, 1, 1, attributes, currentAttributes);
     Monster monster2 = new Monster(null, null, "MONSTER_2", "TRAINER_ID", 4, 2, 5, attributes, currentAttributes);
     Monster monster3 = new Monster(null, null, "MONSTER_3", "TRAINER_ID", 0, 3, 2, attributes, currentAttributes);
-    final Trainer trainer = new Trainer(null, null, "123", "A", "123", "A", "A.png", 0, null, 0, 0, 0, null);
+    final Trainer trainer = new Trainer(null, null, "123", "A", "123", "A", "A.png", List.of("MONSTER_1"), 0, null, 0, 0, 0, null);
     MonsterTypeDto monsterTypeDto = new MonsterTypeDto(0, "MONSTER_1", "MONSTER_TYPE.png", List.of(""), "");
 
     @Override
@@ -67,7 +68,6 @@ class EditBeastTeamControllerTest extends ApplicationTest {
         when(cache.getTrainer()).thenReturn(trainer);
         when(trainerService.getTrainerMonsters(any(), any())).thenReturn(Observable.empty());
         when(presetsService.getAllBeasts()).thenReturn(Observable.just(List.of(monsterTypeDto)));
-        when(prefs.getBeastTeam()).thenReturn(List.of("MONSTER_2"));
         doNothing().when(cache).setAllBeasts(any());
 
         app.start(stage);
@@ -102,6 +102,7 @@ class EditBeastTeamControllerTest extends ApplicationTest {
 
     @Test
     public void selectAndSaveTest() {
+        when(trainerService.updateTrainer(any(), any(), any(), any(), anyList())).thenReturn(Observable.just(trainer));
         MenuController mocked = mock(MenuController.class);
         when(mocked.render()).thenReturn(new Label("backTest"));
         app.setHistory(List.of(mocked));
@@ -122,23 +123,22 @@ class EditBeastTeamControllerTest extends ApplicationTest {
         assertEquals(1, beastListView.getItems().size());
         assertEquals(2, teamListView.getItems().size());
 
-        doNothing().when(prefs).setBeastTeam(any());
         clickOn("#editBeastTeam");
-        verify(prefs, times(1)).setBeastTeam(any());
+        verify(cache, times(1)).setTrainer(any());
         verify(mocked, times(1)).render();
     }
 
     @Test
     public void removeTeamTest() {
+        when(trainerService.updateTrainer(any(), any(), any(), any(), anyList())).thenReturn(Observable.just(trainer));
         MenuController mocked = mock(MenuController.class);
         when(mocked.render()).thenReturn(new Label("backTest"));
         app.setHistory(List.of(mocked));
 
         moveTo(app.getStage().getScene().getRoot(), new Point2D(100, -150)).clickOn();
 
-        doNothing().when(prefs).removeBeastTeam();
         clickOn("#editBeastTeam");
-        verify(prefs, times(1)).removeBeastTeam();
+        verify(cache, times(1)).setTrainer(any());
         verify(mocked, times(1)).render();
     }
 
@@ -158,7 +158,7 @@ class EditBeastTeamControllerTest extends ApplicationTest {
         assertEquals(2, beastListView.getItems().size());
         clickOn("#filterBar");
         write("2");
-        assertEquals(0, beastListView.getItems().size());
+        assertEquals(1, beastListView.getItems().size());
     }
 
     @Test
