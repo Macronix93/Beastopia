@@ -34,6 +34,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -41,6 +42,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.util.Pair;
 
 import javax.inject.Inject;
@@ -59,11 +61,14 @@ public class IngameController extends Controller {
     static final int MENU_NONE = 0;
     static final int MENU_SCOREBOARD = 1;
     static final int MENU_BEASTLIST = 2;
+    static final int MENU_PAUSE = 3;
 
     @FXML
     public Pane tilePane;
     @FXML
     private HBox scoreBoardLayout;
+    @FXML
+    private StackPane pauseMenuLayout;
     @Inject
     App app;
     @Inject
@@ -74,6 +79,8 @@ public class IngameController extends Controller {
     TrainerService trainerService;
     @Inject
     AchievementsService achievementsService;
+    @Inject
+    PauseController pauseController;
     @Inject
     Provider<PauseController> pauseControllerProvider;
     @Inject
@@ -124,6 +131,7 @@ public class IngameController extends Controller {
     EntityController playerController;
     SoundController soundController;
     Parent scoreBoardParent;
+    Parent pauseMenuParent;
     final java.util.Map<EntityController, Parent> otherPlayers = new HashMap<>();
     private final List<KeyCode> pressedKeys = new ArrayList<>();
     private final String[] locationStrings = {"Moncenter", "House", "Store"};
@@ -161,6 +169,12 @@ public class IngameController extends Controller {
         });
         beastListController.setOnBeastClicked(this::toggleBeastDetails);
         beastListController.init();
+
+        pauseController.setOnCloseRequest(() -> {
+            pauseMenuLayout.getChildren().remove(pauseMenuParent);
+            currentMenu = MENU_NONE;
+        });
+        pauseController.init();
 
         state.setValue(PlayerState.IDLE);
         playerController = entityControllerProvider.get();
@@ -216,6 +230,7 @@ public class IngameController extends Controller {
 
             beastListParent = beastListController.render();
             scoreBoardParent = scoreBoardController.render();
+            pauseMenuParent = pauseController.render();
             loadRemoteTrainer(trainers);
             listenToTrainerEvents();
             loadingPage.setDone();
@@ -416,8 +431,8 @@ public class IngameController extends Controller {
         view.setPreserveRatio(true);
         view.setSmooth(true);
         view.setImage(image);
-        view.setFitWidth(TILE_SIZE + 1);
-        view.setFitHeight(TILE_SIZE + 1);
+        view.setFitWidth(TILE_SIZE);
+        view.setFitHeight(TILE_SIZE);
         view.setViewport(viewPort);
         view.setTranslateX(x * TILE_SIZE);
         view.setTranslateY(y * TILE_SIZE);
@@ -566,10 +581,22 @@ public class IngameController extends Controller {
     }
 
     private void handlePauseMenu(KeyEvent keyEvent) {
-        if (keyEvent.getCode().equals(KeyCode.ESCAPE)) {
-            PauseController controller = pauseControllerProvider.get();
-            controller.setRegion(region);
-            app.show(controller);
+        if (keyEvent.getCode().equals(KeyCode.ESCAPE) && (currentMenu == MENU_NONE || currentMenu == MENU_PAUSE)) {
+            if (pauseMenuLayout.getChildren().contains(pauseMenuParent)) {
+                for (Node tile : tilePane.getChildren()) {
+                    tile.setOpacity(1);
+                }
+
+                pauseMenuLayout.getChildren().remove(pauseMenuParent);
+                currentMenu = MENU_NONE;
+            } else {
+                for (Node tile : tilePane.getChildren()) {
+                    tile.setOpacity(0.5);
+                }
+
+                pauseMenuLayout.getChildren().add(pauseMenuParent);
+                currentMenu = MENU_PAUSE;
+            }
         }
     }
 

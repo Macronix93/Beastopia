@@ -2,7 +2,7 @@
     -fx-background-color: #DBF0EB;
 }
 
-.radio-button .radio, .slider .track, .scroll-bar .track, .scroll-bar .increment-button, .scroll-bar .decrement-button {
+.radio-button .radio, .slider .track, .scroll-bar .track, .scroll-bar .increment-button, .scroll-bar .decrement-button, .pauseMenuHBox {
     -fx-background-color: #FFD4B2;
     -fx-border-color: #D79B00;
     -fx-border-width: 1px;
@@ -62,7 +62,8 @@
 
 #left,
 #friendListContainer,
-#trainerContainer {
+#trainerContainer,
+#pauseMenuVBox {
     -fx-background-color: linear-gradient(to bottom, #CEEDC7, #DBF0EB);
     -fx-border-color: #82B366;
     -fx-border-width: 1px;
@@ -116,9 +117,9 @@
 }
 
 .text-area {
-    text-area-background: transparent ;
+    text-area-background: transparent;
 }
 
 .text-area .content {
-    -fx-background-color: text-area-background ;
+    -fx-background-color: text-area-background;
 }
