@@ -78,7 +78,8 @@ public class UserInfoController extends Controller {
         achievementPane.setSpacing(5);
 
         for (Achievement achievement : userAchievements) {
-            Button button = new Button(cache.getAchievementDescriptions().get(achievement.id()));
+            String buttonText = cache.getAchievementDescriptions().get(achievement.id()) + (achievement.progress() < 100.0 ? (" (" + achievement.progress() + "/100)") : "");
+            Button button = new Button(buttonText);
             button.setPrefWidth(Double.MAX_VALUE);
             achievementPane.getChildren().add(button);
         }
