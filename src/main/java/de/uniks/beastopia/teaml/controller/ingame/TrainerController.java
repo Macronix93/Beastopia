@@ -277,14 +277,10 @@ public class TrainerController extends Controller {
     }
 
     private void checkTrainerAchievement() {
-        Achievement firstTrainerAchievement = null;
-
-        for (Achievement achievement : cache.getMyAchievements()) {
-            if (achievement.id().equals("FirstTrainer")) {
-                firstTrainerAchievement = achievement;
-                break;
-            }
-        }
+        Achievement firstTrainerAchievement = cache.getMyAchievements().stream()
+                .filter(achievement -> achievement.id().equals("FirstTrainer"))
+                .findFirst()
+                .orElse(null);
 
         if (firstTrainerAchievement == null) {
             Date date = new Date();
@@ -295,14 +291,10 @@ public class TrainerController extends Controller {
     }
 
     private void checkRegionAchievement() {
-        Achievement firstRegionAchievement = null;
-
-        for (Achievement achievement : cache.getMyAchievements()) {
-            if (achievement.id().equals("FirstRegion")) {
-                firstRegionAchievement = achievement;
-                break;
-            }
-        }
+        Achievement firstRegionAchievement = cache.getMyAchievements().stream()
+                .filter(achievement -> achievement.id().equals("FirstRegion"))
+                .findFirst()
+                .orElse(null);
 
         if (firstRegionAchievement == null) {
             Date date = new Date();
