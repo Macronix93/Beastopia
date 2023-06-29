@@ -111,4 +111,12 @@ public class Prefs {
     public double getSoundVolume() {
         return preferences.getDouble("soundVolume", 50.0);
     }
+
+    public void addVisitedArea(String areas) {
+        preferences.put("visitedAreas", areas);
+    }
+
+    public String getVisitedAreas() {
+        return preferences.get("visitedAreas", null);
+    }
 }

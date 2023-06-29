@@ -36,6 +36,7 @@ public class DataCache {
     private final List<Pair<String, Image>> characters = new ArrayList<>();
     private List<Achievement> myAchievements = new ArrayList<>();
     private final Map<String, String> achievementDescriptions = new HashMap<>();
+    private List<String> visitedAreas = new ArrayList<>();
     Trainer trainer;
     Region joinedRegion;
 
@@ -98,6 +99,10 @@ public class DataCache {
 
     public void setAreas(List<Area> areas) {
         this.areas = new ArrayList<>(areas);
+    }
+
+    public List<Area> getAreas() {
+        return this.areas;
     }
 
     public Area getArea(String id) {
@@ -218,6 +223,11 @@ public class DataCache {
         this.myAchievements.add(achievement);
     }
 
+    public void updateMyAchievement(Achievement oldAchievement, Achievement newAchievement) {
+        myAchievements.removeIf(a -> a.equals(oldAchievement));
+        myAchievements.add(newAchievement);
+    }
+
     public void setMyAchievements(List<Achievement> achievements) {
         this.myAchievements = new ArrayList<>(achievements);
     }
@@ -232,5 +242,13 @@ public class DataCache {
 
     public Map<String, String> getAchievementDescriptions() {
         return this.achievementDescriptions;
+    }
+
+    public void addVisitedArea(String id) {
+        this.visitedAreas.add(id);
+    }
+
+    public List<String> getVisitedAreas() {
+        return this.visitedAreas;
     }
 }

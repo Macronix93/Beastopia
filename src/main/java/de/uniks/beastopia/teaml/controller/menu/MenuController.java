@@ -9,6 +9,7 @@ import de.uniks.beastopia.teaml.service.AuthService;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.utils.Dialog;
+import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -61,6 +62,8 @@ public class MenuController extends Controller {
     private Text userName;
     @Inject
     DataCache cache;
+    @Inject
+    Prefs prefs;
 
     @Inject
     public MenuController() {
@@ -76,9 +79,19 @@ public class MenuController extends Controller {
             cache.setTrainer(null);
         }
 
+        // Load achievements to user account
         if (cache.getMyAchievements().isEmpty()) {
             disposables.add(achievementsService.getUserAchievements(tokenStorage.getCurrentUser()._id())
                     .subscribe(achievements -> cache.setMyAchievements(achievements)));
+        }
+
+        if (prefs.getVisitedAreas() != null) {
+            String storedAreasString = prefs.getVisitedAreas();
+            String[] storedAreas = storedAreasString.split(";");
+
+            for (String id : storedAreas) {
+                cache.addVisitedArea(id);
+            }
         }
     }
 

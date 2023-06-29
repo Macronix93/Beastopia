@@ -73,13 +73,6 @@ public class ScoreboardFilterController extends Controller {
             achievementPane.getChildren().add(checkBox);
         }
 
-        for (int i = 0; i < 5; i++) {
-            CheckBox checkBox = new CheckBox("Test " + i);
-            checkBox.setStyle("-fx-font-size: 14px;");
-
-            achievementPane.getChildren().add(checkBox);
-        }
-
         achievementList.setContent(achievementPane);
         return parent;
     }

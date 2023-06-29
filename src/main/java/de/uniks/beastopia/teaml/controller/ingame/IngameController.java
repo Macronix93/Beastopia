@@ -5,6 +5,7 @@ import com.google.gson.JsonPrimitive;
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
+import de.uniks.beastopia.teaml.rest.Achievement;
 import de.uniks.beastopia.teaml.rest.Area;
 import de.uniks.beastopia.teaml.rest.Chunk;
 import de.uniks.beastopia.teaml.rest.Layer;
@@ -14,6 +15,7 @@ import de.uniks.beastopia.teaml.rest.Region;
 import de.uniks.beastopia.teaml.rest.TileSet;
 import de.uniks.beastopia.teaml.rest.TileSetDescription;
 import de.uniks.beastopia.teaml.rest.Trainer;
+import de.uniks.beastopia.teaml.service.AchievementsService;
 import de.uniks.beastopia.teaml.service.AreaService;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
@@ -45,6 +47,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -69,6 +72,8 @@ public class IngameController extends Controller {
     PresetsService presetsService;
     @Inject
     TrainerService trainerService;
+    @Inject
+    AchievementsService achievementsService;
     @Inject
     Provider<PauseController> pauseControllerProvider;
     @Inject
@@ -166,6 +171,9 @@ public class IngameController extends Controller {
                     soundController.play("sfx:opendoor");
                 }
 
+                checkAreaAchievement(cache.getArea(trainer.area())._id());
+
+                destroy();
                 IngameController controller = ingameControllerProvider.get();
                 controller.setRegion(region);
                 app.show(controller);
@@ -618,6 +626,8 @@ public class IngameController extends Controller {
         }
 
         if (moved) {
+            checkMovementAchievement();
+
             onUI(() -> {
                 state.setValue(PlayerState.WALKING);
                 updateTrainerPos(direction);
@@ -632,6 +642,70 @@ public class IngameController extends Controller {
         drawPlayer(posx, posy);
     }
 
+    private void checkMovementAchievement() {
+        Achievement firstMovementAchievement = cache.getMyAchievements().stream()
+                .filter(achievement -> achievement.id().equals("MoveCharacter"))
+                .findFirst()
+                .orElse(null);
+
+        if (firstMovementAchievement == null) {
+            Date date = new Date();
+
+            disposables.add(achievementsService.updateUserAchievement(tokenStorage.getCurrentUser()._id(), "MoveCharacter", new Achievement(null, null, "MoveCharacter", tokenStorage.getCurrentUser()._id(), date, 100))
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe(a -> {
+                        cache.addMyAchievement(a);
+                        Dialog.info(resources.getString("achievementUnlockHeader"), resources.getString("achievementUnlockedPre") + "\n" + resources.getString("achievementMoveCharacter"));
+                    }));
+        }
+    }
+
+    private void checkAreaAchievement(String areaId) {
+        String areasString;
+        String foundArea = "";
+        String areaIdSub = areaId.substring(areaId.length() - 6);
+
+        for (String visitedArea : cache.getVisitedAreas()) {
+            if (areaIdSub.equals(visitedArea)) {
+                foundArea = visitedArea;
+                break;
+            }
+        }
+
+        if (foundArea.isEmpty()) {
+            cache.addVisitedArea(areaIdSub);
+            areasString = String.join(";", cache.getVisitedAreas());
+            prefs.addVisitedArea(areasString);
+            double percentage = (double) cache.getVisitedAreas().size() / cache.getAreas().size() * 100;
+            //System.out.println("Areas: " + cache.getVisitedAreas().size() + "/" + cache.getAreas().size() + " | Prozentual erkundet: " + Math.round(percentage));
+
+            Achievement allAreasAchievement = cache.getMyAchievements().stream()
+                    .filter(achievement -> achievement.id().equals("VisitAllRegions"))
+                    .findFirst()
+                    .orElse(null);
+
+            Date date = new Date();
+
+            if (allAreasAchievement == null) {
+                allAreasAchievement = new Achievement(date, null, "VisitAllRegions", tokenStorage.getCurrentUser()._id(), null, (int) Math.round(percentage));
+                cache.addMyAchievement(allAreasAchievement);
+
+                disposables.add(achievementsService.updateUserAchievement(tokenStorage.getCurrentUser()._id(), "VisitAllRegions", allAreasAchievement).subscribe());
+            } else {
+                if (allAreasAchievement.unlockedAt() == null) {
+                    Achievement updatedAchievement = new Achievement(null, date, "VisitAllRegions", tokenStorage.getCurrentUser()._id(), allAreasAchievement.progress() == 100.0 ? date : null, (int) Math.round(percentage));
+                    cache.getMyAchievements().remove(allAreasAchievement);
+                    cache.addMyAchievement(updatedAchievement);
+
+                    disposables.add(achievementsService.updateUserAchievement(tokenStorage.getCurrentUser()._id(), "VisitAllRegions", updatedAchievement).subscribe());
+
+                    if (percentage == 100.0) {
+                        Dialog.info(resources.getString("achievementUnlockHeader"), resources.getString("achievementUnlockedPre") + "\n" + resources.getString("achievementVisitAllRegions"));
+                    }
+                }
+            }
+        }
+    }
 
     @Override
     public String getTitle() {

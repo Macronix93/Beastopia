@@ -102,8 +102,6 @@ public class TrainerController extends Controller {
             disposables.add(trainerService.createTrainer(region._id(), nameInput, trainerImage)
                     .observeOn(FX_SCHEDULER)
                     .subscribe(tr -> {
-                        checkTrainerAchievement();
-
                         cache.setTrainer(tr);
                         showIngameController(region);
                     }, error -> Dialog.error(error, "Trainer creation failed!")));
@@ -132,6 +130,7 @@ public class TrainerController extends Controller {
     }
 
     public void showIngameController(Region region) {
+        checkTrainerAchievement();
         checkRegionAchievement();
 
         IngameController ingameController = ingameControllerProvider.get();
@@ -157,8 +156,6 @@ public class TrainerController extends Controller {
                                     .filter(t -> t.user().equals(tokenStorage.getCurrentUser()._id()))
                                     .findFirst()
                                     .ifPresentOrElse(tr -> {
-                                        checkTrainerAchievement();
-
                                         cache.setTrainer(tr);
                                         showIngameController(region);
                                     }, this::loadCharacterSelection),
@@ -286,7 +283,10 @@ public class TrainerController extends Controller {
             Date date = new Date();
 
             disposables.add(achievementsService.updateUserAchievement(tokenStorage.getCurrentUser()._id(), "FirstTrainer", new Achievement(null, null, "FirstTrainer", tokenStorage.getCurrentUser()._id(), date, 100))
-                    .subscribe(a -> cache.addMyAchievement(a)));
+                    .subscribe(a -> {
+                        cache.addMyAchievement(a);
+                        Dialog.info(resources.getString("achievementUnlockHeader"), resources.getString("achievementUnlockedPre") + "\n" + resources.getString("achievementFirstTrainer"));
+                    }));
         }
     }
 
@@ -300,7 +300,10 @@ public class TrainerController extends Controller {
             Date date = new Date();
 
             disposables.add(achievementsService.updateUserAchievement(tokenStorage.getCurrentUser()._id(), "FirstRegion", new Achievement(null, null, "FirstRegion", tokenStorage.getCurrentUser()._id(), date, 100))
-                    .subscribe(a -> cache.addMyAchievement(a)));
+                    .subscribe(a -> {
+                        cache.addMyAchievement(a);
+                        Dialog.info(resources.getString("achievementUnlockHeader"), resources.getString("achievementUnlockedPre") + "\n" + resources.getString("achievementFirstRegion"));
+                    }));
         }
     }
 }
