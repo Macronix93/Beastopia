@@ -59,7 +59,7 @@
                     <Font size="20.0"/>
                 </font>
             </Text>
-            <TextField fx:id="usernameInput"/>
+            <ComboBox fx:id="usernameInput" editable="true" prefWidth="1000.0"/>
         </VBox>
         <VBox spacing="15.0">
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%Password">
