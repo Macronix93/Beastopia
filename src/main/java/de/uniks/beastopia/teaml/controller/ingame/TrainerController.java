@@ -280,13 +280,13 @@ public class TrainerController extends Controller {
                 .orElse(null);
 
         if (firstTrainerAchievement == null) {
-            Date date = new Date();
+            firstTrainerAchievement = new Achievement(null, null, "FirstTrainer", tokenStorage.getCurrentUser()._id(), new Date(), 100);
+            cache.addMyAchievement(firstTrainerAchievement);
+            Dialog.info(resources.getString("achievementUnlockHeader"), resources.getString("achievementUnlockedPre") + "\n" + resources.getString("achievementFirstTrainer"));
 
-            disposables.add(achievementsService.updateUserAchievement(tokenStorage.getCurrentUser()._id(), "FirstTrainer", new Achievement(null, null, "FirstTrainer", tokenStorage.getCurrentUser()._id(), date, 100))
-                    .subscribe(a -> {
-                        cache.addMyAchievement(a);
-                        Dialog.info(resources.getString("achievementUnlockHeader"), resources.getString("achievementUnlockedPre") + "\n" + resources.getString("achievementFirstTrainer"));
-                    }));
+            System.out.println("called");
+
+            disposables.add(achievementsService.updateUserAchievement(tokenStorage.getCurrentUser()._id(), "FirstTrainer", firstTrainerAchievement).subscribe());
         }
     }
 
@@ -297,13 +297,13 @@ public class TrainerController extends Controller {
                 .orElse(null);
 
         if (firstRegionAchievement == null) {
-            Date date = new Date();
+            firstRegionAchievement = new Achievement(null, null, "FirstRegion", tokenStorage.getCurrentUser()._id(), new Date(), 100);
+            cache.addMyAchievement(firstRegionAchievement);
+            Dialog.info(resources.getString("achievementUnlockHeader"), resources.getString("achievementUnlockedPre") + "\n" + resources.getString("achievementFirstRegion"));
 
-            disposables.add(achievementsService.updateUserAchievement(tokenStorage.getCurrentUser()._id(), "FirstRegion", new Achievement(null, null, "FirstRegion", tokenStorage.getCurrentUser()._id(), date, 100))
-                    .subscribe(a -> {
-                        cache.addMyAchievement(a);
-                        Dialog.info(resources.getString("achievementUnlockHeader"), resources.getString("achievementUnlockedPre") + "\n" + resources.getString("achievementFirstRegion"));
-                    }));
+            System.out.println("called");
+
+            disposables.add(achievementsService.updateUserAchievement(tokenStorage.getCurrentUser()._id(), "FirstRegion", firstRegionAchievement).subscribe());
         }
     }
 }

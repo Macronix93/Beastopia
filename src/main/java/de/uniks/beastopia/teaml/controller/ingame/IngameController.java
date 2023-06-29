@@ -171,11 +171,9 @@ public class IngameController extends Controller {
                     soundController.play("sfx:opendoor");
                 }
 
-                checkAreaAchievement(cache.getArea(trainer.area())._id());
-
-                destroy();
                 IngameController controller = ingameControllerProvider.get();
                 controller.setRegion(region);
+                controller.checkAreaAchievement(cache.getArea(trainer.area())._id());
                 app.show(controller);
                 return;
             }
@@ -649,14 +647,11 @@ public class IngameController extends Controller {
                 .orElse(null);
 
         if (firstMovementAchievement == null) {
-            Date date = new Date();
+            firstMovementAchievement = new Achievement(null, null, "MoveCharacter", tokenStorage.getCurrentUser()._id(), new Date(), 100);
+            cache.addMyAchievement(firstMovementAchievement);
 
-            disposables.add(achievementsService.updateUserAchievement(tokenStorage.getCurrentUser()._id(), "MoveCharacter", new Achievement(null, null, "MoveCharacter", tokenStorage.getCurrentUser()._id(), date, 100))
-                    .observeOn(FX_SCHEDULER)
-                    .subscribe(a -> {
-                        cache.addMyAchievement(a);
-                        Dialog.info(resources.getString("achievementUnlockHeader"), resources.getString("achievementUnlockedPre") + "\n" + resources.getString("achievementMoveCharacter"));
-                    }));
+            disposables.add(achievementsService.updateUserAchievement(tokenStorage.getCurrentUser()._id(), "MoveCharacter", firstMovementAchievement).observeOn(FX_SCHEDULER)
+                    .subscribe(a -> Dialog.info(resources.getString("achievementUnlockHeader"), resources.getString("achievementUnlockedPre") + "\n" + resources.getString("achievementMoveCharacter"))));
         }
     }
 
