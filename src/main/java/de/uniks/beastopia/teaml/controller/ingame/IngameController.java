@@ -627,37 +627,39 @@ public class IngameController extends Controller {
     }
 
     public void moveLoop() {
-        boolean moved = false;
+        if (currentMenu == MENU_NONE) {
+            boolean moved = false;
 
-        lastposx = posx;
-        lastposy = posy;
+            lastposx = posx;
+            lastposy = posy;
 
-        if (pressedKeys.contains(KeyCode.UP) || pressedKeys.contains(KeyCode.W)) {
-            posy--;
-            direction = Direction.UP;
-            moved = true;
-        } else if (pressedKeys.contains(KeyCode.DOWN) || pressedKeys.contains(KeyCode.S)) {
-            posy++;
-            direction = Direction.DOWN;
-            moved = true;
-        } else if (pressedKeys.contains(KeyCode.LEFT) || pressedKeys.contains(KeyCode.A)) {
-            posx--;
-            direction = Direction.LEFT;
-            moved = true;
-        } else if (pressedKeys.contains(KeyCode.RIGHT) || pressedKeys.contains(KeyCode.D)) {
-            posx++;
-            direction = Direction.RIGHT;
-            moved = true;
-        }
+            if (pressedKeys.contains(KeyCode.UP) || pressedKeys.contains(KeyCode.W)) {
+                posy--;
+                direction = Direction.UP;
+                moved = true;
+            } else if (pressedKeys.contains(KeyCode.DOWN) || pressedKeys.contains(KeyCode.S)) {
+                posy++;
+                direction = Direction.DOWN;
+                moved = true;
+            } else if (pressedKeys.contains(KeyCode.LEFT) || pressedKeys.contains(KeyCode.A)) {
+                posx--;
+                direction = Direction.LEFT;
+                moved = true;
+            } else if (pressedKeys.contains(KeyCode.RIGHT) || pressedKeys.contains(KeyCode.D)) {
+                posx++;
+                direction = Direction.RIGHT;
+                moved = true;
+            }
 
-        if (moved) {
-            checkMovementAchievement();
+            if (moved) {
+                checkMovementAchievement();
 
-            onUI(() -> {
-                state.setValue(PlayerState.WALKING);
-                updateTrainerPos(direction);
-                updateOrigin();
-            });
+                onUI(() -> {
+                    state.setValue(PlayerState.WALKING);
+                    updateTrainerPos(direction);
+                    updateOrigin();
+                });
+            }
         }
     }
 

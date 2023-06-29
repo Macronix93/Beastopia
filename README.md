@@ -68,3 +68,6 @@ Kiranshastry - Flaticon</a>
 
 <a href="https://www.flaticon.com/de/kostenlose-icons/trichter" title="trichter Icons">Trichter Icons erstellt von
 Freepik - Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/nutzer" title="nutzer Icons">Nutzer Icons erstellt von Freepik -
+Flaticon</a>
