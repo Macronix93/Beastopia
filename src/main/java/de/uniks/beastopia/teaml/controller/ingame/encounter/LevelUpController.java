@@ -9,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 import javax.inject.Inject;
@@ -54,15 +55,18 @@ public class LevelUpController extends Controller {
     private Monster beast;
 
     private boolean newAbility;
+    private boolean dev;
 
     @Inject
     public LevelUpController() {
 
     }
 
-    public void setBeast(Monster beast, boolean newAbility) {
+    public void setBeast(Monster beast, boolean newAbility, boolean dev) {
+        //TODO evtl. alten Type für Name und Bild übergeben und um diff. maxhp. zu haben
         this.newAbility = newAbility;
         this.beast = beast;
+        this.dev = dev;
     }
 
     @Override
@@ -94,9 +98,24 @@ public class LevelUpController extends Controller {
                     }
                 }));
 
-        disposables.add(presetsService.getMonsterImage(beast.type())
-                .observeOn(FX_SCHEDULER)
-                .subscribe(monsterImage -> image.setImage(monsterImage))); //TODO fade
+        lifeValueLabel.setText(beast.currentAttributes().health() + " ");
+        maxLifeLabel.setText(" " + beast.currentAttributes().health());
+        //TODO plusHP.setText();
+        xpValueLabel.setText(beast.experience() + " ");
+        maxXpLabel.setText((int) Math.pow(beast.level(), 3) - (int) Math.pow(beast.level() - 1, 3) + " ");
+
+        if (dev) { //Fade old Image -> New one
+            //Fade out oldImage //vllt id - 1
+            disposables.add(presetsService.getMonsterImage(beast.type())
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe(monsterImage ->
+                            //TODO Fade in new
+                            image.setImage(monsterImage)));
+        } else {
+            disposables.add(presetsService.getMonsterImage(beast.type())
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe(monsterImage -> image.setImage(monsterImage))); //TODO fade
+        }
 
         if (this.newAbility) {
             //TODO wenn neue nicht hinten ist
