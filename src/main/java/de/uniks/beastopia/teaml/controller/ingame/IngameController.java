@@ -3,7 +3,6 @@ package de.uniks.beastopia.teaml.controller.ingame;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import de.uniks.beastopia.teaml.App;
-import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
 import de.uniks.beastopia.teaml.rest.Map;
@@ -522,19 +521,12 @@ public class IngameController extends Controller {
     }
 
     public void handleTalkToTrainer(KeyEvent keyEvent) {
-        Image i = new Image(Objects.requireNonNull(Main.class.getResourceAsStream("assets/user.png")));
         if (keyEvent.getCode().equals(KeyCode.T)) {
             if (stackPane.getChildren().contains(dialogWindowParent)) {
                 stackPane.getChildren().remove(dialogWindowParent);
                 currentMenu = MENU_NONE;
             } else {
-                dialogWindowController = dialogWindowControllerProvider.get()
-                        .setChoices(List.of("one", "two"))
-                        .setTrainerImage(i)
-                        .setText("Dies ist ein Beispieltext.")
-                        .setOnButtonClicked(index -> {
-                            Dialog.info("test", "Button index: " + index + " was pressed :)");
-                        });
+                dialogWindowController = dialogWindowControllerProvider.get();
 
                 dialogWindowParent = dialogWindowController.render();
                 stackPane.getChildren().add(dialogWindowParent);
