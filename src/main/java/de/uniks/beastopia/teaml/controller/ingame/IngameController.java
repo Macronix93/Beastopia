@@ -36,6 +36,7 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -69,6 +70,8 @@ public class IngameController extends Controller {
     private HBox scoreBoardLayout;
     @FXML
     private StackPane pauseMenuLayout;
+    @FXML
+    private Button pauseHint;
     @Inject
     App app;
     @Inject
@@ -586,14 +589,14 @@ public class IngameController extends Controller {
                 for (Node tile : tilePane.getChildren()) {
                     tile.setOpacity(1);
                 }
-
+                pauseHint.setOpacity(1);
                 pauseMenuLayout.getChildren().remove(pauseMenuParent);
                 currentMenu = MENU_NONE;
             } else {
                 for (Node tile : tilePane.getChildren()) {
                     tile.setOpacity(0.5);
                 }
-
+                pauseHint.setOpacity(0);
                 pauseMenuLayout.getChildren().add(pauseMenuParent);
                 currentMenu = MENU_PAUSE;
             }

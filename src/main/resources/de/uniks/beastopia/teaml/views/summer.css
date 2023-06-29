@@ -2,7 +2,7 @@
     -fx-background-color: #DBF0EB;
 }
 
-.radio-button .radio, .slider .track, .scroll-bar .track, .scroll-bar .increment-button, .scroll-bar .decrement-button, .pauseMenuHBox {
+.radio-button .radio, .slider .track, .scroll-bar .track, .scroll-bar .increment-button, .scroll-bar .decrement-button {
     -fx-background-color: #FFD4B2;
     -fx-border-color: #D79B00;
     -fx-border-width: 1px;
@@ -20,7 +20,7 @@
     -fx-effect: dropshadow(gaussian, #D79B00, 5, 0, 0, 1);
 }
 
-.button {
+.button, .pauseMenuHBox {
     -fx-background-color: #FFF6BD;
     -fx-border-color: #D6B656;
     -fx-border-width: 1px;
