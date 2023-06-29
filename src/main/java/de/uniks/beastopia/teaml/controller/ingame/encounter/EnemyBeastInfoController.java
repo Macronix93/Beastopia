@@ -29,20 +29,22 @@ public class EnemyBeastInfoController extends Controller {
     public EnemyBeastInfoController() {
     }
 
+    public EnemyBeastInfoController setBeast(Monster monster) {
+        this.monster = monster;
+        return this;
+    }
+
     @Override
     public Parent render() {
         Parent parent = super.render();
+        disposables.add(presetsService.getMonsterType(monster.type())
+                .observeOn(FX_SCHEDULER)
+                .subscribe(monsterType -> enemyName.setText(monsterType.name())));
+        enemyLevel.setText(String.valueOf(monster.level()));
 
+        //TODO: calculate lifebar value, call setLifeBarValue()
 
         return parent;
-    }
-
-    public void setEnemyName(String value) {
-        enemyName.setText(value);
-    }
-
-    public void setEnemyLevel(String value) {
-        enemyLevel.setText(value);
     }
 
     public void setLifeBarValue(double value) {

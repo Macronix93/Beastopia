@@ -7,16 +7,15 @@ import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import de.uniks.beastopia.teaml.service.TrainerService;
 import de.uniks.beastopia.teaml.utils.Prefs;
-import io.reactivex.rxjava3.core.Observable;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +30,8 @@ public class EncounterController extends Controller {
     @FXML
     private VBox attackBox4;
     @FXML
+    private VBox enemyBeastInfo;
+    @FXML
     Button leaveEncounter;
     @FXML
     Button changeMonster;
@@ -40,6 +41,8 @@ public class EncounterController extends Controller {
     VBox beastInfoBox;
     @FXML
     VBox enemyMonstersBox;
+    @FXML
+    HBox ownMonstersBox;
     @FXML
     Label attackNameLabel1;
     @FXML
@@ -72,7 +75,12 @@ public class EncounterController extends Controller {
     Label accLabel4;
     @FXML
     Label powerLabel4;
-
+    @Inject
+    Provider<EnemyBeastInfoController> enemyBeastInfoControllerProvider;
+    @Inject
+    Provider<BeastInfoController> beastInfoControllerProvider;
+    @Inject
+    Provider<RenderBeastController> renderBeastControllerProvider;
     @Inject
     DataCache cache;
     @Inject
@@ -103,13 +111,13 @@ public class EncounterController extends Controller {
     private boolean twoVsTwoFight = false;
     private List<Controller> subControllers = new ArrayList<>();
 
-    @FXML
-    ImageView test;
-
     Trainer trainer = new Trainer(null, null, "1", "1", "user", "name", null,
             1, null, 1, 1, 1, null);
-    Monster monster = new Monster(null, null,
-            "1", "jor",3, 1, 10, null, null);
+    Monster monster1 = new Monster(null, null,
+            "1", "1", 3, 1, 10, null, null);
+    Monster monster2 = new Monster(null, null,
+            "1", "1", 1, 1, 10, null, null);
+
 
     @Inject
     public EncounterController() {
@@ -117,21 +125,31 @@ public class EncounterController extends Controller {
 
     @Override
     public void init() {
-
         super.init();
-        setFightMode();
-        System.out.println("jor");
+
+        //setFightMode();
     }
 
     @Override
     public Parent render() {
         Parent parent = super.render();
 
-        disposables.add(presetsService.getMonsterImage(monster.type())
-                .observeOn(FX_SCHEDULER)
-                .subscribe(monsterImage -> test.setImage(monsterImage)));
+        EnemyBeastInfoController enemyBeastInfoController1 = enemyBeastInfoControllerProvider.get().setBeast(monster1);
+        EnemyBeastInfoController enemyBeastInfoController2 = enemyBeastInfoControllerProvider.get().setBeast(monster2);
+        enemyBeastInfo.getChildren().addAll(enemyBeastInfoController1.render(), enemyBeastInfoController2.render());
 
-        getOwnMonsters();
+        RenderBeastController renderBeastController = renderBeastControllerProvider.get().setBeast1(monster1);
+        renderBeastController.setBeast2(monster2);
+        enemyMonstersBox.getChildren().addAll(renderBeastController.render());
+
+        RenderBeastController renderBeastController2 = renderBeastControllerProvider.get().setBeast1(monster1);
+        renderBeastController2.setBeast2(monster2);
+        ownMonstersBox.getChildren().addAll(renderBeastController2.render());
+
+        BeastInfoController beastInfoController1 = beastInfoControllerProvider.get().setBeast(monster1);
+        BeastInfoController beastInfoController2 = beastInfoControllerProvider.get().setBeast(monster2);
+        beastInfoBox.getChildren().addAll(beastInfoController1.render(), beastInfoController2.render());
+
         if (enemyTrainer != null) {
             getEnemyTrainerMonsters();
         } else {
@@ -187,6 +205,23 @@ public class EncounterController extends Controller {
     public void changeMonster() {
         //TODO: switch screen to monster selection
         System.out.println("change monster");
+    }
+
+    //setter methods for monsters
+    public void setOwnMonster(Monster ownMonster) {
+        this.ownMonster = ownMonster;
+    }
+
+    public void setAllyMonster(Monster allyMonster) {
+        this.allyMonster = allyMonster;
+    }
+
+    public void setEnemyMonster(Monster enemyMonster) {
+        this.enemyMonster = enemyMonster;
+    }
+
+    public void setEnemyAllyMonster(Monster enemyAllyMonster) {
+        this.enemyAllyMonster = enemyAllyMonster;
     }
 
     @Override

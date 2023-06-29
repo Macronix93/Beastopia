@@ -45,14 +45,22 @@ public class BeastInfoController extends Controller {
     public BeastInfoController() {
     }
 
-    public void setBeast(Monster monster) {
+    public BeastInfoController setBeast(Monster monster) {
         this.monster = monster;
+        return this;
     }
 
     @Override
     public Parent render() {
         Parent parent = super.render();
 
+        disposables.add(presetsService.getMonsterType(monster.type())
+                .observeOn(FX_SCHEDULER)
+                .subscribe(monsterType -> {
+                    name.setText(monsterType.name());
+                    type.setText(monsterType.type().get(0));
+                }));
+        level.setText(String.valueOf(monster.level()));
 
         return parent;
     }
@@ -74,16 +82,8 @@ public class BeastInfoController extends Controller {
         maxXpLabel.setText(value);
     }
 
-    public void setName(String value) {
-        name.setText(value);
-    }
-
     public void setType(String value) {
         type.setText(value);
-    }
-
-    public void setLevel(String value) {
-        level.setText(value);
     }
 
     public void setLifeBarValue(double value) {

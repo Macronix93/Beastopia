@@ -4,6 +4,7 @@ import dagger.BindsInstance;
 import dagger.Component;
 import de.uniks.beastopia.teaml.controller.auth.LoginController;
 import de.uniks.beastopia.teaml.controller.ingame.encounter.EncounterController;
+import de.uniks.beastopia.teaml.controller.ingame.encounter.EnemyBeastInfoController;
 import de.uniks.beastopia.teaml.modules.HttpModule;
 import de.uniks.beastopia.teaml.modules.MainModule;
 import de.uniks.beastopia.teaml.modules.PrefModule;
@@ -19,6 +20,8 @@ public interface MainComponent {
     LoginController loginController();
 
     //TODO: remove this
+    EnemyBeastInfoController enemyBeastInfoController();
+
     EncounterController encounterController();
 
     Prefs prefs();

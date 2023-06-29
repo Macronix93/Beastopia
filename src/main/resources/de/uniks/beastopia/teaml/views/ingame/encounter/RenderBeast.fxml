@@ -1,17 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Ellipse?>
-<VBox prefHeight="250.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
-   <StackPane prefHeight="250.0" prefWidth="400.0">
-      <Ellipse fill="#1fffca" radiusX="200.0" radiusY="125.0" stroke="BLACK" strokeType="INSIDE"/>
-      <HBox fx:id="imgContainer" alignment="CENTER" spacing="20.0">
-         <ImageView fx:id="firstMonster" fitHeight="125.0" fitWidth="125.0" pickOnBounds="true"
-                    preserveRatio="true"/>
-      </HBox>
-   </StackPane>
+<VBox fillWidth="false" prefHeight="250.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/19"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="de.uniks.beastopia.teaml.controller.ingame.encounter.RenderBeastController">
+    <StackPane prefHeight="250.0" prefWidth="400.0">
+        <Ellipse fill="#1fffca" radiusX="200.0" radiusY="125.0" stroke="BLACK" strokeType="INSIDE">
+            <StackPane.margin>
+                <Insets/>
+            </StackPane.margin>
+        </Ellipse>
+        <HBox fx:id="monsterContainer" alignment="CENTER" spacing="20.0">
+            <ImageView fx:id="firstMonster" fitHeight="125.0" fitWidth="125.0" pickOnBounds="true"
+                       preserveRatio="true"/>
+        </HBox>
+    </StackPane>
 </VBox>
