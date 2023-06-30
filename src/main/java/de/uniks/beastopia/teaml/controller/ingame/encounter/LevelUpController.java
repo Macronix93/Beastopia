@@ -126,10 +126,10 @@ public class LevelUpController extends Controller {
 
         plusHPLabel.setText(" (+" + plusHP + " Max HP)");
         xpValueLabel.setText(beast.experience() + " ");
-        int maxExp = (int) Math.pow(beast.level(), 3) - (int) Math.pow(beast.level() - 1, 3);
+        int maxExp =(int) Math.pow(beast.level(), 3) - (int) Math.pow(beast.level() - 1, 3);
         maxXpLabel.setText(maxExp + " ");
         double expWidth = (double) beast.experience() / maxExp;
-        starBg.setPrefWidth(expWidth * borderBg.getWidth());
+        starBg.setPrefWidth(expWidth * starBg.getWidth());
 
         if (dev) { //Fade old Image -> New one
             disposables.add(presetsService.getMonsterImage(beast.type() - 1)
