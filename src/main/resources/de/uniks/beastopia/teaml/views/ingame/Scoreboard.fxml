@@ -32,7 +32,7 @@
                         <Insets left="40.0"/>
                     </HBox.margin>
                 </Text>
-                <Button mnemonicParsing="false" onAction="#showFilterOptions">
+                <Button fx:id="filterIcon" mnemonicParsing="false" onAction="#showFilterOptions">
                     <graphic>
                         <ImageView fitHeight="19.0" fitWidth="19.0" pickOnBounds="true" preserveRatio="true">
                             <Image url="@../../assets/buttons/filter_icon.png"/>
