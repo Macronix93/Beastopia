@@ -54,7 +54,7 @@ public class BeastInfoController extends Controller {
                 .observeOn(FX_SCHEDULER)
                 .subscribe(monsterType -> {
                     name.setText(monsterType.name());
-                    type.setText(monsterType.type().get(0));
+                    type.setText("(" + monsterType.type().get(0) + ")");
                 }));
         level.setText(String.valueOf(monster.level()));
         hpLabel.setText(monster.currentAttributes().health() + " / " + monster.attributes().health() + " (HP)");

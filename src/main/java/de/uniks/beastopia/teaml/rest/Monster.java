@@ -11,6 +11,7 @@ public record Monster(
         int level,
         int experience,
         MonsterAttributes attributes,
-        MonsterAttributes currentAttributes
+        MonsterAttributes currentAttributes,
+        java.util.Map<String, Integer> abilities
 ) {
 }

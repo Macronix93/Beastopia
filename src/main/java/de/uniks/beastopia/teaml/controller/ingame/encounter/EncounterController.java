@@ -20,19 +20,20 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class EncounterController extends Controller {
 
     @FXML
-    private VBox attackBox1;
+    VBox attackBox1;
     @FXML
-    private VBox attackBox2;
+    VBox attackBox2;
     @FXML
-    private VBox attackBox3;
+    VBox attackBox3;
     @FXML
-    private VBox attackBox4;
+    VBox attackBox4;
     @FXML
-    private VBox enemyBeastInfo;
+    VBox enemyBeastInfo;
     @FXML
     Button leaveEncounter;
     @FXML
@@ -124,16 +125,16 @@ public class EncounterController extends Controller {
             1, null, 1, 1, 1, null);
     Monster monster1 = new Monster(null, null,
             "1", "1", 3, 1, 10, new MonsterAttributes(100, 100, 100, 100),
-            new MonsterAttributes(20, 10, 10, 5));
+            new MonsterAttributes(20, 10, 10, 5), Map.ofEntries(Map.entry("1", 1), Map.entry("2", 2), Map.entry("3", 3)));
     Monster monster2 = new Monster(null, null,
             "1", "1", 1, 1, 10, new MonsterAttributes(100, 100, 100, 100),
-            new MonsterAttributes(20, 10, 10, 5));
+            new MonsterAttributes(20, 10, 10, 5), Map.ofEntries(Map.entry("1", 1), Map.entry("2", 2)));
     Monster monster3 = new Monster(null, null,
             "1", "1", 2, 1, 10, new MonsterAttributes(100, 100, 100, 100),
-            new MonsterAttributes(20, 10, 10, 5));
+            new MonsterAttributes(20, 10, 10, 5), Map.ofEntries(Map.entry("1", 1)));
     Monster monster4 = new Monster(null, null,
             "1", "1", 4, 1, 10, new MonsterAttributes(100, 100, 100, 100),
-            new MonsterAttributes(20, 10, 10, 5));
+            new MonsterAttributes(20, 10, 10, 5), Map.ofEntries(Map.entry("1", 1), Map.entry("2", 2), Map.entry("3", 3)));
 
 
     @Inject
@@ -147,7 +148,7 @@ public class EncounterController extends Controller {
         setAllyMonster(monster2);
         setEnemyMonster(monster3);
         setEnemyAllyMonster(monster4);
-        //setFightMode();
+
     }
 
     @Override
@@ -194,11 +195,24 @@ public class EncounterController extends Controller {
             HBox.setHgrow(render4, Priority.ALWAYS);
         }
 
+        setNumberOfAttacks();
         return parent;
     }
 
     //TODO: set no of possible attacks according to active monster, unneeded boxes must be set to invisible
     public void setNumberOfAttacks() {
+        //get no of possible attacks
+        System.out.println("no of attacks: " + ownMonster.abilities().size());
+        if (ownMonster.abilities().size() == 1) {
+            attackBox2.setVisible(false);
+            attackBox3.setVisible(false);
+            attackBox4.setVisible(false);
+        } else if (ownMonster.abilities().size() == 2) {
+            attackBox3.setVisible(false);
+            attackBox4.setVisible(false);
+        } else if (ownMonster.abilities().size() == 3) {
+            attackBox4.setVisible(false);
+        }
 
     }
 
@@ -214,23 +228,6 @@ public class EncounterController extends Controller {
             oneVsOneFightMonsterOnly = true;
         }
 
-    }
-
-    private void getEnemyMonster() {
-        //TODO: get enemy monster
-    }
-
-    private void getEnemyTrainerMonsters() {
-        //TODO: get ID of enemy trainer and enemy trainer monsters
-    }
-
-    public void getOwnMonsters() {
-        /*
-        disposables.add(trainerService.getTrainerMonsters(prefs.getRegionID(), cache.getTrainer()._id())
-                .observeOn(FX_SCHEDULER)
-                .subscribe(monsters -> {
-                    this.ownMonsters.addAll(monsters);
-                }));*/
     }
 
     //clicked leave encounter button
