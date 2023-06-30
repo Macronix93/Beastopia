@@ -7,9 +7,9 @@ import retrofit2.http.Path;
 import java.util.List;
 
 public interface RegionEncountersApiService {
-    @GET("regions/{region_id}/encounters")
-    Observable<List<Encounter>> getRegionEncounters(@Path("region_id") String region_id);
+    @GET("regions/{regionId}/encounters")
+    Observable<List<Encounter>> getRegionEncounters(@Path("regionId") String region_id);
 
-    @GET("regions/{region_id}/encounters/{id}")
-    Observable<Encounter> getRegionEncounter(@Path("region_id") String region_id, @Path("id") String id);
+    @GET("regions/{regionId}/encounters/{id}")
+    Observable<Encounter> getRegionEncounter(@Path("regionId") String region_id, @Path("id") String id);
 }

@@ -86,5 +86,8 @@ class FightWildBeastControllerTest extends ApplicationTest {
 
     @Test
     void startFight() {
+        //TODO show EndScreen
+        //following just to undo the fight, that the server knows
+
     }
 }

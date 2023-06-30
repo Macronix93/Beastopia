@@ -6,58 +6,40 @@ import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.ingame.encounter.FightWildBeastController;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
+import de.uniks.beastopia.teaml.rest.Map;
 import de.uniks.beastopia.teaml.rest.*;
 import de.uniks.beastopia.teaml.service.*;
 import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.sockets.UDPEventListener;
-import de.uniks.beastopia.teaml.utils.Dialog;
-import de.uniks.beastopia.teaml.utils.Direction;
-import de.uniks.beastopia.teaml.utils.LoadingPage;
-import de.uniks.beastopia.teaml.utils.PlayerState;
-import de.uniks.beastopia.teaml.utils.Prefs;
-import de.uniks.beastopia.teaml.utils.SoundController;
+import de.uniks.beastopia.teaml.utils.*;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.util.Pair;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 public class IngameController extends Controller {
     static final double TILE_SIZE = 20;
     static final int MENU_NONE = 0;
     static final int MENU_SCOREBOARD = 1;
     static final int MENU_BEASTLIST = 2;
-    static final int MENU_PAUSE = 3;
 
     @FXML
     public Pane tilePane;
     @FXML
     private HBox scoreBoardLayout;
-    @FXML
-    private StackPane pauseMenuLayout;
-    @FXML
-    private Button pauseHint;
     @Inject
     App app;
     @Inject
@@ -66,8 +48,6 @@ public class IngameController extends Controller {
     PresetsService presetsService;
     @Inject
     TrainerService trainerService;
-    @Inject
-    AchievementsService achievementsService;
     @Inject
     PauseController pauseController;
     @Inject
@@ -224,7 +204,6 @@ public class IngameController extends Controller {
                 .observeOn(FX_SCHEDULER)
                 .concatMap(opponentEvent -> {
                     Opponent opponent = opponentEvent.data();
-                    System.out.println(opponent.toString());
                     return regionEncountersService.getRegionEncounter(cache.getJoinedRegion()._id(), opponent.encounter())
                             .observeOn(FX_SCHEDULER);
                 })
@@ -248,7 +227,7 @@ public class IngameController extends Controller {
                 .observeOn(FX_SCHEDULER)
                 .subscribe(o -> {
                     for (Opponent op : o) {
-                        if(op.trainer().equals("000000000000000000000000")) {
+                        if (op.trainer().equals("000000000000000000000000")) {
                             controller.setControllerInfo(op.monster(), op.trainer());
                             app.show(controller);
                         }
@@ -585,15 +564,6 @@ public class IngameController extends Controller {
         handlePauseMenu(keyEvent);
         handleScoreboard(keyEvent);
         handleBeastList(keyEvent);
-
-        //TODO
-        if (keyEvent.getCode() == KeyCode.J) {
-            FightWildBeastController controller = fightWildBeastControllerProvider.get();
-            Opponent opponent = new Opponent(null, null, null, null,
-                    "000000000000000000000000", true, true, "648c93c8866ace3595ad3d6d", null, null, 0);
-            controller.setControllerInfo(opponent.monster(), opponent.trainer());
-            app.show(controller);
-        }
     }
 
     public void handleBeastList(KeyEvent keyEvent) {
@@ -623,22 +593,10 @@ public class IngameController extends Controller {
     }
 
     private void handlePauseMenu(KeyEvent keyEvent) {
-        if (keyEvent.getCode().equals(KeyCode.ESCAPE) && (currentMenu == MENU_NONE || currentMenu == MENU_PAUSE)) {
-            if (pauseMenuLayout.getChildren().contains(pauseMenuParent)) {
-                for (Node tile : tilePane.getChildren()) {
-                    tile.setOpacity(1);
-                }
-                pauseHint.setOpacity(1);
-                pauseMenuLayout.getChildren().remove(pauseMenuParent);
-                currentMenu = MENU_NONE;
-            } else {
-                for (Node tile : tilePane.getChildren()) {
-                    tile.setOpacity(0.5);
-                }
-                pauseHint.setOpacity(0);
-                pauseMenuLayout.getChildren().add(pauseMenuParent);
-                currentMenu = MENU_PAUSE;
-            }
+        if (keyEvent.getCode().equals(KeyCode.ESCAPE)) {
+            PauseController controller = pauseControllerProvider.get();
+            controller.setRegion(region);
+            app.show(controller);
         }
     }
 
