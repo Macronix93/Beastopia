@@ -151,7 +151,7 @@ public class EditBeastTeamController extends Controller {
     public void moveItemToBeasts() {
         filterBar.clear();
         beastListView.setItems(beastList);
-        if (teamList.size() > 0) {
+        if (teamList.size() > 0 && teamListView.getSelectionModel().getSelectedItem() != null) {
             beastList.add(teamListView.getSelectionModel().getSelectedItem());
             teamListView.getItems().remove(teamListView.getSelectionModel().getSelectedItem());
         }
@@ -160,7 +160,7 @@ public class EditBeastTeamController extends Controller {
     public void moveItemToTeam() {
         filterBar.clear();
         beastListView.setItems(beastList);
-        if (teamList.size() < 6) {
+        if (teamList.size() < 6 && beastListView.getSelectionModel().getSelectedItem() != null) {
             teamList.add(beastListView.getSelectionModel().getSelectedItem());
             beastListView.getItems().remove(beastListView.getSelectionModel().getSelectedItem());
         }
