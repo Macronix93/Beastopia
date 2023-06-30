@@ -4,10 +4,10 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0"
-      prefWidth="800.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
+<HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+      prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="de.uniks.beastopia.teaml.controller.ingame.encounter.EncounterController">
-    <VBox prefHeight="600.0" prefWidth="400.0">
+    <VBox alignment="CENTER" prefHeight="600.0" prefWidth="400.0">
         <VBox prefHeight="300.0" prefWidth="400.0">
             <VBox fx:id="enemyBeastInfo" prefHeight="200.0" prefWidth="400.0" spacing="5.0">
                 <VBox.margin>
@@ -25,7 +25,7 @@
             </VBox>
         </VBox>
         <VBox prefHeight="300.0" prefWidth="400.0">
-            <HBox fx:id="ownMonstersBox" alignment="CENTER" prefHeight="150.0" prefWidth="400.0"/>
+            <HBox fx:id="ownMonstersBox" alignment="CENTER"/>
             <VBox prefHeight="46.0" prefWidth="400.0">
                 <HBox alignment="CENTER" prefHeight="100.0" prefWidth="400.0" spacing="15.0">
                     <VBox fx:id="attackBox4" alignment="CENTER" onMouseClicked="#executeAttack4" prefHeight="100.0" prefWidth="84.0" spacing="5.0" style="-fx-border-color: black;">
@@ -201,14 +201,14 @@
                         </HBox>
                     </VBox>
                     <padding>
-                        <Insets left="10.0" />
+                        <Insets left="10.0"/>
                     </padding>
                 </HBox>
             </VBox>
         </VBox>
     </VBox>
-    <VBox prefHeight="600.0" prefWidth="400.0">
-        <VBox fx:id="enemyMonstersBox" prefHeight="250.0" prefWidth="400.0" VBox.vgrow="ALWAYS"/>
+    <VBox alignment="CENTER" prefHeight="600.0" prefWidth="400.0">
+        <HBox fx:id="enemyMonstersBox" alignment="CENTER"/>
         <VBox fx:id="actionInfoBox" prefHeight="100.0" prefWidth="400.0"/>
         <VBox fx:id="beastInfoBox" alignment="CENTER" prefHeight="250.0" prefWidth="400.0" spacing="5.0">
             <VBox.margin>

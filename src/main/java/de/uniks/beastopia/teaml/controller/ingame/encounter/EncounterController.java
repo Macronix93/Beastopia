@@ -13,6 +13,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
@@ -41,7 +42,7 @@ public class EncounterController extends Controller {
     @FXML
     VBox beastInfoBox;
     @FXML
-    VBox enemyMonstersBox;
+    HBox enemyMonstersBox;
     @FXML
     HBox ownMonstersBox;
     @FXML
@@ -150,33 +151,47 @@ public class EncounterController extends Controller {
     }
 
     @Override
+    public void onResize(int width, int height) {
+        renderBeastController1.onResize(width, height);
+        renderBeastController2.onResize(width, height);
+    }
+
+    @Override
     public Parent render() {
         Parent parent = super.render();
 
         beastInfoController1 = beastInfoControllerProvider.get().setMonster(ownMonster);
         beastInfoBox.getChildren().addAll(beastInfoController1.render());
         renderBeastController1 = renderBeastControllerProvider.get().setMonster1(ownMonster);
-        ownMonstersBox.getChildren().addAll(renderBeastController1.render());
+        Parent render1 = renderBeastController1.render();
+        ownMonstersBox.getChildren().addAll(render1);
+        HBox.setHgrow(render1, Priority.ALWAYS);
 
         if (allyMonster != null) {
             beastInfoController2 = beastInfoControllerProvider.get().setMonster(allyMonster);
             beastInfoBox.getChildren().addAll(beastInfoController2.render());
             renderBeastController1.setMonster2(allyMonster);
             ownMonstersBox.getChildren().clear();
-            ownMonstersBox.getChildren().addAll(renderBeastController1.render());
+            Parent render2 = renderBeastController1.render();
+            ownMonstersBox.getChildren().addAll(render2);
+            HBox.setHgrow(render2, Priority.ALWAYS);
         }
 
         enemyBeastInfoController1 = enemyBeastInfoControllerProvider.get().setMonster(enemyMonster);
         enemyBeastInfo.getChildren().addAll(enemyBeastInfoController1.render());
-        renderBeastController1 = renderBeastControllerProvider.get().setMonster1(enemyMonster);
-        enemyMonstersBox.getChildren().addAll(renderBeastController1.render());
+        renderBeastController2 = renderBeastControllerProvider.get().setMonster1(enemyMonster);
+        Parent render3 = renderBeastController2.render();
+        enemyMonstersBox.getChildren().addAll(render3);
+        HBox.setHgrow(render3, Priority.ALWAYS);
 
         if (enemyAllyMonster != null) {
             enemyBeastInfoController2 = enemyBeastInfoControllerProvider.get().setMonster(enemyAllyMonster);
             enemyBeastInfo.getChildren().addAll(enemyBeastInfoController2.render());
-            renderBeastController1.setMonster2(enemyAllyMonster);
+            renderBeastController2.setMonster2(enemyAllyMonster);
             enemyMonstersBox.getChildren().clear();
-            enemyMonstersBox.getChildren().addAll(renderBeastController1.render());
+            Parent render4 = renderBeastController2.render();
+            enemyMonstersBox.getChildren().addAll(render4);
+            HBox.setHgrow(render4, Priority.ALWAYS);
         }
 
         return parent;

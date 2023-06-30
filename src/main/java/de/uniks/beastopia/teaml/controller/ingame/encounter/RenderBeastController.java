@@ -7,12 +7,18 @@ import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.shape.Ellipse;
 
 import javax.inject.Inject;
 
 @SuppressWarnings("unused")
 public class RenderBeastController extends Controller {
 
+    @FXML
+    VBox monsterRenderBox;
+    @FXML
+    Ellipse ellipse;
     @FXML
     HBox monsterContainer;
     @FXML
@@ -33,6 +39,12 @@ public class RenderBeastController extends Controller {
     }
 
     @Override
+    public void onResize(int width, int height) {
+        ellipse.setRadiusX(width / 5);
+        ellipse.setRadiusY(height / 6);
+    }
+
+    @Override
     public Parent render() {
         Parent parent = super.render();
 
@@ -42,13 +54,15 @@ public class RenderBeastController extends Controller {
 
         if (monster2 != null) {
             ImageView secondMonster = new ImageView();
-            secondMonster.setFitHeight(125);
-            secondMonster.setFitWidth(125);
+
             disposables.add(presetsService.getMonsterImage(monster2.type())
                     .observeOn(FX_SCHEDULER)
                     .subscribe(secondMonster::setImage));
             monsterContainer.getChildren().add(secondMonster);
         }
+
+        //ellipse.radiusXProperty().bind(monsterRenderBox.widthProperty().divide(2));
+        //ellipse.radiusYProperty().bind(monsterRenderBox.heightProperty().divide(2));
 
         return parent;
     }

@@ -57,11 +57,14 @@ public class BeastInfoController extends Controller {
                     type.setText(monsterType.type().get(0));
                 }));
         level.setText(String.valueOf(monster.level()));
-        hpLabel.setText(monster.currentAttributes().health() + " / " + monster.attributes().health() + "(HP)");
-        // (currentLevel) => currentLevel ** 3 - (currentLevel - 1) ** 3
-        xpLabel.setText(monster.experience() + " / " + "something" + "(Exp)");
+        hpLabel.setText(monster.currentAttributes().health() + " / " + monster.attributes().health() + " (HP)");
+        xpLabel.setText(monster.experience() + " / " + calcMaxXp() + " (Exp)");
 
         return parent;
+    }
+
+    private long calcMaxXp() {
+        return Math.round(Math.pow(monster.level(), 3) - Math.pow((monster.level() - 1), 3));
     }
 
     public void setType(String value) {
