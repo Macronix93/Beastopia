@@ -4,16 +4,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.Controller;
+import de.uniks.beastopia.teaml.controller.ingame.encounter.LevelUpController;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
-import de.uniks.beastopia.teaml.rest.Area;
-import de.uniks.beastopia.teaml.rest.Chunk;
-import de.uniks.beastopia.teaml.rest.Layer;
-import de.uniks.beastopia.teaml.rest.Map;
-import de.uniks.beastopia.teaml.rest.Monster;
-import de.uniks.beastopia.teaml.rest.Region;
-import de.uniks.beastopia.teaml.rest.TileSet;
-import de.uniks.beastopia.teaml.rest.TileSetDescription;
-import de.uniks.beastopia.teaml.rest.Trainer;
+import de.uniks.beastopia.teaml.rest.*;
 import de.uniks.beastopia.teaml.service.AreaService;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
@@ -95,6 +88,9 @@ public class IngameController extends Controller {
     Provider<IngameController> ingameControllerProvider;
     @Inject
     Provider<SoundController> soundControllerProvider;
+
+    @Inject
+    Provider<LevelUpController> levelUpControllerProvider;
 
     private Region region;
     private Map map;
@@ -531,6 +527,22 @@ public class IngameController extends Controller {
         handlePauseMenu(keyEvent);
         handleScoreboard(keyEvent);
         handleBeastList(keyEvent);
+
+        //TODO
+
+
+        if (keyEvent.getCode() == KeyCode.J) {
+            List<Integer> ab = new ArrayList<>();
+            ab.add(1);
+            ab.add(2);
+            Monster flam1 = new Monster(null, null, null, null , 2,
+                    2, 2, ab, new MonsterAttributes(2, 2, 2, 2),
+                    new MonsterAttributes(1, 2, 2, 2));
+            LevelUpController controller = levelUpControllerProvider.get();
+            controller.setBeast(flam1, true, true, 5);
+            controller.init();
+            app.show(controller);
+        }
     }
 
     public void handleBeastList(KeyEvent keyEvent) {

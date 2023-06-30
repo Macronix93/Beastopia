@@ -47,6 +47,10 @@ perfect - Flaticon</a>
 <a href="https://www.flaticon.com/de/kostenlose-icons/gruppe" title="gruppe Icons">Gruppe Icons erstellt von Pixel
 perfect - Flaticon</a>
 
+<a href="https://www.flaticon.com/de/kostenlose-icons/star" title="star Icons">Star Icons erstellt von Smashicons - Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/herz" title="herz Icons">Herz Icons erstellt von Good Ware - Flaticon</a>
+
 Music
 by <a href="https://pixabay.com/users/geoffharvey-9096471/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=150611">
 Geoff Harvey</a>
