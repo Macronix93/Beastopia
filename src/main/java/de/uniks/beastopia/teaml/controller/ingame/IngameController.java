@@ -226,18 +226,15 @@ public class IngameController extends Controller {
 
     private void loadTrainers(List<Trainer> trainers) {
         Trainer myTrainer = loadMyTrainer(trainers);
-        disposables.add(areaService.getAreas(this.region._id()).observeOn(FX_SCHEDULER).subscribe(areas -> {
-            cache.setAreas(areas);
-            loadMap(areas, myTrainer);
-            drawMap();
 
-            beastListParent = beastListController.render();
-            scoreBoardParent = scoreBoardController.render();
-            pauseMenuParent = pauseController.render();
-            loadRemoteTrainer(trainers);
-            listenToTrainerEvents();
-            loadingPage.setDone();
-        }));
+        if (cache.getAreas().isEmpty()) {
+            disposables.add(areaService.getAreas(this.region._id()).observeOn(FX_SCHEDULER).subscribe(areas -> {
+                cache.setAreas(areas);
+                loadMap(cache.getAreas(), myTrainer, trainers);
+            }));
+        } else {
+            loadMap(cache.getAreas(), myTrainer, trainers);
+        }
     }
 
     private void listenToTrainerEvents() {
@@ -264,23 +261,37 @@ public class IngameController extends Controller {
         }
     }
 
-    private void loadMap(List<Area> areas, Trainer myTrainer) {
+    private void loadMap(List<Area> areas, Trainer myTrainer, List<Trainer> trainers) {
         Area area = areas.stream().filter(a -> a._id().equals(myTrainer.area())).findFirst().orElseThrow();
         prefs.setArea(area);
-        this.map = area.map();
-        for (TileSetDescription tileSetDesc : map.tilesets()) {
-            TileSet tileSet = presetsService.getTileset(tileSetDesc).blockingFirst();
-            Image image = presetsService.getImage(tileSet).blockingFirst();
-            tileSets.add(new Pair<>(tileSetDesc, new Pair<>(tileSet, image)));
-        }
 
-        if (area.name().contains("Route")) {
-            soundController.play("bgm:route");
-        } else if (area.name().contains("House")) {
-            soundController.play("bgm:house");
-        } else {
-            soundController.play("bgm:city");
-        }
+        disposables.add(areaService.getArea(this.region._id(), area._id())
+                .observeOn(FX_SCHEDULER)
+                .subscribe(a -> {
+                            this.map = a.map();
+                            for (TileSetDescription tileSetDesc : map.tilesets()) {
+                                TileSet tileSet = presetsService.getTileset(tileSetDesc).blockingFirst();
+                                Image image = presetsService.getImage(tileSet).blockingFirst();
+                                tileSets.add(new Pair<>(tileSetDesc, new Pair<>(tileSet, image)));
+                            }
+                            drawMap();
+
+                            if (a.name().contains("Route")) {
+                                soundController.play("bgm:route");
+                            } else if (a.name().contains("House")) {
+                                soundController.play("bgm:house");
+                            } else {
+                                soundController.play("bgm:city");
+                            }
+
+                            beastListParent = beastListController.render();
+                            scoreBoardParent = scoreBoardController.render();
+                            pauseMenuParent = pauseController.render();
+                            loadRemoteTrainer(trainers);
+                            listenToTrainerEvents();
+                            loadingPage.setDone();
+                        }
+                ));
     }
 
     /**

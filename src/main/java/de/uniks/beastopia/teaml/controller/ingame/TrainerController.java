@@ -284,8 +284,6 @@ public class TrainerController extends Controller {
             cache.addMyAchievement(firstTrainerAchievement);
             Dialog.info(resources.getString("achievementUnlockHeader"), resources.getString("achievementUnlockedPre") + "\n" + resources.getString("achievementFirstTrainer"));
 
-            System.out.println("called");
-
             disposables.add(achievementsService.updateUserAchievement(tokenStorage.getCurrentUser()._id(), "FirstTrainer", firstTrainerAchievement).subscribe());
         }
     }
@@ -300,8 +298,6 @@ public class TrainerController extends Controller {
             firstRegionAchievement = new Achievement(null, null, "FirstRegion", tokenStorage.getCurrentUser()._id(), new Date(), 100);
             cache.addMyAchievement(firstRegionAchievement);
             Dialog.info(resources.getString("achievementUnlockHeader"), resources.getString("achievementUnlockedPre") + "\n" + resources.getString("achievementFirstRegion"));
-
-            System.out.println("called");
 
             disposables.add(achievementsService.updateUserAchievement(tokenStorage.getCurrentUser()._id(), "FirstRegion", firstRegionAchievement).subscribe());
         }

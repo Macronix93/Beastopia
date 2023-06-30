@@ -21,6 +21,7 @@ import javafx.scene.text.Text;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -79,7 +80,7 @@ public class MenuController extends Controller {
             cache.setTrainer(null);
         }
 
-        // Load achievements to user account
+        // Reset current achievements and load achievements to user account
         if (cache.getMyAchievements().isEmpty()) {
             disposables.add(achievementsService.getUserAchievements(tokenStorage.getCurrentUser()._id())
                     .subscribe(achievements -> cache.setMyAchievements(achievements)));
@@ -133,8 +134,12 @@ public class MenuController extends Controller {
     @FXML
     public void logout() {
         disposables.add(authService.logout().observeOn(FX_SCHEDULER).subscribe(
-                lr -> app.show(loginControllerProvider.get()),
-                error -> Dialog.error(error, "Logout failed")));
+                lr -> {
+                    app.show(loginControllerProvider.get());
+                    cache.setMyAchievements(Collections.emptyList());
+                },
+                error -> Dialog.error(error, "Logout failed")
+        ));
     }
 
     @FXML
