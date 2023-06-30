@@ -704,7 +704,6 @@ public class IngameController extends Controller {
             areasString = String.join(";", cache.getVisitedAreas());
             prefs.addVisitedArea(areasString);
             double percentage = (double) cache.getVisitedAreas().size() / cache.getAreas().size() * 100;
-            //System.out.println("Areas: " + cache.getVisitedAreas().size() + "/" + cache.getAreas().size() + " | Prozentual erkundet: " + Math.round(percentage));
 
             Achievement allAreasAchievement = cache.getMyAchievements().stream()
                     .filter(achievement -> achievement.id().equals("VisitAllRegions"))
