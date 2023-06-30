@@ -95,6 +95,10 @@ public class DataCache {
         this.areas = new ArrayList<>(areas);
     }
 
+    public List<Area> getAreas() {
+        return this.areas;
+    }
+
     public Area getArea(String id) {
         return areas.stream()
                 .filter(area -> area._id().equals(id))

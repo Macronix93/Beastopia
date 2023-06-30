@@ -125,6 +125,7 @@ public class IngameController extends Controller {
     EntityController playerController;
     SoundController soundController;
     Parent scoreBoardParent;
+    Parent pauseMenuParent;
     final java.util.Map<EntityController, Parent> otherPlayers = new HashMap<>();
     private final List<KeyCode> pressedKeys = new ArrayList<>();
     private final String[] locationStrings = {"Moncenter", "House", "Store"};
