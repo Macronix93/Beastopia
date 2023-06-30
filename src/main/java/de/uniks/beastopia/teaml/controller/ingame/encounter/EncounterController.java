@@ -12,6 +12,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -40,6 +41,8 @@ public class EncounterController extends Controller {
     Button changeMonster;
     @FXML
     VBox actionInfoBox;
+    @FXML
+    TextArea actionInfoText;
     @FXML
     VBox beastInfoBox;
     @FXML
@@ -78,6 +81,7 @@ public class EncounterController extends Controller {
     Label accLabel4;
     @FXML
     Label powerLabel4;
+
     @Inject
     Provider<EnemyBeastInfoController> enemyBeastInfoControllerProvider;
     @Inject
@@ -108,11 +112,6 @@ public class EncounterController extends Controller {
     private Trainer allyTrainer;
     private Trainer enemyTrainer;
     private Trainer enemyAllyTrainer;
-    private boolean oneVsOneFight = true;
-    private boolean oneVsOneFightMonsterOnly = false;
-    private boolean oneVsTwoFight = false;
-    private boolean twoVsTwoFight = false;
-    private List<Controller> subControllers = new ArrayList<>();
 
     EnemyBeastInfoController enemyBeastInfoController1;
     EnemyBeastInfoController enemyBeastInfoController2;
@@ -125,7 +124,7 @@ public class EncounterController extends Controller {
             1, null, 1, 1, 1, null);
     Monster monster1 = new Monster(null, null,
             "1", "1", 3, 1, 10, new MonsterAttributes(100, 100, 100, 100),
-            new MonsterAttributes(20, 10, 10, 5), Map.ofEntries(Map.entry("1", 1), Map.entry("2", 2), Map.entry("3", 3)));
+            new MonsterAttributes(20, 10, 10, 5), Map.ofEntries(Map.entry("test1", 1), Map.entry("test2", 2), Map.entry("test3", 3)));
     Monster monster2 = new Monster(null, null,
             "1", "1", 1, 1, 10, new MonsterAttributes(100, 100, 100, 100),
             new MonsterAttributes(20, 10, 10, 5), Map.ofEntries(Map.entry("1", 1), Map.entry("2", 2)));
@@ -164,42 +163,41 @@ public class EncounterController extends Controller {
         beastInfoController1 = beastInfoControllerProvider.get().setMonster(ownMonster);
         beastInfoBox.getChildren().addAll(beastInfoController1.render());
         renderBeastController1 = renderBeastControllerProvider.get().setMonster1(ownMonster);
-        Parent render1 = renderBeastController1.render();
-        ownMonstersBox.getChildren().addAll(render1);
-        HBox.setHgrow(render1, Priority.ALWAYS);
+        Parent ownMonster = renderBeastController1.render();
+        ownMonstersBox.getChildren().addAll(ownMonster);
+        HBox.setHgrow(ownMonster, Priority.ALWAYS);
 
         if (allyMonster != null) {
             beastInfoController2 = beastInfoControllerProvider.get().setMonster(allyMonster);
             beastInfoBox.getChildren().addAll(beastInfoController2.render());
             renderBeastController1.setMonster2(allyMonster);
             ownMonstersBox.getChildren().clear();
-            Parent render2 = renderBeastController1.render();
-            ownMonstersBox.getChildren().addAll(render2);
-            HBox.setHgrow(render2, Priority.ALWAYS);
+            Parent allyMonster = renderBeastController1.render();
+            ownMonstersBox.getChildren().addAll(allyMonster);
+            HBox.setHgrow(allyMonster, Priority.ALWAYS);
         }
 
         enemyBeastInfoController1 = enemyBeastInfoControllerProvider.get().setMonster(enemyMonster);
         enemyBeastInfo.getChildren().addAll(enemyBeastInfoController1.render());
         renderBeastController2 = renderBeastControllerProvider.get().setMonster1(enemyMonster);
-        Parent render3 = renderBeastController2.render();
-        enemyMonstersBox.getChildren().addAll(render3);
-        HBox.setHgrow(render3, Priority.ALWAYS);
+        Parent enemyMonster = renderBeastController2.render();
+        enemyMonstersBox.getChildren().addAll(enemyMonster);
+        HBox.setHgrow(enemyMonster, Priority.ALWAYS);
 
         if (enemyAllyMonster != null) {
             enemyBeastInfoController2 = enemyBeastInfoControllerProvider.get().setMonster(enemyAllyMonster);
             enemyBeastInfo.getChildren().addAll(enemyBeastInfoController2.render());
             renderBeastController2.setMonster2(enemyAllyMonster);
             enemyMonstersBox.getChildren().clear();
-            Parent render4 = renderBeastController2.render();
-            enemyMonstersBox.getChildren().addAll(render4);
-            HBox.setHgrow(render4, Priority.ALWAYS);
+            Parent enemyAlly = renderBeastController2.render();
+            enemyMonstersBox.getChildren().addAll(enemyAlly);
+            HBox.setHgrow(enemyAlly, Priority.ALWAYS);
         }
 
         setNumberOfAttacks();
         return parent;
     }
 
-    //TODO: set no of possible attacks according to active monster, unneeded boxes must be set to invisible
     public void setNumberOfAttacks() {
         //get no of possible attacks
         System.out.println("no of attacks: " + ownMonster.abilities().size());
@@ -216,19 +214,6 @@ public class EncounterController extends Controller {
 
     }
 
-    private void setFightMode() {
-        if (enemyAllyTrainer != null && allyTrainer != null) {
-            oneVsOneFight = false;
-            twoVsTwoFight = true;
-        } else if (allyTrainer == null && enemyAllyTrainer != null) {
-            oneVsOneFight = false;
-            oneVsTwoFight = true;
-        } else if (allyTrainer == null && enemyTrainer == null) {
-            oneVsOneFight = false;
-            oneVsOneFightMonsterOnly = true;
-        }
-
-    }
 
     //clicked leave encounter button
     public void leaveEncounter() {
