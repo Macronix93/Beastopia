@@ -44,8 +44,7 @@
          <HBox.margin>
             <Insets right="10.0"/>
          </HBox.margin>
-         <HBox fx:id="lifeBar" maxHeight="25.0" prefHeight="25.0" prefWidth="200.0"
-               style="-fx-border-color: black;"/>
+         <HBox fx:id="lifeBar" maxHeight="25.0" prefHeight="25.0" prefWidth="200.0" style="-fx-border-color: black;"/>
          <HBox fx:id="lifeBarValue" maxHeight="25.0" prefHeight="25.0" prefWidth="200.0"
                style="-fx-background-color: red; -fx-border-color: black;"/>
          <HBox alignment="CENTER_LEFT" maxHeight="25.0" prefHeight="25.0" prefWidth="200.0" spacing="5.0"
@@ -53,22 +52,7 @@
             <StackPane.margin>
                <Insets left="5.0"/>
             </StackPane.margin>
-            <Label fx:id="lifeValueLabel" text="lifeValue">
-               <font>
-                  <Font size="14.0"/>
-               </font>
-            </Label>
-            <Label text="/">
-               <font>
-                  <Font size="14.0"/>
-               </font>
-            </Label>
-            <Label fx:id="maxLifeLabel" text="maxLife">
-               <font>
-                  <Font size="14.0"/>
-               </font>
-            </Label>
-            <Label text="(HP)">
+            <Label fx:id="hpLabel" text="hpLabel">
                <font>
                   <Font size="14.0"/>
                </font>
@@ -98,22 +82,7 @@
                <HBox.margin>
                   <Insets left="5.0"/>
                </HBox.margin>
-               <Label text="xpValue" fx:id="xpValueLabel">
-                  <font>
-                     <Font size="14.0"/>
-                  </font>
-               </Label>
-               <Label text="/">
-                  <font>
-                     <Font size="14.0"/>
-                  </font>
-               </Label>
-               <Label fx:id="maxXpLabel" text="maxXp">
-                  <font>
-                     <Font size="14.0"/>
-                  </font>
-               </Label>
-               <Label text="(HP)">
+               <Label text="xpLabel" fx:id="xpLabel">
                   <font>
                      <Font size="14.0"/>
                   </font>

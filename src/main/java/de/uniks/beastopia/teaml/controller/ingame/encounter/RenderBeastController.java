@@ -29,14 +29,7 @@ public class RenderBeastController extends Controller {
 
     @Override
     public void init() {
-        //TODO: get monsters, check number of monsters
-        /*
-        if (monsters.size() >= 1) {
-            //get ImgView of seconds monster, set width and height to 125
-            monsterContainer.getChildren().add( ImageView of seconds monster );
 
-        }
-         */
     }
 
     @Override
@@ -60,14 +53,20 @@ public class RenderBeastController extends Controller {
         return parent;
     }
 
-    public RenderBeastController setBeast1(Monster monster1) {
+    public RenderBeastController setMonster1(Monster monster1) {
         this.monster1 = monster1;
         return this;
     }
 
-    public RenderBeastController setBeast2(Monster monster2) {
+    public RenderBeastController setMonster2(Monster monster2) {
         this.monster2 = monster2;
         return this;
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+
     }
 
 }

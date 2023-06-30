@@ -2,6 +2,7 @@ package de.uniks.beastopia.teaml.controller.ingame.encounter;
 
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Monster;
+import de.uniks.beastopia.teaml.rest.MonsterAttributes;
 import de.uniks.beastopia.teaml.rest.Trainer;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
@@ -111,12 +112,27 @@ public class EncounterController extends Controller {
     private boolean twoVsTwoFight = false;
     private List<Controller> subControllers = new ArrayList<>();
 
+    EnemyBeastInfoController enemyBeastInfoController1;
+    EnemyBeastInfoController enemyBeastInfoController2;
+    RenderBeastController renderBeastController1;
+    RenderBeastController renderBeastController2;
+    BeastInfoController beastInfoController1;
+    BeastInfoController beastInfoController2;
+
     Trainer trainer = new Trainer(null, null, "1", "1", "user", "name", null,
             1, null, 1, 1, 1, null);
     Monster monster1 = new Monster(null, null,
-            "1", "1", 3, 1, 10, null, null);
+            "1", "1", 3, 1, 10, new MonsterAttributes(100, 100, 100, 100),
+            new MonsterAttributes(20, 10, 10, 5));
     Monster monster2 = new Monster(null, null,
-            "1", "1", 1, 1, 10, null, null);
+            "1", "1", 1, 1, 10, new MonsterAttributes(100, 100, 100, 100),
+            new MonsterAttributes(20, 10, 10, 5));
+    Monster monster3 = new Monster(null, null,
+            "1", "1", 2, 1, 10, new MonsterAttributes(100, 100, 100, 100),
+            new MonsterAttributes(20, 10, 10, 5));
+    Monster monster4 = new Monster(null, null,
+            "1", "1", 4, 1, 10, new MonsterAttributes(100, 100, 100, 100),
+            new MonsterAttributes(20, 10, 10, 5));
 
 
     @Inject
@@ -126,7 +142,10 @@ public class EncounterController extends Controller {
     @Override
     public void init() {
         super.init();
-
+        setOwnMonster(monster1);
+        setAllyMonster(monster2);
+        setEnemyMonster(monster3);
+        setEnemyAllyMonster(monster4);
         //setFightMode();
     }
 
@@ -134,26 +153,30 @@ public class EncounterController extends Controller {
     public Parent render() {
         Parent parent = super.render();
 
-        EnemyBeastInfoController enemyBeastInfoController1 = enemyBeastInfoControllerProvider.get().setBeast(monster1);
-        EnemyBeastInfoController enemyBeastInfoController2 = enemyBeastInfoControllerProvider.get().setBeast(monster2);
-        enemyBeastInfo.getChildren().addAll(enemyBeastInfoController1.render(), enemyBeastInfoController2.render());
+        beastInfoController1 = beastInfoControllerProvider.get().setMonster(ownMonster);
+        beastInfoBox.getChildren().addAll(beastInfoController1.render());
+        renderBeastController1 = renderBeastControllerProvider.get().setMonster1(ownMonster);
+        ownMonstersBox.getChildren().addAll(renderBeastController1.render());
 
-        RenderBeastController renderBeastController = renderBeastControllerProvider.get().setBeast1(monster1);
-        renderBeastController.setBeast2(monster2);
-        enemyMonstersBox.getChildren().addAll(renderBeastController.render());
+        if (allyMonster != null) {
+            beastInfoController2 = beastInfoControllerProvider.get().setMonster(allyMonster);
+            beastInfoBox.getChildren().addAll(beastInfoController2.render());
+            renderBeastController1.setMonster2(allyMonster);
+            ownMonstersBox.getChildren().clear();
+            ownMonstersBox.getChildren().addAll(renderBeastController1.render());
+        }
 
-        RenderBeastController renderBeastController2 = renderBeastControllerProvider.get().setBeast1(monster1);
-        renderBeastController2.setBeast2(monster2);
-        ownMonstersBox.getChildren().addAll(renderBeastController2.render());
+        enemyBeastInfoController1 = enemyBeastInfoControllerProvider.get().setMonster(enemyMonster);
+        enemyBeastInfo.getChildren().addAll(enemyBeastInfoController1.render());
+        renderBeastController1 = renderBeastControllerProvider.get().setMonster1(enemyMonster);
+        enemyMonstersBox.getChildren().addAll(renderBeastController1.render());
 
-        BeastInfoController beastInfoController1 = beastInfoControllerProvider.get().setBeast(monster1);
-        BeastInfoController beastInfoController2 = beastInfoControllerProvider.get().setBeast(monster2);
-        beastInfoBox.getChildren().addAll(beastInfoController1.render(), beastInfoController2.render());
-
-        if (enemyTrainer != null) {
-            getEnemyTrainerMonsters();
-        } else {
-            getEnemyMonster();
+        if (enemyAllyMonster != null) {
+            enemyBeastInfoController2 = enemyBeastInfoControllerProvider.get().setMonster(enemyAllyMonster);
+            enemyBeastInfo.getChildren().addAll(enemyBeastInfoController2.render());
+            renderBeastController1.setMonster2(enemyAllyMonster);
+            enemyMonstersBox.getChildren().clear();
+            enemyMonstersBox.getChildren().addAll(renderBeastController1.render());
         }
 
         return parent;

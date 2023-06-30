@@ -20,13 +20,9 @@ public class BeastInfoController extends Controller {
     @FXML
     Label level;
     @FXML
-    Label lifeValueLabel;
+    Label hpLabel;
     @FXML
-    Label maxLifeLabel;
-    @FXML
-    Label xpValueLabel;
-    @FXML
-    Label maxXpLabel;
+    Label xpLabel;
 
     @FXML
     HBox lifeBar;
@@ -45,7 +41,7 @@ public class BeastInfoController extends Controller {
     public BeastInfoController() {
     }
 
-    public BeastInfoController setBeast(Monster monster) {
+    public BeastInfoController setMonster(Monster monster) {
         this.monster = monster;
         return this;
     }
@@ -61,25 +57,11 @@ public class BeastInfoController extends Controller {
                     type.setText(monsterType.type().get(0));
                 }));
         level.setText(String.valueOf(monster.level()));
+        hpLabel.setText(monster.currentAttributes().health() + " / " + monster.attributes().health() + "(HP)");
+        // (currentLevel) => currentLevel ** 3 - (currentLevel - 1) ** 3
+        xpLabel.setText(monster.experience() + " / " + "something" + "(Exp)");
 
         return parent;
-    }
-
-
-    public void setLifeValueLabel(String value) {
-        lifeValueLabel.setText(value);
-    }
-
-    public void setMaxLifeLabel(String value) {
-        maxLifeLabel.setText(value);
-    }
-
-    public void setXpValueLabel(String value) {
-        xpValueLabel.setText(value);
-    }
-
-    public void setMaxXpLabel(String value) {
-        maxXpLabel.setText(value);
     }
 
     public void setType(String value) {

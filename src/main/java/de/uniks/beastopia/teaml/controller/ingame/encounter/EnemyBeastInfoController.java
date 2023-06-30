@@ -29,7 +29,7 @@ public class EnemyBeastInfoController extends Controller {
     public EnemyBeastInfoController() {
     }
 
-    public EnemyBeastInfoController setBeast(Monster monster) {
+    public EnemyBeastInfoController setMonster(Monster monster) {
         this.monster = monster;
         return this;
     }

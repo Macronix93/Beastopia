@@ -5,11 +5,15 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0"
-      prefWidth="800.0" spacing="10.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
+      prefWidth="800.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="de.uniks.beastopia.teaml.controller.ingame.encounter.EncounterController">
     <VBox prefHeight="600.0" prefWidth="400.0">
         <VBox prefHeight="300.0" prefWidth="400.0">
-            <VBox fx:id="enemyBeastInfo" prefHeight="200.0" prefWidth="400.0"/>
+            <VBox fx:id="enemyBeastInfo" prefHeight="200.0" prefWidth="400.0" spacing="5.0">
+                <VBox.margin>
+                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                </VBox.margin>
+            </VBox>
             <VBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="400.0" spacing="10.0">
                 <padding>
                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
@@ -206,13 +210,10 @@
     <VBox prefHeight="600.0" prefWidth="400.0">
         <VBox fx:id="enemyMonstersBox" prefHeight="250.0" prefWidth="400.0" VBox.vgrow="ALWAYS"/>
         <VBox fx:id="actionInfoBox" prefHeight="100.0" prefWidth="400.0"/>
-        <VBox fx:id="beastInfoBox" alignment="CENTER" prefHeight="250.0" prefWidth="400.0" spacing="10.0">
+        <VBox fx:id="beastInfoBox" alignment="CENTER" prefHeight="250.0" prefWidth="400.0" spacing="5.0">
             <VBox.margin>
                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
             </VBox.margin>
         </VBox>
     </VBox>
-    <padding>
-        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
-    </padding>
 </HBox>
