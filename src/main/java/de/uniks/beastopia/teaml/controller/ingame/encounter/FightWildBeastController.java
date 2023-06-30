@@ -38,7 +38,7 @@ public class FightWildBeastController extends Controller {
 
     }
 
-    public void setWildBeast(String beastId, String trainerId) {
+    public void setControllerInfo(String beastId, String trainerId) {
         this.beastId = beastId;
         this.trainerId = trainerId;
     }

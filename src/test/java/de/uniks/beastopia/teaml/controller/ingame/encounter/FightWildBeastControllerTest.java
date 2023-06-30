@@ -58,7 +58,7 @@ class FightWildBeastControllerTest extends ApplicationTest {
     public void start(Stage stage) {
         AppPreparer.prepare(app);
 
-        fightWildBeastController.setWildBeast("beast", "trainer");
+        fightWildBeastController.setControllerInfo("beast", "trainer");
         when(prefs.getRegionID()).thenReturn("region");
         when(trainerService.getTrainerMonster("region", "trainer", "beast"))
                 .thenReturn(Observable.just(monster));

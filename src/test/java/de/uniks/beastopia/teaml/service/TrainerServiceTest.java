@@ -103,6 +103,7 @@ public class TrainerServiceTest {
         verify(trainerApiService).updateTrainer("region", "trainer",
                 new UpdateTrainerDto("A", "A"));
     }
+
     @Test
     void getTrainerMonsters() {
         when(trainerApiService.getTrainerMonsters("region", "trainer"))
