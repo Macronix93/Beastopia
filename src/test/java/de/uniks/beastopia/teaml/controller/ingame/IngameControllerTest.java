@@ -122,16 +122,17 @@ class IngameControllerTest extends ApplicationTest {
 
         when(tokenStorage.getCurrentUser()).thenReturn(user);
         when(trainerService.getAllTrainer(any())).thenReturn(Observable.just(List.of(trainer)));
+        when(areaService.getArea(anyString(), anyString())).thenReturn(Observable.just(area));
+        when(cache.getAreas()).thenReturn(List.of(area));
         doNothing().when(scoreboardController).init();
         when(scoreboardController.render()).thenReturn(new Pane());
         when(eventListener.listen(any(), any())).thenReturn(Observable.empty());
         doNothing().when(prefs).setCurrentRegion(any());
         doNothing().when(prefs).setArea(any());
-        when(areaService.getAreas(anyString())).thenReturn(Observable.just(List.of(area)));
-        doNothing().when(cache).setAreas(any());
         when(presetsService.getTileset(tileSetDescription)).thenReturn(Observable.just(tileSet));
         when(presetsService.getImage(tileSet)).thenReturn(Observable.just(image));
         when(cache.getTrainer()).thenReturn(trainer);
+        doNothing().when(cache).setTrainer(trainer);
         when(entityControllerProvider.get()).thenReturn(playerController);
         doNothing().when(playerController).setTrainer(any());
         when(playerController.playerState()).thenReturn(new SimpleObjectProperty<>(PlayerState.IDLE));
