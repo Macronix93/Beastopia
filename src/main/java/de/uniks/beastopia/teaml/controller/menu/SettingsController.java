@@ -2,6 +2,7 @@ package de.uniks.beastopia.teaml.controller.menu;
 
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.utils.Prefs;
+import de.uniks.beastopia.teaml.utils.SoundController;
 import de.uniks.beastopia.teaml.utils.ThemeSettings;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -49,6 +50,11 @@ public class SettingsController extends Controller {
     Provider<ResourceBundle> resourcesProvider;
     @Inject
     Provider<KeybindElementController> keybindElementControllerProvider;
+    @Inject
+    Provider<SoundController> soundControllerProvider;
+    SoundController soundController;
+    double debounceDelay = 250; // Delay in milliseconds
+    long lastValueChangeTime = 0;
 
 
     @Inject
@@ -71,6 +77,8 @@ public class SettingsController extends Controller {
         soundVolumeSlider.setValue(prefs.getSoundVolume());
 
         showKeyBindings();
+
+        soundController = soundControllerProvider.get();
 
         return parent;
     }
@@ -117,16 +125,34 @@ public class SettingsController extends Controller {
     @FXML
     public void changeMusicVolume() {
         prefs.setMusicVolume(musicVolumeSlider.getValue());
+
+        if (soundController.getBgmPlayer() != null) {
+            soundController.updateVolume();
+        } else {
+            soundController.play("bgm:city");
+        }
     }
 
     @FXML
     public void changeSoundVolume() {
-        prefs.setSoundVolume(soundVolumeSlider.getValue());
+        soundVolumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            prefs.setSoundVolume(soundVolumeSlider.getValue());
+
+            long currentTime = System.currentTimeMillis();
+            if (currentTime - lastValueChangeTime > debounceDelay) {
+                soundController.play("sfx:bump");
+                lastValueChangeTime = currentTime;
+            }
+        });
     }
 
     @FXML
     public void back() {
         app.showPrevious();
+
+        if (soundController.getBgmPlayer() != null) {
+            soundController.stopBGM();
+        }
     }
 
     @Override
