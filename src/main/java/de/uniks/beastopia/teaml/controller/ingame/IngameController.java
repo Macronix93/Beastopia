@@ -19,6 +19,8 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelReader;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
@@ -109,6 +111,7 @@ public class IngameController extends Controller {
     private final String[] locationStrings = {"Moncenter", "House", "Store"};
     private long lastValueChangeTime = 0;
     private DialogWindowController dialogWindowController;
+    private Trainer npcTalkPartner;
 
     @Inject
     public IngameController() {
@@ -191,6 +194,7 @@ public class IngameController extends Controller {
         Trainer myTrainer = loadMyTrainer(trainers);
         disposables.add(areaService.getAreas(this.region._id()).observeOn(FX_SCHEDULER).subscribe(areas -> {
             cache.setAreas(areas);
+            cache.setTrainers(trainers);
             loadMap(areas, myTrainer);
             drawMap();
 

@@ -129,6 +129,15 @@ public class DataCache {
         }
     }
 
+    public void setTrainers(List<Trainer> trainers) {
+        this.trainers.clear();
+        this.trainers.addAll(trainers);
+    }
+
+    public List<Trainer> getTrainers() {
+        return trainers;
+    }
+
     public Trainer getTrainer(String id) {
         return trainers.stream()
                 .filter(trainer -> trainer._id().equals(id))
