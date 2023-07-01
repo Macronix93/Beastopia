@@ -69,7 +69,6 @@ public class TrainerController extends Controller {
     Provider<DeleteTrainerController> deleteTrainerControllerProvider;
 
     private Trainer trainer;
-    private Region region;
     private String backController;
     private LoadingPage loadingPage;
     private String currentSprite = "";
@@ -99,33 +98,31 @@ public class TrainerController extends Controller {
 
         // Either change the current trainer or create
         if (cache.getTrainer() == null) {
-            disposables.add(trainerService.createTrainer(region._id(), nameInput, trainerImage)
+            disposables.add(trainerService.createTrainer(cache.getJoinedRegion()._id(), nameInput, trainerImage)
                     .observeOn(FX_SCHEDULER)
                     .subscribe(tr -> {
                         cache.setTrainer(tr);
-                        showIngameController(region);
+                        showIngameController(cache.getJoinedRegion());
                     }, error -> Dialog.error(error, "Trainer creation failed!")));
         } else {
-            disposables.add(trainerService.updateTrainer(region._id(), cache.getTrainer()._id(), nameInput, trainerImage, cache.getTrainer().team())
+            disposables.add(trainerService.updateTrainer(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), nameInput, trainerImage, cache.getTrainer().team())
                     .observeOn(FX_SCHEDULER)
                     .subscribe(tr -> {
                         cache.setTrainer(tr);
-                        showIngameController(region);
+                        showIngameController(cache.getJoinedRegion());
                     }, error -> Dialog.error(error, "Trainer adjustments failed!")));
         }
     }
 
     public void deleteTrainer() {
-        DeleteTrainerController deleteTrainerController = deleteTrainerControllerProvider.get();
-        deleteTrainerController.setRegion(region);
-        app.show(deleteTrainerController);
+        app.show(deleteTrainerControllerProvider.get());
     }
 
     public void back() {
         if (this.backController.equals("menu")) {
             app.show(menuControllerProvider.get());
         } else {
-            showIngameController(region);
+            showIngameController(cache.getJoinedRegion());
         }
     }
 
@@ -143,21 +140,21 @@ public class TrainerController extends Controller {
         loadingPage = LoadingPage.makeLoadingPage(super.render());
 
         trainerNameInput.textProperty().bindBidirectional(trainerName);
-        regionNameDisplay.setText(region.name());
+        regionNameDisplay.setText(cache.getJoinedRegion().name());
 
         if (trainer == null) {
             // Disable trainer deletion button if no trainer present
             deleteTrainerButton.setDisable(true);
 
             // Check if current user has a trainer for the specified region
-            disposables.add(trainerService.getAllTrainer(region._id())
+            disposables.add(trainerService.getAllTrainer(cache.getJoinedRegion()._id())
                     .observeOn(FX_SCHEDULER)
                     .subscribe(trainers -> trainers.stream()
                                     .filter(t -> t.user().equals(tokenStorage.getCurrentUser()._id()))
                                     .findFirst()
                                     .ifPresentOrElse(tr -> {
                                         cache.setTrainer(tr);
-                                        showIngameController(region);
+                                        showIngameController(cache.getJoinedRegion());
                                     }, this::loadCharacterSelection),
                             error -> Dialog.error(error, "Trainer loading failed!")));
         } else {
@@ -246,10 +243,6 @@ public class TrainerController extends Controller {
     public TrainerController backController(String controller) {
         this.backController = controller;
         return this;
-    }
-
-    public void setRegion(Region region) {
-        this.region = region;
     }
 
     public void showTrainerSpritePreview(String charName, Image sprite) {

@@ -98,7 +98,9 @@
 #chatList,
 #regionList,
 .region-cell,
-#chatScrollPane .viewport {
+#chatScrollPane .viewport,
+#regionList .list-cell:even,
+#regionList .list-cell:odd {
     -fx-background-color: #DBF0EB;
 }
 

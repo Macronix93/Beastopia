@@ -4,7 +4,6 @@ import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.ingame.TrainerController;
 import de.uniks.beastopia.teaml.controller.ingame.beast.EditBeastTeamController;
 import de.uniks.beastopia.teaml.controller.menu.social.FriendListController;
-import de.uniks.beastopia.teaml.rest.Region;
 import de.uniks.beastopia.teaml.utils.SoundController;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -35,7 +34,6 @@ public class PauseController extends Controller {
 
     @FXML
     private VBox friendListContainer;
-    private Region region;
     private Runnable onCloseRequest;
 
     @Inject
@@ -87,7 +85,6 @@ public class PauseController extends Controller {
         }
 
         TrainerController controller = trainerControllerProvider.get();
-        controller.setRegion(region);
         controller.backController("pause");
         app.show(controller);
     }
@@ -99,10 +96,6 @@ public class PauseController extends Controller {
     @FXML
     public void pauseMenu() {
         onCloseRequest.run();
-    }
-
-    public void setRegion(Region region) {
-        this.region = region;
     }
 
     public void beastTeamButtonPressed() {
