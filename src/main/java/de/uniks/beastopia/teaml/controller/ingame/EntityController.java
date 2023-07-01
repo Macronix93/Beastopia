@@ -146,7 +146,7 @@ public class EntityController extends Controller {
         updateViewPort();
 
         if (!SPRITESHEET.containsKey(trainer.image()) || SPRITESHEET.get(trainer.image()) == null) {
-            disposables.add(presetsService.getCharacterSprites(trainer.image()).observeOn(FX_SCHEDULER).subscribe(image -> {
+            disposables.add(presetsService.getCharacterSprites(trainer.image(), false).observeOn(FX_SCHEDULER).subscribe(image -> {
                 SPRITESHEET.put(trainer.image(), image);
                 entityView.setImage(image);
             }));

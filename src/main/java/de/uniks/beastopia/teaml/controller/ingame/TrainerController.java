@@ -175,8 +175,10 @@ public class TrainerController extends Controller {
                     disposables.add(delay().subscribe(t -> {
                         for (Pair<String, Image> pair : cache.getCharacters()) {
                             if (cache.getCharacterImage(pair.getKey()).getValue() == null) {
-                                cache.setCharacterImage(pair.getKey(), new Image("https://stpmon.uniks.de/api/v3/presets/characters/" + pair.getKey(), 383 * PREVIEW_SCALING, 96 * PREVIEW_SCALING, true, false));
-                                onUI(this::updateImages);
+                                disposables.add(presetsService.getCharacterSprites(pair.getKey(), true).subscribe(image -> {
+                                    cache.setCharacterImage(pair.getKey(), image);
+                                    onUI(this::updateImages);
+                                }));
                             }
                         }
                     }));
@@ -249,12 +251,11 @@ public class TrainerController extends Controller {
         currentSprite = charName;
         saveTrainerButton.setDisable(sprite == null);
         deleteTrainerButton.setDisable(sprite == null || trainer == null);
+        trainerSprite.setImage(sprite);
         trainerSprite.setFitWidth(16 * PREVIEW_SCALING);
         trainerSprite.setFitHeight(32 * PREVIEW_SCALING);
-        trainerSprite.setImage(sprite);
         trainerSprite.setViewport(PREVIEW_VIEWPORT);
         trainerSprite.setSmooth(false);
-
         spriteNameDisplay.setText(stripString(charName));
     }
 
