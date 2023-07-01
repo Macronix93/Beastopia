@@ -5,6 +5,7 @@ import com.google.gson.JsonPrimitive;
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.ingame.encounter.FightWildBeastController;
+import de.uniks.beastopia.teaml.controller.ingame.encounter.StartFightNPCController;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
 import de.uniks.beastopia.teaml.rest.Map;
 import de.uniks.beastopia.teaml.rest.*;
@@ -56,6 +57,8 @@ public class IngameController extends Controller {
     BeastListController beastListController;
     @Inject
     Provider<FightWildBeastController> fightWildBeastControllerProvider;
+    @Inject
+    Provider<StartFightNPCController> startFightNPCControllerProvider;
     @Inject
     Provider<BeastDetailController> beastDetailControllerProvider;
     @Inject
@@ -199,6 +202,7 @@ public class IngameController extends Controller {
         } else {
             loadMap(cache.getAreas(), myTrainer, trainers);
         }
+        System.out.println(cache.getTrainer()._id());
         disposables.add(eventListener.listen("encounters.*.trainers." + cache.getTrainer()._id()
                         + ".opponents.*.created", Opponent.class)
                 .observeOn(FX_SCHEDULER)
@@ -209,15 +213,23 @@ public class IngameController extends Controller {
                 })
                 .subscribe(
                         encounter -> {
+                            System.out.println("hallo");
                             if (encounter.isWild()) {
                                 openFightBeastScreen(encounter);
                             } else {
-                                // TODO start NPC screen
+                                System.out.println("hallo2");
+                                openFightNPCScreen(encounter);
                             }
                         },
                         error -> System.err.println("Fehler: " + error.getMessage())
                 )
         );
+    }
+
+    private void openFightNPCScreen(Encounter encounter) {
+        StartFightNPCController controller = startFightNPCControllerProvider.get();
+        controller.setControllerInfo(encounter);
+        app.show(controller);
     }
 
     private void openFightBeastScreen(Encounter encounter) {
