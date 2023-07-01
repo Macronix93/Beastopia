@@ -52,7 +52,7 @@ class DeleteTrainerControllerTest extends ApplicationTest {
     TrainerService trainerService;
 
     final Image image = createImage(2, 2, List.of(new Color(255, 0, 255), new Color(0, 255, 0), new Color(0, 0, 255), new Color(255, 255, 0)));
-    final Trainer trainer = new Trainer(null, null, "123", "A", "123", "A", "A.png", 0, null, 0, 0, 0, null);
+    final Trainer trainer = new Trainer(null, null, "123", "A", "123", "A", "A.png", null, 0, null, 0, 0, 0, null);
     final TileSetDescription tileSetDescription = new TileSetDescription(0, "SOURCE");
     final List<HashMap<String, Double>> polygon = List.of(new HashMap<>() {{
         put("x", 0.0);

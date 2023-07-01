@@ -43,8 +43,8 @@ public class RegionCell extends ListCell<Region> {
                 app.show(controller);
             });
             setGraphic(join);
+            setAlignment(Pos.CENTER);
+            getStyleClass().add("region-cell");
         }
-        setAlignment(Pos.CENTER);
-        getStyleClass().add("region-cell");
     }
 }
