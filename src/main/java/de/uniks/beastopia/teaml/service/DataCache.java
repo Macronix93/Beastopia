@@ -2,10 +2,7 @@ package de.uniks.beastopia.teaml.service;
 
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.Main;
-import de.uniks.beastopia.teaml.rest.Area;
-import de.uniks.beastopia.teaml.rest.Region;
-import de.uniks.beastopia.teaml.rest.Trainer;
-import de.uniks.beastopia.teaml.rest.User;
+import de.uniks.beastopia.teaml.rest.*;
 import javafx.scene.image.Image;
 import javafx.stage.FileChooser;
 import javafx.util.Pair;
@@ -33,6 +30,7 @@ public class DataCache {
     private final List<Pair<String, Image>> characters = new ArrayList<>();
     Trainer trainer;
     Region joinedRegion;
+    private List<MonsterTypeDto> allBeasts = new ArrayList<>();
 
     @Inject
     public DataCache() {
@@ -207,5 +205,16 @@ public class DataCache {
         graphics.drawImage(bufferedImage, 0, 0, 64, 64, null);
         graphics.dispose();
         return resized;
+    }
+
+    public void setAllBeasts(List<MonsterTypeDto> beasts) {
+        this.allBeasts = beasts;
+    }
+
+    public MonsterTypeDto getBeastDto(int id) {
+        return allBeasts.stream()
+                .filter(monsterTypeDto -> monsterTypeDto.id() == id)
+                .findFirst()
+                .orElse(null);
     }
 }

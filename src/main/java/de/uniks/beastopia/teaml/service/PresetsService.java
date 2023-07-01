@@ -57,4 +57,8 @@ public class PresetsService {
         return presetsApiService.getMonsterImage(type)
                 .map((ResponseBody body) -> new Image(body.byteStream()));
     }
+
+    public Observable<List<MonsterTypeDto>> getAllBeasts() {
+        return presetsApiService.getMonsters();
+    }
 }
