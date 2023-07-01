@@ -118,8 +118,7 @@ class TrainerControllerTest extends ApplicationTest {
     public void start(Stage stage) {
         AppPreparer.prepare(app);
 
-        trainerController.setRegion(region);
-
+        when(cache.getJoinedRegion()).thenReturn(region);
         when(cache.getTrainer()).thenReturn(allTrainer.get(0));
         when(cache.getCharacters()).thenReturn(allCharacters);
         when(cache.getCharacterImage(anyString())).thenReturn(allCharacters.get(0));
