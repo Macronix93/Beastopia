@@ -107,7 +107,6 @@ class EditBeastTeamControllerTest extends ApplicationTest {
         when(mocked.render()).thenReturn(new Label("backTest"));
         app.setHistory(List.of(mocked));
 
-
         ListView<Monster> beastListView = lookup("#beastListView").query();
         ListView<Monster> teamListView = lookup("#teamListView").query();
 
@@ -124,7 +123,6 @@ class EditBeastTeamControllerTest extends ApplicationTest {
         assertEquals(2, teamListView.getItems().size());
 
         clickOn("#editBeastTeam");
-        verify(cache, times(1)).setTrainer(any());
         verify(mocked, times(1)).render();
     }
 

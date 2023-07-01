@@ -5,7 +5,9 @@ import de.uniks.beastopia.teaml.rest.Monster;
 import de.uniks.beastopia.teaml.rest.MonsterTypeDto;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
+import io.reactivex.rxjava3.core.Scheduler;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -21,6 +23,8 @@ import java.io.IOException;
 import java.util.Objects;
 
 public class BeastListElementController extends ListCell<Monster> {
+
+    protected static final Scheduler FX_SCHEDULER = Schedulers.from(Platform::runLater);
 
     @FXML
     public ImageView beastImg;
@@ -62,8 +66,8 @@ public class BeastListElementController extends ListCell<Monster> {
             }
 
             disposables.add(presetsService.getMonsterImage(item.type())
-                    .subscribe(image -> Platform
-                                    .runLater(() -> beastImg.setImage(image)),
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe(image -> beastImg.setImage(image),
                             Throwable::printStackTrace));
 
             MonsterTypeDto type = cache.getBeastDto(item.type());

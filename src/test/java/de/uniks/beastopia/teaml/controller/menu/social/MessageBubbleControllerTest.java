@@ -140,9 +140,4 @@ public class MessageBubbleControllerTest extends ApplicationTest {
         Node node = from(pane).lookup((Text t) -> t.getText().contains("Attempt to delete")).query();
         assertNotNull(node);
     }
-
-    @Override
-    public void stop() throws Exception {
-        super.stop();
-    }
 }

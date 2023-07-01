@@ -166,7 +166,7 @@ public class EditBeastTeamController extends Controller {
         }
     }
 
-    private boolean isInt(String s) {
+    private static boolean isInt(String s) {
         try {
             Integer.parseInt(s);
             return true;

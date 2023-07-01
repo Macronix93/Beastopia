@@ -111,5 +111,4 @@ public class Prefs {
     public double getSoundVolume() {
         return preferences.getDouble("soundVolume", 50.0);
     }
-
 }
