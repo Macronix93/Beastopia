@@ -192,6 +192,9 @@ public class ScoreboardController extends Controller {
         }
 
         if (scoreboardFilterController != null) {
+            if (scoreboardFilterController.isFilterApplied()) {
+                scoreboardFilterController.removeFilter();
+            }
             scoreboardFilterController.destroy();
         }
 
