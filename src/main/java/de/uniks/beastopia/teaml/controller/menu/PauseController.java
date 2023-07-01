@@ -2,6 +2,7 @@ package de.uniks.beastopia.teaml.controller.menu;
 
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.ingame.TrainerController;
+import de.uniks.beastopia.teaml.controller.ingame.beast.EditBeastTeamController;
 import de.uniks.beastopia.teaml.controller.menu.social.FriendListController;
 import de.uniks.beastopia.teaml.rest.Region;
 import de.uniks.beastopia.teaml.utils.SoundController;
@@ -27,6 +28,8 @@ public class PauseController extends Controller {
     Provider<SettingsController> settingsControllerProvider;
     @Inject
     Provider<TrainerController> trainerControllerProvider;
+    @Inject
+    Provider<EditBeastTeamController> editBeastTeamControllerProvider;
     @Inject
     Provider<SoundController> soundControllerProvider;
 
@@ -100,5 +103,10 @@ public class PauseController extends Controller {
 
     public void setRegion(Region region) {
         this.region = region;
+    }
+
+    public void beastTeamButtonPressed() {
+        EditBeastTeamController beastTeam = editBeastTeamControllerProvider.get();
+        app.show(beastTeam);
     }
 }

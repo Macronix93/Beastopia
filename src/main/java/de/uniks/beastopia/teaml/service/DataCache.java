@@ -2,6 +2,7 @@ package de.uniks.beastopia.teaml.service;
 
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.Main;
+import de.uniks.beastopia.teaml.rest.*;
 import de.uniks.beastopia.teaml.rest.Achievement;
 import de.uniks.beastopia.teaml.rest.Area;
 import de.uniks.beastopia.teaml.rest.Region;
@@ -39,6 +40,7 @@ public class DataCache {
     private final List<String> visitedAreas = new ArrayList<>();
     Trainer trainer;
     Region joinedRegion;
+    private List<MonsterTypeDto> allBeasts = new ArrayList<>();
 
     @Inject
     public DataCache() {
@@ -217,6 +219,17 @@ public class DataCache {
         graphics.drawImage(bufferedImage, 0, 0, 64, 64, null);
         graphics.dispose();
         return resized;
+    }
+
+    public void setAllBeasts(List<MonsterTypeDto> beasts) {
+        this.allBeasts = beasts;
+    }
+
+    public MonsterTypeDto getBeastDto(int id) {
+        return allBeasts.stream()
+                .filter(monsterTypeDto -> monsterTypeDto.id() == id)
+                .findFirst()
+                .orElse(null);
     }
 
     public void addMyAchievement(Achievement achievement) {

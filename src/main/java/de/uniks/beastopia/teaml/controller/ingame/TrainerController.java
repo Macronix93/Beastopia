@@ -106,7 +106,7 @@ public class TrainerController extends Controller {
                         showIngameController(region);
                     }, error -> Dialog.error(error, "Trainer creation failed!")));
         } else {
-            disposables.add(trainerService.updateTrainer(region._id(), cache.getTrainer()._id(), nameInput, trainerImage)
+            disposables.add(trainerService.updateTrainer(region._id(), cache.getTrainer()._id(), nameInput, trainerImage, cache.getTrainer().team())
                     .observeOn(FX_SCHEDULER)
                     .subscribe(tr -> {
                         cache.setTrainer(tr);

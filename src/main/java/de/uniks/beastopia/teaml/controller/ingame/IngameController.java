@@ -4,12 +4,15 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.Controller;
+import de.uniks.beastopia.teaml.controller.ingame.beast.EditBeastTeamController;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
 import de.uniks.beastopia.teaml.rest.Achievement;
 import de.uniks.beastopia.teaml.rest.Area;
 import de.uniks.beastopia.teaml.rest.Chunk;
 import de.uniks.beastopia.teaml.rest.Layer;
 import de.uniks.beastopia.teaml.rest.Map;
+import de.uniks.beastopia.teaml.rest.*;
+import de.uniks.beastopia.teaml.service.*;
 import de.uniks.beastopia.teaml.rest.Monster;
 import de.uniks.beastopia.teaml.rest.Region;
 import de.uniks.beastopia.teaml.rest.TileSet;
@@ -23,12 +26,7 @@ import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.service.TrainerService;
 import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.sockets.UDPEventListener;
-import de.uniks.beastopia.teaml.utils.Dialog;
-import de.uniks.beastopia.teaml.utils.Direction;
-import de.uniks.beastopia.teaml.utils.LoadingPage;
-import de.uniks.beastopia.teaml.utils.PlayerState;
-import de.uniks.beastopia.teaml.utils.Prefs;
-import de.uniks.beastopia.teaml.utils.SoundController;
+import de.uniks.beastopia.teaml.utils.*;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
@@ -48,6 +46,7 @@ import javafx.util.Pair;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+import java.util.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -87,9 +86,13 @@ public class IngameController extends Controller {
     @Inject
     Provider<PauseController> pauseControllerProvider;
     @Inject
-    BeastListController beastListController;
-    @Inject
     Provider<BeastDetailController> beastDetailControllerProvider;
+    @Inject
+    Provider<EditBeastTeamController> editBeastTeamControllerProvider;
+    @Inject
+    Provider<EntityController> entityControllerProvider;
+    @Inject
+    Provider<MapController> mapControllerProvider;
     @Inject
     Prefs prefs;
     @Inject
@@ -97,13 +100,11 @@ public class IngameController extends Controller {
     @Inject
     TokenStorage tokenStorage;
     @Inject
-    Provider<EntityController> entityControllerProvider;
-    @Inject
     UDPEventListener udpEventListener;
     @Inject
     EventListener eventListener;
     @Inject
-    Provider<MapController> mapControllerProvider;
+    BeastListController beastListController;
     @Inject
     ScoreboardController scoreBoardController;
     @Inject
@@ -566,6 +567,7 @@ public class IngameController extends Controller {
         handlePauseMenu(keyEvent);
         handleScoreboard(keyEvent);
         handleBeastList(keyEvent);
+        handleBeastTeam(keyEvent);
     }
 
     public void handleBeastList(KeyEvent keyEvent) {
@@ -620,6 +622,13 @@ public class IngameController extends Controller {
             app.show(map);
         }
     }
+
+    private void handleBeastTeam(KeyEvent keyEvent) {
+        if (keyEvent.getCode().equals(KeyCode.X)) {
+            app.show(editBeastTeamControllerProvider.get());
+        }
+    }
+
 
     private void handlePlayerMovement(KeyEvent keyEvent) {
         if (!pressedKeys.contains(keyEvent.getCode())) {

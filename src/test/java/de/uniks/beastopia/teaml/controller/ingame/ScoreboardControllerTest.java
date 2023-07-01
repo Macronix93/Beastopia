@@ -58,7 +58,7 @@ class ScoreboardControllerTest extends ApplicationTest {
     private final List<AchievementsSummary> achievementSummaries = List.of(new AchievementsSummary("123", 0, 2, 3));
     private final List<Achievement> achievements = List.of(new Achievement(null, null, "ID2", "ID", new Date(), 0));
     private final List<User> users = List.of(new User(null, null, "ID", "Leon", "status", "avatar", null));
-    private final List<Trainer> trainers = List.of(new Trainer(null, null, "TRAINER_ID", "region", "ID", "Lonartie", "image", 0, "area", 0, 0, 0, null));
+    private final List<Trainer> trainers = List.of(new Trainer(null, null, "TRAINER_ID", "region", "ID", "Lonartie", "image", null, 0, "area", 0, 0, 0, null));
     private final List<Achievement> userAchievements = List.of(new Achievement(null, null, "ID", "Leon", null, 25));
     private final Pane pane = new Pane();
     private ArgumentCaptor<Consumer<String>> onUserClickedCaptor;
