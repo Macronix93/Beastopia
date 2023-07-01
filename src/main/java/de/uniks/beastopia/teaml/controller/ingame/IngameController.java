@@ -450,8 +450,8 @@ public class IngameController extends Controller {
         view.setPreserveRatio(true);
         view.setSmooth(true);
         view.setImage(image);
-        view.setFitWidth(TILE_SIZE);
-        view.setFitHeight(TILE_SIZE);
+        view.setFitWidth(TILE_SIZE + 1);
+        view.setFitHeight(TILE_SIZE + 1);
         view.setViewport(viewPort);
         view.setTranslateX(x * TILE_SIZE);
         view.setTranslateY(y * TILE_SIZE);
@@ -604,6 +604,10 @@ public class IngameController extends Controller {
         if (keyEvent.getCode().equals(KeyCode.ESCAPE) && (currentMenu == MENU_NONE || currentMenu == MENU_PAUSE)) {
             if (pauseMenuLayout.getChildren().contains(pauseMenuParent)) {
                 for (Node tile : tilePane.getChildren()) {
+                    if (tile instanceof ImageView imageView) {
+                        imageView.setFitWidth(TILE_SIZE + 1);
+                        imageView.setFitHeight(TILE_SIZE + 1);
+                    }
                     tile.setOpacity(1);
                 }
                 pauseHint.setOpacity(1);
@@ -611,6 +615,10 @@ public class IngameController extends Controller {
                 currentMenu = MENU_NONE;
             } else {
                 for (Node tile : tilePane.getChildren()) {
+                    if (tile instanceof ImageView imageView) {
+                        imageView.setFitWidth(TILE_SIZE);
+                        imageView.setFitHeight(TILE_SIZE);
+                    }
                     tile.setOpacity(0.5);
                 }
                 pauseHint.setOpacity(0);
