@@ -31,6 +31,7 @@ import javafx.util.Pair;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.*;
+import java.util.function.Consumer;
 
 public class IngameController extends Controller {
     static final double TILE_SIZE = 20;
@@ -526,21 +527,78 @@ public class IngameController extends Controller {
 
     public void handleTalkToTrainer(KeyEvent keyEvent) {
         if (keyEvent.getCode().equals(KeyCode.T)) {
-            if (stackPane.getChildren().contains(dialogWindowParent)) {
-                stackPane.getChildren().remove(dialogWindowParent);
-                currentMenu = MENU_NONE;
+            if (canTalkToNPC("Albert")) {
+                talkToAlbert();
             } else {
-                dialogWindowController = dialogWindowControllerProvider.get();
-
-                dialogWindowParent = dialogWindowController.render();
-                stackPane.getChildren().add(dialogWindowParent);
-                stackPane.setPrefWidth(600);
-                currentMenu = MENU_DIALOGWINDOW;
+                closeTalk();
             }
-            dialogWindowController.setOnCloseRequested(() -> {
-                stackPane.getChildren().remove(dialogWindowParent);
-                dialogWindowController.destroy();
-            });
+        }
+    }
+
+    private double distance(Trainer a, Trainer b) {
+        int dx = b.x() - a.x();
+        int dy = b.y() - a.y();
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    private boolean canTalkToNPC(String npcName) {
+        Trainer me = cache.getTrainer();
+
+        for (Trainer trainer : cache.getTrainers()) {
+            if (trainer.name().equals(npcName)
+                    && trainer.npc() != null) {
+                npcTalkPartner = trainer;
+                break;
+            }
+        }
+
+        return me.area().equals(npcTalkPartner.area()) && !(distance(me, npcTalkPartner) > 1.5);
+    }
+
+    private void talkToAlbert() {
+        disposables.add(presetsService.getCharacterSprites(npcTalkPartner.image())
+                .observeOn(FX_SCHEDULER)
+                .subscribe(image -> {
+                    MonsterTypeDto monster1 = presetsService.getMonsterType(1).blockingFirst();
+                    Image monster1Image = presetsService.getMonsterImage(1).blockingFirst();
+                    MonsterTypeDto monster2 = presetsService.getMonsterType(2).blockingFirst();
+                    Image monster2Image = presetsService.getMonsterImage(2).blockingFirst();
+                    MonsterTypeDto monster3 = presetsService.getMonsterType(3).blockingFirst();
+                    Image monster3Image = presetsService.getMonsterImage(3).blockingFirst();
+                    Rectangle2D viewPort = new Rectangle2D(3 * 96, 32, 16, 32);
+                    PixelReader reader = image.getPixelReader();
+                    WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
+                    talk(newImage, "Welcome! /t Please select a starter Beast.", List.of(monster1.name(), monster2.name(), monster3.name()), List.of(monster1Image, monster2Image, monster3Image), (i -> {
+                        //TODO onButtonClicked
+                    }));
+                }));
+    }
+
+    private void talk(Image image, String message, List<String> choices, List<Image> buttonImages, Consumer<Integer> onButtonPressed) {
+        closeTalk();
+
+        dialogWindowController = dialogWindowControllerProvider.get();
+        dialogWindowController
+                .setTrainerImage(image)
+                .setChoices(choices)
+                .setButtonImages(buttonImages)
+                .setText(message)
+                .setOnButtonClicked(onButtonPressed);
+        dialogWindowParent = dialogWindowController.render();
+        stackPane.getChildren().add(dialogWindowParent);
+        stackPane.setPrefWidth(600);
+        currentMenu = MENU_DIALOGWINDOW;
+
+        dialogWindowController.setOnCloseRequested(() -> {
+            stackPane.getChildren().remove(dialogWindowParent);
+            dialogWindowController.destroy();
+        });
+    }
+
+    private void closeTalk() {
+        if (stackPane.getChildren().contains(dialogWindowParent)) {
+            stackPane.getChildren().remove(dialogWindowParent);
+            currentMenu = MENU_NONE;
         }
     }
 
