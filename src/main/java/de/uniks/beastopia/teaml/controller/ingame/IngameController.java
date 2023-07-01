@@ -4,29 +4,14 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.Controller;
+import de.uniks.beastopia.teaml.controller.ingame.encounter.FightWildBeastController;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
-import de.uniks.beastopia.teaml.rest.Area;
-import de.uniks.beastopia.teaml.rest.Chunk;
-import de.uniks.beastopia.teaml.rest.Layer;
 import de.uniks.beastopia.teaml.rest.Map;
-import de.uniks.beastopia.teaml.rest.Monster;
-import de.uniks.beastopia.teaml.rest.Region;
-import de.uniks.beastopia.teaml.rest.TileSet;
-import de.uniks.beastopia.teaml.rest.TileSetDescription;
-import de.uniks.beastopia.teaml.rest.Trainer;
-import de.uniks.beastopia.teaml.service.AreaService;
-import de.uniks.beastopia.teaml.service.DataCache;
-import de.uniks.beastopia.teaml.service.PresetsService;
-import de.uniks.beastopia.teaml.service.TokenStorage;
-import de.uniks.beastopia.teaml.service.TrainerService;
+import de.uniks.beastopia.teaml.rest.*;
+import de.uniks.beastopia.teaml.service.*;
 import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.sockets.UDPEventListener;
-import de.uniks.beastopia.teaml.utils.Dialog;
-import de.uniks.beastopia.teaml.utils.Direction;
-import de.uniks.beastopia.teaml.utils.LoadingPage;
-import de.uniks.beastopia.teaml.utils.PlayerState;
-import de.uniks.beastopia.teaml.utils.Prefs;
-import de.uniks.beastopia.teaml.utils.SoundController;
+import de.uniks.beastopia.teaml.utils.*;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
@@ -43,13 +28,7 @@ import javafx.util.Pair;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 public class IngameController extends Controller {
     static final double TILE_SIZE = 20;
@@ -70,9 +49,13 @@ public class IngameController extends Controller {
     @Inject
     TrainerService trainerService;
     @Inject
+    PauseController pauseController;
+    @Inject
     Provider<PauseController> pauseControllerProvider;
     @Inject
     BeastListController beastListController;
+    @Inject
+    Provider<FightWildBeastController> fightWildBeastControllerProvider;
     @Inject
     Provider<BeastDetailController> beastDetailControllerProvider;
     @Inject
@@ -95,7 +78,10 @@ public class IngameController extends Controller {
     Provider<IngameController> ingameControllerProvider;
     @Inject
     Provider<SoundController> soundControllerProvider;
-
+    @Inject
+    RegionEncountersService regionEncountersService;
+    @Inject
+    EncounterOpponentsService encounterOpponentsService;
     private Region region;
     private Map map;
     private final List<Pair<TileSetDescription, Pair<TileSet, Image>>> tileSets = new ArrayList<>();
@@ -119,6 +105,7 @@ public class IngameController extends Controller {
     EntityController playerController;
     SoundController soundController;
     Parent scoreBoardParent;
+    Parent pauseMenuParent;
     final java.util.Map<EntityController, Parent> otherPlayers = new HashMap<>();
     private final List<KeyCode> pressedKeys = new ArrayList<>();
     private final String[] locationStrings = {"Moncenter", "House", "Store"};
@@ -203,17 +190,49 @@ public class IngameController extends Controller {
 
     private void loadTrainers(List<Trainer> trainers) {
         Trainer myTrainer = loadMyTrainer(trainers);
-        disposables.add(areaService.getAreas(this.region._id()).observeOn(FX_SCHEDULER).subscribe(areas -> {
-            cache.setAreas(areas);
-            loadMap(areas, myTrainer);
-            drawMap();
 
-            beastListParent = beastListController.render();
-            scoreBoardParent = scoreBoardController.render();
-            loadRemoteTrainer(trainers);
-            listenToTrainerEvents();
-            loadingPage.setDone();
-        }));
+        if (cache.getAreas().isEmpty()) {
+            disposables.add(areaService.getAreas(this.region._id()).observeOn(FX_SCHEDULER).subscribe(areas -> {
+                cache.setAreas(areas);
+                loadMap(cache.getAreas(), myTrainer, trainers);
+            }));
+        } else {
+            loadMap(cache.getAreas(), myTrainer, trainers);
+        }
+        disposables.add(eventListener.listen("encounters.*.trainers." + cache.getTrainer()._id()
+                        + ".opponents.*.created", Opponent.class)
+                .observeOn(FX_SCHEDULER)
+                .concatMap(opponentEvent -> {
+                    Opponent opponent = opponentEvent.data();
+                    return regionEncountersService.getRegionEncounter(cache.getJoinedRegion()._id(), opponent.encounter())
+                            .observeOn(FX_SCHEDULER);
+                })
+                .subscribe(
+                        encounter -> {
+                            if (encounter.isWild()) {
+                                openFightBeastScreen(encounter);
+                            } else {
+                                // TODO start NPC screen
+                            }
+                        },
+                        error -> System.err.println("Fehler: " + error.getMessage())
+                )
+        );
+    }
+
+    private void openFightBeastScreen(Encounter encounter) {
+        FightWildBeastController controller = fightWildBeastControllerProvider.get();
+        disposables.add(encounterOpponentsService
+                .getEncounterOpponents(cache.getJoinedRegion()._id(), encounter._id())
+                .observeOn(FX_SCHEDULER)
+                .subscribe(o -> {
+                    for (Opponent op : o) {
+                        if (op.trainer().equals("000000000000000000000000")) {
+                            controller.setControllerInfo(op.monster(), op.trainer());
+                            app.show(controller);
+                        }
+                    }
+                }));
     }
 
     private void listenToTrainerEvents() {
@@ -240,23 +259,37 @@ public class IngameController extends Controller {
         }
     }
 
-    private void loadMap(List<Area> areas, Trainer myTrainer) {
+    private void loadMap(List<Area> areas, Trainer myTrainer, List<Trainer> trainers) {
         Area area = areas.stream().filter(a -> a._id().equals(myTrainer.area())).findFirst().orElseThrow();
         prefs.setArea(area);
-        this.map = area.map();
-        for (TileSetDescription tileSetDesc : map.tilesets()) {
-            TileSet tileSet = presetsService.getTileset(tileSetDesc).blockingFirst();
-            Image image = presetsService.getImage(tileSet).blockingFirst();
-            tileSets.add(new Pair<>(tileSetDesc, new Pair<>(tileSet, image)));
-        }
 
-        if (area.name().contains("Route")) {
-            soundController.play("bgm:route");
-        } else if (area.name().contains("House")) {
-            soundController.play("bgm:house");
-        } else {
-            soundController.play("bgm:city");
-        }
+        disposables.add(areaService.getArea(this.region._id(), area._id())
+                .observeOn(FX_SCHEDULER)
+                .subscribe(a -> {
+                            this.map = a.map();
+                            for (TileSetDescription tileSetDesc : map.tilesets()) {
+                                TileSet tileSet = presetsService.getTileset(tileSetDesc).blockingFirst();
+                                Image image = presetsService.getImage(tileSet).blockingFirst();
+                                tileSets.add(new Pair<>(tileSetDesc, new Pair<>(tileSet, image)));
+                            }
+                            drawMap();
+
+                            if (a.name().contains("Route")) {
+                                soundController.play("bgm:route");
+                            } else if (a.name().contains("House")) {
+                                soundController.play("bgm:house");
+                            } else {
+                                soundController.play("bgm:city");
+                            }
+
+                            beastListParent = beastListController.render();
+                            scoreBoardParent = scoreBoardController.render();
+                            pauseMenuParent = pauseController.render();
+                            loadRemoteTrainer(trainers);
+                            listenToTrainerEvents();
+                            loadingPage.setDone();
+                        }
+                ));
     }
 
     /**
@@ -410,8 +443,8 @@ public class IngameController extends Controller {
         view.setPreserveRatio(true);
         view.setSmooth(true);
         view.setImage(image);
-        view.setFitWidth(TILE_SIZE + 1);
-        view.setFitHeight(TILE_SIZE + 1);
+        view.setFitWidth(TILE_SIZE);
+        view.setFitHeight(TILE_SIZE);
         view.setViewport(viewPort);
         view.setTranslateX(x * TILE_SIZE);
         view.setTranslateY(y * TILE_SIZE);
@@ -594,35 +627,37 @@ public class IngameController extends Controller {
     }
 
     public void moveLoop() {
-        boolean moved = false;
+        if (currentMenu == MENU_NONE) {
+            boolean moved = false;
 
-        lastposx = posx;
-        lastposy = posy;
+            lastposx = posx;
+            lastposy = posy;
 
-        if (pressedKeys.contains(KeyCode.UP) || pressedKeys.contains(KeyCode.W)) {
-            posy--;
-            direction = Direction.UP;
-            moved = true;
-        } else if (pressedKeys.contains(KeyCode.DOWN) || pressedKeys.contains(KeyCode.S)) {
-            posy++;
-            direction = Direction.DOWN;
-            moved = true;
-        } else if (pressedKeys.contains(KeyCode.LEFT) || pressedKeys.contains(KeyCode.A)) {
-            posx--;
-            direction = Direction.LEFT;
-            moved = true;
-        } else if (pressedKeys.contains(KeyCode.RIGHT) || pressedKeys.contains(KeyCode.D)) {
-            posx++;
-            direction = Direction.RIGHT;
-            moved = true;
-        }
+            if (pressedKeys.contains(KeyCode.UP) || pressedKeys.contains(KeyCode.W)) {
+                posy--;
+                direction = Direction.UP;
+                moved = true;
+            } else if (pressedKeys.contains(KeyCode.DOWN) || pressedKeys.contains(KeyCode.S)) {
+                posy++;
+                direction = Direction.DOWN;
+                moved = true;
+            } else if (pressedKeys.contains(KeyCode.LEFT) || pressedKeys.contains(KeyCode.A)) {
+                posx--;
+                direction = Direction.LEFT;
+                moved = true;
+            } else if (pressedKeys.contains(KeyCode.RIGHT) || pressedKeys.contains(KeyCode.D)) {
+                posx++;
+                direction = Direction.RIGHT;
+                moved = true;
+            }
 
-        if (moved) {
-            onUI(() -> {
-                state.setValue(PlayerState.WALKING);
-                updateTrainerPos(direction);
-                updateOrigin();
-            });
+            if (moved) {
+                onUI(() -> {
+                    state.setValue(PlayerState.WALKING);
+                    updateTrainerPos(direction);
+                    updateOrigin();
+                });
+            }
         }
     }
 
