@@ -53,80 +53,74 @@
                     </VBox>
                     <VBox fx:id="attackBox1" alignment="CENTER" onMouseClicked="#executeAttack1" prefHeight="40.0"
                           prefWidth="80.0" style="-fx-border-color: black;">
-                        <children>
-                            <Label fx:id="attackNameLabel1" text="Tackle">
-                                <font>
-                                    <Font size="14.0"/>
-                                </font>
-                            </Label>
-                            <Label fx:id="attackTypeLabel1" text="Type">
-                                <font>
-                                    <Font size="14.0"/>
-                                </font>
-                            </Label>
-                            <Label fx:id="accLabel1" text="value">
-                                <font>
-                                    <Font size="14.0"/>
-                                </font>
-                            </Label>
-                            <Label fx:id="powerLabel1" text="value">
-                                <font>
-                                    <Font size="14.0"/>
-                                </font>
-                            </Label>
-                        </children>
+                        <Label fx:id="attackNameLabel1" text="Tackle">
+                            <font>
+                                <Font size="14.0"/>
+                            </font>
+                        </Label>
+                        <Label fx:id="attackTypeLabel1" text="Type">
+                            <font>
+                                <Font size="14.0"/>
+                            </font>
+                        </Label>
+                        <Label fx:id="accLabel1" text="value">
+                            <font>
+                                <Font size="14.0"/>
+                            </font>
+                        </Label>
+                        <Label fx:id="powerLabel1" text="value">
+                            <font>
+                                <Font size="14.0"/>
+                            </font>
+                        </Label>
                     </VBox>
                     <VBox fx:id="attackBox2" alignment="CENTER" layoutX="218.0" layoutY="10.0"
                           onMouseClicked="#executeAttack2" prefHeight="40.0" prefWidth="80.0"
                           style="-fx-border-color: black;">
-                        <children>
-                            <Label fx:id="attackNameLabel2" text="Tackle">
-                                <font>
-                                    <Font size="14.0"/>
-                                </font>
-                            </Label>
-                            <Label fx:id="attackTypeLabel2" text="Type">
-                                <font>
-                                    <Font size="14.0"/>
-                                </font>
-                            </Label>
-                            <Label fx:id="accLabel2" text="value">
-                                <font>
-                                    <Font size="14.0"/>
-                                </font>
-                            </Label>
-                            <Label fx:id="powerLabel2" text="value">
-                                <font>
-                                    <Font size="14.0"/>
-                                </font>
-                            </Label>
-                        </children>
+                        <Label fx:id="attackNameLabel2" text="Tackle">
+                            <font>
+                                <Font size="14.0"/>
+                            </font>
+                        </Label>
+                        <Label fx:id="attackTypeLabel2" text="Type">
+                            <font>
+                                <Font size="14.0"/>
+                            </font>
+                        </Label>
+                        <Label fx:id="accLabel2" text="value">
+                            <font>
+                                <Font size="14.0"/>
+                            </font>
+                        </Label>
+                        <Label fx:id="powerLabel2" text="value">
+                            <font>
+                                <Font size="14.0"/>
+                            </font>
+                        </Label>
                     </VBox>
                     <VBox fx:id="attackBox3" alignment="CENTER" layoutX="265.0" layoutY="10.0"
                           onMouseClicked="#executeAttack3" prefHeight="40.0" prefWidth="80.0"
                           style="-fx-border-color: black;">
-                        <children>
-                            <Label fx:id="attackNameLabel3" text="Tackle">
-                                <font>
-                                    <Font size="14.0"/>
-                                </font>
-                            </Label>
-                            <Label fx:id="attackTypeLabel3" text="Type">
-                                <font>
-                                    <Font size="14.0"/>
-                                </font>
-                            </Label>
-                            <Label fx:id="accLabel3" text="value">
-                                <font>
-                                    <Font size="14.0"/>
-                                </font>
-                            </Label>
-                            <Label fx:id="powerLabel3" text="value">
-                                <font>
-                                    <Font size="14.0"/>
-                                </font>
-                            </Label>
-                        </children>
+                        <Label fx:id="attackNameLabel3" text="Tackle">
+                            <font>
+                                <Font size="14.0"/>
+                            </font>
+                        </Label>
+                        <Label fx:id="attackTypeLabel3" text="Type">
+                            <font>
+                                <Font size="14.0"/>
+                            </font>
+                        </Label>
+                        <Label fx:id="accLabel3" text="value">
+                            <font>
+                                <Font size="14.0"/>
+                            </font>
+                        </Label>
+                        <Label fx:id="powerLabel3" text="value">
+                            <font>
+                                <Font size="14.0"/>
+                            </font>
+                        </Label>
                     </VBox>
                     <padding>
                         <Insets left="10.0"/>
@@ -144,17 +138,15 @@
     <VBox alignment="CENTER" prefHeight="600.0" prefWidth="400.0">
         <HBox fx:id="enemyMonstersBox" alignment="CENTER"/>
         <VBox fx:id="actionInfoBox" alignment="CENTER" prefHeight="100.0" prefWidth="400.0">
-            <children>
-                <TextArea fx:id="actionInfoText" prefHeight="200.0" prefWidth="200.0"
-                          text="something hitted something with something! it was very something!" wrapText="true">
-                    <font>
-                        <Font size="18.0"/>
-                    </font>
-                </TextArea>
-            </children>
             <padding>
                 <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
             </padding>
+            <TextArea fx:id="actionInfoText" prefHeight="200.0" prefWidth="200.0"
+                      text="something hitted something with something! it was very something!" wrapText="true">
+                <font>
+                    <Font size="18.0"/>
+                </font>
+            </TextArea>
         </VBox>
         <VBox fx:id="beastInfoBox" alignment="CENTER" prefHeight="250.0" prefWidth="400.0" spacing="5.0">
             <VBox.margin>

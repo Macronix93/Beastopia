@@ -8,7 +8,9 @@ import javax.inject.Inject;
 @SuppressWarnings("unused")
 public class ActionInfoController extends Controller {
 
+    @SuppressWarnings("FieldCanBeLocal")
     private String attackerBeastName;
+    @SuppressWarnings("FieldCanBeLocal")
     private String defenderBeastName;
     public Label actionLabel;
 

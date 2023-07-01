@@ -33,11 +33,7 @@ public class RenderBeastController extends Controller {
     public RenderBeastController() {
     }
 
-    @Override
-    public void init() {
-
-    }
-
+    @SuppressWarnings("IntegerDivisionInFloatingPointContext")
     @Override
     public void onResize(int width, int height) {
         ellipse.setRadiusX(width / 5);
@@ -72,6 +68,7 @@ public class RenderBeastController extends Controller {
         return this;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public RenderBeastController setMonster2(Monster monster2) {
         this.monster2 = monster2;
         return this;

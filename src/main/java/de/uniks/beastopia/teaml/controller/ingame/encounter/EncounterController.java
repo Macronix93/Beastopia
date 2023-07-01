@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings("unused")
 public class EncounterController extends Controller {
 
     @FXML
@@ -98,9 +99,13 @@ public class EncounterController extends Controller {
     Prefs prefs;
 
     //monster on the substitute's bench
+    @SuppressWarnings("FieldCanBeLocal")
     private List<Monster> ownMonsters = new ArrayList<>();
+    @SuppressWarnings("FieldCanBeLocal")
     private List<Monster> allyMonsters = new ArrayList<>();
+    @SuppressWarnings("FieldCanBeLocal")
     private List<Monster> enemyMonsters = new ArrayList<>();
+    @SuppressWarnings("FieldCanBeLocal")
     private List<Monster> enemyAllyMonsters = new ArrayList<>();
 
     //monsters in the fight
@@ -109,8 +114,11 @@ public class EncounterController extends Controller {
     private Monster enemyMonster;
     private Monster enemyAllyMonster;
 
+    @SuppressWarnings("FieldCanBeLocal")
     private Trainer allyTrainer;
+    @SuppressWarnings({"unused", "FieldCanBeLocal"})
     private Trainer enemyTrainer;
+    @SuppressWarnings("FieldCanBeLocal")
     private Trainer enemyAllyTrainer;
 
     EnemyBeastInfoController enemyBeastInfoController1;
@@ -214,14 +222,13 @@ public class EncounterController extends Controller {
 
     }
 
-
-    //clicked leave encounter button
+    //onClicked leave encounter button
     public void leaveEncounter() {
         //TODO: switch screen to map
         System.out.println("leave encounter");
     }
 
-    //clicked change monster button
+    //onClicked change monster button
     public void changeMonster() {
         //TODO: switch screen to monster selection
         System.out.println("change monster");
