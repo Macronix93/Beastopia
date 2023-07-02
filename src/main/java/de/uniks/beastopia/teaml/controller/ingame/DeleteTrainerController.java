@@ -1,7 +1,6 @@
 package de.uniks.beastopia.teaml.controller.ingame;
 
 import de.uniks.beastopia.teaml.controller.Controller;
-import de.uniks.beastopia.teaml.rest.Region;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.TrainerService;
 import de.uniks.beastopia.teaml.utils.Dialog;
@@ -25,8 +24,6 @@ public class DeleteTrainerController extends Controller {
     TrainerService trainerService;
     @Inject
     Provider<TrainerController> trainerControllerProvider;
-
-    private Region region;
 
 
     @Inject
@@ -57,14 +54,13 @@ public class DeleteTrainerController extends Controller {
             return;
         }
 
-        disposables.add(trainerService.deleteTrainer(region._id(), cache.getTrainer()._id())
+        disposables.add(trainerService.deleteTrainer(cache.getJoinedRegion()._id(), cache.getTrainer()._id())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(tr -> {
                     if (tr != null) {
                         cache.setTrainer(null);
 
                         TrainerController trainerController = trainerControllerProvider.get();
-                        trainerController.setRegion(region);
                         trainerController.backController("menu");
                         app.show(trainerController);
                     }
@@ -73,12 +69,7 @@ public class DeleteTrainerController extends Controller {
 
     public void cancel() {
         TrainerController trainerController = trainerControllerProvider.get();
-        trainerController.setRegion(region);
         trainerController.backController("pause");
         app.show(trainerController);
-    }
-
-    public void setRegion(Region region) {
-        this.region = region;
     }
 }

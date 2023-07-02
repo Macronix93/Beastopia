@@ -127,4 +127,12 @@ public class Prefs {
     public void setUserHistory(List<String> userHistory) {
         preferences.put("userHistory", String.join(";", userHistory));
     }
+
+    public void addVisitedArea(String areas) {
+        preferences.put("visitedAreas", areas);
+    }
+
+    public String getVisitedAreas() {
+        return preferences.get("visitedAreas", null);
+    }
 }

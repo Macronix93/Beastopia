@@ -6,40 +6,73 @@ import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.ingame.beast.EditBeastTeamController;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
+import de.uniks.beastopia.teaml.rest.Achievement;
+import de.uniks.beastopia.teaml.rest.Area;
+import de.uniks.beastopia.teaml.rest.Chunk;
+import de.uniks.beastopia.teaml.rest.Layer;
 import de.uniks.beastopia.teaml.rest.Map;
-import de.uniks.beastopia.teaml.rest.*;
-import de.uniks.beastopia.teaml.service.*;
+import de.uniks.beastopia.teaml.rest.Monster;
+import de.uniks.beastopia.teaml.rest.Region;
+import de.uniks.beastopia.teaml.rest.TileSet;
+import de.uniks.beastopia.teaml.rest.TileSetDescription;
+import de.uniks.beastopia.teaml.rest.Trainer;
+import de.uniks.beastopia.teaml.service.AchievementsService;
+import de.uniks.beastopia.teaml.service.AreaService;
+import de.uniks.beastopia.teaml.service.DataCache;
+import de.uniks.beastopia.teaml.service.PresetsService;
+import de.uniks.beastopia.teaml.service.TokenStorage;
+import de.uniks.beastopia.teaml.service.TrainerService;
 import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.sockets.UDPEventListener;
-import de.uniks.beastopia.teaml.utils.*;
+import de.uniks.beastopia.teaml.utils.Dialog;
+import de.uniks.beastopia.teaml.utils.Direction;
+import de.uniks.beastopia.teaml.utils.LoadingPage;
+import de.uniks.beastopia.teaml.utils.PlayerState;
+import de.uniks.beastopia.teaml.utils.Prefs;
+import de.uniks.beastopia.teaml.utils.SoundController;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.util.Pair;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class IngameController extends Controller {
     static final double TILE_SIZE = 20;
     static final int MENU_NONE = 0;
     static final int MENU_SCOREBOARD = 1;
     static final int MENU_BEASTLIST = 2;
+    static final int MENU_PAUSE = 3;
 
     @FXML
     public Pane tilePane;
     @FXML
     private HBox scoreBoardLayout;
+    @FXML
+    private StackPane pauseMenuLayout;
+    @FXML
+    private Button pauseHint;
     @Inject
     App app;
     @Inject
@@ -48,6 +81,10 @@ public class IngameController extends Controller {
     PresetsService presetsService;
     @Inject
     TrainerService trainerService;
+    @Inject
+    AchievementsService achievementsService;
+    @Inject
+    PauseController pauseController;
     @Inject
     Provider<PauseController> pauseControllerProvider;
     @Inject
@@ -100,6 +137,7 @@ public class IngameController extends Controller {
     EntityController playerController;
     SoundController soundController;
     Parent scoreBoardParent;
+    Parent pauseMenuParent;
     final java.util.Map<EntityController, Parent> otherPlayers = new HashMap<>();
     private final List<KeyCode> pressedKeys = new ArrayList<>();
     private final String[] locationStrings = {"Moncenter", "House", "Store"};
@@ -123,6 +161,8 @@ public class IngameController extends Controller {
     public void init() {
         super.init();
 
+        currentMenu = MENU_NONE;
+
         scoreBoardController.setOnCloseRequested(() -> {
             scoreBoardLayout.getChildren().remove(scoreBoardParent);
             currentMenu = MENU_NONE;
@@ -138,6 +178,12 @@ public class IngameController extends Controller {
         beastListController.setOnBeastClicked(this::toggleBeastDetails);
         beastListController.init();
 
+        pauseController.setOnCloseRequest(() -> {
+            pauseMenuLayout.getChildren().remove(pauseMenuParent);
+            currentMenu = MENU_NONE;
+        });
+        pauseController.init();
+
         state.setValue(PlayerState.IDLE);
         playerController = entityControllerProvider.get();
         playerController.playerState().bind(state);
@@ -149,6 +195,7 @@ public class IngameController extends Controller {
 
                 IngameController controller = ingameControllerProvider.get();
                 controller.setRegion(region);
+                controller.checkAreaAchievement(cache.getArea(trainer.area())._id());
                 app.show(controller);
                 return;
             }
@@ -184,17 +231,15 @@ public class IngameController extends Controller {
 
     private void loadTrainers(List<Trainer> trainers) {
         Trainer myTrainer = loadMyTrainer(trainers);
-        disposables.add(areaService.getAreas(this.region._id()).observeOn(FX_SCHEDULER).subscribe(areas -> {
-            cache.setAreas(areas);
-            loadMap(areas, myTrainer);
-            drawMap();
 
-            beastListParent = beastListController.render();
-            scoreBoardParent = scoreBoardController.render();
-            loadRemoteTrainer(trainers);
-            listenToTrainerEvents();
-            loadingPage.setDone();
-        }));
+        if (cache.getAreas().isEmpty()) {
+            disposables.add(areaService.getAreas(this.region._id()).observeOn(FX_SCHEDULER).subscribe(areas -> {
+                cache.setAreas(areas);
+                loadMap(cache.getAreas(), myTrainer, trainers);
+            }));
+        } else {
+            loadMap(cache.getAreas(), myTrainer, trainers);
+        }
     }
 
     private void listenToTrainerEvents() {
@@ -221,23 +266,37 @@ public class IngameController extends Controller {
         }
     }
 
-    private void loadMap(List<Area> areas, Trainer myTrainer) {
+    private void loadMap(List<Area> areas, Trainer myTrainer, List<Trainer> trainers) {
         Area area = areas.stream().filter(a -> a._id().equals(myTrainer.area())).findFirst().orElseThrow();
         prefs.setArea(area);
-        this.map = area.map();
-        for (TileSetDescription tileSetDesc : map.tilesets()) {
-            TileSet tileSet = presetsService.getTileset(tileSetDesc).blockingFirst();
-            Image image = presetsService.getImage(tileSet).blockingFirst();
-            tileSets.add(new Pair<>(tileSetDesc, new Pair<>(tileSet, image)));
-        }
 
-        if (area.name().contains("Route")) {
-            soundController.play("bgm:route");
-        } else if (area.name().contains("House")) {
-            soundController.play("bgm:house");
-        } else {
-            soundController.play("bgm:city");
-        }
+        disposables.add(areaService.getArea(this.region._id(), area._id())
+                .observeOn(FX_SCHEDULER)
+                .subscribe(a -> {
+                            this.map = a.map();
+                            for (TileSetDescription tileSetDesc : map.tilesets()) {
+                                TileSet tileSet = presetsService.getTileset(tileSetDesc).blockingFirst();
+                                Image image = presetsService.getImage(tileSet).blockingFirst();
+                                tileSets.add(new Pair<>(tileSetDesc, new Pair<>(tileSet, image)));
+                            }
+                            drawMap();
+
+                            if (a.name().contains("Route")) {
+                                soundController.play("bgm:route");
+                            } else if (a.name().contains("House")) {
+                                soundController.play("bgm:house");
+                            } else {
+                                soundController.play("bgm:city");
+                            }
+
+                            beastListParent = beastListController.render();
+                            scoreBoardParent = scoreBoardController.render();
+                            pauseMenuParent = pauseController.render();
+                            loadRemoteTrainer(trainers);
+                            listenToTrainerEvents();
+                            loadingPage.setDone();
+                        }
+                ));
     }
 
     /**
@@ -514,6 +573,7 @@ public class IngameController extends Controller {
         handleBeastList(keyEvent);
         handleBeastTeam(keyEvent);
     }
+
     public void handleBeastList(KeyEvent keyEvent) {
         if (keyEvent.getCode().equals(KeyCode.B) && (currentMenu == MENU_NONE || currentMenu == MENU_BEASTLIST)) {
             if (scoreBoardLayout.getChildren().contains(beastListParent)) {
@@ -541,10 +601,30 @@ public class IngameController extends Controller {
     }
 
     private void handlePauseMenu(KeyEvent keyEvent) {
-        if (keyEvent.getCode().equals(KeyCode.ESCAPE)) {
-            PauseController controller = pauseControllerProvider.get();
-            controller.setRegion(region);
-            app.show(controller);
+        if (keyEvent.getCode().equals(KeyCode.ESCAPE) && (currentMenu == MENU_NONE || currentMenu == MENU_PAUSE)) {
+            if (pauseMenuLayout.getChildren().contains(pauseMenuParent)) {
+                for (Node tile : tilePane.getChildren()) {
+                    if (tile instanceof ImageView imageView) {
+                        imageView.setFitWidth(TILE_SIZE + 1);
+                        imageView.setFitHeight(TILE_SIZE + 1);
+                    }
+                    tile.setOpacity(1);
+                }
+                pauseHint.setOpacity(1);
+                pauseMenuLayout.getChildren().remove(pauseMenuParent);
+                currentMenu = MENU_NONE;
+            } else {
+                for (Node tile : tilePane.getChildren()) {
+                    if (tile instanceof ImageView imageView) {
+                        imageView.setFitWidth(TILE_SIZE);
+                        imageView.setFitHeight(TILE_SIZE);
+                    }
+                    tile.setOpacity(0.5);
+                }
+                pauseHint.setOpacity(0);
+                pauseMenuLayout.getChildren().add(pauseMenuParent);
+                currentMenu = MENU_PAUSE;
+            }
         }
     }
 
@@ -582,35 +662,39 @@ public class IngameController extends Controller {
     }
 
     public void moveLoop() {
-        boolean moved = false;
+        if (currentMenu == MENU_NONE) {
+            boolean moved = false;
 
-        lastposx = posx;
-        lastposy = posy;
+            lastposx = posx;
+            lastposy = posy;
 
-        if (pressedKeys.contains(KeyCode.UP) || pressedKeys.contains(KeyCode.W)) {
-            posy--;
-            direction = Direction.UP;
-            moved = true;
-        } else if (pressedKeys.contains(KeyCode.DOWN) || pressedKeys.contains(KeyCode.S)) {
-            posy++;
-            direction = Direction.DOWN;
-            moved = true;
-        } else if (pressedKeys.contains(KeyCode.LEFT) || pressedKeys.contains(KeyCode.A)) {
-            posx--;
-            direction = Direction.LEFT;
-            moved = true;
-        } else if (pressedKeys.contains(KeyCode.RIGHT) || pressedKeys.contains(KeyCode.D)) {
-            posx++;
-            direction = Direction.RIGHT;
-            moved = true;
-        }
+            if (pressedKeys.contains(KeyCode.UP) || pressedKeys.contains(KeyCode.W)) {
+                posy--;
+                direction = Direction.UP;
+                moved = true;
+            } else if (pressedKeys.contains(KeyCode.DOWN) || pressedKeys.contains(KeyCode.S)) {
+                posy++;
+                direction = Direction.DOWN;
+                moved = true;
+            } else if (pressedKeys.contains(KeyCode.LEFT) || pressedKeys.contains(KeyCode.A)) {
+                posx--;
+                direction = Direction.LEFT;
+                moved = true;
+            } else if (pressedKeys.contains(KeyCode.RIGHT) || pressedKeys.contains(KeyCode.D)) {
+                posx++;
+                direction = Direction.RIGHT;
+                moved = true;
+            }
 
-        if (moved) {
-            onUI(() -> {
-                state.setValue(PlayerState.WALKING);
-                updateTrainerPos(direction);
-                updateOrigin();
-            });
+            if (moved) {
+                checkMovementAchievement();
+
+                onUI(() -> {
+                    state.setValue(PlayerState.WALKING);
+                    updateTrainerPos(direction);
+                    updateOrigin();
+                });
+            }
         }
     }
 
@@ -620,6 +704,66 @@ public class IngameController extends Controller {
         drawPlayer(posx, posy);
     }
 
+    private void checkMovementAchievement() {
+        Achievement firstMovementAchievement = cache.getMyAchievements().stream()
+                .filter(achievement -> achievement.id().equals("MoveCharacter"))
+                .findFirst()
+                .orElse(null);
+
+        if (firstMovementAchievement == null) {
+            firstMovementAchievement = new Achievement(null, null, "MoveCharacter", tokenStorage.getCurrentUser()._id(), new Date(), 100);
+            cache.addMyAchievement(firstMovementAchievement);
+
+            disposables.add(achievementsService.updateUserAchievement(tokenStorage.getCurrentUser()._id(), "MoveCharacter", firstMovementAchievement).observeOn(FX_SCHEDULER)
+                    .subscribe(a -> Dialog.info(resources.getString("achievementUnlockHeader"), resources.getString("achievementUnlockedPre") + "\n" + resources.getString("achievementMoveCharacter"))));
+        }
+    }
+
+    private void checkAreaAchievement(String areaId) {
+        String areasString;
+        String foundArea = "";
+        String areaIdSub = areaId.substring(areaId.length() - 6);
+
+        for (String visitedArea : cache.getVisitedAreas()) {
+            if (areaIdSub.equals(visitedArea)) {
+                foundArea = visitedArea;
+                break;
+            }
+        }
+
+        if (foundArea.isEmpty()) {
+            cache.addVisitedArea(areaIdSub);
+            areasString = String.join(";", cache.getVisitedAreas());
+            prefs.addVisitedArea(areasString);
+            double percentage = (double) cache.getVisitedAreas().size() / cache.getAreas().size() * 100;
+
+            Achievement allAreasAchievement = cache.getMyAchievements().stream()
+                    .filter(achievement -> achievement.id().equals("VisitAllRegions"))
+                    .findFirst()
+                    .orElse(null);
+
+            Date date = new Date();
+
+            if (allAreasAchievement == null) {
+                allAreasAchievement = new Achievement(date, null, "VisitAllRegions", tokenStorage.getCurrentUser()._id(), null, (int) Math.round(percentage));
+                cache.addMyAchievement(allAreasAchievement);
+
+                disposables.add(achievementsService.updateUserAchievement(tokenStorage.getCurrentUser()._id(), "VisitAllRegions", allAreasAchievement).subscribe());
+            } else {
+                if (allAreasAchievement.unlockedAt() == null) {
+                    Achievement updatedAchievement = new Achievement(null, date, "VisitAllRegions", tokenStorage.getCurrentUser()._id(), allAreasAchievement.progress() == 100.0 ? date : null, (int) Math.round(percentage));
+                    cache.getMyAchievements().remove(allAreasAchievement);
+                    cache.addMyAchievement(updatedAchievement);
+
+                    disposables.add(achievementsService.updateUserAchievement(tokenStorage.getCurrentUser()._id(), "VisitAllRegions", updatedAchievement).subscribe());
+
+                    if (percentage == 100.0) {
+                        Dialog.info(resources.getString("achievementUnlockHeader"), resources.getString("achievementUnlockedPre") + "\n" + resources.getString("achievementVisitAllRegions"));
+                    }
+                }
+            }
+        }
+    }
 
     @Override
     public String getTitle() {

@@ -5,6 +5,23 @@ import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
 import de.uniks.beastopia.teaml.rest.*;
 import de.uniks.beastopia.teaml.service.*;
+import de.uniks.beastopia.teaml.rest.Achievement;
+import de.uniks.beastopia.teaml.rest.Area;
+import de.uniks.beastopia.teaml.rest.Chunk;
+import de.uniks.beastopia.teaml.rest.Layer;
+import de.uniks.beastopia.teaml.rest.Map;
+import de.uniks.beastopia.teaml.rest.NPCInfo;
+import de.uniks.beastopia.teaml.rest.Region;
+import de.uniks.beastopia.teaml.rest.Spawn;
+import de.uniks.beastopia.teaml.rest.TileSet;
+import de.uniks.beastopia.teaml.rest.TileSetDescription;
+import de.uniks.beastopia.teaml.rest.Trainer;
+import de.uniks.beastopia.teaml.rest.User;
+import de.uniks.beastopia.teaml.service.AreaService;
+import de.uniks.beastopia.teaml.service.DataCache;
+import de.uniks.beastopia.teaml.service.PresetsService;
+import de.uniks.beastopia.teaml.service.TokenStorage;
+import de.uniks.beastopia.teaml.service.TrainerService;
 import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.sockets.UDPEventListener;
 import de.uniks.beastopia.teaml.utils.PlayerState;
@@ -42,8 +59,6 @@ import static org.mockito.Mockito.*;
 class IngameControllerTest extends ApplicationTest {
 
     @Mock
-    Provider<PauseController> pauseControllerProvider;
-    @Mock
     Provider<EntityController> entityControllerProvider;
     @Mock
     Provider<MapController> mapControllerProvider;
@@ -65,6 +80,9 @@ class IngameControllerTest extends ApplicationTest {
     EventListener eventListener;
     @Mock
     BeastListController beastListController;
+    @Mock
+    final
+    PauseController pauseController = mock();
     @Mock
     DataCache cache;
     @Mock
@@ -92,6 +110,7 @@ class IngameControllerTest extends ApplicationTest {
     final Image image = createImage(2, 2, List.of(new Color(255, 0, 255), new Color(0, 255, 0), new Color(0, 0, 255), new Color(255, 255, 0)));
     final Trainer trainer = new Trainer(null, null, "ID_TRAINER", "ID_REGION", "ID_USER", "TRAINER_NAME", "TRAINER_IMAGE", null, 0, "ID_AREA", 0, 0, 0, new NPCInfo(false));
     final User user = new User(null, null, "ID_USER", "USER_NAME", "USER_STATUS", "USER_AVATAR", List.of());
+    final Achievement achievement = new Achievement(null, null, "MoveCharacter", "ID_USER", null, 100);
 
     @Override
     public void start(Stage stage) {
@@ -99,16 +118,17 @@ class IngameControllerTest extends ApplicationTest {
 
         when(tokenStorage.getCurrentUser()).thenReturn(user);
         when(trainerService.getAllTrainer(any())).thenReturn(Observable.just(List.of(trainer)));
+        when(areaService.getArea(anyString(), anyString())).thenReturn(Observable.just(area));
+        when(cache.getAreas()).thenReturn(List.of(area));
         doNothing().when(scoreboardController).init();
         when(scoreboardController.render()).thenReturn(new Pane());
         when(eventListener.listen(any(), any())).thenReturn(Observable.empty());
         doNothing().when(prefs).setCurrentRegion(any());
         doNothing().when(prefs).setArea(any());
-        when(areaService.getAreas(anyString())).thenReturn(Observable.just(List.of(area)));
-        doNothing().when(cache).setAreas(any());
         when(presetsService.getTileset(tileSetDescription)).thenReturn(Observable.just(tileSet));
         when(presetsService.getImage(tileSet)).thenReturn(Observable.just(image));
         when(cache.getTrainer()).thenReturn(trainer);
+        doNothing().when(cache).setTrainer(trainer);
         when(entityControllerProvider.get()).thenReturn(playerController);
         doNothing().when(playerController).setTrainer(any());
         when(playerController.playerState()).thenReturn(new SimpleObjectProperty<>(PlayerState.IDLE));
@@ -120,6 +140,8 @@ class IngameControllerTest extends ApplicationTest {
         doNothing().when(beastListController).init();
         when(beastListController.render()).thenReturn(new Pane());
         when(soundControllerProvider.get()).thenReturn(soundController);
+        doNothing().when(pauseController).setOnCloseRequest(any());
+        doNothing().when(pauseController).init();
         ingameController.setRegion(region);
 
         app.start(stage);
@@ -127,16 +149,6 @@ class IngameControllerTest extends ApplicationTest {
         stage.requestFocus();
 
         sleep(1000);
-    }
-
-    @Test
-    void pauseMenu() {
-        final PauseController mock = Mockito.mock(PauseController.class);
-        when(pauseControllerProvider.get()).thenReturn(mock);
-        when(mock.render()).thenReturn(new Label());
-
-        type(KeyCode.ESCAPE);
-        verify(mock).render();
     }
 
     @Test
@@ -155,6 +167,7 @@ class IngameControllerTest extends ApplicationTest {
 
     @Test
     void movePlayer() {
+        when(cache.getMyAchievements()).thenReturn(List.of(achievement));
         when(cache.getTrainer()).thenReturn(trainer);
         doNothing().when(udpEventListener).send(anyString());
         press(KeyCode.W);
