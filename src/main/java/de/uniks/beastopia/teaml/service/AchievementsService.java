@@ -7,7 +7,6 @@ import de.uniks.beastopia.teaml.rest.UpdateAchievementDto;
 import io.reactivex.rxjava3.core.Observable;
 
 import javax.inject.Inject;
-import java.util.Date;
 import java.util.List;
 
 @SuppressWarnings("unused")
@@ -37,7 +36,7 @@ public class AchievementsService {
     }
 
     public Observable<Achievement> updateUserAchievement(String userId, String id, Achievement achievement) {
-        return achievementsApiService.updateUserAchievement(userId, id, new UpdateAchievementDto(new Date(), achievement.progress()));
+        return achievementsApiService.updateUserAchievement(userId, id, new UpdateAchievementDto(achievement.unlockedAt(), achievement.progress()));
     }
 
     public Observable<Achievement> deleteUserAchievement(String userId, String id) {

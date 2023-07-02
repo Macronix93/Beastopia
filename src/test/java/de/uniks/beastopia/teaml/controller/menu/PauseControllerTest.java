@@ -2,7 +2,6 @@ package de.uniks.beastopia.teaml.controller.menu;
 
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.AppPreparer;
-import de.uniks.beastopia.teaml.controller.ingame.IngameController;
 import de.uniks.beastopia.teaml.controller.menu.social.FriendListController;
 import de.uniks.beastopia.teaml.utils.SoundController;
 import javafx.scene.control.Label;
@@ -12,13 +11,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
 
 import javax.inject.Provider;
-import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -96,15 +93,12 @@ class PauseControllerTest extends ApplicationTest {
 
     @Test
     void pauseMenu() {
-        final IngameController mock = Mockito.mock(IngameController.class);
-        when(mock.render()).thenReturn(new Label("IngameController"));
-        doNothing().when(mock).init();
-
-        app.setHistory(List.of(mock));
+        Runnable runnable = mock(Runnable.class);
+        doNothing().when(runnable).run();
+        pauseController.setOnCloseRequest(runnable);
 
         press(KeyCode.ESCAPE);
-        sleep(1000);
 
-        verify(mock).render();
+        verify(runnable).run();
     }
 }
