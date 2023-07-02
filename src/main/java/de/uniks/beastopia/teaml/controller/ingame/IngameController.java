@@ -63,6 +63,7 @@ public class IngameController extends Controller {
     PauseController pauseController;
     @Inject
     Provider<BeastDetailController> beastDetailControllerProvider;
+    @Inject
     Provider<EditBeastTeamController> editBeastTeamControllerProvider;
     @Inject
     Provider<EntityController> entityControllerProvider;
