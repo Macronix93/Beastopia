@@ -15,6 +15,7 @@ import java.io.File;
 import java.util.List;
 
 public class PresetsService {
+    public static final int PREVIEW_SCALING = 3;
     @Inject
     PresetsApiService presetsApiService;
 
@@ -26,9 +27,11 @@ public class PresetsService {
         return presetsApiService.getCharacters();
     }
 
-    public Observable<Image> getCharacterSprites(String fileName) {
+    public Observable<Image> getCharacterSprites(String fileName, boolean useConstantValues) {
         return presetsApiService.getCharacterSprites(fileName)
-                .map((ResponseBody body) -> new Image(body.byteStream()));
+                .map((ResponseBody body) ->
+                        (useConstantValues ? new Image(body.byteStream(), 384 * PREVIEW_SCALING, 96 * PREVIEW_SCALING, true, false)
+                                : new Image(body.byteStream())));
     }
 
     public Observable<Image> getImage(TileSet tileSet) {
@@ -56,5 +59,9 @@ public class PresetsService {
     public Observable<Image> getMonsterImage(int type) {
         return presetsApiService.getMonsterImage(type)
                 .map((ResponseBody body) -> new Image(body.byteStream()));
+    }
+
+    public Observable<List<MonsterTypeDto>> getAllBeasts() {
+        return presetsApiService.getMonsters();
     }
 }

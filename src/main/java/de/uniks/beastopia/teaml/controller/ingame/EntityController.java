@@ -92,7 +92,7 @@ public class EntityController extends Controller {
         updateViewPort();
         if (!data.area().equals(trainer.area())) {
             trainer = new Trainer(trainer.createdAt(), trainer.updatedAt(), trainer._id(), trainer.region(),
-                    trainer.user(), trainer.name(), trainer.image(), trainer.coins(), data.area(), trainer.x(),
+                    trainer.user(), trainer.name(), trainer.image(), trainer.team(), trainer.coins(), data.area(), trainer.x(),
                     trainer.y(), trainer.direction(), trainer.npc());
             listenToMovements();
         }
@@ -146,7 +146,7 @@ public class EntityController extends Controller {
         updateViewPort();
 
         if (!SPRITESHEET.containsKey(trainer.image()) || SPRITESHEET.get(trainer.image()) == null) {
-            disposables.add(presetsService.getCharacterSprites(trainer.image()).observeOn(FX_SCHEDULER).subscribe(image -> {
+            disposables.add(presetsService.getCharacterSprites(trainer.image(), false).observeOn(FX_SCHEDULER).subscribe(image -> {
                 SPRITESHEET.put(trainer.image(), image);
                 entityView.setImage(image);
             }));

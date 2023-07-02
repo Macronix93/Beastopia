@@ -4,10 +4,12 @@ import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.auth.LoginController;
 import de.uniks.beastopia.teaml.controller.menu.social.FriendListController;
+import de.uniks.beastopia.teaml.service.AchievementsService;
 import de.uniks.beastopia.teaml.service.AuthService;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.utils.Dialog;
+import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -19,6 +21,7 @@ import javafx.scene.text.Text;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -46,6 +49,8 @@ public class MenuController extends Controller {
     AuthService authService;
     @Inject
     TokenStorage tokenStorage;
+    @Inject
+    AchievementsService achievementsService;
     @FXML
     private VBox friendListContainer;
     @FXML
@@ -58,6 +63,8 @@ public class MenuController extends Controller {
     private Text userName;
     @Inject
     DataCache cache;
+    @Inject
+    Prefs prefs;
 
     @Inject
     public MenuController() {
@@ -71,6 +78,21 @@ public class MenuController extends Controller {
 
         if (cache.getTrainer() != null) {
             cache.setTrainer(null);
+        }
+
+        // Reset current achievements and load achievements to user account
+        if (cache.getMyAchievements().isEmpty()) {
+            disposables.add(achievementsService.getUserAchievements(tokenStorage.getCurrentUser()._id())
+                    .subscribe(achievements -> cache.setMyAchievements(achievements)));
+        }
+
+        if (prefs.getVisitedAreas() != null) {
+            String storedAreasString = prefs.getVisitedAreas();
+            String[] storedAreas = storedAreasString.split(";");
+
+            for (String id : storedAreas) {
+                cache.addVisitedArea(id);
+            }
         }
     }
 
@@ -112,8 +134,12 @@ public class MenuController extends Controller {
     @FXML
     public void logout() {
         disposables.add(authService.logout().observeOn(FX_SCHEDULER).subscribe(
-                lr -> app.show(loginControllerProvider.get()),
-                error -> Dialog.error(error, "Logout failed")));
+                lr -> {
+                    app.show(loginControllerProvider.get());
+                    cache.setMyAchievements(Collections.emptyList());
+                },
+                error -> Dialog.error(error, "Logout failed")
+        ));
     }
 
     @FXML

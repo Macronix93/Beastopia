@@ -16,13 +16,11 @@ import javafx.scene.image.ImageView;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class LoginController extends Controller {
     @FXML
-    public TextField usernameInput;
+    public ComboBox<String> usernameInput;
     @FXML
     public PasswordField passwordInput;
     @FXML
@@ -47,6 +45,7 @@ public class LoginController extends Controller {
     @Inject
     Provider<ResourceBundle> resourcesProvider;
 
+    private List<String> userHistory = new ArrayList<>();
     private BooleanBinding isInValid;
     private final SimpleStringProperty username = new SimpleStringProperty();
     private final SimpleStringProperty password = new SimpleStringProperty();
@@ -67,23 +66,31 @@ public class LoginController extends Controller {
                     lr -> app.show(menuControllerProvider.get()),
                     error -> Dialog.error(error, "Remember me failed!")));
         }
+        userHistory = prefs.getUserHistory();
+        Collections.reverse(userHistory);
     }
 
     @Override
     public Parent render() {
         final Parent parent = super.render();
         banner.setImage(new Image(Objects.requireNonNull(Main.class.getResourceAsStream("assets/beastopia_banner.png"))));
-
+        usernameInput.valueProperty().bindBidirectional(username);
+        passwordInput.textProperty().bindBidirectional(password);
+        usernameInput.getItems().addAll(userHistory);
+        usernameInput.setOnAction(event -> username.set(usernameInput.getSelectionModel().getSelectedItem()));
+        usernameInput.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                username.set(newValue);
+            }
+        });
         if (prefs.getLocale().contains("de")) {
             selectGermanLanguage.setSelected(true);
         } else {
             selectEnglishLanguage.setSelected(true);
         }
-        usernameInput.textProperty().bindBidirectional(username);
-        passwordInput.textProperty().bindBidirectional(password);
 
-        isInValid = usernameInput.textProperty().isEmpty()
-                .or(passwordInput.textProperty().length().lessThan(8));
+
+        isInValid = username.isEmpty().or(password.length().lessThan(8));
         loginButton.disableProperty().bind(isInValid);
 
         return parent;
@@ -95,10 +102,20 @@ public class LoginController extends Controller {
             return;
         }
 
-        disposables.add(authService.login(usernameInput.getText(), passwordInput.getText(), rememberMe.isSelected())
+        disposables.add(authService.login(usernameInput.getSelectionModel().getSelectedItem(), passwordInput.getText(), rememberMe.isSelected())
                 .observeOn(FX_SCHEDULER).subscribe(
-                        lr -> app.show(menuControllerProvider.get()),
-                        error -> Dialog.error(error, "Login failed")));
+                        lr -> {
+                            if (userHistory.size() == 5 && !userHistory.contains(lr.name())) {
+                                userHistory.remove(4);
+                            }
+                            Collections.reverse(userHistory);
+                            if (!userHistory.contains(lr.name())) {
+                                userHistory.add(lr.name());
+                            }
+                            prefs.setUserHistory(userHistory);
+                            app.show(menuControllerProvider.get());
+                        },
+                        error -> Dialog.error(error, "Login failed!")));
     }
 
     @FXML
