@@ -232,11 +232,9 @@ public class IngameController extends Controller {
                 })
                 .subscribe(
                         encounter -> {
-                            System.out.println("hallo");
                             if (encounter.isWild()) {
                                 openFightBeastScreen(encounter);
                             } else {
-                                System.out.println("hallo2");
                                 openFightNPCScreen(encounter);
                             }
                         },
