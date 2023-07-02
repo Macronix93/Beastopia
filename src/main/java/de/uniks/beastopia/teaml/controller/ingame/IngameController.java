@@ -58,13 +58,9 @@ public class IngameController extends Controller {
     @Inject
     TrainerService trainerService;
     @Inject
-    PauseController pauseController;
-    @Inject
     AchievementsService achievementsService;
     @Inject
-    BeastListController beastListController;
-    @Inject
-    Provider<FightWildBeastController> fightWildBeastControllerProvider;
+    PauseController pauseController;
     @Inject
     Provider<BeastDetailController> beastDetailControllerProvider;
     Provider<EditBeastTeamController> editBeastTeamControllerProvider;
@@ -83,11 +79,15 @@ public class IngameController extends Controller {
     @Inject
     EventListener eventListener;
     @Inject
+    BeastListController beastListController;
+    @Inject
     ScoreboardController scoreBoardController;
     @Inject
     Provider<IngameController> ingameControllerProvider;
     @Inject
     Provider<SoundController> soundControllerProvider;
+    @Inject
+    Provider<FightWildBeastController> fightWildBeastControllerProvider;
     @Inject
     RegionEncountersService regionEncountersService;
     @Inject
