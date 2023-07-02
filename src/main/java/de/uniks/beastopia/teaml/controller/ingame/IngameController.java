@@ -4,6 +4,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.Controller;
+import de.uniks.beastopia.teaml.controller.ingame.beast.EditBeastTeamController;
+import de.uniks.beastopia.teaml.controller.ingame.encounter.FightWildBeastController;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
 import de.uniks.beastopia.teaml.rest.Map;
 import de.uniks.beastopia.teaml.rest.*;
@@ -16,31 +18,21 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.util.Pair;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.*;
-import de.uniks.beastopia.teaml.controller.ingame.encounter.FightWildBeastController;
-import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.layout.StackPane;
-import java.util.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class IngameController extends Controller {
     static final double TILE_SIZE = 20;
@@ -70,8 +62,6 @@ public class IngameController extends Controller {
     @Inject
     AchievementsService achievementsService;
     @Inject
-    Provider<PauseController> pauseControllerProvider;
-    @Inject
     BeastListController beastListController;
     @Inject
     Provider<FightWildBeastController> fightWildBeastControllerProvider;
@@ -92,8 +82,6 @@ public class IngameController extends Controller {
     UDPEventListener udpEventListener;
     @Inject
     EventListener eventListener;
-    @Inject
-    BeastListController beastListController;
     @Inject
     ScoreboardController scoreBoardController;
     @Inject
