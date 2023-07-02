@@ -91,17 +91,17 @@ public class TrainerServiceTest {
     @Test
     void updateTrainer() {
         when(trainerApiService.updateTrainer("region", "trainer",
-                new UpdateTrainerDto("A", "A")))
+                new UpdateTrainerDto("A", "A", List.of())))
                 .thenReturn(Observable.just(allTrainer.get(0)));
 
-        Trainer result = trainerService.updateTrainer("region", "trainer", "A", "A")
+        Trainer result = trainerService.updateTrainer("region", "trainer", "A", "A", List.of())
                 .blockingFirst();
 
         assertEquals("A", result.name());
         assertEquals("A", result.image());
 
         verify(trainerApiService).updateTrainer("region", "trainer",
-                new UpdateTrainerDto("A", "A"));
+                new UpdateTrainerDto("A", "A", List.of()));
     }
 
     @Test
