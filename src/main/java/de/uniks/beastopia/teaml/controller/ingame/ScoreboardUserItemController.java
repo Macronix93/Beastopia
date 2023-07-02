@@ -1,6 +1,7 @@
 package de.uniks.beastopia.teaml.controller.ingame;
 
 import de.uniks.beastopia.teaml.controller.Controller;
+import de.uniks.beastopia.teaml.rest.Achievement;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.DataCache;
 import javafx.fxml.FXML;
@@ -9,6 +10,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 public class ScoreboardUserItemController extends Controller {
@@ -25,6 +28,8 @@ public class ScoreboardUserItemController extends Controller {
     private int achievements;
     private int totalAchievements;
     Consumer<String> onUserClicked;
+    private List<Achievement> userAchievements;
+    private Parent parent;
 
     @Inject
     public ScoreboardUserItemController() {
@@ -50,12 +55,29 @@ public class ScoreboardUserItemController extends Controller {
         return this;
     }
 
+    public ScoreboardUserItemController setUserAchievements(List<Achievement> achievements) {
+        this.userAchievements = new ArrayList<>(achievements);
+        return this;
+    }
+
+    public List<Achievement> getUserAchievements() {
+        return this.userAchievements;
+    }
+
+    public void setParent(Parent parent) {
+        this.parent = parent;
+    }
+
+    public Parent getParent() {
+        return this.parent;
+    }
+
     @Override
     public Parent render() {
-        Parent parent = super.render();
+        parent = super.render();
 
         nameText.setText(user.name());
-        achievementsText.setText(achievements + "/" + totalAchievements + " Achievements");
+        achievementsText.setText(achievements + "/" + totalAchievements + " " + resources.getString("achievements"));
         avatarImageView.setImage(cache.getImageAvatar(user));
         return parent;
     }

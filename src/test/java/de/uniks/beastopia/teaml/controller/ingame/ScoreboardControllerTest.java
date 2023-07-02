@@ -29,7 +29,12 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ScoreboardControllerTest extends ApplicationTest {
@@ -44,6 +49,8 @@ class ScoreboardControllerTest extends ApplicationTest {
     @Mock
     Provider<ScoreboardUserItemController> scoreBoardUserItemControllerProvider;
     @Mock
+    Provider<ScoreboardFilterController> scoreboardFilterControllerProvider;
+    @Mock
     Provider<UserInfoController> userInfoControllerProvider;
     @InjectMocks
     ScoreboardController scoreboardController;
@@ -51,7 +58,8 @@ class ScoreboardControllerTest extends ApplicationTest {
     private final List<AchievementsSummary> achievementSummaries = List.of(new AchievementsSummary("123", 0, 2, 3));
     private final List<Achievement> achievements = List.of(new Achievement(null, null, "ID2", "ID", new Date(), 0));
     private final List<User> users = List.of(new User(null, null, "ID", "Leon", "status", "avatar", null));
-    private final List<Trainer> trainers = List.of(new Trainer(null, null, "TRAINER_ID", "region", "ID", "Lonartie", "image", 0, "area", 0, 0, 0, null));
+    private final List<Trainer> trainers = List.of(new Trainer(null, null, "TRAINER_ID", "region", "ID", "Lonartie", "image", null, 0, "area", 0, 0, 0, null));
+    private final List<Achievement> userAchievements = List.of(new Achievement(null, null, "ID", "Leon", null, 25));
     private final Pane pane = new Pane();
     private ArgumentCaptor<Consumer<String>> onUserClickedCaptor;
 
@@ -67,6 +75,8 @@ class ScoreboardControllerTest extends ApplicationTest {
         when(controller.setOnUserClicked(onUserClickedCaptor.capture())).thenReturn(controller);
         when(controller.setTotalAchievements(anyInt())).thenReturn(controller);
         when(controller.render()).thenReturn(pane);
+        when(controller.setUserAchievements(any())).thenReturn(controller);
+        when(controller.getUserAchievements()).thenReturn(userAchievements);
 
         when(prefs.getRegionID()).thenReturn("region");
         when(achievementsService.getAchievements()).thenReturn(Observable.just(achievementSummaries));
@@ -106,6 +116,8 @@ class ScoreboardControllerTest extends ApplicationTest {
         when(mocked.setName(any())).thenReturn(mocked);
         when(mocked.setAchievements(anyInt())).thenReturn(mocked);
         when(mocked.setTotalAchievements(anyInt())).thenReturn(mocked);
+        when(mocked.setUserAchievements(any())).thenReturn(mocked);
+        when(mocked.setUserAvatar(any())).thenReturn(mocked);
 
         when(userInfoControllerProvider.get()).thenReturn(mocked);
 
@@ -121,5 +133,20 @@ class ScoreboardControllerTest extends ApplicationTest {
             sleep(100);
         }
         verify(userInfoControllerProvider.get()).render();
+    }
+
+    @Test
+    void clickOnFilterIcon() {
+        ScoreboardFilterController mocked = mock(ScoreboardFilterController.class);
+        when(mocked.render()).thenReturn(new Pane());
+        when(mocked.setCurrentAchievements(any())).thenReturn(mocked);
+        when(mocked.setSubControllers(any())).thenReturn(mocked);
+        when(mocked.setParentPane(any())).thenReturn(mocked);
+
+        when(scoreboardFilterControllerProvider.get()).thenReturn(mocked);
+
+        clickOn("#filterIcon");
+
+        verify(scoreboardFilterControllerProvider.get()).render();
     }
 }

@@ -1,6 +1,7 @@
 package de.uniks.beastopia.teaml.rest;
 
 import java.util.Date;
+import java.util.List;
 
 public record Trainer(
         Date createdAt,
@@ -10,6 +11,7 @@ public record Trainer(
         String user,
         String name,
         String image,
+        List<String> team,
         int coins,
         String area,
         int x,

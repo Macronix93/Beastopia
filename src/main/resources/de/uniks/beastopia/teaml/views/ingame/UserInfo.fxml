@@ -3,14 +3,15 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 <VBox minWidth="-Infinity" prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: black;"
       xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="de.uniks.beastopia.teaml.controller.ingame.UserInfoController">
     <HBox alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="75.0" prefWidth="204.0"
-          spacing="10.0" style="-fx-border-color: black;">
+          spacing="5.0" style="-fx-border-color: black;">
         <Separator layoutX="186.0" layoutY="49.0" prefWidth="200.0" visible="false"/>
         <!--suppress JavaFxUnresolvedFxIdReference -->
         <ImageView fx:id="avatarImageView" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true"/>
@@ -18,20 +19,20 @@
         <VBox alignment="CENTER">
             <Text fx:id="nameText" strokeType="OUTSIDE" strokeWidth="0.0" text="Name">
                 <font>
-                    <Font name="System Bold" size="12.0"/>
+                    <Font name="System Bold" size="17.0"/>
                 </font>
             </Text>
             <Text fx:id="achievementsText" layoutX="10.0" layoutY="214.0" strokeType="OUTSIDE" strokeWidth="0.0"
                   text="6/6 Achievements">
                 <font>
-                    <Font size="8.0"/>
+                    <Font size="13.0"/>
                 </font>
             </Text>
         </VBox>
         <Separator layoutX="53.0" layoutY="49.0" prefWidth="200.0" visible="false"/>
     </HBox>
-    <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="200.0"
+    <ScrollPane fx:id="achievementList" fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="200.0"
                 style="-fx-border-color: black; -fx-background-color: transparent;">
-        <VBox prefHeight="117.0" prefWidth="181.0"/>
+        <VBox fx:id="achievementPane" prefHeight="117.0" prefWidth="181.0"/>
     </ScrollPane>
 </VBox>

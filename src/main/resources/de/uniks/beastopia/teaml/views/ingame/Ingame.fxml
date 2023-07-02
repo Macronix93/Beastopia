@@ -1,19 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--suppress JavaFxUnresolvedFxIdReference -->
+
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
-<HBox fx:id="ingame" alignment="BOTTOM_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="750.0" spacing="20.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.uniks.beastopia.teaml.controller.ingame.IngameController">
-    <StackPane fx:id="stackPane" prefHeight="150.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+<HBox fx:id="ingame" alignment="BOTTOM_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+      minWidth="-Infinity" prefHeight="600.0" prefWidth="750.0" spacing="20.0" xmlns="http://javafx.com/javafx/19"
+      xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.uniks.beastopia.teaml.controller.ingame.IngameController">
+    <StackPane fx:id="pauseMenuLayout" prefHeight="150.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
         <ScrollPane>
             <Pane fx:id="tilePane" prefHeight="200.0" prefWidth="200.0"/>
         </ScrollPane>
         <AnchorPane prefHeight="200.0" prefWidth="200.0">
-            <Button alignment="CENTER" minWidth="180.0" mnemonicParsing="false" onKeyPressed="#keyDown"
-                    onKeyReleased="#keyUp"
+            <Button fx:id="pauseHint" alignment="CENTER" minWidth="180.0" mnemonicParsing="false"
+                    onKeyPressed="#keyDown" onKeyReleased="#keyUp"
                     style="-fx-background-color: transparent; -fx-border-color: black; -fx-border-radius: 10;"
                     text="%ESCtoPause" textAlignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0">
                 <font>
@@ -25,6 +31,6 @@
         </AnchorPane>
     </StackPane>
     <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
     </padding>
 </HBox>
