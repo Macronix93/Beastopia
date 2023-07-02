@@ -63,11 +63,33 @@ public class DialogWindowControllerTest extends ApplicationTest {
 
     @Test
     public void closeTest() {
+        Runnable onClose = Mockito.mock();
+        dialogWindowController.setOnCloseRequested(onClose);
 
+        clickOn("#closeButton");
+
+        verify(onClose).run();
     }
 
     @Test
     public void handleKeyEventTest() {
+        Runnable onClose = Mockito.mock();
+        dialogWindowController.setOnCloseRequested(onClose);
 
+        press(KeyCode.T);
+
+        verify(onClose).run();
+    }
+
+    @Test
+    public void buttonClickedTest() {
+        Consumer<Integer> onButtonClicked = Mockito.mock();
+        dialogWindowController.setOnButtonClicked(onButtonClicked);
+
+        clickOn("Button 1");
+        verify(onButtonClicked).accept(0);
+
+        clickOn("Button 2");
+        verify(onButtonClicked).accept(1);
     }
 }
