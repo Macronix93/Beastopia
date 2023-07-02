@@ -6,17 +6,19 @@ import de.uniks.beastopia.teaml.rest.Encounter;
 import de.uniks.beastopia.teaml.rest.Opponent;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.EncounterOpponentsService;
+import de.uniks.beastopia.teaml.service.PresetsService;
 import de.uniks.beastopia.teaml.service.TrainerService;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
+
+
+import static de.uniks.beastopia.teaml.controller.ingame.TrainerController.PREVIEW_VIEWPORT;
+import static de.uniks.beastopia.teaml.service.PresetsService.PREVIEW_SCALING;
 
 public class StartFightNPCController extends Controller {
     @FXML
@@ -32,7 +34,8 @@ public class StartFightNPCController extends Controller {
     DataCache cache;
     @Inject
     EncounterOpponentsService encounterOpponentsService;
-
+    @Inject
+    PresetsService presetsService;
     @Inject
     public StartFightNPCController() {
 
@@ -62,7 +65,15 @@ public class StartFightNPCController extends Controller {
                                         String message = (prefs.getLocale().contains("de")) ? " startet einen Kampf " +
                                                 "gegen dich!" : " starts a fight against you!";
                                         headline.setText(t.name() + message);
-                                        image.setImage(cache.getCharacterImage(t.image()).getValue());
+                                        disposables.add(presetsService
+                                                .getCharacterSprites(t.image(), true)
+                                                .observeOn(FX_SCHEDULER)
+                                                .subscribe(i -> {
+                                                    image.setImage(i);
+                                                    image.setViewport(PREVIEW_VIEWPORT);
+                                                    image.setFitWidth(32 * PREVIEW_SCALING);
+                                                    image.setFitHeight(64 * PREVIEW_SCALING);
+                                                }));
                                     }));
                             return;
                         }

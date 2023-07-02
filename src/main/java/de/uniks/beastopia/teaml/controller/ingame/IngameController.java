@@ -222,7 +222,6 @@ public class IngameController extends Controller {
         } else {
             loadMap(cache.getAreas(), myTrainer, trainers);
         }
-        System.out.println(cache.getTrainer()._id());
         disposables.add(eventListener.listen("encounters.*.trainers." + cache.getTrainer()._id()
                         + ".opponents.*.created", Opponent.class)
                 .observeOn(FX_SCHEDULER)
