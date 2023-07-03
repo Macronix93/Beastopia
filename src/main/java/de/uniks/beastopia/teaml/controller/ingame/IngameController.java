@@ -550,6 +550,8 @@ public class IngameController extends Controller {
         if (keyEvent.getCode().equals(KeyCode.T)) {
             if (canTalkToNPC("Albert")) {
                 talkToAlbert();
+            } else if (canTalkToNPC("nurse")) {
+                talkToNurse();
             } else {
                 closeTalk();
             }
@@ -589,9 +591,26 @@ public class IngameController extends Controller {
                     Rectangle2D viewPort = new Rectangle2D(3 * 96, 32, 16, 32);
                     PixelReader reader = image.getPixelReader();
                     WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
-                    talk(newImage, "Welcome! /t Please select a starter Beast.", List.of(monster1.name(), monster2.name(), monster3.name()), List.of(monster1Image, monster2Image, monster3Image), (i -> {
+                    talk(newImage, "Welcome! \t Please select a starter Beast.", List.of(monster1.name(), monster2.name(), monster3.name()), List.of(monster1Image, monster2Image, monster3Image), (i -> {
                         talk(newImage, "Flamander", List.of("another Beast", "select Beast"), null, (j -> {
 
+                        }));
+                    }));
+                }));
+    }
+
+    private void talkToNurse() {
+        disposables.add(presetsService.getCharacterSprites(npcTalkPartner.image(), true)
+                .observeOn(FX_SCHEDULER)
+                .subscribe(image -> {
+                    Rectangle2D viewPort = new Rectangle2D(3 * 96, 32, 16, 32);
+                    PixelReader reader = image.getPixelReader();
+                    WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
+                    talk(newImage, "Hello! \t what can I do for you?", List.of("Heal all Beasts"), null, (i -> {
+                        disposables.add(presetsService.getAllBeasts().observeOn(FX_SCHEDULER).subscribe(beasts -> {
+                            for (MonsterTypeDto beast : beasts) {
+
+                            }
                         }));
                     }));
                 }));
@@ -820,6 +839,7 @@ public class IngameController extends Controller {
         playerController.destroy();
         scoreBoardController.destroy();
         beastListController.destroy();
+        dialogWindowController.destroy();
         for (Controller controller : subControllers) {
             controller.destroy();
         }
