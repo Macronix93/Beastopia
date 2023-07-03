@@ -59,7 +59,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class IngameController extends Controller {
-    static final double TILE_SIZE = 20;
+    static final double TILE_SIZE = 32;
     static final int MENU_NONE = 0;
     static final int MENU_SCOREBOARD = 1;
     static final int MENU_BEASTLIST = 2;
@@ -161,8 +161,6 @@ public class IngameController extends Controller {
     public void init() {
         super.init();
 
-        currentMenu = MENU_NONE;
-
         scoreBoardController.setOnCloseRequested(() -> {
             scoreBoardLayout.getChildren().remove(scoreBoardParent);
             currentMenu = MENU_NONE;
@@ -222,6 +220,8 @@ public class IngameController extends Controller {
     @Override
     public Parent render() {
         loadingPage = LoadingPage.makeLoadingPage(super.render());
+
+        currentMenu = MENU_NONE;
 
         disposables.add(trainerService.getAllTrainer(this.region._id())
                 .subscribe(this::loadTrainers));
@@ -310,6 +310,7 @@ public class IngameController extends Controller {
 
         playerController.setTrainer(myTrainer);
         playerController.init();
+        playerController.setDirection(myTrainer.direction());
 
         cache.setTrainer(myTrainer);
         posx = myTrainer.x();
@@ -334,6 +335,7 @@ public class IngameController extends Controller {
             }
         });
         controller.init();
+        controller.setDirection(trainer.direction());
         Parent parent = drawRemotePlayer(controller, trainer.x(), trainer.y());
         otherPlayers.put(controller, parent);
         if (prefs.getArea() != null && !prefs.getArea()._id().equals(trainer.area())) {
@@ -410,7 +412,9 @@ public class IngameController extends Controller {
                             continue;
                         }
 
-                        drawTile(x, y, tileSet.getKey().getValue(), presetsService.getTileViewPort(tileSet.getValue(), tileSet.getKey().getKey()));
+                        if (id != 0) {
+                            drawTile(x, y, tileSet.getKey().getValue(), presetsService.getTileViewPort(tileSet.getValue(), tileSet.getKey().getKey()));
+                        }
                     }
                 }
             } else if (layer.data() != null) {
@@ -426,7 +430,9 @@ public class IngameController extends Controller {
                         continue;
                     }
 
-                    drawTile(x, y, tileSet.getKey().getValue(), presetsService.getTileViewPort(tileSet.getValue(), tileSet.getKey().getKey()));
+                    if (id != 0) {
+                        drawTile(x, y, tileSet.getKey().getValue(), presetsService.getTileViewPort(tileSet.getValue(), tileSet.getKey().getKey()));
+                    }
                 }
             }
         }
@@ -447,7 +453,6 @@ public class IngameController extends Controller {
 
     private void drawTile(int x, int y, Image image, Rectangle2D viewPort) {
         ImageView view = new ImageView();
-        view.setPreserveRatio(true);
         view.setSmooth(true);
         view.setImage(image);
         view.setFitWidth(TILE_SIZE + 1);
@@ -459,12 +464,19 @@ public class IngameController extends Controller {
     }
 
     public void setOrigin(int tilex, int tiley) {
-        double parentWidth = width;
-        double parentHeight = height;
-        double originX = parentWidth / 2 - TILE_SIZE / 2;
-        double originY = parentHeight / 2 - TILE_SIZE / 2;
+        double originX = (double) width / 2 - TILE_SIZE / 2;
+        double originY = (double) height / 2 - TILE_SIZE / 2;
         double tilePaneTranslationX = originX - tilex * TILE_SIZE;
         double tilePaneTranslationY = originY - tiley * TILE_SIZE;
+
+        // Calculate the maximum translation values based on the map dimensions and visible area
+        double maxTranslationX = Math.max(0, tilePane.getBoundsInLocal().getWidth() - width + (TILE_SIZE / 2));
+        double maxTranslationY = Math.max(0, tilePane.getBoundsInLocal().getHeight() - height + TILE_SIZE);
+
+        // Clamp the translation values within the maximum range
+        tilePaneTranslationX = Math.max(-maxTranslationX, Math.min(0, tilePaneTranslationX));
+        tilePaneTranslationY = Math.max(-maxTranslationY, Math.min(0, tilePaneTranslationY));
+
         tilePane.setTranslateX(tilePaneTranslationX);
         tilePane.setTranslateY(tilePaneTranslationY);
         movePlayer(tilex, tiley);
