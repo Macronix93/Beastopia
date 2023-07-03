@@ -123,6 +123,18 @@
     -fx-background-color: #FFD4B2CF;
 }
 
+#scoreBoardTitle {
+    -fx-font-size: 23px;
+}
+
+#nameText {
+    -fx-font-size: 17px;
+}
+
+#achievementsText {
+    -fx-font-size: 10px;
+}
+
 #msgList,
 #chatList,
 #regionList,
