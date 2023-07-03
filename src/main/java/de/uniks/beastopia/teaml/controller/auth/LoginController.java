@@ -154,5 +154,6 @@ public class LoginController extends Controller {
         prefs.setLocale(locale.toLanguageTag());
         resources = resourcesProvider.get();
         app.update();
+        loadingPage.setDone();
     }
 }
