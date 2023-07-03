@@ -3,6 +3,7 @@ package de.uniks.beastopia.teaml.controller.ingame;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.MoveTrainerDto;
 import de.uniks.beastopia.teaml.rest.Trainer;
+import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import de.uniks.beastopia.teaml.sockets.UDPEventListener;
 import de.uniks.beastopia.teaml.utils.Direction;
@@ -43,6 +44,8 @@ public class EntityController extends Controller {
     PresetsService presetsService;
     @Inject
     UDPEventListener udpEventListener;
+    @Inject
+    DataCache cache;
     Disposable eventListener;
     Timer timer = null;
 
@@ -136,7 +139,7 @@ public class EntityController extends Controller {
 
     @Override
     public Parent render() {
-        int VIEW_SIZE = 40;
+        int VIEW_SIZE = 60;
         parent = super.render();
         entityView.toFront();
         entityView.setPreserveRatio(true);
@@ -146,7 +149,7 @@ public class EntityController extends Controller {
         updateViewPort();
 
         if (!SPRITESHEET.containsKey(trainer.image()) || SPRITESHEET.get(trainer.image()) == null) {
-            disposables.add(presetsService.getCharacterSprites(trainer.image(), false).observeOn(FX_SCHEDULER).subscribe(image -> {
+            disposables.add(presetsService.getCharacterSprites(trainer.image(), true).observeOn(FX_SCHEDULER).subscribe(image -> {
                 SPRITESHEET.put(trainer.image(), image);
                 entityView.setImage(image);
             }));
@@ -157,12 +160,22 @@ public class EntityController extends Controller {
     }
 
     private Rectangle2D getViewport() {
-        return new Rectangle2D(direction.ordinal() * DIRECTION_STEP + index * SPRITE_STEP, state.get().ordinal() * STATE_STEP + STATE_STEP, PORT_WIDTH, PORT_HEIGHT);
+        int SPRITE_SCALING = 3;
+        return new Rectangle2D((direction.ordinal() * DIRECTION_STEP + index * SPRITE_STEP) * SPRITE_SCALING, (state.get().ordinal() * STATE_STEP + STATE_STEP) * SPRITE_SCALING, PORT_WIDTH * SPRITE_SCALING, PORT_HEIGHT * SPRITE_SCALING);
     }
 
     @Override
     public void destroy() {
         eventListener.dispose();
         super.destroy();
+    }
+
+    public void setDirection(int direction) {
+        switch (direction) {
+            case 0 -> this.direction = Direction.RIGHT;
+            case 1 -> this.direction = Direction.UP;
+            case 2 -> this.direction = Direction.LEFT;
+            case 3 -> this.direction = Direction.DOWN;
+        }
     }
 }
