@@ -22,6 +22,8 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelReader;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
@@ -32,6 +34,7 @@ import javafx.util.Pair;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.*;
+import java.util.function.Consumer;
 
 public class IngameController extends Controller {
     static final double TILE_SIZE = 20;
@@ -66,6 +69,8 @@ public class IngameController extends Controller {
     @Inject
     Provider<PauseController> pauseControllerProvider;
     @Inject
+    BeastListController beastListController;
+    @Inject
     Provider<BeastDetailController> beastDetailControllerProvider;
     @Inject
     Provider<DialogWindowController> dialogWindowControllerProvider;
@@ -85,7 +90,7 @@ public class IngameController extends Controller {
     @Inject
     EventListener eventListener;
     @Inject
-    BeastListController beastListController;
+    Provider<MapController> mapControllerProvider;
     @Inject
     ScoreboardController scoreBoardController;
     @Inject
@@ -123,6 +128,7 @@ public class IngameController extends Controller {
     private final String[] locationStrings = {"Moncenter", "House", "Store"};
     private long lastValueChangeTime = 0;
     private DialogWindowController dialogWindowController;
+    private Trainer npcTalkPartner;
 
     @Inject
     public IngameController() {
@@ -212,15 +218,18 @@ public class IngameController extends Controller {
 
     private void loadTrainers(List<Trainer> trainers) {
         Trainer myTrainer = loadMyTrainer(trainers);
+        disposables.add(areaService.getAreas(this.region._id()).observeOn(FX_SCHEDULER).subscribe(areas -> {
+            cache.setAreas(areas);
+            cache.setTrainers(trainers);
+            loadMap(areas, myTrainer);
+            drawMap();
 
-        if (cache.getAreas().isEmpty()) {
-            disposables.add(areaService.getAreas(this.region._id()).observeOn(FX_SCHEDULER).subscribe(areas -> {
-                cache.setAreas(areas);
-                loadMap(cache.getAreas(), myTrainer, trainers);
-            }));
-        } else {
-            loadMap(cache.getAreas(), myTrainer, trainers);
-        }
+            beastListParent = beastListController.render();
+            scoreBoardParent = scoreBoardController.render();
+            loadRemoteTrainer(trainers);
+            listenToTrainerEvents();
+            loadingPage.setDone();
+        }));
     }
 
     private void listenToTrainerEvents() {
@@ -247,37 +256,23 @@ public class IngameController extends Controller {
         }
     }
 
-    private void loadMap(List<Area> areas, Trainer myTrainer, List<Trainer> trainers) {
+    private void loadMap(List<Area> areas, Trainer myTrainer) {
         Area area = areas.stream().filter(a -> a._id().equals(myTrainer.area())).findFirst().orElseThrow();
         prefs.setArea(area);
+        this.map = area.map();
+        for (TileSetDescription tileSetDesc : map.tilesets()) {
+            TileSet tileSet = presetsService.getTileset(tileSetDesc).blockingFirst();
+            Image image = presetsService.getImage(tileSet).blockingFirst();
+            tileSets.add(new Pair<>(tileSetDesc, new Pair<>(tileSet, image)));
+        }
 
-        disposables.add(areaService.getArea(this.region._id(), area._id())
-                .observeOn(FX_SCHEDULER)
-                .subscribe(a -> {
-                            this.map = a.map();
-                            for (TileSetDescription tileSetDesc : map.tilesets()) {
-                                TileSet tileSet = presetsService.getTileset(tileSetDesc).blockingFirst();
-                                Image image = presetsService.getImage(tileSet).blockingFirst();
-                                tileSets.add(new Pair<>(tileSetDesc, new Pair<>(tileSet, image)));
-                            }
-                            drawMap();
-
-                            if (a.name().contains("Route")) {
-                                soundController.play("bgm:route");
-                            } else if (a.name().contains("House")) {
-                                soundController.play("bgm:house");
-                            } else {
-                                soundController.play("bgm:city");
-                            }
-
-                            beastListParent = beastListController.render();
-                            scoreBoardParent = scoreBoardController.render();
-                            pauseMenuParent = pauseController.render();
-                            loadRemoteTrainer(trainers);
-                            listenToTrainerEvents();
-                            loadingPage.setDone();
-                        }
-                ));
+        if (area.name().contains("Route")) {
+            soundController.play("bgm:route");
+        } else if (area.name().contains("House")) {
+            soundController.play("bgm:house");
+        } else {
+            soundController.play("bgm:city");
+        }
     }
 
     /**
@@ -552,27 +547,83 @@ public class IngameController extends Controller {
         handlePauseMenu(keyEvent);
         handleScoreboard(keyEvent);
         handleBeastList(keyEvent);
-        handleBeastTeam(keyEvent);
         handleTalkToTrainer(keyEvent);
     }
 
     public void handleTalkToTrainer(KeyEvent keyEvent) {
         if (keyEvent.getCode().equals(KeyCode.T)) {
-            if (stackPane.getChildren().contains(dialogWindowParent)) {
-                stackPane.getChildren().remove(dialogWindowParent);
-                currentMenu = MENU_NONE;
+            if (canTalkToNPC("Albert")) {
+                talkToAlbert();
             } else {
-                dialogWindowController = dialogWindowControllerProvider.get();
-
-                dialogWindowParent = dialogWindowController.render();
-                stackPane.getChildren().add(dialogWindowParent);
-                stackPane.setPrefWidth(600);
-                currentMenu = MENU_DIALOGWINDOW;
+                closeTalk();
             }
-            dialogWindowController.setOnCloseRequested(() -> {
-                stackPane.getChildren().remove(dialogWindowParent);
-                dialogWindowController.destroy();
-            });
+        }
+    }
+
+    private double distance(Trainer a, Trainer b) {
+        int dx = b.x() - a.x();
+        int dy = b.y() - a.y();
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    private boolean canTalkToNPC(String npcName) {
+        Trainer me = cache.getTrainer();
+
+        for (Trainer trainer : cache.getTrainers()) {
+            if (trainer.name().equals(npcName)
+                    && trainer.npc() != null) {
+                npcTalkPartner = trainer;
+                break;
+            }
+        }
+
+        return me.area().equals(npcTalkPartner.area()) && !(distance(me, npcTalkPartner) > 1.5);
+    }
+
+    private void talkToAlbert() {
+        disposables.add(presetsService.getCharacterSprites(npcTalkPartner.image())
+                .observeOn(FX_SCHEDULER)
+                .subscribe(image -> {
+                    MonsterTypeDto monster1 = presetsService.getMonsterType(1).blockingFirst();
+                    Image monster1Image = presetsService.getMonsterImage(1).blockingFirst();
+                    MonsterTypeDto monster2 = presetsService.getMonsterType(2).blockingFirst();
+                    Image monster2Image = presetsService.getMonsterImage(2).blockingFirst();
+                    MonsterTypeDto monster3 = presetsService.getMonsterType(3).blockingFirst();
+                    Image monster3Image = presetsService.getMonsterImage(3).blockingFirst();
+                    Rectangle2D viewPort = new Rectangle2D(3 * 96, 32, 16, 32);
+                    PixelReader reader = image.getPixelReader();
+                    WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
+                    talk(newImage, "Welcome! /t Please select a starter Beast.", List.of(monster1.name(), monster2.name(), monster3.name()), List.of(monster1Image, monster2Image, monster3Image), (i -> {
+                        //TODO onButtonClicked
+                    }));
+                }));
+    }
+
+    private void talk(Image image, String message, List<String> choices, List<Image> buttonImages, Consumer<Integer> onButtonPressed) {
+        closeTalk();
+
+        dialogWindowController = dialogWindowControllerProvider.get();
+        dialogWindowController
+                .setTrainerImage(image)
+                .setChoices(choices)
+                .setButtonImages(buttonImages)
+                .setText(message)
+                .setOnButtonClicked(onButtonPressed);
+        dialogWindowParent = dialogWindowController.render();
+        stackPane.getChildren().add(dialogWindowParent);
+        stackPane.setPrefWidth(600);
+        currentMenu = MENU_DIALOGWINDOW;
+
+        dialogWindowController.setOnCloseRequested(() -> {
+            stackPane.getChildren().remove(dialogWindowParent);
+            dialogWindowController.destroy();
+        });
+    }
+
+    private void closeTalk() {
+        if (stackPane.getChildren().contains(dialogWindowParent)) {
+            stackPane.getChildren().remove(dialogWindowParent);
+            currentMenu = MENU_NONE;
         }
     }
 
