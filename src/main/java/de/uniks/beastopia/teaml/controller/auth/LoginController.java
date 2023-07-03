@@ -88,6 +88,10 @@ public class LoginController extends Controller {
     public Parent render() {
         loadingPage = LoadingPage.makeLoadingPage(super.render());
 
+        if (!prefs.isRememberMe()) {
+            onUI(() -> loadingPage.setDone());
+        }
+
         banner.setImage(new Image(Objects.requireNonNull(Main.class.getResourceAsStream("assets/beastopia_banner.png"))));
         usernameInput.valueProperty().bindBidirectional(username);
         passwordInput.textProperty().bindBidirectional(password);
@@ -150,6 +154,10 @@ public class LoginController extends Controller {
         prefs.setLocale(locale.toLanguageTag());
         resources = resourcesProvider.get();
         app.update();
+    }
+
+    public void setLoadingPageDone() {
+        this.loadingPage.setDone();
     }
 
 }
