@@ -714,6 +714,10 @@ public class IngameController extends Controller {
     public void setIdleState() {
         state.setValue(PlayerState.IDLE);
         drawPlayer(posx, posy);
+
+        if (currentMenu == MENU_PAUSE) {
+            player.setOpacity(0.5);
+        }
     }
 
     private void checkMovementAchievement() {
