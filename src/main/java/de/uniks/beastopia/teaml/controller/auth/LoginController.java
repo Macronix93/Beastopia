@@ -78,7 +78,10 @@ public class LoginController extends Controller {
                         app.show(menuControllerProvider.get());
                         loadingPage.setDone();
                     },
-                    error -> Dialog.error(error, "Remember me failed!")));
+                    error -> {
+                        loadingPage.setDone();
+                        Dialog.error(error, "Remember me failed!");
+                    }));
         }
         userHistory = prefs.getUserHistory();
         Collections.reverse(userHistory);
