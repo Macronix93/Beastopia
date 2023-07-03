@@ -4,7 +4,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.Controller;
-import de.uniks.beastopia.teaml.controller.ingame.beast.EditBeastTeamController;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
 import de.uniks.beastopia.teaml.rest.Map;
 import de.uniks.beastopia.teaml.rest.*;
@@ -74,7 +73,6 @@ public class IngameController extends Controller {
     Provider<BeastDetailController> beastDetailControllerProvider;
     @Inject
     Provider<DialogWindowController> dialogWindowControllerProvider;
-    Provider<EditBeastTeamController> editBeastTeamControllerProvider;
     @Inject
     Provider<EntityController> entityControllerProvider;
     @Inject
@@ -89,8 +87,6 @@ public class IngameController extends Controller {
     UDPEventListener udpEventListener;
     @Inject
     EventListener eventListener;
-    @Inject
-    Provider<MapController> mapControllerProvider;
     @Inject
     ScoreboardController scoreBoardController;
     @Inject
@@ -581,7 +577,7 @@ public class IngameController extends Controller {
     }
 
     private void talkToAlbert() {
-        disposables.add(presetsService.getCharacterSprites(npcTalkPartner.image())
+        disposables.add(presetsService.getCharacterSprites(npcTalkPartner.image(), true)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(image -> {
                     MonsterTypeDto monster1 = presetsService.getMonsterType(1).blockingFirst();
@@ -594,7 +590,9 @@ public class IngameController extends Controller {
                     PixelReader reader = image.getPixelReader();
                     WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
                     talk(newImage, "Welcome! /t Please select a starter Beast.", List.of(monster1.name(), monster2.name(), monster3.name()), List.of(monster1Image, monster2Image, monster3Image), (i -> {
-                        //TODO onButtonClicked
+                        talk(newImage, "Flamander", List.of("another Beast", "select Beast"), null, (j -> {
+
+                        }));
                     }));
                 }));
     }
@@ -687,13 +685,6 @@ public class IngameController extends Controller {
             app.show(map);
         }
     }
-
-    private void handleBeastTeam(KeyEvent keyEvent) {
-        if (keyEvent.getCode().equals(KeyCode.X)) {
-            app.show(editBeastTeamControllerProvider.get());
-        }
-    }
-
 
     private void handlePlayerMovement(KeyEvent keyEvent) {
         if (!pressedKeys.contains(keyEvent.getCode())) {
