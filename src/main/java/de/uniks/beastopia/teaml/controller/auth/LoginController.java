@@ -155,9 +155,4 @@ public class LoginController extends Controller {
         resources = resourcesProvider.get();
         app.update();
     }
-
-    public void setLoadingPageDone() {
-        this.loadingPage.setDone();
-    }
-
 }
