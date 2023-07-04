@@ -84,11 +84,11 @@
     -fx-effect: dropshadow(gaussian, #395B64, 5, 0, 0, 1);
 }
 
-#textBox,
 .text-field {
     -fx-font-size: 14px;
 }
 
+#textBox,
 #left,
 #friendListContainer,
 #trainerContainer,
@@ -126,7 +126,6 @@
     -fx-background-color: #4C5250CF;
 }
 
-#dialogWindow,
 #scoreBoardTitle {
     -fx-font-size: 23px;
 }
@@ -139,6 +138,7 @@
     -fx-font-size: 10px;
 }
 
+#dialogWindow,
 #msgList,
 #chatList,
 #regionList,
