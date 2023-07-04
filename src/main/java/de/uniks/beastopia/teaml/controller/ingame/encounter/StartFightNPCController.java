@@ -62,9 +62,7 @@ public class StartFightNPCController extends Controller {
                             disposables.add(trainerService.getTrainer(cache.getJoinedRegion()._id(), o.trainer())
                                     .observeOn(FX_SCHEDULER)
                                     .subscribe(t -> {
-                                        String message = (prefs.getLocale().contains("de")) ? " startet einen Kampf " +
-                                                "gegen dich!" : " starts a fight against you!";
-                                        headline.setText(t.name() + message);
+                                        headline.setText(t.name() + " " + resources.getString("npcStart"));
                                         disposables.add(presetsService
                                                 .getCharacterSprites(t.image(), true)
                                                 .observeOn(FX_SCHEDULER)

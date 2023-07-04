@@ -75,7 +75,7 @@ class StartFightNPCControllerTest extends ApplicationTest {
         when(cache.getTrainer()).thenReturn(trainer);
         when(cache.getJoinedRegion()).thenReturn(region);
         when(trainerService.getTrainer(any(), any())).thenReturn(Observable.just(trainer));
-        when(presetsService.getCharacterSprites(any(), eq(true))).thenReturn(Observable.just(expectedImage));        when(prefs.getLocale()).thenReturn("en");
+        when(presetsService.getCharacterSprites(any(), eq(true))).thenReturn(Observable.just(expectedImage));
 
         app.start(stage);
         app.show(startFightNPCController);
@@ -85,7 +85,7 @@ class StartFightNPCControllerTest extends ApplicationTest {
     @Test
     void setScreen() {
         assertEquals(expectedImage, lookup("#image").queryAs(ImageView.class).getImage());
-        assertEquals(trainer.name() + " starts a fight against you!", lookup("#headline")
+        assertEquals(trainer.name() + " " + resources.getString("npcStart"), lookup("#headline")
                 .queryAs(Label.class).getText());
     }
 

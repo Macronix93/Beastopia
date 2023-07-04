@@ -42,9 +42,12 @@ public class IngameController extends Controller {
     static final int MENU_SCOREBOARD = 1;
     static final int MENU_BEASTLIST = 2;
     static final int MENU_PAUSE = 3;
+    static final int MENU_DIALOGWINDOW = 3;
 
     @FXML
     public Pane tilePane;
+    @FXML
+    public StackPane stackPane;
     @FXML
     private HBox scoreBoardLayout;
     @FXML
@@ -68,6 +71,7 @@ public class IngameController extends Controller {
     @Inject
     Provider<BeastDetailController> beastDetailControllerProvider;
     @Inject
+    Provider<DialogWindowController> dialogWindowControllerProvider;
     Provider<EditBeastTeamController> editBeastTeamControllerProvider;
     @Inject
     Provider<EntityController> entityControllerProvider;
@@ -91,16 +95,14 @@ public class IngameController extends Controller {
     Provider<IngameController> ingameControllerProvider;
     @Inject
     Provider<SoundController> soundControllerProvider;
-
-    @Inject
-    Provider<LevelUpController> levelUpControllerProvider;
-
     @Inject
     Provider<FightWildBeastController> fightWildBeastControllerProvider;
     @Inject
     RegionEncountersService regionEncountersService;
     @Inject
     EncounterOpponentsService encounterOpponentsService;
+    @Inject
+    Provider<LevelUpController> levelUpControllerProvider;
     private Region region;
     private Map map;
     private final List<Pair<TileSetDescription, Pair<TileSet, Image>>> tileSets = new ArrayList<>();
@@ -125,10 +127,12 @@ public class IngameController extends Controller {
     SoundController soundController;
     Parent scoreBoardParent;
     Parent pauseMenuParent;
+    Parent dialogWindowParent;
     final java.util.Map<EntityController, Parent> otherPlayers = new HashMap<>();
     private final List<KeyCode> pressedKeys = new ArrayList<>();
     private final String[] locationStrings = {"Moncenter", "House", "Store"};
     private long lastValueChangeTime = 0;
+    private DialogWindowController dialogWindowController;
 
     @Inject
     public IngameController() {
@@ -599,6 +603,25 @@ public class IngameController extends Controller {
         handleScoreboard(keyEvent);
         handleBeastList(keyEvent);
         handleBeastTeam(keyEvent);
+        handleTalkToTrainer(keyEvent);
+    }
+
+    public void handleTalkToTrainer(KeyEvent keyEvent) {
+        if (keyEvent.getCode().equals(KeyCode.T)) {
+            if (stackPane.getChildren().contains(dialogWindowParent)) {
+                stackPane.getChildren().remove(dialogWindowParent);
+                currentMenu = MENU_NONE;
+            } else {
+                dialogWindowParent = dialogWindowController.render();
+                stackPane.getChildren().add(dialogWindowParent);
+                stackPane.setPrefWidth(600);
+                currentMenu = MENU_DIALOGWINDOW;
+            }
+            dialogWindowController.setOnCloseRequested(() -> {
+                stackPane.getChildren().remove(dialogWindowParent);
+                dialogWindowController.destroy();
+            });
+        }
 
         //TODO
 
