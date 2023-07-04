@@ -14,12 +14,16 @@
         <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES"/>
         <RowConstraints maxHeight="30.0" minHeight="50.0" prefHeight="30.0" vgrow="SOMETIMES"/>
     </rowConstraints>
-    <AnchorPane fx:id="anchorPane" GridPane.columnIndex="1" GridPane.rowIndex="1">
-        <Pane fx:id="mapPane" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0"
-              AnchorPane.topAnchor="10.0"/>
-    </AnchorPane>
+    <VBox alignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="1">
+        <HBox alignment="CENTER">
+            <AnchorPane fx:id="anchorPane" prefHeight="548.0" prefWidth="600.0">
+                <Pane fx:id="mapPane" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0"
+                      AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0"/>
+            </AnchorPane>
+        </HBox>
+    </VBox>
     <!--suppress JavaFxUnresolvedFxIdReference -->
     <Button fx:id="closeMapButton" alignment="BOTTOM_CENTER" contentDisplay="CENTER" mnemonicParsing="false"
-            onAction="#closeMap"
-            text="%CloseMap" GridPane.columnIndex="2" GridPane.rowIndex="1" GridPane.valignment="BOTTOM"/>
+            onAction="#closeMap" text="%CloseMap" GridPane.columnIndex="2" GridPane.rowIndex="1"
+            GridPane.valignment="BOTTOM"/>
 </GridPane>

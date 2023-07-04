@@ -22,6 +22,7 @@ import javafx.scene.shape.Rectangle;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.HashMap;
+import java.util.List;
 
 public class MapController extends Controller {
     @FXML
@@ -38,8 +39,7 @@ public class MapController extends Controller {
     RegionService regionService;
     @Inject
     Provider<RegionInfoController> regionInfoControllerProvider;
-    @SuppressWarnings("unused")
-    private Region region;
+
     private LoadingPage loadingPage;
     private TileSet tileSet;
     private Image image;
@@ -68,7 +68,6 @@ public class MapController extends Controller {
         disposables.add(regionService.getRegion(cache.getJoinedRegion()._id())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(region -> {
-                            this.region = region;
                             this.map = region.map();
                             this.tileSet = presetsService.getTileset(map.tilesets().get(0)).blockingFirst();
                             this.image = presetsService.getImage(tileSet).blockingFirst();
@@ -169,42 +168,31 @@ public class MapController extends Controller {
             for (Chunk chunk : layer.chunks()) {
                 int chunkX = chunk.x();
                 int chunkY = chunk.y();
-                int index = 0;
-                for (int id : chunk.data()) {
-                    int x = index % chunk.width() + chunkX;
-                    int y = index / chunk.height() + chunkY;
-                    index++;
-                    ImageView view = new ImageView();
-                    view.setPreserveRatio(true);
-                    view.setSmooth(true);
-                    view.setImage(image);
-                    view.setFitWidth(TILE_SIZE + 1);
-                    view.setFitHeight(TILE_SIZE + 1);
-                    view.setViewport(presetsService.getTileViewPort(id, tileSet));
-                    view.setTranslateX(x * TILE_SIZE);
-                    view.setTranslateY(y * TILE_SIZE);
-                    anchorPane.getChildren().add(view);
-                }
+                setTile(TILE_SIZE, chunk.data(), chunkX, chunkY, chunk.width(), chunk.height());
             }
         } else if (layer.data() != null) {
             int chunkX = layer.x();
             int chunkY = layer.y();
-            int index = 0;
-            for (int id : layer.data()) {
-                int x = index % layer.width() + chunkX;
-                int y = index / layer.height() + chunkY;
-                index++;
-                ImageView view = new ImageView();
-                view.setPreserveRatio(true);
-                view.setSmooth(true);
-                view.setImage(image);
-                view.setFitWidth(TILE_SIZE + 1);
-                view.setFitHeight(TILE_SIZE + 1);
-                view.setViewport(presetsService.getTileViewPort(id, tileSet));
-                view.setTranslateX(x * TILE_SIZE);
-                view.setTranslateY(y * TILE_SIZE);
-                anchorPane.getChildren().add(view);
-            }
+            setTile(TILE_SIZE, layer.data(), chunkX, chunkY, layer.width(), layer.height());
+        }
+    }
+
+    private void setTile(int TILE_SIZE, List<Integer> data, int xPos, int yPos, int width, int height) {
+        int index = 0;
+        for (int id : data) {
+            int x = index % width + xPos;
+            int y = index / height + yPos;
+            index++;
+            ImageView view = new ImageView();
+            view.setPreserveRatio(true);
+            view.setSmooth(true);
+            view.setImage(image);
+            view.setFitWidth(TILE_SIZE + 1);
+            view.setFitHeight(TILE_SIZE + 1);
+            view.setViewport(presetsService.getTileViewPort(id, tileSet));
+            view.setTranslateX(x * TILE_SIZE);
+            view.setTranslateY(y * TILE_SIZE);
+            anchorPane.getChildren().add(view);
         }
     }
 
