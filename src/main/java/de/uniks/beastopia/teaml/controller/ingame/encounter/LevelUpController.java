@@ -113,19 +113,11 @@ public class LevelUpController extends Controller {
                 .observeOn(FX_SCHEDULER)
                 .subscribe(type -> {
                     up_text_bottom.setText(type.name() + " " + type.type() + " Lvl. " + beast.level());
-                    if (prefs.getLocale().contains("de")) {
                         if (this.newAbility) {
-                            up_text.setText(type.name() + " ist ein Level aufgestiegen und erlernt die Fähigkeit ");
+                            up_text.setText(type.name() + " " + resources.getString("lvl+A"));
                         } else {
-                            up_text.setText(type.name() + " ist ein Level aufgestiegen!");
+                            up_text.setText(type.name() + " " + resources.getString("lvl+"));
                         }
-                    } else {
-                        if (this.newAbility) {
-                            up_text.setText(type.name() + " levelled up and unlocked the new ability ");
-                        } else {
-                            up_text.setText(type.name() + " levelled up!");
-                        }
-                    }
                 }));
 
         lifeValueLabel.setText(beast.currentAttributes().health() + " ");

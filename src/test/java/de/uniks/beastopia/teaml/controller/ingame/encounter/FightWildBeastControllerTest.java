@@ -49,7 +49,7 @@ class FightWildBeastControllerTest extends ApplicationTest {
     Prefs prefs;
 
     Monster monster = new Monster(null, null, "MONSTER_ID", "TRAINER_ID", 1, 0,
-            0, null, null);
+            0, null, null, null);
 
     MonsterTypeDto monsterTypeDto = new MonsterTypeDto(3, "name", "image", null, null);
 
