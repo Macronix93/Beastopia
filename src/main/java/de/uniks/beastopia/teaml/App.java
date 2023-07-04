@@ -104,8 +104,8 @@ public class App extends Application {
 
         //TODO: remove this, restore login screen
         //show(mainComponent.enemyBeastInfoController());
-        show(mainComponent.encounterController());
-        //show(mainComponent.loginController());
+        //show(mainComponent.encounterController());
+        show(mainComponent.loginController());
     }
 
     @Override

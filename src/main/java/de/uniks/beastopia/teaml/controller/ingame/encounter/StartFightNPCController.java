@@ -3,6 +3,7 @@ package de.uniks.beastopia.teaml.controller.ingame.encounter;
 
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Encounter;
+import de.uniks.beastopia.teaml.rest.Monster;
 import de.uniks.beastopia.teaml.rest.Opponent;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.EncounterOpponentsService;
@@ -15,7 +16,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 
 import javax.inject.Inject;
-
+import java.util.List;
 
 import static de.uniks.beastopia.teaml.controller.ingame.TrainerController.PREVIEW_VIEWPORT;
 import static de.uniks.beastopia.teaml.service.PresetsService.PREVIEW_SCALING;
@@ -34,6 +35,8 @@ public class StartFightNPCController extends Controller {
     DataCache cache;
     @Inject
     EncounterOpponentsService encounterOpponentsService;
+    @Inject
+    EncounterController encounterController;
     @Inject
     PresetsService presetsService;
 
@@ -83,6 +86,37 @@ public class StartFightNPCController extends Controller {
     }
     @FXML
     public void startFight() {
-        //TODO start EncounterScreen
+        disposables.add(encounterOpponentsService.getTrainerOpponents(cache.getJoinedRegion()._id(),
+                        cache.getTrainer()._id())
+                .map(o -> {
+                    if (o.size() == 2) {
+                        List<Monster> myMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(0).trainer()).blockingFirst();
+                        List<Monster> enemyMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(1).trainer()).blockingFirst();
+                        encounterController.setOwnMonster(myMonsters.stream().filter(m -> m._id().equals(o.get(0).monster())).findFirst().orElseThrow());
+                        encounterController.setEnemyMonster(enemyMonsters.stream().filter(m -> m._id().equals(o.get(1).monster())).findFirst().orElseThrow());
+                    } else if (o.size() == 3) {
+                        List<Monster> myMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(0).trainer()).blockingFirst();
+                        List<Monster> enemyMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(1).trainer()).blockingFirst();
+                        List<Monster> enemyAllyMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(2).trainer()).blockingFirst();
+                        encounterController.setOwnMonster(myMonsters.stream().filter(m -> m._id().equals(o.get(0).monster())).findFirst().orElseThrow());
+                        encounterController.setEnemyMonster(enemyMonsters.stream().filter(m -> m._id().equals(o.get(1).monster())).findFirst().orElseThrow());
+                        encounterController.setEnemyAllyMonster(enemyAllyMonsters.stream().filter(m -> m._id().equals(o.get(2).monster())).findFirst().orElseThrow());
+                    } else if (o.size() == 4) {
+                        List<Monster> myMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(0).trainer()).blockingFirst();
+                        List<Monster> myAllyMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(1).trainer()).blockingFirst();
+                        List<Monster> enemyMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(2).trainer()).blockingFirst();
+                        List<Monster> enemyAllyMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(3).trainer()).blockingFirst();
+                        encounterController.setOwnMonster(myMonsters.stream().filter(m -> m._id().equals(o.get(0).monster())).findFirst().orElseThrow());
+                        encounterController.setAllyMonster(myAllyMonsters.stream().filter(m -> m._id().equals(o.get(1).monster())).findFirst().orElseThrow());
+                        encounterController.setEnemyMonster(enemyMonsters.stream().filter(m -> m._id().equals(o.get(2).monster())).findFirst().orElseThrow());
+                        encounterController.setEnemyAllyMonster(enemyAllyMonsters.stream().filter(m -> m._id().equals(o.get(3).monster())).findFirst().orElseThrow());
+                    }
+                    return o;
+                })
+                .observeOn(FX_SCHEDULER)
+                .subscribe(o -> {
+                    encounterController.init();
+                    app.show(encounterController);
+                }));
     }
 }

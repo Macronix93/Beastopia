@@ -149,17 +149,18 @@ public class EncounterController extends Controller {
     @Override
     public void init() {
         super.init();
-        setOwnMonster(monster1);
+        /*setOwnMonster(monster1);
         setAllyMonster(monster2);
         setEnemyMonster(monster3);
-        setEnemyAllyMonster(monster4);
-
+        setEnemyAllyMonster(monster4);*/
     }
 
     @Override
     public void onResize(int width, int height) {
-        renderBeastController1.onResize(width, height);
-        renderBeastController2.onResize(width, height);
+        if (renderBeastController1 != null)
+            renderBeastController1.onResize(width, height);
+        if (renderBeastController2 != null)
+            renderBeastController2.onResize(width, height);
     }
 
     @Override
@@ -201,10 +202,13 @@ public class EncounterController extends Controller {
         }
 
         setNumberOfAttacks();
+
+        // set label informations
+
         return parent;
     }
 
-    public void setNumberOfAttacks() {
+    private void setNumberOfAttacks() {
         //get no of possible attacks
         System.out.println("no of attacks: " + ownMonster.abilities().size());
         if (ownMonster.abilities().size() == 1) {
@@ -221,13 +225,13 @@ public class EncounterController extends Controller {
     }
 
     //onClicked leave encounter button
-    public void leaveEncounter() {
+    private void leaveEncounter() {
         //TODO: switch screen to map
         System.out.println("leave encounter");
     }
 
     //onClicked change monster button
-    public void changeMonster() {
+    private void changeMonster() {
         //TODO: switch screen to monster selection
         System.out.println("change monster");
     }
@@ -249,44 +253,6 @@ public class EncounterController extends Controller {
         this.enemyAllyMonster = enemyAllyMonster;
     }
 
-    @Override
-    public String getTitle() {
-        return resources.getString("titleEncounter");
-    }
-
-    //methods for attack buttons
-    public void executeAttack1() {
-        System.out.println("attack1");
-    }
-
-    public void executeAttack2() {
-        System.out.println("attack2");
-    }
-
-    public void executeAttack3() {
-        System.out.println("attack3");
-    }
-
-    public void executeAttack4() {
-        System.out.println("attack4");
-    }
-
-    public void setOwnMonsters(List<Monster> ownMonsters) {
-        this.ownMonsters = ownMonsters;
-    }
-
-    public void setAllyMonsters(List<Monster> allyMonsters) {
-        this.allyMonsters = allyMonsters;
-    }
-
-    public void setEnemyMonsters(List<Monster> enemyMonsters) {
-        this.enemyMonsters = enemyMonsters;
-    }
-
-    public void setEnemyAllyMonsters(List<Monster> enemyAllyMonsters) {
-        this.enemyAllyMonsters = enemyAllyMonsters;
-    }
-
     public void setAllyTrainer(Trainer allyTrainer) {
         this.allyTrainer = allyTrainer;
     }
@@ -299,70 +265,90 @@ public class EncounterController extends Controller {
         this.enemyAllyTrainer = enemyAllyTrainer;
     }
 
+    @Override
+    public String getTitle() {
+        return resources.getString("titleEncounter");
+    }
+
+    //methods for attack buttons
+    private void executeAttack1() {
+        System.out.println("attack1");
+    }
+
+    private void executeAttack2() {
+        System.out.println("attack2");
+    }
+
+    private void executeAttack3() {
+        System.out.println("attack3");
+    }
+
+    private void executeAttack4() {
+        System.out.println("attack4");
+    }
+
     //methods for setting labels in attack boxes
-    public void setAttackNameLabel1(String value) {
+    private void setAttackNameLabel1(String value) {
         attackNameLabel1.setText(value);
     }
 
-    public void setAttackTypeLabel1(String value) {
+    private void setAttackTypeLabel1(String value) {
         attackTypeLabel1.setText(value);
     }
 
-    public void setAccLabel1(String value) {
+    private void setAccLabel1(String value) {
         accLabel1.setText(value);
     }
 
-    public void setPowerLabel1(String value) {
+    private void setPowerLabel1(String value) {
         powerLabel1.setText(value);
     }
 
-    public void setAttackNameLabel2(String value) {
+    private void setAttackNameLabel2(String value) {
         attackNameLabel2.setText(value);
     }
 
-    public void setAttackTypeLabel2(String value) {
+    private void setAttackTypeLabel2(String value) {
         attackTypeLabel2.setText(value);
     }
 
-    public void setAccLabel2(String value) {
+    private void setAccLabel2(String value) {
         accLabel2.setText(value);
     }
 
-    public void setPowerLabel2(String value) {
+    private void setPowerLabel2(String value) {
         powerLabel2.setText(value);
     }
 
-    public void setAttackNameLabel3(String value) {
+    private void setAttackNameLabel3(String value) {
         attackNameLabel3.setText(value);
     }
 
-    public void setAttackTypeLabel3(String value) {
+    private void setAttackTypeLabel3(String value) {
         attackTypeLabel3.setText(value);
     }
 
-    public void setAccLabel3(String value) {
+    private void setAccLabel3(String value) {
         accLabel3.setText(value);
     }
 
-    public void setPowerLabel3(String value) {
+    private void setPowerLabel3(String value) {
         powerLabel3.setText(value);
     }
 
-    public void setAttackNameLabel4(String value) {
+    private void setAttackNameLabel4(String value) {
         attackNameLabel4.setText(value);
     }
 
-    public void setAttackTypeLabel4(String value) {
+    private void setAttackTypeLabel4(String value) {
         attackTypeLabel4.setText(value);
     }
 
-    public void setAccLabel4(String value) {
+    private void setAccLabel4(String value) {
         accLabel4.setText(value);
     }
 
-    public void setPowerLabel4(String value) {
+    private void setPowerLabel4(String value) {
         powerLabel4.setText(value);
     }
-
-
 }

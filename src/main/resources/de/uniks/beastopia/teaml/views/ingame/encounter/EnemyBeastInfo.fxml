@@ -45,10 +45,9 @@
             <HBox.margin>
                 <Insets right="10.0"/>
             </HBox.margin>
-            <HBox fx:id="lifeBar" maxHeight="25.0" prefHeight="25.0" prefWidth="200.0"
-                  style="-fx-border-color: black;"/>
-            <HBox fx:id="lifeBarValue" maxHeight="25.0" prefHeight="25.0" prefWidth="200.0"
-                  style="-fx-background-color: red; -fx-border-color: black;"/>
+            <HBox fx:id="lifeBar" alignment="CENTER_LEFT" style="-fx-border-color: black;"/>
+            <HBox fx:id="lifeBarValue" alignment="CENTER_LEFT"
+                  style="-fx-background-color: red; -fx-border-color: black;" StackPane.alignment="CENTER_LEFT"/>
         </StackPane>
     </HBox>
 </VBox>

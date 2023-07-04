@@ -3,12 +3,15 @@ package de.uniks.beastopia.teaml.controller.ingame.encounter;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Monster;
 import de.uniks.beastopia.teaml.service.PresetsService;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 
 import javax.inject.Inject;
+import java.util.Timer;
+import java.util.TimerTask;
 
 @SuppressWarnings("unused")
 public class EnemyBeastInfoController extends Controller {
@@ -44,12 +47,22 @@ public class EnemyBeastInfoController extends Controller {
 
         //TODO: calculate lifebar value, call setLifeBarValue()
 
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Platform.runLater(() -> {
+                    setLifeBarValue(monster.currentAttributes().health() / (double) monster.attributes().health());
+                });
+            }
+        }, 500);
+
         return parent;
     }
 
     public void setLifeBarValue(double value) {
-        lifeBarValue.setPrefWidth(value);
+        lifeBarValue.setMinWidth(lifeBar.getWidth() * value);
+        lifeBarValue.setMaxWidth(lifeBar.getWidth() * value);
+        lifeBarValue.setPrefWidth(lifeBar.getWidth() * value);
     }
-
-
 }
