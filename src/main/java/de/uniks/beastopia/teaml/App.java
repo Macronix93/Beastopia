@@ -78,8 +78,8 @@ public class App extends Application {
         scene = new Scene(new Label("Loading..."));
         stage.setScene(scene);
 
-        scene.getStylesheets().add(Objects.requireNonNull(Main.class.getResource("views/summer.css")).toString());
-        CSSFX.start(scene);
+        scene.getStylesheets().add(Objects.requireNonNull(Main.class.getResource("views/light.css")).toString());
+        CSSFX.start();
         setAppIcon();
 
         stage.show();
@@ -90,11 +90,11 @@ public class App extends Application {
 
         mainComponent.themeSettings().updateSceneTheme = theme -> {
             if (theme.equals("dark")) {
-                scene.getStylesheets().removeIf(style -> style.endsWith("views/summer.css"));
+                scene.getStylesheets().removeIf(style -> style.endsWith("views/light.css"));
                 scene.getStylesheets().add(Objects.requireNonNull(Main.class.getResource("views/dark.css")).toString());
             } else {
                 scene.getStylesheets().removeIf(style -> style.endsWith("views/dark.css"));
-                scene.getStylesheets().add(Objects.requireNonNull(Main.class.getResource("views/summer.css")).toString());
+                scene.getStylesheets().add(Objects.requireNonNull(Main.class.getResource("views/light.css")).toString());
             }
         };
 

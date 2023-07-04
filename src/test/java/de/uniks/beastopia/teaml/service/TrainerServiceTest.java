@@ -1,8 +1,6 @@
 package de.uniks.beastopia.teaml.service;
 
-import de.uniks.beastopia.teaml.rest.CreateTrainerDto;
-import de.uniks.beastopia.teaml.rest.Trainer;
-import de.uniks.beastopia.teaml.rest.TrainerApiService;
+import de.uniks.beastopia.teaml.rest.*;
 import io.reactivex.rxjava3.core.Observable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,9 +23,11 @@ public class TrainerServiceTest {
     @InjectMocks
     TrainerService trainerService;
 
-    final List<Trainer> allTrainer = List.of(new Trainer(null, null, "123", "A", "123", "A", "A", 0, null, 0, 0, 0, null),
-            new Trainer(null, null, "456", "B", "456", "B", "B", 1, null, 0, 0, 0, null));
+    final List<Trainer> allTrainer = List.of(new Trainer(null, null, "123", "A", "123", "A", "A", null, 0, null, 0, 0, 0, null),
+            new Trainer(null, null, "456", "B", "456", "B", "B", null, 1, null, 0, 0, 0, null));
 
+    final List<Monster> monsters = List.of(new Monster(null, null, "ID", "trainer",
+            1, 1, 1, null, null));
     @Test
     void createTrainerTest() {
         Trainer trainer = allTrainer.get(0);
@@ -88,4 +88,42 @@ public class TrainerServiceTest {
         verify(trainerApiService).deleteTrainer("123", "123");
     }
 
+    @Test
+    void updateTrainer() {
+        when(trainerApiService.updateTrainer("region", "trainer",
+                new UpdateTrainerDto("A", "A", List.of())))
+                .thenReturn(Observable.just(allTrainer.get(0)));
+
+        Trainer result = trainerService.updateTrainer("region", "trainer", "A", "A", List.of())
+                .blockingFirst();
+
+        assertEquals("A", result.name());
+        assertEquals("A", result.image());
+
+        verify(trainerApiService).updateTrainer("region", "trainer",
+                new UpdateTrainerDto("A", "A", List.of()));
+    }
+
+    @Test
+    void getTrainerMonsters() {
+        when(trainerApiService.getTrainerMonsters("region", "trainer"))
+                .thenReturn(Observable.just(monsters));
+        List<Monster> result = trainerService.getTrainerMonsters("region", "trainer").blockingFirst();
+        assertEquals(1, result.size());
+        assertEquals("ID", result.get(0)._id());
+        assertEquals("trainer", result.get(0).trainer());
+        assertEquals(1, result.get(0).type());
+        verify(trainerApiService).getTrainerMonsters("region", "trainer");
+    }
+
+    @Test
+    void getTrainerMonster() {
+        when(trainerApiService.getTrainerMonster("region", "trainer", "monster"))
+                .thenReturn(Observable.just(monsters.get(0)));
+        Monster result = trainerService.getTrainerMonster("region", "trainer", "monster").blockingFirst();
+        assertEquals("ID", result._id());
+        assertEquals("trainer", result.trainer());
+        assertEquals(1, result.type());
+        verify(trainerApiService).getTrainerMonster("region", "trainer", "monster");
+    }
 }

@@ -38,13 +38,12 @@ public class RegionCell extends ListCell<Region> {
             join.setOnAction(event -> {
                 TrainerController controller = trainerControllerProvider.get();
                 cache.setRegion(item);
-                controller.setRegion(item);
                 controller.backController("menu");
                 app.show(controller);
             });
             setGraphic(join);
+            setAlignment(Pos.CENTER);
+            getStyleClass().add("region-cell");
         }
-        setAlignment(Pos.CENTER);
-        getStyleClass().add("region-cell");
     }
 }

@@ -77,7 +77,7 @@ class SettingsControllerTest extends ApplicationTest {
         doNothing().when(mocked).accept(any());
         themeSettings.updateSceneTheme = mocked;
 
-        clickOn("#summerRadioButton");
+        clickOn("#lightRadioButton");
         clickOn("#darkRadioButton");
 
         verify(prefs, times(1)).setTheme("dark");
@@ -85,16 +85,16 @@ class SettingsControllerTest extends ApplicationTest {
     }
 
     @Test
-    public void setSummerTheme() {
+    public void setLightTheme() {
         doNothing().when(prefs).setTheme(any());
         Consumer<String> mocked = mock();
         doNothing().when(mocked).accept(any());
         themeSettings.updateSceneTheme = mocked;
 
-        clickOn("#summerRadioButton");
+        clickOn("#lightRadioButton");
 
-        verify(prefs, times(1)).setTheme("summer");
-        verify(mocked, times(1)).accept("summer");
+        verify(prefs, times(1)).setTheme("light");
+        verify(mocked, times(1)).accept("light");
     }
 
     @Test

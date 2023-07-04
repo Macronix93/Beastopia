@@ -3,8 +3,17 @@ package de.uniks.beastopia.teaml.controller.ingame;
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.controller.menu.MenuController;
+import de.uniks.beastopia.teaml.rest.Achievement;
+import de.uniks.beastopia.teaml.rest.Chunk;
+import de.uniks.beastopia.teaml.rest.Layer;
 import de.uniks.beastopia.teaml.rest.Map;
-import de.uniks.beastopia.teaml.rest.*;
+import de.uniks.beastopia.teaml.rest.MapObject;
+import de.uniks.beastopia.teaml.rest.NPCInfo;
+import de.uniks.beastopia.teaml.rest.Region;
+import de.uniks.beastopia.teaml.rest.Spawn;
+import de.uniks.beastopia.teaml.rest.TileSetDescription;
+import de.uniks.beastopia.teaml.rest.Trainer;
+import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
@@ -32,12 +41,23 @@ import org.testfx.framework.junit5.ApplicationTest;
 import javax.inject.Provider;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
-import java.util.*;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import static javafx.scene.input.KeyCode.BACK_SPACE;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class TrainerControllerTest extends ApplicationTest {
@@ -87,16 +107,18 @@ class TrainerControllerTest extends ApplicationTest {
     final Map map = new Map(List.of(tileSetDescription), List.of(tilelayer, objectGroup), 2, 24, 4);
     final Region region = new Region(null, null, "ID", "NAME", new Spawn(null, 0, 0), map);
     final List<Trainer> allTrainer = List.of(
-            new Trainer(null, null, "123", "A", "123", "A", "A.png", 0, null, 0, 0, 0, null),
-            new Trainer(null, null, "456", "B", "456", "B", "B.png", 1, null, 0, 0, 0, null)
+            new Trainer(null, null, "123", "A", "123", "A", "A.png", List.of(), 0, null, 0, 0, 0, null),
+            new Trainer(null, null, "456", "B", "456", "B", "B.png", List.of(), 1, null, 0, 0, 0, null)
     );
+    final List<Achievement> achievements = List.of(
+            new Achievement(null, null, "FirstTrainer", "123", null, 100),
+            new Achievement(null, null, "FirstRegion", "123", null, 100));
 
     @Override
     public void start(Stage stage) {
         AppPreparer.prepare(app);
 
-        trainerController.setRegion(region);
-
+        when(cache.getJoinedRegion()).thenReturn(region);
         when(cache.getTrainer()).thenReturn(allTrainer.get(0));
         when(cache.getCharacters()).thenReturn(allCharacters);
         when(cache.getCharacterImage(anyString())).thenReturn(allCharacters.get(0));
@@ -110,6 +132,7 @@ class TrainerControllerTest extends ApplicationTest {
 
     @Test
     void createNewTrainer() {
+        when(cache.getMyAchievements()).thenReturn(achievements);
         TextField trainerNameInput = lookup("#trainerNameInput").query();
         trainerNameInput.setText(null);
         assertNull(trainerNameInput.getText());
@@ -123,7 +146,7 @@ class TrainerControllerTest extends ApplicationTest {
 
         when(trainerService.createTrainer(anyString(), anyString(), anyString()))
                 .thenReturn(Observable.just(
-                        new Trainer(null, null, "ID", "REGION", "USER", "TRAINER_NAME", "A.png", 0, null, 0, 0, 0, new NPCInfo(false))));
+                        new Trainer(null, null, "ID", "REGION", "USER", "TRAINER_NAME", "A.png", List.of(), 0, null, 0, 0, 0, new NPCInfo(false))));
 
         clickOn("#trainerNameInput");
         write("MyTrainer");
@@ -136,20 +159,21 @@ class TrainerControllerTest extends ApplicationTest {
 
     @Test
     void updateCurrentTrainer() {
+        when(cache.getMyAchievements()).thenReturn(achievements);
         IngameController mockedIngameController = mock(IngameController.class);
         when(ingameControllerProvider.get()).thenReturn(mockedIngameController);
         when(mockedIngameController.render()).thenReturn(new Button());
 
-        when(trainerService.updateTrainer(anyString(), anyString(), anyString(), anyString()))
+        when(trainerService.updateTrainer(anyString(), anyString(), anyString(), anyString(), anyList()))
                 .thenReturn(Observable.just(
-                        new Trainer(null, null, "ID", "REGION", "USER", "TRAINER_NAME", "B.png", 0, null, 0, 0, 0, new NPCInfo(false))));
+                        new Trainer(null, null, "ID", "REGION", "USER", "TRAINER_NAME", "B.png", List.of(""), 0, null, 0, 0, 0, new NPCInfo(false))));
 
         clickOn("#trainerNameInput");
         write("B");
         clickOn("#chooseRight");
         clickOn("#saveTrainerButton");
 
-        verify(trainerService).updateTrainer(anyString(), anyString(), anyString(), anyString());
+        verify(trainerService).updateTrainer(anyString(), anyString(), anyString(), anyString(), anyList());
         verify(ingameControllerProvider).get();
         verify(mockedIngameController).render();
     }
@@ -208,7 +232,8 @@ class TrainerControllerTest extends ApplicationTest {
 
     @Test
     void clickOnBackButtonIngame() {
-        trainerController.backController("pause");
+        when(cache.getMyAchievements()).thenReturn(achievements);
+        trainerController.backController("ingame");
 
         IngameController mocked = mock();
         when(ingameControllerProvider.get()).thenReturn(mocked);

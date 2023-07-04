@@ -2,8 +2,10 @@ package de.uniks.beastopia.teaml.controller.ingame;
 
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.menu.MenuController;
+import de.uniks.beastopia.teaml.rest.Achievement;
 import de.uniks.beastopia.teaml.rest.Region;
 import de.uniks.beastopia.teaml.rest.Trainer;
+import de.uniks.beastopia.teaml.service.AchievementsService;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
@@ -26,6 +28,7 @@ import javafx.util.Pair;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+import java.util.Date;
 import java.util.stream.IntStream;
 
 public class TrainerController extends Controller {
@@ -57,6 +60,8 @@ public class TrainerController extends Controller {
     @Inject
     PresetsService presetsService;
     @Inject
+    AchievementsService achievementsService;
+    @Inject
     Provider<IngameController> ingameControllerProvider;
     @Inject
     Provider<MenuController> menuControllerProvider;
@@ -64,7 +69,6 @@ public class TrainerController extends Controller {
     Provider<DeleteTrainerController> deleteTrainerControllerProvider;
 
     private Trainer trainer;
-    private Region region;
     private String backController;
     private LoadingPage loadingPage;
     private String currentSprite = "";
@@ -94,37 +98,38 @@ public class TrainerController extends Controller {
 
         // Either change the current trainer or create
         if (cache.getTrainer() == null) {
-            disposables.add(trainerService.createTrainer(region._id(), nameInput, trainerImage)
+            disposables.add(trainerService.createTrainer(cache.getJoinedRegion()._id(), nameInput, trainerImage)
                     .observeOn(FX_SCHEDULER)
                     .subscribe(tr -> {
                         cache.setTrainer(tr);
-                        showIngameController(region);
+                        showIngameController(cache.getJoinedRegion());
                     }, error -> Dialog.error(error, "Trainer creation failed!")));
         } else {
-            disposables.add(trainerService.updateTrainer(region._id(), cache.getTrainer()._id(), nameInput, trainerImage)
+            disposables.add(trainerService.updateTrainer(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), nameInput, trainerImage, cache.getTrainer().team())
                     .observeOn(FX_SCHEDULER)
                     .subscribe(tr -> {
                         cache.setTrainer(tr);
-                        showIngameController(region);
+                        showIngameController(cache.getJoinedRegion());
                     }, error -> Dialog.error(error, "Trainer adjustments failed!")));
         }
     }
 
     public void deleteTrainer() {
-        DeleteTrainerController deleteTrainerController = deleteTrainerControllerProvider.get();
-        deleteTrainerController.setRegion(region);
-        app.show(deleteTrainerController);
+        app.show(deleteTrainerControllerProvider.get());
     }
 
     public void back() {
         if (this.backController.equals("menu")) {
             app.show(menuControllerProvider.get());
         } else {
-            showIngameController(region);
+            showIngameController(cache.getJoinedRegion());
         }
     }
 
     public void showIngameController(Region region) {
+        checkTrainerAchievement();
+        checkRegionAchievement();
+
         IngameController ingameController = ingameControllerProvider.get();
         ingameController.setRegion(region);
         app.show(ingameController);
@@ -135,21 +140,21 @@ public class TrainerController extends Controller {
         loadingPage = LoadingPage.makeLoadingPage(super.render());
 
         trainerNameInput.textProperty().bindBidirectional(trainerName);
-        regionNameDisplay.setText(region.name());
+        regionNameDisplay.setText(cache.getJoinedRegion().name());
 
         if (trainer == null) {
             // Disable trainer deletion button if no trainer present
             deleteTrainerButton.setDisable(true);
 
             // Check if current user has a trainer for the specified region
-            disposables.add(trainerService.getAllTrainer(region._id())
+            disposables.add(trainerService.getAllTrainer(cache.getJoinedRegion()._id())
                     .observeOn(FX_SCHEDULER)
                     .subscribe(trainers -> trainers.stream()
                                     .filter(t -> t.user().equals(tokenStorage.getCurrentUser()._id()))
                                     .findFirst()
                                     .ifPresentOrElse(tr -> {
                                         cache.setTrainer(tr);
-                                        showIngameController(region);
+                                        showIngameController(cache.getJoinedRegion());
                                     }, this::loadCharacterSelection),
                             error -> Dialog.error(error, "Trainer loading failed!")));
         } else {
@@ -170,8 +175,10 @@ public class TrainerController extends Controller {
                     disposables.add(delay().subscribe(t -> {
                         for (Pair<String, Image> pair : cache.getCharacters()) {
                             if (cache.getCharacterImage(pair.getKey()).getValue() == null) {
-                                cache.setCharacterImage(pair.getKey(), new Image("https://stpmon.uniks.de/api/v3/presets/characters/" + pair.getKey(), 383 * PREVIEW_SCALING, 96 * PREVIEW_SCALING, true, false));
-                                onUI(this::updateImages);
+                                disposables.add(presetsService.getCharacterSprites(pair.getKey(), true).subscribe(image -> {
+                                    cache.setCharacterImage(pair.getKey(), image);
+                                    onUI(this::updateImages);
+                                }));
                             }
                         }
                     }));
@@ -240,20 +247,15 @@ public class TrainerController extends Controller {
         return this;
     }
 
-    public void setRegion(Region region) {
-        this.region = region;
-    }
-
     public void showTrainerSpritePreview(String charName, Image sprite) {
         currentSprite = charName;
         saveTrainerButton.setDisable(sprite == null);
         deleteTrainerButton.setDisable(sprite == null || trainer == null);
+        trainerSprite.setImage(sprite);
         trainerSprite.setFitWidth(16 * PREVIEW_SCALING);
         trainerSprite.setFitHeight(32 * PREVIEW_SCALING);
-        trainerSprite.setImage(sprite);
         trainerSprite.setViewport(PREVIEW_VIEWPORT);
         trainerSprite.setSmooth(false);
-
         spriteNameDisplay.setText(stripString(charName));
     }
 
@@ -263,5 +265,35 @@ public class TrainerController extends Controller {
                 .replace("16x16", "");
         stringToStrip = stringToStrip.substring(0, stringToStrip.lastIndexOf("."));
         return stringToStrip;
+    }
+
+    private void checkTrainerAchievement() {
+        Achievement firstTrainerAchievement = cache.getMyAchievements().stream()
+                .filter(achievement -> achievement.id().equals("FirstTrainer"))
+                .findFirst()
+                .orElse(null);
+
+        if (firstTrainerAchievement == null) {
+            firstTrainerAchievement = new Achievement(null, null, "FirstTrainer", tokenStorage.getCurrentUser()._id(), new Date(), 100);
+            cache.addMyAchievement(firstTrainerAchievement);
+            Dialog.info(resources.getString("achievementUnlockHeader"), resources.getString("achievementUnlockedPre") + "\n" + resources.getString("achievementFirstTrainer"));
+
+            disposables.add(achievementsService.updateUserAchievement(tokenStorage.getCurrentUser()._id(), "FirstTrainer", firstTrainerAchievement).subscribe());
+        }
+    }
+
+    private void checkRegionAchievement() {
+        Achievement firstRegionAchievement = cache.getMyAchievements().stream()
+                .filter(achievement -> achievement.id().equals("FirstRegion"))
+                .findFirst()
+                .orElse(null);
+
+        if (firstRegionAchievement == null) {
+            firstRegionAchievement = new Achievement(null, null, "FirstRegion", tokenStorage.getCurrentUser()._id(), new Date(), 100);
+            cache.addMyAchievement(firstRegionAchievement);
+            Dialog.info(resources.getString("achievementUnlockHeader"), resources.getString("achievementUnlockedPre") + "\n" + resources.getString("achievementFirstRegion"));
+
+            disposables.add(achievementsService.updateUserAchievement(tokenStorage.getCurrentUser()._id(), "FirstRegion", firstRegionAchievement).subscribe());
+        }
     }
 }

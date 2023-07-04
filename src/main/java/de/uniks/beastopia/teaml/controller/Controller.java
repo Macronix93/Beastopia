@@ -29,10 +29,13 @@ public abstract class Controller {
     @Inject
     protected App app;
 
-    protected final CompositeDisposable disposables = new CompositeDisposable();
+    protected CompositeDisposable disposables = new CompositeDisposable();
 
     public void init() {
-
+        if (!disposables.isDisposed()) {
+            disposables.dispose();
+        }
+        disposables = new CompositeDisposable();
     }
 
     public void destroy() {

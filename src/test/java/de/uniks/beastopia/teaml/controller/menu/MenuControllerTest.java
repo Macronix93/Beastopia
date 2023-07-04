@@ -4,10 +4,12 @@ import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.controller.auth.LoginController;
 import de.uniks.beastopia.teaml.controller.menu.social.FriendListController;
+import de.uniks.beastopia.teaml.rest.Achievement;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.AuthService;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.TokenStorage;
+import de.uniks.beastopia.teaml.utils.Prefs;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -23,11 +25,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
 
 import javax.inject.Provider;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -50,6 +57,8 @@ class MenuControllerTest extends ApplicationTest {
     @SuppressWarnings("unused")
     @Mock
     DataCache cache;
+    @Mock
+    Prefs prefs;
     @Spy
     @SuppressWarnings("unused")
     App app;
@@ -59,6 +68,8 @@ class MenuControllerTest extends ApplicationTest {
     @SuppressWarnings("unused")
     final
     ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang");
+    final Achievement achievement = new Achievement(null, null, "ID", "ID_USER", null, 100);
+    final String visitedArea = "AREA";
 
     RegionController mockedRegionController;
     FriendListController mockedFriendListController;
@@ -75,6 +86,9 @@ class MenuControllerTest extends ApplicationTest {
 
         when(mockedRegionController.render()).thenReturn(new Label("RegionControllerLabelTest"));
         when(mockedFriendListController.render()).thenReturn(new Label("FriendListControllerLabelTest"));
+
+        when(cache.getMyAchievements()).thenReturn(List.of(achievement));
+        when(prefs.getVisitedAreas()).thenReturn(visitedArea);
 
         User mockedUser = mock(User.class);
         when(tokenStorage.getCurrentUser()).thenReturn(mockedUser);

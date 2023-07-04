@@ -7,7 +7,9 @@ import dagger.Module;
 import dagger.Provides;
 import de.uniks.beastopia.teaml.rest.*;
 import de.uniks.beastopia.teaml.utils.ThemeSettings;
+import retrofit2.Retrofit;
 
+import javax.inject.Singleton;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
@@ -94,5 +96,18 @@ public class TestModule {
     @SuppressWarnings("unused")
     ThemeSettings themeSettings() {
         return new ThemeSettings();
+    }
+
+
+    @Provides
+    @SuppressWarnings("unused")
+    RegionEncountersApiService regionEncounters() {
+        return null;
+    }
+
+    @Provides
+    @SuppressWarnings("unused")
+    EncounterOpponentsApiService encounterOpponents() {
+        return null;
     }
 }

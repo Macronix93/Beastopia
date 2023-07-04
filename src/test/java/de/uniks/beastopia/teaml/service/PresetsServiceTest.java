@@ -46,7 +46,7 @@ class PresetsServiceTest {
     void getSpriteSheet() {
         when(presetsApiService.getCharacterSprites("A.png")).thenReturn(Observable.just(responseBody));
 
-        Image response = presetsService.getCharacterSprites("A.png").blockingFirst();
+        Image response = presetsService.getCharacterSprites("A.png", false).blockingFirst();
 
         assertNull(response.getUrl());
         verify(presetsApiService).getCharacterSprites("A.png");

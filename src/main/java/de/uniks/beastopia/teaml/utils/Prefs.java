@@ -8,6 +8,9 @@ import de.uniks.beastopia.teaml.service.DataCache;
 import javafx.geometry.Point2D;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.prefs.Preferences;
 
@@ -110,5 +113,26 @@ public class Prefs {
 
     public double getSoundVolume() {
         return preferences.getDouble("soundVolume", 50.0);
+    }
+
+    public List<String> getUserHistory() {
+        String userHistoryString = preferences.get("userHistory", null);
+        List<String> userHistory = new ArrayList<>();
+        if (userHistoryString != null) {
+            userHistory.addAll(Arrays.asList(userHistoryString.split(";")));
+        }
+        return userHistory;
+    }
+
+    public void setUserHistory(List<String> userHistory) {
+        preferences.put("userHistory", String.join(";", userHistory));
+    }
+
+    public void addVisitedArea(String areas) {
+        preferences.put("visitedAreas", areas);
+    }
+
+    public String getVisitedAreas() {
+        return preferences.get("visitedAreas", null);
     }
 }
