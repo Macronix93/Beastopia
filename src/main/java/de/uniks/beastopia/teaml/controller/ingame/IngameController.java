@@ -5,31 +5,14 @@ import com.google.gson.JsonPrimitive;
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.ingame.beast.EditBeastTeamController;
+import de.uniks.beastopia.teaml.controller.ingame.encounter.FightWildBeastController;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
-import de.uniks.beastopia.teaml.rest.Achievement;
-import de.uniks.beastopia.teaml.rest.Area;
-import de.uniks.beastopia.teaml.rest.Chunk;
-import de.uniks.beastopia.teaml.rest.Layer;
 import de.uniks.beastopia.teaml.rest.Map;
-import de.uniks.beastopia.teaml.rest.Monster;
-import de.uniks.beastopia.teaml.rest.Region;
-import de.uniks.beastopia.teaml.rest.TileSet;
-import de.uniks.beastopia.teaml.rest.TileSetDescription;
-import de.uniks.beastopia.teaml.rest.Trainer;
-import de.uniks.beastopia.teaml.service.AchievementsService;
-import de.uniks.beastopia.teaml.service.AreaService;
-import de.uniks.beastopia.teaml.service.DataCache;
-import de.uniks.beastopia.teaml.service.PresetsService;
-import de.uniks.beastopia.teaml.service.TokenStorage;
-import de.uniks.beastopia.teaml.service.TrainerService;
+import de.uniks.beastopia.teaml.rest.*;
+import de.uniks.beastopia.teaml.service.*;
 import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.sockets.UDPEventListener;
-import de.uniks.beastopia.teaml.utils.Dialog;
-import de.uniks.beastopia.teaml.utils.Direction;
-import de.uniks.beastopia.teaml.utils.LoadingPage;
-import de.uniks.beastopia.teaml.utils.PlayerState;
-import de.uniks.beastopia.teaml.utils.Prefs;
-import de.uniks.beastopia.teaml.utils.SoundController;
+import de.uniks.beastopia.teaml.utils.*;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
@@ -49,14 +32,7 @@ import javafx.util.Pair;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 public class IngameController extends Controller {
     static final double TILE_SIZE = 20;
@@ -86,8 +62,6 @@ public class IngameController extends Controller {
     @Inject
     PauseController pauseController;
     @Inject
-    Provider<PauseController> pauseControllerProvider;
-    @Inject
     Provider<BeastDetailController> beastDetailControllerProvider;
     @Inject
     Provider<EditBeastTeamController> editBeastTeamControllerProvider;
@@ -113,7 +87,12 @@ public class IngameController extends Controller {
     Provider<IngameController> ingameControllerProvider;
     @Inject
     Provider<SoundController> soundControllerProvider;
-
+    @Inject
+    Provider<FightWildBeastController> fightWildBeastControllerProvider;
+    @Inject
+    RegionEncountersService regionEncountersService;
+    @Inject
+    EncounterOpponentsService encounterOpponentsService;
     private Region region;
     private Map map;
     private final List<Pair<TileSetDescription, Pair<TileSet, Image>>> tileSets = new ArrayList<>();
@@ -240,6 +219,40 @@ public class IngameController extends Controller {
         } else {
             loadMap(cache.getAreas(), myTrainer, trainers);
         }
+        disposables.add(eventListener.listen("encounters.*.trainers." + cache.getTrainer()._id()
+                        + ".opponents.*.created", Opponent.class)
+                .observeOn(FX_SCHEDULER)
+                .concatMap(opponentEvent -> {
+                    Opponent opponent = opponentEvent.data();
+                    return regionEncountersService.getRegionEncounter(cache.getJoinedRegion()._id(), opponent.encounter())
+                            .observeOn(FX_SCHEDULER);
+                })
+                .subscribe(
+                        encounter -> {
+                            if (encounter.isWild()) {
+                                openFightBeastScreen(encounter);
+                            } else {
+                                // TODO start NPC screen
+                            }
+                        },
+                        error -> System.err.println("Fehler: " + error.getMessage())
+                )
+        );
+    }
+
+    private void openFightBeastScreen(Encounter encounter) {
+        FightWildBeastController controller = fightWildBeastControllerProvider.get();
+        disposables.add(encounterOpponentsService
+                .getEncounterOpponents(cache.getJoinedRegion()._id(), encounter._id())
+                .observeOn(FX_SCHEDULER)
+                .subscribe(o -> {
+                    for (Opponent op : o) {
+                        if (op.trainer().equals("000000000000000000000000")) {
+                            controller.setControllerInfo(op.monster(), op.trainer());
+                            app.show(controller);
+                        }
+                    }
+                }));
     }
 
     private void listenToTrainerEvents() {
