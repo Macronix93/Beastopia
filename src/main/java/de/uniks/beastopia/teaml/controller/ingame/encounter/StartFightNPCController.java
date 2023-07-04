@@ -36,6 +36,7 @@ public class StartFightNPCController extends Controller {
     EncounterOpponentsService encounterOpponentsService;
     @Inject
     PresetsService presetsService;
+
     @Inject
     public StartFightNPCController() {
 

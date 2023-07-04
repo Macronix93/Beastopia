@@ -32,7 +32,7 @@ class BeastDetailControllerTest extends ApplicationTest {
 
     MonsterAttributes attributes = new MonsterAttributes(1, 1, 1, 1);
     MonsterAttributes currentAttributes = new MonsterAttributes(0, 0, 0, 0);
-    Monster monster = new Monster(null, null, "MONSTER_ID", "TRAINER_ID", 0, 0, 0, attributes, currentAttributes);
+    Monster monster = new Monster(null, null, "MONSTER_ID", "TRAINER_ID", 0, 0, 0, attributes, currentAttributes, null);
 
     @Override
     public void start(Stage stage) throws Exception {

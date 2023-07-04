@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="70.0"
-      prefWidth="300.0" style="-fx-border-color: black;" xmlns="http://javafx.com/javafx/19"
+      prefWidth="300.0" style="-fx-border-color: black;" xmlns="http://javafx.com/javafx/17.0.2-ea"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="de.uniks.beastopia.teaml.controller.ingame.encounter.EnemyBeastInfoController">
     <HBox alignment="CENTER" prefHeight="30.0" prefWidth="200.0" spacing="5.0">
@@ -31,7 +31,7 @@
             </font>
         </Label>
     </HBox>
-    <HBox alignment="CENTER_LEFT" prefHeight="40.0" prefWidth="200.0" spacing="10.0">
+    <HBox alignment="CENTER_LEFT" prefHeight="30.0" prefWidth="200.0" spacing="10.0">
         <opaqueInsets>
             <Insets/>
         </opaqueInsets>
@@ -41,7 +41,7 @@
         <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
             <Image url="@../../../assets/icons8-heart-32.png"/>
         </ImageView>
-        <StackPane prefHeight="39.0" prefWidth="165.0" HBox.hgrow="ALWAYS">
+        <StackPane prefHeight="30.0" prefWidth="165.0" HBox.hgrow="ALWAYS">
             <HBox.margin>
                 <Insets right="10.0"/>
             </HBox.margin>
