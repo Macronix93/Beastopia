@@ -6,6 +6,7 @@ import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.ingame.beast.EditBeastTeamController;
 import de.uniks.beastopia.teaml.controller.ingame.encounter.FightWildBeastController;
+import de.uniks.beastopia.teaml.controller.ingame.encounter.StartFightNPCController;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
 import de.uniks.beastopia.teaml.rest.Map;
 import de.uniks.beastopia.teaml.rest.*;
@@ -64,6 +65,8 @@ public class IngameController extends Controller {
     AchievementsService achievementsService;
     @Inject
     PauseController pauseController;
+    @Inject
+    Provider<StartFightNPCController> startFightNPCControllerProvider;
     @Inject
     Provider<BeastDetailController> beastDetailControllerProvider;
     @Inject
@@ -238,12 +241,18 @@ public class IngameController extends Controller {
                             if (encounter.isWild()) {
                                 openFightBeastScreen(encounter);
                             } else {
-                                // TODO start NPC screen
+                                openFightNPCScreen(encounter);
                             }
                         },
                         error -> System.err.println("Fehler: " + error.getMessage())
                 )
         );
+    }
+
+    private void openFightNPCScreen(Encounter encounter) {
+        StartFightNPCController controller = startFightNPCControllerProvider.get();
+        controller.setControllerInfo(encounter);
+        app.show(controller);
     }
 
     private void openFightBeastScreen(Encounter encounter) {
