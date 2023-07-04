@@ -122,6 +122,7 @@ public class IngameController extends Controller {
     private final List<KeyCode> pressedKeys = new ArrayList<>();
     private final String[] locationStrings = {"Moncenter", "House", "Store"};
     private long lastValueChangeTime = 0;
+    private DialogWindowController dialogWindowController;
 
     @Inject
     public IngameController() {
