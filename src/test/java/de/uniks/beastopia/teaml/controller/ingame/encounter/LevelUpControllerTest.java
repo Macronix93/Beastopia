@@ -7,7 +7,6 @@ import de.uniks.beastopia.teaml.rest.Monster;
 import de.uniks.beastopia.teaml.rest.MonsterAttributes;
 import de.uniks.beastopia.teaml.rest.MonsterTypeDto;
 import de.uniks.beastopia.teaml.service.PresetsService;
-import de.uniks.beastopia.teaml.utils.Prefs;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -20,10 +19,7 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -43,10 +39,8 @@ class LevelUpControllerTest extends ApplicationTest {
             Locale.forLanguageTag("en"));
     @Mock
     PresetsService presetsService;
-    @Mock
-    Prefs prefs;
     Monster monster = new Monster(null, null, "MONSTER_ID", "TRAINER_ID", 10, 0,
-            0, List.of(1, 2), new MonsterAttributes(1, 1, 1, 1),
+            0, Map.of("1", 1, "2", 2), new MonsterAttributes(1, 1, 1, 1),
             new MonsterAttributes(1, 1, 1, 1));
     Image expectedImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/de/uniks/beastopia/teaml/assets/group.png")));
     MonsterTypeDto monsterTypeDto = new MonsterTypeDto(3, "name", "image", List.of("1", "2"), "a");
@@ -68,7 +62,6 @@ class LevelUpControllerTest extends ApplicationTest {
 
     @Test
     void setScreen() {
-        //assertEquals("name " + resources.getString("lvl+A"), lookup("#upText").queryAs(Label.class).getText());
         assertEquals(expectedImage, lookup("#image").queryAs(ImageView.class).getImage());
     }
 

@@ -3,7 +3,6 @@ package de.uniks.beastopia.teaml.controller.ingame.encounter;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Monster;
 import de.uniks.beastopia.teaml.service.PresetsService;
-import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -69,9 +68,6 @@ public class LevelUpController extends Controller {
     @Inject
     PresetsService presetsService;
 
-    @Inject
-    Prefs prefs;
-
     private Monster beast;
 
     private boolean newAbility;
@@ -113,11 +109,11 @@ public class LevelUpController extends Controller {
                 .observeOn(FX_SCHEDULER)
                 .subscribe(type -> {
                     up_text_bottom.setText(type.name() + " " + type.type() + " Lvl. " + beast.level());
-                        if (this.newAbility) {
-                            up_text.setText(type.name() + " " + resources.getString("lvl+A"));
-                        } else {
-                            up_text.setText(type.name() + " " + resources.getString("lvl+"));
-                        }
+                    if (this.newAbility) {
+                        up_text.setText(type.name() + " " + resources.getString("lvl+A"));
+                    } else {
+                        up_text.setText(type.name() + " " + resources.getString("lvl+"));
+                    }
                 }));
 
         lifeValueLabel.setText(beast.currentAttributes().health() + " ");
@@ -134,14 +130,11 @@ public class LevelUpController extends Controller {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        hpBg.setMinWidth(healthWidth * borderBg.getWidth());
-                        hpBg.setMaxWidth(healthWidth * borderBg.getWidth());
-                        starBg.setMinWidth(expWidth * borderBg.getWidth());
-                        starBg.setMaxWidth(expWidth * borderBg.getWidth());
-                    }
+                Platform.runLater(() -> {
+                    hpBg.setMinWidth(healthWidth * borderBg.getWidth());
+                    hpBg.setMaxWidth(healthWidth * borderBg.getWidth());
+                    starBg.setMinWidth(expWidth * borderBg.getWidth());
+                    starBg.setMaxWidth(expWidth * borderBg.getWidth());
                 });
             }
         }, 100);
@@ -177,7 +170,8 @@ public class LevelUpController extends Controller {
         }
 
         if (this.newAbility) {
-            disposables.add(presetsService.getAbility(beast.abilities().get(beast.abilities().size() - 1))
+            String lastKey = (String) beast.abilities().keySet().toArray()[beast.abilities().size() - 1];
+            disposables.add(presetsService.getAbility(beast.abilities().get(lastKey))
                     .observeOn(FX_SCHEDULER)
                     .subscribe(abilityDto -> {
                         attack.setText(abilityDto.name());

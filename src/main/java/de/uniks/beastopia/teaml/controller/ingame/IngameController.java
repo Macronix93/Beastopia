@@ -627,9 +627,9 @@ public class IngameController extends Controller {
 
 
         if (keyEvent.getCode() == KeyCode.J) {
-            List<Integer> ab = new ArrayList<>();
-            ab.add(1);
-            ab.add(2);
+            java.util.Map<String, Integer> ab = new HashMap<>();
+            ab.put("1", 1);
+            ab.put("2", 2);
             Monster flam1 = new Monster(null, null, null, null, 2,
                     2, 2, ab, new MonsterAttributes(2, 2, 2, 2),
                     new MonsterAttributes(1, 2, 2, 2));
