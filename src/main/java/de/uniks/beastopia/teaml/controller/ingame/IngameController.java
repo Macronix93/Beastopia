@@ -6,18 +6,12 @@ import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.ingame.beast.EditBeastTeamController;
 import de.uniks.beastopia.teaml.controller.ingame.encounter.FightWildBeastController;
-import de.uniks.beastopia.teaml.controller.ingame.encounter.StartFightNPCController;
 import de.uniks.beastopia.teaml.controller.ingame.encounter.LevelUpController;
+import de.uniks.beastopia.teaml.controller.ingame.encounter.StartFightNPCController;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
 import de.uniks.beastopia.teaml.rest.Map;
 import de.uniks.beastopia.teaml.rest.*;
 import de.uniks.beastopia.teaml.service.*;
-import de.uniks.beastopia.teaml.rest.*;
-import de.uniks.beastopia.teaml.service.AreaService;
-import de.uniks.beastopia.teaml.service.DataCache;
-import de.uniks.beastopia.teaml.service.PresetsService;
-import de.uniks.beastopia.teaml.service.TokenStorage;
-import de.uniks.beastopia.teaml.service.TrainerService;
 import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.sockets.UDPEventListener;
 import de.uniks.beastopia.teaml.utils.*;
@@ -86,8 +80,6 @@ public class IngameController extends Controller {
     @Inject
     TokenStorage tokenStorage;
     @Inject
-    Provider<EntityController> entityControllerProvider;
-    @Inject
     UDPEventListener udpEventListener;
     @Inject
     EventListener eventListener;
@@ -132,6 +124,7 @@ public class IngameController extends Controller {
     EntityController playerController;
     SoundController soundController;
     Parent scoreBoardParent;
+    Parent pauseMenuParent;
     final java.util.Map<EntityController, Parent> otherPlayers = new HashMap<>();
     private final List<KeyCode> pressedKeys = new ArrayList<>();
     private final String[] locationStrings = {"Moncenter", "House", "Store"};
@@ -614,7 +607,7 @@ public class IngameController extends Controller {
             List<Integer> ab = new ArrayList<>();
             ab.add(1);
             ab.add(2);
-            Monster flam1 = new Monster(null, null, null, null , 2,
+            Monster flam1 = new Monster(null, null, null, null, 2,
                     2, 2, ab, new MonsterAttributes(2, 2, 2, 2),
                     new MonsterAttributes(1, 2, 2, 2));
             LevelUpController controller = levelUpControllerProvider.get();
