@@ -122,7 +122,6 @@ public class IngameController extends Controller {
     private final List<KeyCode> pressedKeys = new ArrayList<>();
     private final String[] locationStrings = {"Moncenter", "House", "Store"};
     private long lastValueChangeTime = 0;
-    private DialogWindowController dialogWindowController;
 
     @Inject
     public IngameController() {
@@ -562,8 +561,6 @@ public class IngameController extends Controller {
                 stackPane.getChildren().remove(dialogWindowParent);
                 currentMenu = MENU_NONE;
             } else {
-                dialogWindowController = dialogWindowControllerProvider.get();
-
                 dialogWindowParent = dialogWindowController.render();
                 stackPane.getChildren().add(dialogWindowParent);
                 stackPane.setPrefWidth(600);

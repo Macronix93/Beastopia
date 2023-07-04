@@ -82,6 +82,7 @@ public class DialogWindowController extends Controller {
 
     @Override
     public Parent render() {
+        super.init();
         Parent parent = super.render();
 
         for (int i = 0; i < choices.size(); i++) {
