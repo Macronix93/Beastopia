@@ -11,6 +11,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
+import java.util.Map;
 
 public class BeastDetailController extends Controller {
 
@@ -65,8 +66,16 @@ public class BeastDetailController extends Controller {
                 .subscribe(monsterType -> {
                     name.setText(monsterType.name());
                     type.setText("Type: " + monsterType.type().get(0));
-                    description.setText(monsterType.description());
+                    description.setText(monsterType.description() + "\n\n");
                 }));
+
+        for (Map.Entry<String, Integer> entry : monster.abilities().entrySet()) {
+            int ability = entry.getValue();
+            disposables.add(presetsService.getAbility(ability)
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe(ad -> description.setText(description.getText() + ad.name() + " [" + ad.type() +
+                            "] ACC: " + ad.accuracy() + " POW: " + ad.power() + "\n" + ad.description() + "\n\n")));
+        }
 
         disposables.add(presetsService.getMonsterImage(monster.type())
                 .observeOn(FX_SCHEDULER)

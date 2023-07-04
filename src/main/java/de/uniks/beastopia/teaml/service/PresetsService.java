@@ -65,4 +65,8 @@ public class PresetsService {
     public Observable<AbilityDto> getAbility(int id) {
         return presetsApiService.getAbility(id);
     }
+
+    public Observable<List<AbilityDto>> getAbilities() {
+        return presetsApiService.getAbilities();
+    }
 }
