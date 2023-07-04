@@ -28,4 +28,7 @@ public interface TrainerApiService {
 
     @GET("regions/{regionId}/trainers/{trainerId}/monsters")
     Observable<List<Monster>> getTrainerMonsters(@Path("regionId") String regionId, @Path("trainerId") String trainerId);
+
+    @GET("regions/{regionId}/trainers/{trainerId}/monsters/{id}")
+    Observable<Monster> getTrainerMonster(@Path("regionId") String regionId, @Path("trainerId") String trainerId, @Path("id") String id);
 }
