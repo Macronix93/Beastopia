@@ -86,6 +86,7 @@
     -fx-font-size: 14px;
 }
 
+#textBox,
 #left,
 #friendListContainer,
 #trainerContainer,
@@ -135,6 +136,7 @@
     -fx-font-size: 10px;
 }
 
+#dialogWindow,
 #msgList,
 #chatList,
 #regionList,
