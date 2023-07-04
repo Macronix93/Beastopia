@@ -51,6 +51,8 @@ perfect - Flaticon</a>
 
 <a href="https://www.flaticon.com/de/kostenlose-icons/herz" title="herz Icons">Herz Icons erstellt von Good Ware - Flaticon</a>
 
+<a href="https://www.flaticon.com/de/kostenlose-icons/ui" title="ui Icons">Ui Icons erstellt von Stasy - Flaticon</a>
+
 Music
 by <a href="https://pixabay.com/users/geoffharvey-9096471/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=150611">
 Geoff Harvey</a>
@@ -67,3 +69,11 @@ UNIVERSFIELD</a>
 from <a href="https://pixabay.com/sound-effects//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=114615">
 Pixabay</a>
 
+<a href="https://www.flaticon.com/de/kostenlose-icons/filter" title="filter Icons">Filter Icons erstellt von
+Kiranshastry - Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/trichter" title="trichter Icons">Trichter Icons erstellt von
+Freepik - Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/nutzer" title="nutzer Icons">Nutzer Icons erstellt von Freepik -
+Flaticon</a>

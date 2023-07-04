@@ -40,9 +40,10 @@
                   <ToggleGroup fx:id="theme" />
               </toggleGroup>
           </RadioButton>
-          <RadioButton fx:id="summerRadioButton" mnemonicParsing="false" onAction="#setSummerTheme" text="%Summer" toggleGroup="$theme">
+          <RadioButton fx:id="lightRadioButton" mnemonicParsing="false" onAction="#setLightTheme" text="%Light"
+                       toggleGroup="$theme">
               <font>
-                  <Font size="16.0" />
+                  <Font size="16.0"/>
               </font>
           </RadioButton>
       </HBox>

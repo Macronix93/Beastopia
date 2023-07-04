@@ -16,11 +16,11 @@ public class RegionEncountersService {
     public RegionEncountersService() {
     }
 
-    public Observable<List<Encounter>> getRegionEncounters(String region_id) {
-        return regionEncountersApiService.getRegionEncounters(region_id);
+    public Observable<List<Encounter>> getRegionEncounters(String regionId) {
+        return regionEncountersApiService.getRegionEncounters(regionId);
     }
 
-    public Observable<Encounter> getRegionEncounter(String region_id, String id) {
-        return regionEncountersApiService.getRegionEncounter(region_id, id);
+    public Observable<Encounter> getRegionEncounter(String regionId, String encounterId) {
+        return regionEncountersApiService.getRegionEncounter(regionId, encounterId);
     }
 }

@@ -1,12 +1,10 @@
 package de.uniks.beastopia.teaml.service;
 
-import de.uniks.beastopia.teaml.rest.Encounter;
-import de.uniks.beastopia.teaml.rest.EncounterOpponentsApiService;
-import de.uniks.beastopia.teaml.rest.Opponent;
-import de.uniks.beastopia.teaml.rest.RegionEncountersApiService;
+import de.uniks.beastopia.teaml.rest.*;
 import io.reactivex.rxjava3.core.Observable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -15,9 +13,9 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 
@@ -82,5 +80,49 @@ public class EncounterOpponentsServiceTest {
         assertTrue(result.isAttacker());
         assertTrue(result.isNPC());
         verify(encounterOpponentsApiService).deleteOpponent("ID", "ID", "ID");
+    }
+
+    @Test
+    void updateEncounterOpponent() {
+        ArgumentCaptor<UpdateOpponentDto> captor = ArgumentCaptor.forClass(UpdateOpponentDto.class);
+
+        when(encounterOpponentsApiService.updateEncounterOpponent(anyString(), anyString(), anyString(),captor.capture()))
+                .thenAnswer(i -> {
+                    Opponent op = opponents.get(0);
+                    Opponent answer = new Opponent(
+                            op.createdAt(),
+                            op.updatedAt(),
+                            op._id(),
+                            op.encounter(),
+                            op.trainer(),
+                            op.isAttacker(),
+                            op.isNPC(),
+                            captor.getValue().monster(),
+                            captor.getValue().move(),
+                            op.results(),
+                            op.coins()
+                    );
+                    return Observable.just(answer);
+                });
+
+        AbilityMove abilityMove = new AbilityMove("ty", 1, "t");
+        Opponent result1 = encounterOpponentsService
+                .updateEncounterOpponent("r", "e", "o", "monster", abilityMove)
+                .blockingFirst();
+
+        assertTrue(result1.move().isT());
+        assertEquals("monster", result1.monster());
+
+        ChangeMonsterMove changeMonsterMove = new ChangeMonsterMove("ty", "m");
+
+        Opponent result2 = encounterOpponentsService
+                .updateEncounterOpponent("r", "Encounter", "ID", "monster", changeMonsterMove).blockingFirst();
+
+        assertTrue(result2.move().isU());
+        assertEquals("monster", result2.monster());
+
+        verify(encounterOpponentsApiService, times(2)).updateEncounterOpponent(anyString(), anyString(), anyString(),
+                any(UpdateOpponentDto.class));
+
     }
 }

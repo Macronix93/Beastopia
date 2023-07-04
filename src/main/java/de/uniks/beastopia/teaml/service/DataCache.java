@@ -2,6 +2,8 @@ package de.uniks.beastopia.teaml.service;
 
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.Main;
+import de.uniks.beastopia.teaml.rest.*;
+import de.uniks.beastopia.teaml.rest.Achievement;
 import de.uniks.beastopia.teaml.rest.Area;
 import de.uniks.beastopia.teaml.rest.Region;
 import de.uniks.beastopia.teaml.rest.Trainer;
@@ -21,7 +23,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Singleton
@@ -31,8 +35,12 @@ public class DataCache {
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     private final List<Trainer> trainers = new ArrayList<>();
     private final List<Pair<String, Image>> characters = new ArrayList<>();
+    private List<Achievement> myAchievements = new ArrayList<>();
+    private final Map<String, String> achievementDescriptions = new HashMap<>();
+    private final List<String> visitedAreas = new ArrayList<>();
     Trainer trainer;
     Region joinedRegion;
+    private List<MonsterTypeDto> allBeasts = new ArrayList<>();
 
     @Inject
     public DataCache() {
@@ -93,6 +101,10 @@ public class DataCache {
 
     public void setAreas(List<Area> areas) {
         this.areas = new ArrayList<>(areas);
+    }
+
+    public List<Area> getAreas() {
+        return this.areas;
     }
 
     public Area getArea(String id) {
@@ -207,5 +219,44 @@ public class DataCache {
         graphics.drawImage(bufferedImage, 0, 0, 64, 64, null);
         graphics.dispose();
         return resized;
+    }
+
+    public void setAllBeasts(List<MonsterTypeDto> beasts) {
+        this.allBeasts = beasts;
+    }
+
+    public MonsterTypeDto getBeastDto(int id) {
+        return allBeasts.stream()
+                .filter(monsterTypeDto -> monsterTypeDto.id() == id)
+                .findFirst()
+                .orElse(null);
+    }
+
+    public void addMyAchievement(Achievement achievement) {
+        this.myAchievements.add(achievement);
+    }
+
+    public void setMyAchievements(List<Achievement> achievements) {
+        this.myAchievements = new ArrayList<>(achievements);
+    }
+
+    public List<Achievement> getMyAchievements() {
+        return this.myAchievements;
+    }
+
+    public void addAchievementDescription(String achievementId, String achievementDescription) {
+        this.achievementDescriptions.put(achievementId, achievementDescription);
+    }
+
+    public Map<String, String> getAchievementDescriptions() {
+        return this.achievementDescriptions;
+    }
+
+    public void addVisitedArea(String id) {
+        this.visitedAreas.add(id);
+    }
+
+    public List<String> getVisitedAreas() {
+        return this.visitedAreas;
     }
 }
