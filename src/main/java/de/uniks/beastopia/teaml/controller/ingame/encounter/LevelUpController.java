@@ -5,6 +5,7 @@ import de.uniks.beastopia.teaml.rest.Monster;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.animation.FadeTransition;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -12,9 +13,12 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
 import javax.inject.Inject;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class LevelUpController extends Controller {
     @FXML
@@ -57,6 +61,10 @@ public class LevelUpController extends Controller {
     public HBox starBg;
     @FXML
     public HBox borderBg;
+    @FXML
+    public VBox beastInfo;
+    @FXML
+    public VBox abilityInfo;
 
     @Inject
     PresetsService presetsService;
@@ -69,6 +77,8 @@ public class LevelUpController extends Controller {
     private boolean newAbility;
     private boolean dev;
     private int plusHP;
+    private double healthWidth;
+    private double expWidth;
 
     @Inject
     public LevelUpController() {
@@ -120,16 +130,29 @@ public class LevelUpController extends Controller {
 
         lifeValueLabel.setText(beast.currentAttributes().health() + " ");
         maxLifeLabel.setText(" " + beast.attributes().health());
-
-        double healthWidth = (double) beast.currentAttributes().health() / beast.attributes().health();
-        hpBg.setPrefWidth(healthWidth * borderBg.getWidth());
-
         plusHPLabel.setText(" (+" + plusHP + " Max HP)");
         xpValueLabel.setText(beast.experience() + " ");
-        int maxExp =(int) Math.pow(beast.level(), 3) - (int) Math.pow(beast.level() - 1, 3);
+        int maxExp = (int) Math.pow(beast.level(), 3) - (int) Math.pow(beast.level() - 1, 3);
         maxXpLabel.setText(maxExp + " ");
-        double expWidth = (double) beast.experience() / maxExp;
-        starBg.setPrefWidth(expWidth * starBg.getWidth());
+
+        healthWidth = (double) beast.currentAttributes().health() / beast.attributes().health();
+        expWidth = (double) beast.experience() / maxExp;
+
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        hpBg.setMinWidth(healthWidth * borderBg.getWidth());
+                        hpBg.setMaxWidth(healthWidth * borderBg.getWidth());
+                        starBg.setMinWidth(expWidth * borderBg.getWidth());
+                        starBg.setMaxWidth(expWidth * borderBg.getWidth());
+                    }
+                });
+            }
+        }, 100);
 
         if (dev) { //Fade old Image -> New one
             disposables.add(presetsService.getMonsterImage(beast.type() - 1)
