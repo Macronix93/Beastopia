@@ -61,6 +61,9 @@ public class BeastDetailController extends Controller {
         defense.setText("Defense: " + monster.currentAttributes().defense());
         hp.setText("HP: " + monster.currentAttributes().health() + " / " + monster.attributes().health());
 
+        description.setEditable(false);
+        description.setFocusTraversable(false);
+
         disposables.add(presetsService.getMonsterType(monster.type())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(monsterType -> {
