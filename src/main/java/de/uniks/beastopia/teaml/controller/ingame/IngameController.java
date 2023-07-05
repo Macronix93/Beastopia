@@ -14,6 +14,7 @@ import de.uniks.beastopia.teaml.service.*;
 import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.sockets.UDPEventListener;
 import de.uniks.beastopia.teaml.utils.*;
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
@@ -91,8 +92,6 @@ public class IngameController extends Controller {
     UDPEventListener udpEventListener;
     @Inject
     EventListener eventListener;
-    @Inject
-    BeastListController beastListController;
     @Inject
     ScoreboardController scoreBoardController;
     @Inject
@@ -611,14 +610,25 @@ public class IngameController extends Controller {
 
     public void handleTalkToTrainer(KeyEvent keyEvent) {
         if (keyEvent.getCode().equals(KeyCode.T)) {
-            if (canTalkToNPC()) {
-                System.out.println(npcTalkPartner.npc().toString() + " " + npcTalkPartner.name());
-                if (npcTalkPartner.npc().starters() != null) {
-                    talkToStartersNPC();
-                } //else heal nurse //else tak to fight
-            } else {
-                closeTalk();
-            }
+            canTalkToNPC();
+            Timer timer = new Timer();
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    Platform.runLater(() -> {
+                        System.out.println("HAHAHHA");
+                        if (npcTalkPartner != null) {
+                            System.out.println("HAHAHHA" + npcTalkPartner.npc().starters().toString());
+                            if (npcTalkPartner.npc().starters() != null) {
+                                System.out.println("asasda" + npcTalkPartner.npc().starters().toString());
+                                talkToStartersNPC();
+                            } //else heal nurse //else tak to fight
+                        } else {
+                            closeTalk();
+                        }
+                    });
+                }
+            }, 2000);
         }
     }
 
@@ -628,16 +638,18 @@ public class IngameController extends Controller {
         return Math.sqrt(dx * dx + dy * dy);
     }
 
-    private boolean canTalkToNPC() {
+    private void canTalkToNPC() {
         Trainer me = cache.getTrainer();
-
-        for (Trainer trainer : cache.getTrainers()) {
-            if (trainer.npc() != null && me.area().equals(trainer.area()) && distance(me, trainer) <= 1.5) {
-                npcTalkPartner = trainer;
-                return true;
-            }
-        }
-        return false;
+        disposables.add(trainerService.getAllTrainer(cache.getJoinedRegion()._id())
+                .observeOn(FX_SCHEDULER)
+                .subscribe(t -> {
+                    for (Trainer trainer : t) {
+                        if (trainer.npc() != null && me.area().equals(trainer.area()) && distance(me, trainer) <= 1.5) {
+                            npcTalkPartner = trainer;
+                            System.out.println("erst");
+                        }
+                    }
+                }));
     }
 
     private void talkToStartersNPC() {
@@ -668,7 +680,7 @@ public class IngameController extends Controller {
     }
 
     private void talk(Image image, String message, List<String> choices, List<Image> buttonImages, Consumer<Integer> onButtonPressed) {
-        closeTalk();
+        //closeTalk();
 
         dialogWindowController = dialogWindowControllerProvider.get();
         dialogWindowController
