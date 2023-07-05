@@ -4,6 +4,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.Controller;
+import de.uniks.beastopia.teaml.controller.ingame.beast.EditBeastTeamController;
+import de.uniks.beastopia.teaml.controller.ingame.encounter.FightWildBeastController;
+import de.uniks.beastopia.teaml.controller.ingame.encounter.StartFightNPCController;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
 import de.uniks.beastopia.teaml.rest.Map;
 import de.uniks.beastopia.teaml.rest.*;
@@ -64,6 +67,8 @@ public class IngameController extends Controller {
     @Inject
     PauseController pauseController;
     @Inject
+    Provider<StartFightNPCController> startFightNPCControllerProvider;
+    @Inject
     Provider<PauseController> pauseControllerProvider;
     @Inject
     BeastListController beastListController;
@@ -71,6 +76,7 @@ public class IngameController extends Controller {
     Provider<BeastDetailController> beastDetailControllerProvider;
     @Inject
     Provider<DialogWindowController> dialogWindowControllerProvider;
+    Provider<EditBeastTeamController> editBeastTeamControllerProvider;
     @Inject
     Provider<EntityController> entityControllerProvider;
     @Inject
@@ -86,12 +92,19 @@ public class IngameController extends Controller {
     @Inject
     EventListener eventListener;
     @Inject
+    BeastListController beastListController;
+    @Inject
     ScoreboardController scoreBoardController;
     @Inject
     Provider<IngameController> ingameControllerProvider;
     @Inject
     Provider<SoundController> soundControllerProvider;
-
+    @Inject
+    Provider<FightWildBeastController> fightWildBeastControllerProvider;
+    @Inject
+    RegionEncountersService regionEncountersService;
+    @Inject
+    EncounterOpponentsService encounterOpponentsService;
     private Region region;
     private Map map;
     private final List<Pair<TileSetDescription, Pair<TileSet, Image>>> tileSets = new ArrayList<>();
@@ -212,18 +225,55 @@ public class IngameController extends Controller {
 
     private void loadTrainers(List<Trainer> trainers) {
         Trainer myTrainer = loadMyTrainer(trainers);
-        disposables.add(areaService.getAreas(this.region._id()).observeOn(FX_SCHEDULER).subscribe(areas -> {
-            cache.setAreas(areas);
-            cache.setTrainers(trainers);
-            loadMap(areas, myTrainer);
-            drawMap();
 
-            beastListParent = beastListController.render();
-            scoreBoardParent = scoreBoardController.render();
-            loadRemoteTrainer(trainers);
-            listenToTrainerEvents();
-            loadingPage.setDone();
-        }));
+        if (cache.getAreas().isEmpty()) {
+            disposables.add(areaService.getAreas(this.region._id()).observeOn(FX_SCHEDULER).subscribe(areas -> {
+                cache.setAreas(areas);
+                loadMap(cache.getAreas(), myTrainer, trainers);
+            }));
+        } else {
+            loadMap(cache.getAreas(), myTrainer, trainers);
+        }
+        disposables.add(eventListener.listen("encounters.*.trainers." + cache.getTrainer()._id()
+                        + ".opponents.*.created", Opponent.class)
+                .observeOn(FX_SCHEDULER)
+                .concatMap(opponentEvent -> {
+                    Opponent opponent = opponentEvent.data();
+                    return regionEncountersService.getRegionEncounter(cache.getJoinedRegion()._id(), opponent.encounter())
+                            .observeOn(FX_SCHEDULER);
+                })
+                .subscribe(
+                        encounter -> {
+                            if (encounter.isWild()) {
+                                openFightBeastScreen(encounter);
+                            } else {
+                                openFightNPCScreen(encounter);
+                            }
+                        },
+                        error -> System.err.println("Fehler: " + error.getMessage())
+                )
+        );
+    }
+
+    private void openFightNPCScreen(Encounter encounter) {
+        StartFightNPCController controller = startFightNPCControllerProvider.get();
+        controller.setControllerInfo(encounter);
+        app.show(controller);
+    }
+
+    private void openFightBeastScreen(Encounter encounter) {
+        FightWildBeastController controller = fightWildBeastControllerProvider.get();
+        disposables.add(encounterOpponentsService
+                .getEncounterOpponents(cache.getJoinedRegion()._id(), encounter._id())
+                .observeOn(FX_SCHEDULER)
+                .subscribe(o -> {
+                    for (Opponent op : o) {
+                        if (op.trainer().equals("000000000000000000000000")) {
+                            controller.setControllerInfo(op.monster(), op.trainer());
+                            app.show(controller);
+                        }
+                    }
+                }));
     }
 
     private void listenToTrainerEvents() {
@@ -250,23 +300,37 @@ public class IngameController extends Controller {
         }
     }
 
-    private void loadMap(List<Area> areas, Trainer myTrainer) {
+    private void loadMap(List<Area> areas, Trainer myTrainer, List<Trainer> trainers) {
         Area area = areas.stream().filter(a -> a._id().equals(myTrainer.area())).findFirst().orElseThrow();
         prefs.setArea(area);
-        this.map = area.map();
-        for (TileSetDescription tileSetDesc : map.tilesets()) {
-            TileSet tileSet = presetsService.getTileset(tileSetDesc).blockingFirst();
-            Image image = presetsService.getImage(tileSet).blockingFirst();
-            tileSets.add(new Pair<>(tileSetDesc, new Pair<>(tileSet, image)));
-        }
 
-        if (area.name().contains("Route")) {
-            soundController.play("bgm:route");
-        } else if (area.name().contains("House")) {
-            soundController.play("bgm:house");
-        } else {
-            soundController.play("bgm:city");
-        }
+        disposables.add(areaService.getArea(this.region._id(), area._id())
+                .observeOn(FX_SCHEDULER)
+                .subscribe(a -> {
+                            this.map = a.map();
+                            for (TileSetDescription tileSetDesc : map.tilesets()) {
+                                TileSet tileSet = presetsService.getTileset(tileSetDesc).blockingFirst();
+                                Image image = presetsService.getImage(tileSet).blockingFirst();
+                                tileSets.add(new Pair<>(tileSetDesc, new Pair<>(tileSet, image)));
+                            }
+                            drawMap();
+
+                            if (a.name().contains("Route")) {
+                                soundController.play("bgm:route");
+                            } else if (a.name().contains("House")) {
+                                soundController.play("bgm:house");
+                            } else {
+                                soundController.play("bgm:city");
+                            }
+
+                            beastListParent = beastListController.render();
+                            scoreBoardParent = scoreBoardController.render();
+                            pauseMenuParent = pauseController.render();
+                            loadRemoteTrainer(trainers);
+                            listenToTrainerEvents();
+                            loadingPage.setDone();
+                        }
+                ));
     }
 
     /**
@@ -541,6 +605,7 @@ public class IngameController extends Controller {
         handlePauseMenu(keyEvent);
         handleScoreboard(keyEvent);
         handleBeastList(keyEvent);
+        handleBeastTeam(keyEvent);
         handleTalkToTrainer(keyEvent);
     }
 
@@ -690,6 +755,13 @@ public class IngameController extends Controller {
             app.show(map);
         }
     }
+
+    private void handleBeastTeam(KeyEvent keyEvent) {
+        if (keyEvent.getCode().equals(KeyCode.X)) {
+            app.show(editBeastTeamControllerProvider.get());
+        }
+    }
+
 
     private void handlePlayerMovement(KeyEvent keyEvent) {
         if (!pressedKeys.contains(keyEvent.getCode())) {

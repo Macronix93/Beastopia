@@ -5,6 +5,8 @@ import dagger.Module;
 import dagger.Provides;
 import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.rest.AchievementsApiService;
+import de.uniks.beastopia.teaml.rest.RegionEncountersApiService;
+import de.uniks.beastopia.teaml.rest.EncounterOpponentsApiService;
 import de.uniks.beastopia.teaml.rest.AreaApiService;
 import de.uniks.beastopia.teaml.rest.AuthApiService;
 import de.uniks.beastopia.teaml.rest.GroupApiService;
@@ -236,5 +238,19 @@ public class HttpModule {
     @SuppressWarnings("unused")
     AchievementsApiService achievements(Retrofit retrofit) {
         return retrofit.create(AchievementsApiService.class);
+    }
+
+    @Provides
+    @Singleton
+    @SuppressWarnings("unused")
+    RegionEncountersApiService regionEncounters(Retrofit retrofit) {
+        return retrofit.create(RegionEncountersApiService.class);
+    }
+
+    @Provides
+    @Singleton
+    @SuppressWarnings("unused")
+    EncounterOpponentsApiService encounterOpponents(Retrofit retrofit) {
+        return retrofit.create(EncounterOpponentsApiService.class);
     }
 }
