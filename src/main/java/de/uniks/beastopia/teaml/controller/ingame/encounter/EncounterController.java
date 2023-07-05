@@ -1,6 +1,7 @@
 package de.uniks.beastopia.teaml.controller.ingame.encounter;
 
 import de.uniks.beastopia.teaml.controller.Controller;
+import de.uniks.beastopia.teaml.rest.AbilityDto;
 import de.uniks.beastopia.teaml.rest.Monster;
 import de.uniks.beastopia.teaml.rest.Trainer;
 import de.uniks.beastopia.teaml.service.DataCache;
@@ -20,6 +21,8 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.Stack;
 
 @SuppressWarnings("unused")
 public class EncounterController extends Controller {
@@ -203,8 +206,6 @@ public class EncounterController extends Controller {
 
         setNumberOfAttacks();
 
-        // set label informations
-
         return parent;
     }
 
@@ -221,7 +222,23 @@ public class EncounterController extends Controller {
         } else if (ownMonster.abilities().size() == 3) {
             attackBox4.setVisible(false);
         }
+        setAttackBoxes(ownMonster.abilities().size());
+    }
 
+    private void setAttackBoxes(int size) {
+        Stack<String> stack = new Stack<>();
+        Set<String> keys = ownMonster.abilities().keySet();
+        keys.forEach(stack::push);
+        switch (size) {
+            case 4:
+                setAttack4(presetsService.getAbility(stack.pop()).blockingFirst());
+            case 3:
+                setAttack3(presetsService.getAbility(stack.pop()).blockingFirst());
+            case 2:
+                setAttack2(presetsService.getAbility(stack.pop()).blockingFirst());
+            case 1:
+                setAttack1(presetsService.getAbility(stack.pop()).blockingFirst());
+        }
     }
 
     //onClicked leave encounter button
@@ -288,67 +305,31 @@ public class EncounterController extends Controller {
     }
 
     //methods for setting labels in attack boxes
-    private void setAttackNameLabel1(String value) {
-        attackNameLabel1.setText(value);
+    private void setAttack1(AbilityDto abilityDto) {
+        attackNameLabel1.setText(abilityDto.name());
+        attackTypeLabel1.setText("Type: " + abilityDto.type());
+        accLabel1.setText("Accuracy: " + abilityDto.accuracy());
+        powerLabel1.setText("Power: " + abilityDto.power());
     }
 
-    private void setAttackTypeLabel1(String value) {
-        attackTypeLabel1.setText(value);
+    private void setAttack2(AbilityDto abilityDto) {
+        attackNameLabel2.setText(abilityDto.name());
+        attackTypeLabel2.setText("Type: " + abilityDto.type());
+        accLabel2.setText("Accuracy: " + abilityDto.accuracy());
+        powerLabel2.setText("Power: " + abilityDto.power());
     }
 
-    private void setAccLabel1(String value) {
-        accLabel1.setText(value);
+    private void setAttack3(AbilityDto abilityDto) {
+        attackNameLabel3.setText(abilityDto.name());
+        attackTypeLabel3.setText("Type: " + abilityDto.type());
+        accLabel3.setText("Accuracy: " + abilityDto.accuracy());
+        powerLabel3.setText("Power: " + abilityDto.power());
     }
 
-    private void setPowerLabel1(String value) {
-        powerLabel1.setText(value);
-    }
-
-    private void setAttackNameLabel2(String value) {
-        attackNameLabel2.setText(value);
-    }
-
-    private void setAttackTypeLabel2(String value) {
-        attackTypeLabel2.setText(value);
-    }
-
-    private void setAccLabel2(String value) {
-        accLabel2.setText(value);
-    }
-
-    private void setPowerLabel2(String value) {
-        powerLabel2.setText(value);
-    }
-
-    private void setAttackNameLabel3(String value) {
-        attackNameLabel3.setText(value);
-    }
-
-    private void setAttackTypeLabel3(String value) {
-        attackTypeLabel3.setText(value);
-    }
-
-    private void setAccLabel3(String value) {
-        accLabel3.setText(value);
-    }
-
-    private void setPowerLabel3(String value) {
-        powerLabel3.setText(value);
-    }
-
-    private void setAttackNameLabel4(String value) {
-        attackNameLabel4.setText(value);
-    }
-
-    private void setAttackTypeLabel4(String value) {
-        attackTypeLabel4.setText(value);
-    }
-
-    private void setAccLabel4(String value) {
-        accLabel4.setText(value);
-    }
-
-    private void setPowerLabel4(String value) {
-        powerLabel4.setText(value);
+    private void setAttack4(AbilityDto abilityDto) {
+        attackNameLabel4.setText(abilityDto.name());
+        attackTypeLabel4.setText("Type: " + abilityDto.type());
+        accLabel4.setText("Accuracy: " + abilityDto.accuracy());
+        powerLabel4.setText("Power: " + abilityDto.power());
     }
 }
