@@ -53,7 +53,7 @@ public class EndScreenController extends Controller {
     public Parent render() {
         Parent parent = super.render();
 
-        /*
+/*
         disposables.add(presetsService.getMonsterImage(winner1.type())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(monsterImage -> winnerImg.setImage(monsterImage)));
@@ -76,7 +76,9 @@ public class EndScreenController extends Controller {
                     .observeOn(FX_SCHEDULER)
                     .subscribe(secondLoser::setImage));
             leftMonsterContainer.getChildren().add(secondLoser);
-        }*/
+        }
+*/
+        //resultLabel.setTextOverrun(OverrunStyle.);
 
         if (isWinner) {
             resultLabel.setText("You won the fight!");
@@ -95,19 +97,19 @@ public class EndScreenController extends Controller {
         isWinner = winner;
     }
 
-    public void setWinner1(Monster winner1) {
+    public void setWinnerMonster1(Monster winner1) {
         this.winner1 = winner1;
     }
 
-    public void setWinner2(Monster winner2) {
+    public void setWinnerMonster2(Monster winner2) {
         this.winner2 = winner2;
     }
 
-    public void setLoser1(Monster loser1) {
+    public void setLoserMonster1(Monster loser1) {
         this.loser1 = loser1;
     }
 
-    public void setLoser2(Monster loser2) {
+    public void setLoserMonster2(Monster loser2) {
         this.loser2 = loser2;
     }
 
