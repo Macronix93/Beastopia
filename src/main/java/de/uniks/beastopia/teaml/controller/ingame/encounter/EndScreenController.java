@@ -3,7 +3,10 @@ package de.uniks.beastopia.teaml.controller.ingame.encounter;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.ingame.IngameController;
 import de.uniks.beastopia.teaml.rest.Monster;
+import de.uniks.beastopia.teaml.rest.MonsterAttributes;
+import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
+import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -32,12 +35,31 @@ public class EndScreenController extends Controller {
     Provider<IngameController> ingameControllerProvider;
     @Inject
     PresetsService presetsService;
+    @SuppressWarnings("unused")
+    @Inject
+    DataCache dataCache;
+    @SuppressWarnings("unused")
+    @Inject
+    Prefs prefs;
 
     private Monster winner1;
     private Monster winner2;
     private Monster loser1;
     private Monster loser2;
     private boolean isWinner = false;
+
+    Monster monster1 = new Monster(null, null,
+            "1", "1", 3, 1, 10, new MonsterAttributes(100, 100, 100, 100),
+            new MonsterAttributes(20, 10, 10, 5));
+    Monster monster2 = new Monster(null, null,
+            "1", "1", 1, 1, 10, new MonsterAttributes(100, 100, 100, 100),
+            new MonsterAttributes(20, 10, 10, 5));
+    Monster monster3 = new Monster(null, null,
+            "1", "1", 2, 1, 10, new MonsterAttributes(100, 100, 100, 100),
+            new MonsterAttributes(20, 10, 10, 5));
+    Monster monster4 = new Monster(null, null,
+            "1", "1", 4, 1, 10, new MonsterAttributes(100, 100, 100, 100),
+            new MonsterAttributes(20, 10, 10, 5));
 
     @Inject
     public EndScreenController() {
@@ -47,19 +69,25 @@ public class EndScreenController extends Controller {
     public void init() {
         super.init();
 
+        setLoserMonster1(monster1);
+        setLoserMonster2(monster2);
+        setWinnerMonster1(monster3);
+        setWinnerMonster2(monster4);
     }
 
     @Override
     public Parent render() {
         Parent parent = super.render();
 
-/*
+
         disposables.add(presetsService.getMonsterImage(winner1.type())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(monsterImage -> winnerImg.setImage(monsterImage)));
 
         if (winner2 != null) {
             ImageView secondWinner = new ImageView();
+            secondWinner.setX(125);
+            secondWinner.setY(125);
             disposables.add(presetsService.getMonsterImage(winner2.type())
                     .observeOn(FX_SCHEDULER)
                     .subscribe(secondWinner::setImage));
@@ -72,13 +100,13 @@ public class EndScreenController extends Controller {
 
         if (loser2 != null) {
             ImageView secondLoser = new ImageView();
+            secondLoser.setX(125);
+            secondLoser.setY(125);
             disposables.add(presetsService.getMonsterImage(loser2.type())
                     .observeOn(FX_SCHEDULER)
                     .subscribe(secondLoser::setImage));
-            leftMonsterContainer.getChildren().add(secondLoser);
+            rightMonsterContainer.getChildren().add(secondLoser);
         }
-*/
-        //resultLabel.setTextOverrun(OverrunStyle.);
 
         if (isWinner) {
             resultLabel.setText("You won the fight!");
@@ -93,6 +121,7 @@ public class EndScreenController extends Controller {
         app.show(ingameControllerProvider.get());
     }
 
+    @SuppressWarnings("unused")
     public void setWinner(boolean winner) {
         isWinner = winner;
     }
