@@ -94,6 +94,13 @@ public class LevelUpController extends Controller {
     }
 
     @Override
+    public void onResize(int width, int height) {
+        hpBg.setMinWidth(healthWidth * borderBg.getWidth());
+        hpBg.setMaxWidth(healthWidth * borderBg.getWidth());
+        starBg.setMinWidth(expWidth * borderBg.getWidth());
+        starBg.setMaxWidth(expWidth * borderBg.getWidth());
+    }
+    @Override
     public Parent render() {
         Parent parent = super.render();
         headline.setText("Level up!");
