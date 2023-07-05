@@ -14,6 +14,7 @@ import de.uniks.beastopia.teaml.service.*;
 import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.sockets.UDPEventListener;
 import de.uniks.beastopia.teaml.utils.*;
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
@@ -24,6 +25,8 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelReader;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
@@ -34,6 +37,7 @@ import javafx.util.Pair;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.*;
+import java.util.function.Consumer;
 
 public class IngameController extends Controller {
     static final double TILE_SIZE = 20;
@@ -603,24 +607,6 @@ public class IngameController extends Controller {
         handleTalkToTrainer(keyEvent);
     }
 
-    public void handleTalkToTrainer(KeyEvent keyEvent) {
-        if (keyEvent.getCode().equals(KeyCode.T)) {
-            if (stackPane.getChildren().contains(dialogWindowParent)) {
-                stackPane.getChildren().remove(dialogWindowParent);
-                currentMenu = MENU_NONE;
-            } else {
-                dialogWindowParent = dialogWindowController.render();
-                stackPane.getChildren().add(dialogWindowParent);
-                stackPane.setPrefWidth(600);
-                currentMenu = MENU_DIALOGWINDOW;
-            }
-            dialogWindowController.setOnCloseRequested(() -> {
-                stackPane.getChildren().remove(dialogWindowParent);
-                dialogWindowController.destroy();
-            });
-        }
-    }
-
     public void handleBeastList(KeyEvent keyEvent) {
         if (keyEvent.getCode().equals(KeyCode.B) && (currentMenu == MENU_NONE || currentMenu == MENU_BEASTLIST)) {
             if (scoreBoardLayout.getChildren().contains(beastListParent)) {
@@ -809,6 +795,102 @@ public class IngameController extends Controller {
                     }
                 }
             }
+        }
+    }
+
+    private double distance(Trainer a, Trainer b) {
+        int dx = b.x() - a.x();
+        int dy = b.y() - a.y();
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    public void handleTalkToTrainer(KeyEvent keyEvent) {
+        if (keyEvent.getCode().equals(KeyCode.T)) {
+            Trainer me = cache.getTrainer();
+            disposables.add(trainerService.getAllTrainer(cache.getJoinedRegion()._id())
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe(t -> {
+                        for (Trainer trainer : t) {
+                            dialogWindowController = dialogWindowControllerProvider.get();
+                            if (trainer.npc() != null && me.area().equals(trainer.area()) && distance(me, trainer) <= 1.5) {
+                                if (trainer.npc().starters() != null) {
+                                    talkToNPCWithStarters(trainer);
+                                } //else heal nurse //else tak to fight
+
+                            }
+                        }
+                    }));
+        }
+    }
+
+    public void talkToNPCWithStarters(Trainer trainer) {
+        disposables.add(presetsService.getCharacterSprites(trainer.image(), true)
+                .observeOn(FX_SCHEDULER)
+                .subscribe(image -> {
+                    List<String> beastNames = new ArrayList<>();
+                    List<Image> beastImages = new ArrayList<>();
+                    for (int id : trainer.npc().starters()) {
+                        disposables.add(presetsService.getMonsterType(id).subscribe(type -> {
+                            beastNames.add(type.name());
+                        }));
+                        disposables.add(presetsService.getMonsterImage(id).subscribe(beastImages::add));
+                        if (id == trainer.npc().starters().get(trainer.npc().starters().size() - 1)) {
+                            Rectangle2D viewPort = new Rectangle2D(3 * 96, 32, 16, 32);
+                            PixelReader reader = image.getPixelReader();
+                            WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
+                            talk(newImage, "Welcome! /t Please select a starter Beast.", beastNames, beastImages, null);
+                        }
+                    }
+                }));
+    }
+
+    /*talk(newImage, "Welcome! /t Please select a starter Beast.", beastNames, beastImages, (i -> {
+
+                        talk(newImage, "Flamander", List.of("another Beast", "select Beast"), null, (j -> {
+
+                        }));
+                    }));
+
+                     */
+    public void sendTalk(String target, int selection) {
+        Trainer me = cache.getTrainer();
+        JsonObject data = new JsonObject();
+        data.add("_id", new JsonPrimitive(me._id()));
+        data.add("target", new JsonPrimitive(target));
+        data.add("selection", new JsonPrimitive(selection));
+
+        JsonObject message = new JsonObject();
+        message.add("event", new JsonPrimitive("areas." + me.area() + ".trainers." + me._id() + ".talked"));
+        message.add("data", data);
+
+        udpEventListener.send(message.toString());
+    }
+
+    private void talk(Image image, String message, List<String> choices, List<Image> buttonImages, Consumer<Integer> onButtonPressed) {
+        closeTalk();
+
+        dialogWindowController = dialogWindowControllerProvider.get();
+        dialogWindowController
+                .setTrainerImage(image)
+                .setChoices(choices)
+                .setButtonImages(buttonImages)
+                .setText(message)
+                .setOnButtonClicked(onButtonPressed);
+        dialogWindowParent = dialogWindowController.render();
+        pauseMenuLayout.getChildren().add(dialogWindowParent);
+        pauseMenuLayout.setPrefWidth(600);
+        currentMenu = MENU_DIALOGWINDOW;
+
+        dialogWindowController.setOnCloseRequested(() -> {
+            pauseMenuLayout.getChildren().remove(dialogWindowParent);
+            dialogWindowController.destroy();
+        });
+    }
+
+    private void closeTalk() {
+        if (pauseMenuLayout.getChildren().contains(dialogWindowParent)) {
+            pauseMenuLayout.getChildren().remove(dialogWindowParent);
+            currentMenu = MENU_NONE;
         }
     }
 
