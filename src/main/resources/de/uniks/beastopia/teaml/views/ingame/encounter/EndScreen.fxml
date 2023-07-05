@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-
-
 <HBox alignment="CENTER" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.uniks.beastopia.teaml.controller.ingame.encounter.EndScreenController">
    <children>
       <VBox alignment="BOTTOM_LEFT" prefHeight="200.0" prefWidth="100.0">
          <children>
-            <Button fx:id="leaveButton" mnemonicParsing="false" text="Button">
+            <Button fx:id="leaveButton" mnemonicParsing="false" onMouseClicked="#onLeaveButtonClicked"
+                    text="leaveButton">
                <VBox.margin>
-                  <Insets bottom="10.0" left="10.0" />
+                  <Insets bottom="10.0" left="10.0"/>
                </VBox.margin>
             </Button>
          </children>
@@ -29,25 +28,39 @@
          <children>
             <Label fx:id="resultLabel" text="Label">
                <VBox.margin>
-                  <Insets />
+                  <Insets/>
                </VBox.margin>
-               <padding>
-                  <Insets top="20.0" />
-               </padding>
+               <font>
+                  <Font size="48.0"/>
+               </font>
             </Label>
             <HBox prefHeight="550.0">
                <children>
-                  <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="200.0" />
-                  <VBox alignment="CENTER" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="200.0">
+                  <VBox fx:id="leftMonsterContainer" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity"
+                        minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="200.0" spacing="20.0">
+                     <children>
+                        <ImageView fx:id="winnerImg" fitHeight="125.0" fitWidth="125.0" pickOnBounds="true"
+                                   preserveRatio="true"/>
+                     </children>
+                  </VBox>
+                  <VBox alignment="CENTER" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity"
+                        minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="200.0">
                      <children>
                         <Label text="VS">
                            <font>
-                              <Font size="48.0" />
+                              <Font size="48.0"/>
                            </font>
                         </Label>
                      </children>
                   </VBox>
-                  <VBox layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="200.0" />
+                  <VBox fx:id="rightMonsterContainer" alignment="CENTER" layoutX="10.0" layoutY="10.0"
+                        maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+                        prefHeight="600.0" prefWidth="200.0" spacing="20.0">
+                     <children>
+                        <ImageView fx:id="loserImg" fitHeight="125.0" fitWidth="125.0" pickOnBounds="true"
+                                   preserveRatio="true"/>
+                     </children>
+                  </VBox>
                </children>
             </HBox>
          </children>

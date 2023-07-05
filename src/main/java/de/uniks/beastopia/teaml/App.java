@@ -101,8 +101,10 @@ public class App extends Application {
         mainComponent.themeSettings().updateSceneTheme.accept(
                 mainComponent.prefs().getTheme()
         );
+        //TODO: remove this, restore login screen
+        show(mainComponent.endScreenController());
 
-        show(mainComponent.loginController());
+        //show(mainComponent.loginController());
     }
 
     @Override
