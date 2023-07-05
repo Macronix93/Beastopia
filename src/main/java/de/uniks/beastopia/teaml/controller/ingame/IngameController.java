@@ -46,8 +46,6 @@ public class IngameController extends Controller {
     @FXML
     public Pane tilePane;
     @FXML
-    public StackPane stackPane;
-    @FXML
     private HBox scoreBoardLayout;
     @FXML
     private StackPane pauseMenuLayout;
@@ -548,8 +546,11 @@ public class IngameController extends Controller {
 
     public void handleTalkToTrainer(KeyEvent keyEvent) {
         if (keyEvent.getCode().equals(KeyCode.T)) {
-            if (canTalkToNPC("Albert")) {
-                talkToAlbert();
+            if (canTalkToNPC()) {
+                System.out.println(npcTalkPartner.npc().toString() + " " + npcTalkPartner.name());
+                if (npcTalkPartner.npc().starters() != null) {
+                    talkToStartersNPC();
+                } //else heal nurse //else tak to fight
             } else {
                 closeTalk();
             }
@@ -562,38 +563,42 @@ public class IngameController extends Controller {
         return Math.sqrt(dx * dx + dy * dy);
     }
 
-    private boolean canTalkToNPC(String npcName) {
+    private boolean canTalkToNPC() {
         Trainer me = cache.getTrainer();
 
         for (Trainer trainer : cache.getTrainers()) {
-            if (trainer.name().equals(npcName)
-                    && trainer.npc() != null) {
+            if (trainer.npc() != null && me.area().equals(trainer.area()) && distance(me, trainer) <= 1.5) {
                 npcTalkPartner = trainer;
-                break;
+                return true;
             }
         }
-
-        return me.area().equals(npcTalkPartner.area()) && !(distance(me, npcTalkPartner) > 1.5);
+        return false;
     }
 
-    private void talkToAlbert() {
+    private void talkToStartersNPC() {
         disposables.add(presetsService.getCharacterSprites(npcTalkPartner.image(), true)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(image -> {
-                    MonsterTypeDto monster1 = presetsService.getMonsterType(1).blockingFirst();
-                    Image monster1Image = presetsService.getMonsterImage(1).blockingFirst();
-                    MonsterTypeDto monster2 = presetsService.getMonsterType(2).blockingFirst();
-                    Image monster2Image = presetsService.getMonsterImage(2).blockingFirst();
-                    MonsterTypeDto monster3 = presetsService.getMonsterType(3).blockingFirst();
-                    Image monster3Image = presetsService.getMonsterImage(3).blockingFirst();
+                    List<String> beastNames = new ArrayList<>();
+                    List<Image> beastImages = new ArrayList<>();
+                    for (int id : npcTalkPartner.npc().starters()) {
+                        MonsterTypeDto monsterTypeDto = presetsService.getMonsterType(id).blockingFirst();
+                        beastNames.add(monsterTypeDto.name());
+                        Image beastImage = presetsService.getMonsterImage(id).blockingFirst();
+                        beastImages.add(beastImage);
+                    }
                     Rectangle2D viewPort = new Rectangle2D(3 * 96, 32, 16, 32);
                     PixelReader reader = image.getPixelReader();
                     WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
-                    talk(newImage, "Welcome! /t Please select a starter Beast.", List.of(monster1.name(), monster2.name(), monster3.name()), List.of(monster1Image, monster2Image, monster3Image), (i -> {
+                    talk(newImage, "Welcome! /t Please select a starter Beast.", beastNames, beastImages, null);
+                    /*talk(newImage, "Welcome! /t Please select a starter Beast.", beastNames, beastImages, (i -> {
+
                         talk(newImage, "Flamander", List.of("another Beast", "select Beast"), null, (j -> {
 
                         }));
                     }));
+
+                     */
                 }));
     }
 
@@ -608,19 +613,19 @@ public class IngameController extends Controller {
                 .setText(message)
                 .setOnButtonClicked(onButtonPressed);
         dialogWindowParent = dialogWindowController.render();
-        stackPane.getChildren().add(dialogWindowParent);
-        stackPane.setPrefWidth(600);
+        pauseMenuLayout.getChildren().add(dialogWindowParent);
+        pauseMenuLayout.setPrefWidth(600);
         currentMenu = MENU_DIALOGWINDOW;
 
         dialogWindowController.setOnCloseRequested(() -> {
-            stackPane.getChildren().remove(dialogWindowParent);
+            pauseMenuLayout.getChildren().remove(dialogWindowParent);
             dialogWindowController.destroy();
         });
     }
 
     private void closeTalk() {
-        if (stackPane.getChildren().contains(dialogWindowParent)) {
-            stackPane.getChildren().remove(dialogWindowParent);
+        if (pauseMenuLayout.getChildren().contains(dialogWindowParent)) {
+            pauseMenuLayout.getChildren().remove(dialogWindowParent);
             currentMenu = MENU_NONE;
         }
     }
