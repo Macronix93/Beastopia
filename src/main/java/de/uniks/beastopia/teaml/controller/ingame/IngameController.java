@@ -14,7 +14,6 @@ import de.uniks.beastopia.teaml.service.*;
 import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.sockets.UDPEventListener;
 import de.uniks.beastopia.teaml.utils.*;
-import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
@@ -611,25 +610,18 @@ public class IngameController extends Controller {
 
     public void handleTalkToTrainer(KeyEvent keyEvent) {
         if (keyEvent.getCode().equals(KeyCode.T)) {
-            canTalkToNPC();
-            Timer timer = new Timer();
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    Platform.runLater(() -> {
-                        System.out.println("HAHAHHA");
-                        if (npcTalkPartner != null) {
-                            System.out.println("HAHAHHA" + npcTalkPartner.npc().starters().toString());
-                            if (npcTalkPartner.npc().starters() != null) {
-                                System.out.println("asasda" + npcTalkPartner.npc().starters().toString());
-                                talkToStartersNPC();
-                            } //else heal nurse //else tak to fight
-                        } else {
-                            closeTalk();
-                        }
-                    });
+            if (canTalkToNPC()) {
+                System.out.println("HAHAHHA");
+                if (npcTalkPartner != null) {
+                    System.out.println("HAHAHHA" + npcTalkPartner.npc().starters().toString());
+                    if (npcTalkPartner.npc().starters() != null) {
+                        System.out.println("asasda" + npcTalkPartner.npc().starters());
+                        talkToStartersNPC();
+                    } //else heal nurse //else tak to fight
+                } else {
+                    closeTalk();
                 }
-            }, 2000);
+            }
         }
     }
 
@@ -665,20 +657,36 @@ public class IngameController extends Controller {
                     Rectangle2D viewPort = new Rectangle2D(3 * 96, 32, 16, 32);
                     PixelReader reader = image.getPixelReader();
                     WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
-                    talk(newImage, "Welcome! /t Please select a starter Beast.", beastNames, beastImages, null);
-                    /*talk(newImage, "Welcome! /t Please select a starter Beast.", beastNames, beastImages, (i -> {
+                    talk(newImage, "Welcome! \n Please select a starter Beast.", beastNames, beastImages, (i -> {
+                        int monsterType = npcTalkPartner.npc().starters().get(i);
+                        disposables.add(presetsService.getMonsterType(monsterType).observeOn(FX_SCHEDULER).subscribe(monsterTypeDTO -> {
+                            String message = "Details: \n";
+                            message += monsterTypeDTO.name() + "\n";
+                            message += monsterTypeDTO.description();
+                            talk(newImage, message, List.of("Take it!", "I don't want this one"), null, (j -> {
+                                if (j == 0) {
+                                    JsonObject data = new JsonObject();
+                                    data.add("_id", new JsonPrimitive(cache.getTrainer()._id()));
+                                    data.add("target", new JsonPrimitive(npcTalkPartner._id()));
+                                    data.add("selection", new JsonPrimitive(i));
 
-                        talk(newImage, "Flamander", List.of("another Beast", "select Beast"), null, (j -> {
+                                    JsonObject eventMessage = new JsonObject();
+                                    eventMessage.add("event", new JsonPrimitive("areas." + prefs.getArea() + ".trainers." + cache.getTrainer()._id() + ".talked"));
+                                    eventMessage.add("data", data);
 
+                                    udpEventListener.send(eventMessage.toString());
+                                    closeTalk();
+                                } else {
+                                    talkToStartersNPC();
+                                }
+                            }));
                         }));
                     }));
-
-                     */
                 }));
     }
 
     private void talk(Image image, String message, List<String> choices, List<Image> buttonImages, Consumer<Integer> onButtonPressed) {
-        //closeTalk();
+        closeTalk();
 
         dialogWindowController = dialogWindowControllerProvider.get();
         dialogWindowController
@@ -692,16 +700,14 @@ public class IngameController extends Controller {
         pauseMenuLayout.setPrefWidth(600);
         currentMenu = MENU_DIALOGWINDOW;
 
-        dialogWindowController.setOnCloseRequested(() -> {
-            pauseMenuLayout.getChildren().remove(dialogWindowParent);
-            dialogWindowController.destroy();
-        });
+        dialogWindowController.setOnCloseRequested(this::closeTalk);
     }
 
     private void closeTalk() {
         if (pauseMenuLayout.getChildren().contains(dialogWindowParent)) {
             pauseMenuLayout.getChildren().remove(dialogWindowParent);
             currentMenu = MENU_NONE;
+            dialogWindowController.destroy();
         }
     }
 
