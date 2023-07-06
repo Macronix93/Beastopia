@@ -19,8 +19,7 @@
         </Label>
     </VBox>
     <HBox alignment="CENTER" prefHeight="600.0" prefWidth="800.0">
-        <VBox alignment="BOTTOM_LEFT" prefHeight="600.0" prefWidth="100.0"
-              HBox.hgrow="ALWAYS">
+        <VBox alignment="BOTTOM_LEFT" prefHeight="600.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
             <opaqueInsets>
                 <Insets/>
             </opaqueInsets>
@@ -28,7 +27,7 @@
                 <Insets/>
             </HBox.margin>
             <Button fx:id="leaveButton" alignment="CENTER" mnemonicParsing="false"
-                    onMouseClicked="#onLeaveButtonClicked" text="Leave Encounter" textAlignment="CENTER"
+                    onMouseClicked="#onLeaveButtonClicked" text="%leaveEncounter" textAlignment="CENTER"
                     textOverrun="CLIP" wrapText="true">
                 <VBox.margin>
                     <Insets bottom="30.0" left="10.0"/>
@@ -40,16 +39,14 @@
                 <Insets/>
             </HBox.margin>
             <HBox prefHeight="550.0">
-                <VBox fx:id="leftMonsterContainer" alignment="CENTER" maxHeight="-Infinity"
-                      maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0"
-                      prefWidth="200.0" spacing="20.0">
-                    <ImageView fx:id="winnerImg" fitHeight="125.0" fitWidth="125.0"
-                               pickOnBounds="true" preserveRatio="true"/>
+                <VBox fx:id="leftMonsterContainer" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity"
+                      minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="200.0" spacing="20.0">
+                    <ImageView fx:id="winnerImg" fitHeight="125.0" fitWidth="125.0" pickOnBounds="true"
+                               preserveRatio="true"/>
                 </VBox>
                 <VBox alignment="CENTER">
-                    <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity"
-                          minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
-                          prefWidth="200.0">
+                    <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+                          minWidth="-Infinity" prefHeight="400.0" prefWidth="200.0">
                         <Label text="VS">
                             <font>
                                 <Font size="48.0"/>
@@ -58,10 +55,10 @@
                     </VBox>
                 </VBox>
                 <VBox fx:id="rightMonsterContainer" alignment="CENTER" layoutX="10.0" layoutY="10.0"
-                      maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-                      minWidth="-Infinity" prefHeight="600.0" prefWidth="200.0" spacing="20.0">
-                    <ImageView fx:id="loserImg" fitHeight="125.0" fitWidth="125.0"
-                               pickOnBounds="true" preserveRatio="true"/>
+                      maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+                      prefHeight="600.0" prefWidth="200.0" spacing="20.0">
+                    <ImageView fx:id="loserImg" fitHeight="125.0" fitWidth="125.0" pickOnBounds="true"
+                               preserveRatio="true"/>
                 </VBox>
             </HBox>
         </VBox>

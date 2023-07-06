@@ -16,6 +16,8 @@ import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+import java.util.HashMap;
+import java.util.Map;
 
 public class EndScreenController extends Controller {
 
@@ -48,17 +50,22 @@ public class EndScreenController extends Controller {
     private Monster loser2;
     private boolean isWinner = false;
 
+    //TODO: remove monsters and abilities, they're only for testing purposes
+    Map<String, Integer> abilities1 = new HashMap<>();
+    Map<String, Integer> abilities2 = new HashMap<>();
+    Map<String, Integer> abilities3 = new HashMap<>();
+    Map<String, Integer> abilities4 = new HashMap<>();
     Monster monster1 = new Monster(null, null,
-            "1", "1", 3, 1, 10, new MonsterAttributes(100, 100, 100, 100),
+            "1", "1", 3, 1, 10, abilities1, new MonsterAttributes(100, 100, 100, 100),
             new MonsterAttributes(20, 10, 10, 5));
     Monster monster2 = new Monster(null, null,
-            "1", "1", 1, 1, 10, new MonsterAttributes(100, 100, 100, 100),
+            "1", "1", 1, 1, 10, abilities2, new MonsterAttributes(100, 100, 100, 100),
             new MonsterAttributes(20, 10, 10, 5));
     Monster monster3 = new Monster(null, null,
-            "1", "1", 2, 1, 10, new MonsterAttributes(100, 100, 100, 100),
+            "1", "1", 2, 1, 10, abilities3, new MonsterAttributes(100, 100, 100, 100),
             new MonsterAttributes(20, 10, 10, 5));
     Monster monster4 = new Monster(null, null,
-            "1", "1", 4, 1, 10, new MonsterAttributes(100, 100, 100, 100),
+            "1", "1", 4, 1, 10, abilities4, new MonsterAttributes(100, 100, 100, 100),
             new MonsterAttributes(20, 10, 10, 5));
 
     @Inject
@@ -66,19 +73,28 @@ public class EndScreenController extends Controller {
     }
 
     @Override
+    public String getTitle() {
+        return resources.getString("titleEncounter");
+    }
+
+    @Override
     public void init() {
         super.init();
 
+        //TODO: remove this, it's only for testing purposes
         setLoserMonster1(monster1);
         setLoserMonster2(monster2);
         setWinnerMonster1(monster3);
         setWinnerMonster2(monster4);
+        abilities1.put("1", 1);
+        abilities2.put("2", 2);
+        abilities3.put("3", 3);
+        abilities4.put("4", 4);
     }
 
     @Override
     public Parent render() {
         Parent parent = super.render();
-
 
         disposables.add(presetsService.getMonsterImage(winner1.type())
                 .observeOn(FX_SCHEDULER)
@@ -109,9 +125,9 @@ public class EndScreenController extends Controller {
         }
 
         if (isWinner) {
-            resultLabel.setText("You won the fight!");
+            resultLabel.setText(resources.getString("fightWon"));
         } else {
-            resultLabel.setText("You lost the fight!");
+            resultLabel.setText(resources.getString("fightLost"));
         }
 
         return parent;
