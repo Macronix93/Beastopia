@@ -611,11 +611,13 @@ public class IngameController extends Controller {
     public void handleTalkToTrainer(KeyEvent keyEvent) {
         if (keyEvent.getCode().equals(KeyCode.T)) {
             if (canTalkToNPC()) {
-                System.out.println("HAHAHHA");
                 if (npcTalkPartner != null) {
-                    System.out.println("HAHAHHA" + npcTalkPartner.npc().starters().toString());
                     if (npcTalkPartner.npc().starters() != null) {
-                        System.out.println("asasda" + npcTalkPartner.npc().starters());
+                        disposables.add(eventListener.listen("trainers." + cache.getTrainer()._id()
+                                        + ".monsters.*.created", Monster.class)
+                                .observeOn(FX_SCHEDULER).subscribe(m -> {
+                                    trainerService.updateTrainer(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), "", "", List.of(m.data()._id()));
+                                }));
                         talkToStartersNPC();
                     } //else heal nurse //else tak to fight
                 } else {
@@ -660,7 +662,7 @@ public class IngameController extends Controller {
                     talk(newImage, "Welcome! \n Please select a starter Beast.", beastNames, beastImages, (i -> {
                         int monsterType = npcTalkPartner.npc().starters().get(i);
                         disposables.add(presetsService.getMonsterType(monsterType).observeOn(FX_SCHEDULER).subscribe(monsterTypeDTO -> {
-                            String message = "Details: \n";
+                            String message = "Details: ";
                             message += monsterTypeDTO.name() + "\n";
                             message += monsterTypeDTO.description();
                             talk(newImage, message, List.of("Take it!", "I don't want this one"), null, (j -> {
@@ -671,7 +673,7 @@ public class IngameController extends Controller {
                                     data.add("selection", new JsonPrimitive(i));
 
                                     JsonObject eventMessage = new JsonObject();
-                                    eventMessage.add("event", new JsonPrimitive("areas." + prefs.getArea() + ".trainers." + cache.getTrainer()._id() + ".talked"));
+                                    eventMessage.add("event", new JsonPrimitive("areas." + cache.getTrainer().area() + ".trainers." + cache.getTrainer()._id() + ".talked"));
                                     eventMessage.add("data", data);
 
                                     udpEventListener.send(eventMessage.toString());
