@@ -224,6 +224,7 @@ public class IngameController extends Controller {
 
     private void loadTrainers(List<Trainer> trainers) {
         Trainer myTrainer = loadMyTrainer(trainers);
+        cache.setTrainers(trainers);
 
         if (cache.getAreas().isEmpty()) {
             disposables.add(areaService.getAreas(this.region._id()).observeOn(FX_SCHEDULER).subscribe(areas -> {
@@ -638,22 +639,19 @@ public class IngameController extends Controller {
         return Math.sqrt(dx * dx + dy * dy);
     }
 
-    private void canTalkToNPC() {
+    private boolean canTalkToNPC() {
         Trainer me = cache.getTrainer();
-        disposables.add(trainerService.getAllTrainer(cache.getJoinedRegion()._id())
-                .observeOn(FX_SCHEDULER)
-                .subscribe(t -> {
-                    for (Trainer trainer : t) {
-                        if (trainer.npc() != null && me.area().equals(trainer.area()) && distance(me, trainer) <= 1.5) {
-                            npcTalkPartner = trainer;
-                            System.out.println("erst");
-                        }
-                    }
-                }));
+        for (Trainer trainer : cache.getTrainers()) {
+            if (trainer.npc() != null && me.area().equals(trainer.area()) && distance(me, trainer) <= 1.5) {
+                npcTalkPartner = trainer;
+                return true;
+            }
+        }
+        return false;
     }
 
     private void talkToStartersNPC() {
-        disposables.add(presetsService.getCharacterSprites(npcTalkPartner.image(), true)
+        disposables.add(presetsService.getCharacterSprites(npcTalkPartner.image(), false)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(image -> {
                     List<String> beastNames = new ArrayList<>();
