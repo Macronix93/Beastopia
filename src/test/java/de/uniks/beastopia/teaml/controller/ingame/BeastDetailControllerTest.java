@@ -16,6 +16,8 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
 
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
@@ -32,7 +34,7 @@ class BeastDetailControllerTest extends ApplicationTest {
 
     MonsterAttributes attributes = new MonsterAttributes(1, 1, 1, 1);
     MonsterAttributes currentAttributes = new MonsterAttributes(0, 0, 0, 0);
-    Monster monster = new Monster(null, null, "MONSTER_ID", "TRAINER_ID", 0, 0, 0, null, attributes, currentAttributes);
+    Monster monster = new Monster(null, null, "MONSTER_ID", "TRAINER_ID", 0, 0, 0, Map.of("1", 1, "2", 2), attributes, currentAttributes);
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -41,6 +43,7 @@ class BeastDetailControllerTest extends ApplicationTest {
         beastDetailController.setBeast(monster);
         when(presetsService.getMonsterType(anyInt())).thenReturn(Observable.empty());
         when(presetsService.getMonsterImage(anyInt())).thenReturn(Observable.empty());
+        when(presetsService.getAbility(anyInt())).thenReturn(Observable.empty());
 
         app.start(stage);
         app.show(beastDetailController);

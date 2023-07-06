@@ -1,5 +1,6 @@
 package de.uniks.beastopia.teaml.service;
 
+import de.uniks.beastopia.teaml.rest.AbilityDto;
 import de.uniks.beastopia.teaml.rest.PresetsApiService;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.scene.image.Image;
@@ -15,6 +16,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -30,6 +32,8 @@ class PresetsServiceTest {
     final List<String> allSprites = List.of("A.png", "B.png");
 
     final ResponseBody responseBody = ResponseBody.create(MediaType.parse("text/html"), "<h1>Fake</h1>");
+
+    final AbilityDto abilityDto = new AbilityDto(0, "name", "desc", "ice", 1, 2, 3);
 
     @Test
     void getCharacters() {
@@ -50,5 +54,21 @@ class PresetsServiceTest {
 
         assertNull(response.getUrl());
         verify(presetsApiService).getCharacterSprites("A.png");
+    }
+
+    @Test
+    void getAbility() {
+        when(presetsApiService.getAbilities()).thenReturn(Observable.just(List.of(abilityDto)));
+        List<AbilityDto> result = presetsService.getAbilities().blockingFirst();
+        assertEquals(abilityDto, result.get(0));
+        verify(presetsApiService).getAbilities();
+    }
+
+    @Test
+    void getAbilities() {
+        when(presetsApiService.getAbility(anyInt())).thenReturn(Observable.just(abilityDto));
+        AbilityDto result = presetsService.getAbility(1).blockingFirst();
+        assertEquals(abilityDto, result);
+        verify(presetsApiService).getAbility(1);
     }
 }
