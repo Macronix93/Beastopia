@@ -3,6 +3,7 @@ package de.uniks.beastopia.teaml.controller.ingame.encounter;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Monster;
 import de.uniks.beastopia.teaml.service.PresetsService;
+import de.uniks.beastopia.teaml.Main;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -16,6 +17,7 @@ import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
 import javax.inject.Inject;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -104,11 +106,11 @@ public class LevelUpController extends Controller {
     public Parent render() {
         Parent parent = super.render();
         headline.setText("Level up!");
-        heart.setImage(new Image("de/uniks/beastopia/teaml/assets/herz.png"));
+        heart.setImage(new Image(Objects.requireNonNull(Main.class.getResourceAsStream("assets/herz.png"))));
         heart.setFitWidth(25);
         heart.setFitHeight(25);
 
-        star.setImage(new Image("de/uniks/beastopia/teaml/assets/star.png"));
+        star.setImage(new Image(Objects.requireNonNull(Main.class.getResourceAsStream("assets/star.png"))));
         star.setFitWidth(25);
         star.setFitHeight(25);
 
