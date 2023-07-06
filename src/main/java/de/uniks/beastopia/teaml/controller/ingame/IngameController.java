@@ -622,22 +622,6 @@ public class IngameController extends Controller {
                 dialogWindowController.destroy();
             });
         }
-
-        //TODO
-
-
-        if (keyEvent.getCode() == KeyCode.J) {
-            java.util.Map<String, Integer> ab = new HashMap<>();
-            ab.put("1", 1);
-            ab.put("2", 2);
-            Monster flam1 = new Monster(null, null, null, null, 2,
-                    2, 2, ab, new MonsterAttributes(2, 2, 2, 2),
-                    new MonsterAttributes(1, 2, 2, 2));
-            LevelUpController controller = levelUpControllerProvider.get();
-            controller.setBeast(flam1, true, true, 5);
-            controller.init();
-            app.show(controller);
-        }
     }
 
     public void handleBeastList(KeyEvent keyEvent) {
