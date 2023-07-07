@@ -660,42 +660,46 @@ public class IngameController extends Controller {
         disposables.add(presetsService.getCharacterSprites(npcTalkPartner.image(), false)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(image -> {
-                    List<String> beastNames = new ArrayList<>();
-                    List<Image> beastImages = new ArrayList<>();
-                    for (int id : npcTalkPartner.npc().starters()) {
-                        MonsterTypeDto monsterTypeDto = presetsService.getMonsterType(id).blockingFirst();
-                        beastNames.add(monsterTypeDto.name());
-                        Image beastImage = presetsService.getMonsterImage(id).blockingFirst();
-                        beastImages.add(beastImage);
-                    }
                     Rectangle2D viewPort = new Rectangle2D(3 * 96, 32, 16, 32);
                     PixelReader reader = image.getPixelReader();
                     WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
-                    talk(newImage, "Welcome! \n Please select a starter Beast.", beastNames, beastImages, (i -> {
-                        int monsterType = npcTalkPartner.npc().starters().get(i);
-                        disposables.add(presetsService.getMonsterType(monsterType).observeOn(FX_SCHEDULER).subscribe(monsterTypeDTO -> { //unnötiger API call oben in liste speichern
-                            String message = "Details: ";
-                            message += monsterTypeDTO.name() + "\n";
-                            message += monsterTypeDTO.description();
-                            talk(newImage, message, List.of("Take it!", "I don't want this one"), null, (j -> {
-                                if (j == 0) {
-                                    JsonObject data = new JsonObject();
-                                    data.add("_id", new JsonPrimitive(cache.getTrainer()._id()));
-                                    data.add("target", new JsonPrimitive(npcTalkPartner._id()));
-                                    data.add("selection", new JsonPrimitive(i));
+                    if (npcTalkPartner.npc().encountered().contains(cache.getTrainer()._id())) {
+                        talk(newImage, "Welcome back! \n You already received one starter Beast, have a nice day!", null, null, null);
+                    } else {
+                        List<String> beastNames = new ArrayList<>();
+                        List<Image> beastImages = new ArrayList<>();
+                        for (int id : npcTalkPartner.npc().starters()) {
+                            MonsterTypeDto monsterTypeDto = presetsService.getMonsterType(id).blockingFirst();
+                            beastNames.add(monsterTypeDto.name());
+                            Image beastImage = presetsService.getMonsterImage(id).blockingFirst();
+                            beastImages.add(beastImage);
+                        }
+                        talk(newImage, "Welcome! \n Please select a starter Beast.", beastNames, beastImages, (i -> {
+                            int monsterType = npcTalkPartner.npc().starters().get(i);
+                            disposables.add(presetsService.getMonsterType(monsterType).observeOn(FX_SCHEDULER).subscribe(monsterTypeDTO -> { //unnötiger API call oben in liste speichern
+                                String message = "Details: ";
+                                message += monsterTypeDTO.name() + "\n";
+                                message += monsterTypeDTO.description();
+                                talk(newImage, message, List.of("Take it!", "I don't want this one"), null, (j -> {
+                                    if (j == 0) {
+                                        JsonObject data = new JsonObject();
+                                        data.add("_id", new JsonPrimitive(cache.getTrainer()._id()));
+                                        data.add("target", new JsonPrimitive(npcTalkPartner._id()));
+                                        data.add("selection", new JsonPrimitive(i));
 
-                                    JsonObject eventMessage = new JsonObject();
-                                    eventMessage.add("event", new JsonPrimitive("areas." + cache.getTrainer().area() + ".trainers." + cache.getTrainer()._id() + ".talked"));
-                                    eventMessage.add("data", data);
+                                        JsonObject eventMessage = new JsonObject();
+                                        eventMessage.add("event", new JsonPrimitive("areas." + cache.getTrainer().area() + ".trainers." + cache.getTrainer()._id() + ".talked"));
+                                        eventMessage.add("data", data);
 
-                                    udpEventListener.send(eventMessage.toString());
-                                    closeTalk();
-                                } else {
-                                    talkToStartersNPC();
-                                }
+                                        udpEventListener.send(eventMessage.toString());
+                                        closeTalk();
+                                    } else {
+                                        talkToStartersNPC();
+                                    }
+                                }));
                             }));
                         }));
-                    }));
+                    }
                 }));
     }
 
