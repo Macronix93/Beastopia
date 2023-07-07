@@ -644,18 +644,29 @@ public class IngameController extends Controller {
         }
     }
 
-    private double distance(Trainer a, Trainer b) {
-        int dx = b.x() - a.x();
-        int dy = b.y() - a.y();
-        return Math.sqrt(dx * dx + dy * dy);
-    }
-
     private boolean canTalkToNPC() {
         Trainer me = cache.getTrainer();
         for (Trainer trainer : cache.getTrainers()) {
-            if (trainer.npc() != null && me.area().equals(trainer.area()) && Math.abs(distance(me, trainer) - 1) <= 0.1) { //direction wenn nach oben steht npc an px py+1 ,. bei runter Px py-1
-                npcTalkPartner = trainer;
-                return true;
+            if (me.direction() == 0) { // right
+                if (trainer.x() == me.x() + 1 && trainer.y() == me.y()) {
+                    npcTalkPartner = trainer;
+                    return true;
+                }
+            } else if (me.direction() == 1) { //up
+                if (trainer.x() == me.x() && trainer.y() == me.y() - 1) {
+                    npcTalkPartner = trainer;
+                    return true;
+                }
+            } else if (me.direction() == 2) { //left
+                if (trainer.x() == me.x() - 1 && trainer.y() == me.y()) {
+                    npcTalkPartner = trainer;
+                    return true;
+                }
+            } else if (me.direction() == 3){ //down
+                if (trainer.x() == me.x() && trainer.y() == me.y() + 1) {
+                    npcTalkPartner = trainer;
+                    return true;
+                }
             }
         }
         return false;
@@ -685,9 +696,8 @@ public class IngameController extends Controller {
                     Rectangle2D viewPort = new Rectangle2D(3 * 96, 32, 16, 32);
                     PixelReader reader = image.getPixelReader();
                     WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
-                    talk(newImage, resources.getString("hello") + "\n" + resources.getString("nurse"), null, null, i -> {
-                        udpEventListener.send(createTalkMessage(cache.getTrainer()._id(), npcTalkPartner._id(), Optional.empty()));
-                    });
+                    talk(newImage, resources.getString("hello") + "\n" + resources.getString("nurse"), null, null,
+                            i -> udpEventListener.send(createTalkMessage(cache.getTrainer()._id(), npcTalkPartner._id(), Optional.empty())));
                 }));
     }
     private void startEncounterOnTalk() {
@@ -697,9 +707,8 @@ public class IngameController extends Controller {
                     Rectangle2D viewPort = new Rectangle2D(3 * 96, 32, 16, 32);
                     PixelReader reader = image.getPixelReader();
                     WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
-                    talk(newImage, npcTalkPartner.name() + " " + resources.getString("npcStart"), null, null, i -> {
-                        udpEventListener.send(createTalkMessage(cache.getTrainer()._id(), npcTalkPartner._id(), Optional.empty()));
-                    });
+                    talk(newImage, npcTalkPartner.name() + " " + resources.getString("npcStart"), null, null,
+                            i -> udpEventListener.send(createTalkMessage(cache.getTrainer()._id(), npcTalkPartner._id(), Optional.empty())));
                 }));
     }
 
@@ -715,26 +724,23 @@ public class IngameController extends Controller {
                     } else {
                         List<String> beastNames = new ArrayList<>();
                         List<Image> beastImages = new ArrayList<>();
+                        List<MonsterTypeDto> monsterTypeDtoList = new ArrayList<>();
                         for (int id : npcTalkPartner.npc().starters()) {
                             MonsterTypeDto monsterTypeDto = presetsService.getMonsterType(id).blockingFirst();
                             beastNames.add(monsterTypeDto.name());
+                            monsterTypeDtoList.add(monsterTypeDto);
                             Image beastImage = presetsService.getMonsterImage(id).blockingFirst();
                             beastImages.add(beastImage);
                         }
                         talk(newImage, "Welcome! \n Please select a starter Beast.", beastNames, beastImages, (i -> {
-                            int monsterType = npcTalkPartner.npc().starters().get(i);
-                            disposables.add(presetsService.getMonsterType(monsterType).observeOn(FX_SCHEDULER).subscribe(monsterTypeDTO -> { //unnötiger API call oben in liste speichern
-                                String message = "Details: ";
-                                message += monsterTypeDTO.name() + "\n";
-                                message += monsterTypeDTO.description();
-                                talk(newImage, message, List.of("Take it!", "I don't want this one"), null, (j -> {
-                                    if (j == 0) {
-                                        udpEventListener.send(createTalkMessage(cache.getTrainer()._id(), npcTalkPartner._id(), Optional.of(i)));
-                                        closeTalk();
-                                    } else {
-                                        talkToStartersNPC();
-                                    }
-                                }));
+                            String message = "Details: " + monsterTypeDtoList.get(i).name() + "\n" + monsterTypeDtoList.get(i).description();
+                            talk(newImage, message, List.of("Take it!", "I don't want this one"), null, (j -> {
+                                if (j == 0) {
+                                    udpEventListener.send(createTalkMessage(cache.getTrainer()._id(), npcTalkPartner._id(), Optional.of(i)));
+                                    closeTalk();
+                                } else {
+                                    talkToStartersNPC();
+                                }
                             }));
                         }));
                     }
