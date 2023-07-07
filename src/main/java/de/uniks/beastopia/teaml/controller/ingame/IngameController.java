@@ -51,6 +51,8 @@ public class IngameController extends Controller {
     @FXML
     public Pane tilePane;
     @FXML
+    public StackPane stackPane;
+    @FXML
     private HBox scoreBoardLayout;
     @FXML
     private StackPane pauseMenuLayout;
@@ -229,11 +231,14 @@ public class IngameController extends Controller {
         Trainer myTrainer = loadMyTrainer(trainers);
         cache.setTrainers(trainers);
 
-        disposables.add(areaService.getAreas(this.region._id()).observeOn(FX_SCHEDULER).subscribe(areas -> {
-            cache.setAreas(areas);
+        if (cache.getAreas().isEmpty()) {
+            disposables.add(areaService.getAreas(this.region._id()).observeOn(FX_SCHEDULER).subscribe(areas -> {
+                cache.setAreas(areas);
+                loadMap(cache.getAreas(), myTrainer, trainers);
+            }));
+        } else {
             loadMap(cache.getAreas(), myTrainer, trainers);
-        }));
-
+        }
         disposables.add(eventListener.listen("encounters.*.trainers." + cache.getTrainer()._id()
                         + ".opponents.*.created", Opponent.class)
                 .observeOn(FX_SCHEDULER)
