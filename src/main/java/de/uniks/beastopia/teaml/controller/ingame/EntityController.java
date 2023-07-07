@@ -65,7 +65,7 @@ public class EntityController extends Controller {
     public void init() {
         super.init();
         direction = Direction.DOWN;
-        listenToMovements();
+//        listenToMovements();
     }
 
     private void listenToMovements() {
@@ -84,7 +84,7 @@ public class EntityController extends Controller {
         resetUpdateTimer();
     }
 
-    private void updateTrainer(MoveTrainerDto data) {
+    public void updateTrainer(MoveTrainerDto data) {
         switch (data.direction()) {
             case 0 -> direction = Direction.RIGHT;
             case 1 -> direction = Direction.UP;
@@ -97,7 +97,7 @@ public class EntityController extends Controller {
             trainer = new Trainer(trainer.createdAt(), trainer.updatedAt(), trainer._id(), trainer.region(),
                     trainer.user(), trainer.name(), trainer.image(), trainer.team(), trainer.coins(), data.area(), trainer.x(),
                     trainer.y(), trainer.direction(), trainer.npc());
-            listenToMovements();
+//            listenToMovements();
         }
         onTrainerUpdate.accept(data);
     }
@@ -166,7 +166,7 @@ public class EntityController extends Controller {
 
     @Override
     public void destroy() {
-        eventListener.dispose();
+//        eventListener.dispose();
         super.destroy();
     }
 
