@@ -2,9 +2,11 @@ package de.uniks.beastopia.teaml.service;
 
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.Main;
-import de.uniks.beastopia.teaml.rest.*;
 import de.uniks.beastopia.teaml.rest.Achievement;
 import de.uniks.beastopia.teaml.rest.Area;
+import de.uniks.beastopia.teaml.rest.Encounter;
+import de.uniks.beastopia.teaml.rest.MonsterTypeDto;
+import de.uniks.beastopia.teaml.rest.Opponent;
 import de.uniks.beastopia.teaml.rest.Region;
 import de.uniks.beastopia.teaml.rest.Trainer;
 import de.uniks.beastopia.teaml.rest.User;
@@ -41,6 +43,8 @@ public class DataCache {
     Trainer trainer;
     Region joinedRegion;
     private List<MonsterTypeDto> allBeasts = new ArrayList<>();
+    private List<Opponent> currentOpponents = new ArrayList<>();
+    Encounter currentEncounter;
 
     @Inject
     public DataCache() {
@@ -258,5 +262,21 @@ public class DataCache {
 
     public List<String> getVisitedAreas() {
         return this.visitedAreas;
+    }
+
+    public void setCurrentOpponents(List<Opponent> opponents) {
+        this.currentOpponents = new ArrayList<>(opponents);
+    }
+
+    public List<Opponent> getCurrentOpponents() {
+        return this.currentOpponents;
+    }
+
+    public void setCurrentEncounter(Encounter encounter) {
+        this.currentEncounter = encounter;
+    }
+
+    public Encounter getCurrentEncounter() {
+        return this.currentEncounter;
     }
 }
