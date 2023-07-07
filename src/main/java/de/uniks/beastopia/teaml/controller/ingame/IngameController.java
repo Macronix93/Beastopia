@@ -1,5 +1,6 @@
 package de.uniks.beastopia.teaml.controller.ingame;
 
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import de.uniks.beastopia.teaml.App;
@@ -631,7 +632,11 @@ public class IngameController extends Controller {
                 if (npcTalkPartner != null) {
                     if (npcTalkPartner.npc().starters() != null) {
                         talkToStartersNPC();
-                    } //else heal nurse //else tak to fight
+                    } else if(npcTalkPartner.npc() == null || npcTalkPartner.npc().encounterOnTalk()) {
+                        startEncounterOnTalk();
+                    } else if(npcTalkPartner.npc().canHeal()) {
+                        healAllBeasts();
+                    }
                 } else {
                     closeTalk();
                 }
@@ -654,6 +659,48 @@ public class IngameController extends Controller {
             }
         }
         return false;
+    }
+
+    private String createTalkMessage(String _id, String target, Integer selection) {
+        JsonObject data = new JsonObject();
+        data.add("_id", new JsonPrimitive(_id));
+        data.add("target", new JsonPrimitive(target));
+
+        if (selection != null) {
+            data.add("selection", new JsonPrimitive(selection));
+        } else {
+            data.add("selection", JsonNull.INSTANCE);
+        }
+
+        JsonObject eventMessage = new JsonObject();
+        eventMessage.add("event", new JsonPrimitive("areas." + cache.getTrainer().area() + ".trainers." + cache.getTrainer()._id() + ".talked"));
+        eventMessage.add("data", data);
+
+        return eventMessage.toString();
+    }
+    private void healAllBeasts() {
+        disposables.add(presetsService.getCharacterSprites(npcTalkPartner.image(), false)
+                .observeOn(FX_SCHEDULER)
+                .subscribe(image -> {
+                    Rectangle2D viewPort = new Rectangle2D(3 * 96, 32, 16, 32);
+                    PixelReader reader = image.getPixelReader();
+                    WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
+                    talk(newImage, resources.getString("hello") + "\n" + resources.getString("nurse"), null, null, i -> {
+                        udpEventListener.send(createTalkMessage(cache.getTrainer()._id(), npcTalkPartner._id(), null));
+                    });
+                }));
+    }
+    private void startEncounterOnTalk() {
+        disposables.add(presetsService.getCharacterSprites(npcTalkPartner.image(), false)
+                .observeOn(FX_SCHEDULER)
+                .subscribe(image -> {
+                    Rectangle2D viewPort = new Rectangle2D(3 * 96, 32, 16, 32);
+                    PixelReader reader = image.getPixelReader();
+                    WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
+                    talk(newImage, npcTalkPartner.name() + " " + resources.getString("npcStart"), null, null, i -> {
+                        udpEventListener.send(createTalkMessage(cache.getTrainer()._id(), npcTalkPartner._id(), null));
+                    });
+                }));
     }
 
     private void talkToStartersNPC() {
@@ -682,16 +729,7 @@ public class IngameController extends Controller {
                                 message += monsterTypeDTO.description();
                                 talk(newImage, message, List.of("Take it!", "I don't want this one"), null, (j -> {
                                     if (j == 0) {
-                                        JsonObject data = new JsonObject();
-                                        data.add("_id", new JsonPrimitive(cache.getTrainer()._id()));
-                                        data.add("target", new JsonPrimitive(npcTalkPartner._id()));
-                                        data.add("selection", new JsonPrimitive(i));
-
-                                        JsonObject eventMessage = new JsonObject();
-                                        eventMessage.add("event", new JsonPrimitive("areas." + cache.getTrainer().area() + ".trainers." + cache.getTrainer()._id() + ".talked"));
-                                        eventMessage.add("data", data);
-
-                                        udpEventListener.send(eventMessage.toString());
+                                        udpEventListener.send(createTalkMessage(cache.getTrainer()._id(), npcTalkPartner._id(), i));
                                         closeTalk();
                                     } else {
                                         talkToStartersNPC();
