@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<GridPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.uniks.beastopia.teaml.controller.ingame.encounter.LevelUpController">
+    <columnConstraints>
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="275.0" minHeight="10.0" prefHeight="261.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="82.0" minHeight="10.0" prefHeight="79.0" vgrow="SOMETIMES" />
+    </rowConstraints>
+    <HBox alignment="CENTER">
+        <Label fx:id="headline">
+            <font>
+                <Font size="36.0" />
+            </font></Label>
+    </HBox>
+    <VBox GridPane.rowIndex="1">
+        <GridPane prefHeight="300.0" prefWidth="600.0">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints maxHeight="249.0" minHeight="10.0" prefHeight="214.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="135.0" minHeight="10.0" prefHeight="60.0" vgrow="SOMETIMES" />
+            </rowConstraints>
+            <HBox alignment="CENTER">
+                <ImageView fx:id="image" fitHeight="200.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
+            </HBox>
+            <HBox alignment="CENTER" GridPane.rowIndex="1">
+                <Label fx:id="up_text">
+                    <font>
+                        <Font size="18.0" />
+                    </font>
+                </Label>
+            <Label fx:id="abilityLabel">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+            </HBox>
+        </GridPane>
+    </VBox>
+    <HBox alignment="CENTER" spacing="20.0" GridPane.rowIndex="2">
+        <GridPane prefHeight="60.0" prefWidth="600.0" HBox.hgrow="ALWAYS">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="195.0" minWidth="10.0" percentWidth="20.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="ALWAYS" maxWidth="338.0" minWidth="10.0" percentWidth="70.0" prefWidth="290.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="15.0" prefWidth="100.0" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            </rowConstraints>
+            <VBox fx:id="beastInfo" alignment="CENTER" style="-fx-border-color: black; -fx-border-width: 1;" GridPane.columnIndex="1">
+                <GridPane alignment="CENTER" prefHeight="84.0" prefWidth="348.0" VBox.vgrow="ALWAYS">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" percentWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints percentHeight="33.0" vgrow="SOMETIMES" />
+                        <RowConstraints percentHeight="33.0" vgrow="SOMETIMES" />
+                        <RowConstraints percentHeight="33.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                    <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+                        <Label fx:id="up_text_bottom">
+                            <font>
+                                <Font size="15.0" />
+                            </font>
+                        </Label>
+                    </VBox>
+                    <VBox alignment="CENTER_LEFT" GridPane.rowIndex="1">
+                        <GridPane alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="375.0">
+                            <columnConstraints>
+                                <ColumnConstraints hgrow="NEVER" percentWidth="10.0" />
+                                <ColumnConstraints hgrow="SOMETIMES" percentWidth="90.0" />
+                            </columnConstraints>
+                            <rowConstraints>
+                                <RowConstraints minHeight="10.0" percentHeight="100.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            </rowConstraints>
+                            <StackPane alignment="CENTER_LEFT" GridPane.columnIndex="1">
+                                <HBox fx:id="borderBg" alignment="CENTER_LEFT" style="-fx-border-color: black; -fx-border-width: 1;" StackPane.alignment="CENTER_LEFT" />
+                                <HBox fx:id="hpBg" alignment="CENTER_LEFT" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" style="-fx-background-color: red; -fx-border-color: black; -fx-border-width: 1;" />
+                                <HBox alignment="CENTER_LEFT" spacing="5.0">
+                                    <Label fx:id="lifeValueLabel">
+                                        <font>
+                                            <Font size="14.0" />
+                                        </font>
+                                    </Label>
+                                    <Label text="/">
+                                        <font>
+                                            <Font size="14.0" />
+                                        </font>
+                                    </Label>
+                                    <Label fx:id="maxLifeLabel">
+                                        <font>
+                                            <Font size="14.0" />
+                                        </font>
+                                    </Label>
+                                    <Label text="(HP)">
+                                        <font>
+                                            <Font size="14.0" />
+                                        </font>
+                                    </Label>
+                                    <Label fx:id="plusHPLabel">
+                                        <font>
+                                            <Font size="14.0" />
+                                        </font>
+                                    </Label>
+                                </HBox>
+                            </StackPane>
+                            <HBox alignment="CENTER">
+                                <ImageView fx:id="heart" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" />
+                            </HBox>
+                        </GridPane>
+                    </VBox>
+                    <VBox alignment="CENTER_LEFT" GridPane.rowIndex="2">
+                        <GridPane alignment="CENTER_LEFT">
+                            <columnConstraints>
+                                <ColumnConstraints hgrow="NEVER" maxWidth="159.0" minWidth="10.0" percentWidth="10.0" prefWidth="30.0" />
+                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="303.0" minWidth="10.0" percentWidth="90.0" prefWidth="297.0" />
+                            </columnConstraints>
+                            <rowConstraints>
+                                <RowConstraints minHeight="10.0" percentHeight="100.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            </rowConstraints>
+                            <StackPane alignment="CENTER_LEFT" GridPane.columnIndex="1">
+                                <HBox alignment="CENTER_LEFT" style="-fx-border-color: black; -fx-border-width: 1;" />
+                                <HBox fx:id="starBg" alignment="CENTER_LEFT" maxWidth="-Infinity" minWidth="-Infinity" style="-fx-border-color: black; -fx-background-color: yellow; -fx-border-width: 1;" />
+                                <HBox alignment="CENTER_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" spacing="5.0">
+                                    <Label fx:id="xpValueLabel">
+                                        <font>
+                                            <Font size="14.0" />
+                                        </font>
+                                    </Label>
+                                    <Label text="/">
+                                        <font>
+                                            <Font size="14.0" />
+                                        </font>
+                                    </Label>
+                                    <Label fx:id="maxXpLabel">
+                                        <font>
+                                            <Font size="14.0" />
+                                        </font>
+                                    </Label>
+                                    <Label text="(EXP.)">
+                                        <font>
+                                            <Font size="14.0" />
+                                        </font>
+                                    </Label>
+                                </HBox>
+                            </StackPane>
+                            <HBox alignment="CENTER">
+                                <ImageView fx:id="star" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" />
+                            </HBox>
+                        </GridPane>
+                  <GridPane.margin>
+                     <Insets top="2.0" />
+                  </GridPane.margin>
+                    </VBox>
+                </GridPane>
+            <GridPane.margin>
+               <Insets bottom="5.0" left="25.0" right="25.0" />
+            </GridPane.margin>
+            </VBox>
+            <VBox fx:id="abilityInfo" alignment="CENTER_LEFT">
+                <VBox alignment="CENTER" style="-fx-border-color: black; -fx-border-width: 1;">
+                    <Label fx:id="attack">
+                        <font>
+                            <Font size="14.0" />
+                        </font>
+                    </Label>
+                    <Label fx:id="type">
+                        <font>
+                            <Font size="14.0" />
+                        </font>
+                    </Label>
+                    <Label fx:id="accuracy">
+                        <font>
+                            <Font size="14.0" />
+                        </font>
+                    </Label>
+                    <Label fx:id="power">
+                        <font>
+                            <Font size="14.0" />
+                        </font>
+                    </Label>
+                </VBox>
+            <GridPane.margin>
+               <Insets bottom="10.0" left="20.0" right="10.0" />
+            </GridPane.margin>
+            </VBox>
+            <VBox alignment="BOTTOM_RIGHT" GridPane.columnIndex="2">
+                <Button fx:id="continueBtn" mnemonicParsing="false" onAction="#continuePressed" text="%Continue" />
+            <padding>
+               <Insets bottom="5.0" right="5.0" />
+            </padding>
+            </VBox>
+        </GridPane>
+    </HBox>
+</GridPane>

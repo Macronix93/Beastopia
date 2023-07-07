@@ -62,11 +62,11 @@ public class PresetsService {
         return presetsApiService.getMonsters();
     }
 
-    public Observable<List<AbilityDto>> getAllAbilities() {
-        return presetsApiService.getAbilities();
+    public Observable<AbilityDto> getAbility(int id) {
+        return presetsApiService.getAbility(id);
     }
 
-    public Observable<AbilityDto> getAbility(String id) {
-        return presetsApiService.getAbility(id);
+    public Observable<List<AbilityDto>> getAbilities() {
+        return presetsApiService.getAbilities();
     }
 }

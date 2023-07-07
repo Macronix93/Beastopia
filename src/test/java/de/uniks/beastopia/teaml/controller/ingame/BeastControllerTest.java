@@ -31,7 +31,7 @@ class BeastControllerTest extends ApplicationTest {
     PresetsService presetsService;
     MonsterAttributes attributes = new MonsterAttributes(1, 1, 1, 1);
     MonsterAttributes currentAttributes = new MonsterAttributes(0, 0, 0, 0);
-    Monster monster = new Monster(null, null, "MONSTER_ID", "TRAINER_ID", 0, 0, 0, attributes, currentAttributes, null);
+    Monster monster = new Monster(null, null, "MONSTER_ID", "TRAINER_ID", 0, 0, 0, null, attributes, currentAttributes);
 
 
     @Override
