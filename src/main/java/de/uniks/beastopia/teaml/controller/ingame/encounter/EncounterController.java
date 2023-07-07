@@ -100,13 +100,13 @@ public class EncounterController extends Controller {
     Prefs prefs;
 
     //monster on the substitute's bench
-    @SuppressWarnings("FieldCanBeLocal")
+    @SuppressWarnings("FieldMayBeFinal")
     private List<Monster> ownMonsters = new ArrayList<>();
-    @SuppressWarnings("FieldCanBeLocal")
+    @SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal"})
     private List<Monster> allyMonsters = new ArrayList<>();
-    @SuppressWarnings("FieldCanBeLocal")
+    @SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal"})
     private List<Monster> enemyMonsters = new ArrayList<>();
-    @SuppressWarnings("FieldCanBeLocal")
+    @SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal"})
     private List<Monster> enemyAllyMonsters = new ArrayList<>();
 
     //monsters in the fight
@@ -226,9 +226,9 @@ public class EncounterController extends Controller {
     }
 
     private void setAttackBoxes(int size) {
-        Stack<String> stack = new Stack<>();
+        Stack<Integer> stack = new Stack<>();
         Set<String> keys = ownMonster.abilities().keySet();
-        keys.forEach(stack::push);
+        keys.stream().map(Integer::parseInt).forEach(stack::push);
         switch (size) {
             case 4:
                 setAttack4(presetsService.getAbility(stack.pop()).blockingFirst());
