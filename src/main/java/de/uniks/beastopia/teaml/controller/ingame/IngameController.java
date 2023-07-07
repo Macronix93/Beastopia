@@ -323,7 +323,7 @@ public class IngameController extends Controller {
                             }
 
                             beastListParent = beastListController.render();
-                            scoreBoardParent = scoreBoardController.render();
+                            //scoreBoardParent = scoreBoardController.render();
                             pauseMenuParent = pauseController.render();
                             loadRemoteTrainer(trainers);
                             listenToTrainerEvents();
@@ -661,7 +661,7 @@ public class IngameController extends Controller {
                     WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
                     talk(newImage, "Welcome! \n Please select a starter Beast.", beastNames, beastImages, (i -> {
                         int monsterType = npcTalkPartner.npc().starters().get(i);
-                        disposables.add(presetsService.getMonsterType(monsterType).observeOn(FX_SCHEDULER).subscribe(monsterTypeDTO -> {
+                        disposables.add(presetsService.getMonsterType(monsterType).observeOn(FX_SCHEDULER).subscribe(monsterTypeDTO -> { //unnötiger API call oben in liste speichern
                             String message = "Details: ";
                             message += monsterTypeDTO.name() + "\n";
                             message += monsterTypeDTO.description();
@@ -670,7 +670,7 @@ public class IngameController extends Controller {
                                     JsonObject data = new JsonObject();
                                     data.add("_id", new JsonPrimitive(cache.getTrainer()._id()));
                                     data.add("target", new JsonPrimitive(npcTalkPartner._id()));
-                                    data.add("selection", new JsonPrimitive(i));
+                                    data.add("selection", new JsonPrimitive(npcTalkPartner.npc().starters().get(i)));
 
                                     JsonObject eventMessage = new JsonObject();
                                     eventMessage.add("event", new JsonPrimitive("areas." + cache.getTrainer().area() + ".trainers." + cache.getTrainer()._id() + ".talked"));
