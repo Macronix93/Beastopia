@@ -630,10 +630,10 @@ public class IngameController extends Controller {
         if (keyEvent.getCode().equals(KeyCode.T)) {
             if (canTalkToNPC()) {
                 if (npcTalkPartner != null) {
-                    if (npcTalkPartner.npc().starters() != null) {
-                        talkToStartersNPC();
-                    } else if(npcTalkPartner.npc() == null || npcTalkPartner.npc().encounterOnTalk()) {
+                    if(npcTalkPartner.npc() == null || npcTalkPartner.npc().encounterOnTalk()) {
                         startEncounterOnTalk();
+                    } else if (npcTalkPartner.npc().starters() != null) {
+                        talkToStartersNPC();
                     } else if(npcTalkPartner.npc().canHeal()) {
                         healAllBeasts();
                     }
@@ -653,7 +653,7 @@ public class IngameController extends Controller {
     private boolean canTalkToNPC() {
         Trainer me = cache.getTrainer();
         for (Trainer trainer : cache.getTrainers()) {
-            if (trainer.npc() != null && me.area().equals(trainer.area()) && distance(me, trainer) <= 1.5) {
+            if (trainer.npc() != null && me.area().equals(trainer.area()) && Math.abs(distance(me, trainer) - 1) <= 0.1) { //direction wenn nach oben steht npc an px py+1 ,. bei runter Px py-1
                 npcTalkPartner = trainer;
                 return true;
             }
@@ -661,13 +661,13 @@ public class IngameController extends Controller {
         return false;
     }
 
-    private String createTalkMessage(String _id, String target, Integer selection) {
+    private String createTalkMessage(String _id, String target, @SuppressWarnings("OptionalUsedAsFieldOrParameterType") Optional<Integer> selection) {
         JsonObject data = new JsonObject();
         data.add("_id", new JsonPrimitive(_id));
         data.add("target", new JsonPrimitive(target));
 
-        if (selection != null) {
-            data.add("selection", new JsonPrimitive(selection));
+        if (selection.isPresent()) {
+            data.add("selection", new JsonPrimitive(selection.get()));
         } else {
             data.add("selection", JsonNull.INSTANCE);
         }
@@ -686,7 +686,7 @@ public class IngameController extends Controller {
                     PixelReader reader = image.getPixelReader();
                     WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
                     talk(newImage, resources.getString("hello") + "\n" + resources.getString("nurse"), null, null, i -> {
-                        udpEventListener.send(createTalkMessage(cache.getTrainer()._id(), npcTalkPartner._id(), null));
+                        udpEventListener.send(createTalkMessage(cache.getTrainer()._id(), npcTalkPartner._id(), Optional.empty()));
                     });
                 }));
     }
@@ -698,7 +698,7 @@ public class IngameController extends Controller {
                     PixelReader reader = image.getPixelReader();
                     WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
                     talk(newImage, npcTalkPartner.name() + " " + resources.getString("npcStart"), null, null, i -> {
-                        udpEventListener.send(createTalkMessage(cache.getTrainer()._id(), npcTalkPartner._id(), null));
+                        udpEventListener.send(createTalkMessage(cache.getTrainer()._id(), npcTalkPartner._id(), Optional.empty()));
                     });
                 }));
     }
@@ -729,7 +729,7 @@ public class IngameController extends Controller {
                                 message += monsterTypeDTO.description();
                                 talk(newImage, message, List.of("Take it!", "I don't want this one"), null, (j -> {
                                     if (j == 0) {
-                                        udpEventListener.send(createTalkMessage(cache.getTrainer()._id(), npcTalkPartner._id(), i));
+                                        udpEventListener.send(createTalkMessage(cache.getTrainer()._id(), npcTalkPartner._id(), Optional.of(i)));
                                         closeTalk();
                                     } else {
                                         talkToStartersNPC();
