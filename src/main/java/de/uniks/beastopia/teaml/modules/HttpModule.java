@@ -77,7 +77,7 @@ public class HttpModule {
         ALL_REQUESTS.get(endpointLimit.endpoint()).removeIf(pair -> pair.getKey().getTime() < timeBeginFrame);
     }
 
-    private static final int MAX_REQUESTS = 150;
+    private static final int MAX_REQUESTS = 1500;
 
     @Provides
     @Singleton

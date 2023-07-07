@@ -225,14 +225,11 @@ public class IngameController extends Controller {
         Trainer myTrainer = loadMyTrainer(trainers);
         cache.setTrainers(trainers);
 
-        if (cache.getAreas().isEmpty()) {
-            disposables.add(areaService.getAreas(this.region._id()).observeOn(FX_SCHEDULER).subscribe(areas -> {
-                cache.setAreas(areas);
-                loadMap(cache.getAreas(), myTrainer, trainers);
-            }));
-        } else {
+        disposables.add(areaService.getAreas(this.region._id()).observeOn(FX_SCHEDULER).subscribe(areas -> {
+            cache.setAreas(areas);
             loadMap(cache.getAreas(), myTrainer, trainers);
-        }
+        }));
+
         disposables.add(eventListener.listen("encounters.*.trainers." + cache.getTrainer()._id()
                         + ".opponents.*.created", Opponent.class)
                 .observeOn(FX_SCHEDULER)
@@ -633,11 +630,6 @@ public class IngameController extends Controller {
             if (canTalkToNPC()) {
                 if (npcTalkPartner != null) {
                     if (npcTalkPartner.npc().starters() != null) {
-                        disposables.add(eventListener.listen("trainers." + cache.getTrainer()._id()
-                                        + ".monsters.*.created", Monster.class)
-                                .observeOn(FX_SCHEDULER).subscribe(m -> {
-                                    trainerService.updateTrainer(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), "", "", List.of(m.data()._id()));
-                                }));
                         talkToStartersNPC();
                     } //else heal nurse //else tak to fight
                 } else {
@@ -690,7 +682,7 @@ public class IngameController extends Controller {
                                     JsonObject data = new JsonObject();
                                     data.add("_id", new JsonPrimitive(cache.getTrainer()._id()));
                                     data.add("target", new JsonPrimitive(npcTalkPartner._id()));
-                                    data.add("selection", new JsonPrimitive(npcTalkPartner.npc().starters().get(i)));
+                                    data.add("selection", new JsonPrimitive(i));
 
                                     JsonObject eventMessage = new JsonObject();
                                     eventMessage.add("event", new JsonPrimitive("areas." + cache.getTrainer().area() + ".trainers." + cache.getTrainer()._id() + ".talked"));
