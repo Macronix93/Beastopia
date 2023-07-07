@@ -297,6 +297,26 @@ public class IngameController extends Controller {
             }
             createRemotePlayer(trainer);
         }
+
+
+        disposables.add(udpEventListener.listen("areas.*.trainers.*.moved", MoveTrainerDto.class).observeOn(FX_SCHEDULER).subscribe(event -> {
+            MoveTrainerDto dto = event.data();
+            if (dto == null) {
+                return;
+            }
+
+            if (cache.getTrainer()._id().equals(dto._id())) {
+                playerController.updateTrainer(dto);
+                return;
+            }
+
+            for (EntityController entityController : otherPlayers.keySet()) {
+                if (entityController.getTrainer()._id().equals(dto._id())) {
+                    entityController.updateTrainer(dto);
+                    return;
+                }
+            }
+        }));
     }
 
     private void loadMap(List<Area> areas, Trainer myTrainer, List<Trainer> trainers) {
