@@ -37,4 +37,8 @@ public class TrainerService {
     public Observable<List<Monster>> getTrainerMonsters(String regionId, String trainerId) {
         return trainerApiService.getTrainerMonsters(regionId, trainerId);
     }
+
+    public Observable<Monster> getTrainerMonster(String regionId, String trainerId, String monsterId) {
+        return trainerApiService.getTrainerMonster(regionId, trainerId, monsterId);
+    }
 }

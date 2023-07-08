@@ -51,26 +51,42 @@ public class DialogWindowController extends Controller {
     public DialogWindowController() {
     }
 
-    public void setOnCloseRequested(Runnable onCloseRequested) {
+    public DialogWindowController setOnCloseRequested(Runnable onCloseRequested) {
+        if (onCloseRequested == null) {
+            return this;
+        }
         this.onCloseRequested = onCloseRequested;
+        return this;
     }
 
     public DialogWindowController setOnButtonClicked(Consumer<Integer> onButtonClicked) {
+        if (onButtonClicked == null) {
+            return this;
+        }
         this.onButtonClicked = onButtonClicked;
         return this;
     }
 
     public DialogWindowController setChoices(List<String> choices) {
+        if (choices == null) {
+            return this;
+        }
         this.choices = choices;
         return this;
     }
 
     public DialogWindowController setTrainerImage(Image trainerImage) {
+        if (trainerImage == null) {
+            return this;
+        }
         this.trainerImage = trainerImage;
         return this;
     }
 
     public DialogWindowController setButtonImages(List<Image> images) {
+        if (images == null) {
+            return this;
+        }
         this.buttonImages = images;
         return this;
     }
@@ -78,6 +94,11 @@ public class DialogWindowController extends Controller {
     public DialogWindowController setText(String text) {
         this.text = text;
         return this;
+    }
+
+    @Override
+    public void init() {
+        super.init();
     }
 
     @Override

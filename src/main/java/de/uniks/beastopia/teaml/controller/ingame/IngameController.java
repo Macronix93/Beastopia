@@ -4,6 +4,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.Controller;
+import de.uniks.beastopia.teaml.controller.ingame.beast.EditBeastTeamController;
+import de.uniks.beastopia.teaml.controller.ingame.encounter.FightWildBeastController;
+import de.uniks.beastopia.teaml.controller.ingame.encounter.StartFightNPCController;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
 import de.uniks.beastopia.teaml.rest.Map;
 import de.uniks.beastopia.teaml.rest.*;
@@ -46,8 +49,6 @@ public class IngameController extends Controller {
     @FXML
     public Pane tilePane;
     @FXML
-    public StackPane stackPane;
-    @FXML
     private HBox scoreBoardLayout;
     @FXML
     private StackPane pauseMenuLayout;
@@ -66,6 +67,8 @@ public class IngameController extends Controller {
     @Inject
     PauseController pauseController;
     @Inject
+    Provider<StartFightNPCController> startFightNPCControllerProvider;
+    @Inject
     Provider<PauseController> pauseControllerProvider;
     @Inject
     BeastListController beastListController;
@@ -73,6 +76,7 @@ public class IngameController extends Controller {
     Provider<BeastDetailController> beastDetailControllerProvider;
     @Inject
     Provider<DialogWindowController> dialogWindowControllerProvider;
+    Provider<EditBeastTeamController> editBeastTeamControllerProvider;
     @Inject
     Provider<EntityController> entityControllerProvider;
     @Inject
@@ -93,7 +97,12 @@ public class IngameController extends Controller {
     Provider<IngameController> ingameControllerProvider;
     @Inject
     Provider<SoundController> soundControllerProvider;
-
+    @Inject
+    Provider<FightWildBeastController> fightWildBeastControllerProvider;
+    @Inject
+    RegionEncountersService regionEncountersService;
+    @Inject
+    EncounterOpponentsService encounterOpponentsService;
     private Region region;
     private Map map;
     private final List<Pair<TileSetDescription, Pair<TileSet, Image>>> tileSets = new ArrayList<>();
@@ -214,18 +223,53 @@ public class IngameController extends Controller {
 
     private void loadTrainers(List<Trainer> trainers) {
         Trainer myTrainer = loadMyTrainer(trainers);
+        cache.setTrainers(trainers);
+
         disposables.add(areaService.getAreas(this.region._id()).observeOn(FX_SCHEDULER).subscribe(areas -> {
             cache.setAreas(areas);
-            cache.setTrainers(trainers);
-            loadMap(areas, myTrainer);
-            drawMap();
-
-            beastListParent = beastListController.render();
-            scoreBoardParent = scoreBoardController.render();
-            loadRemoteTrainer(trainers);
-            listenToTrainerEvents();
-            loadingPage.setDone();
+            loadMap(cache.getAreas(), myTrainer, trainers);
         }));
+
+        disposables.add(eventListener.listen("encounters.*.trainers." + cache.getTrainer()._id()
+                        + ".opponents.*.created", Opponent.class)
+                .observeOn(FX_SCHEDULER)
+                .concatMap(opponentEvent -> {
+                    Opponent opponent = opponentEvent.data();
+                    return regionEncountersService.getRegionEncounter(cache.getJoinedRegion()._id(), opponent.encounter())
+                            .observeOn(FX_SCHEDULER);
+                })
+                .subscribe(
+                        encounter -> {
+                            if (encounter.isWild()) {
+                                openFightBeastScreen(encounter);
+                            } else {
+                                openFightNPCScreen(encounter);
+                            }
+                        },
+                        error -> System.err.println("Fehler: " + error.getMessage())
+                )
+        );
+    }
+
+    private void openFightNPCScreen(Encounter encounter) {
+        StartFightNPCController controller = startFightNPCControllerProvider.get();
+        controller.setControllerInfo(encounter);
+        app.show(controller);
+    }
+
+    private void openFightBeastScreen(Encounter encounter) {
+        FightWildBeastController controller = fightWildBeastControllerProvider.get();
+        disposables.add(encounterOpponentsService
+                .getEncounterOpponents(cache.getJoinedRegion()._id(), encounter._id())
+                .observeOn(FX_SCHEDULER)
+                .subscribe(o -> {
+                    for (Opponent op : o) {
+                        if (op.trainer().equals("000000000000000000000000")) {
+                            controller.setControllerInfo(op.monster(), op.trainer());
+                            app.show(controller);
+                        }
+                    }
+                }));
     }
 
     private void listenToTrainerEvents() {
@@ -250,25 +294,59 @@ public class IngameController extends Controller {
             }
             createRemotePlayer(trainer);
         }
+
+
+        disposables.add(udpEventListener.listen("areas.*.trainers.*.moved", MoveTrainerDto.class).observeOn(FX_SCHEDULER).subscribe(event -> {
+            MoveTrainerDto dto = event.data();
+            if (dto == null) {
+                return;
+            }
+
+            if (cache.getTrainer()._id().equals(dto._id())) {
+                playerController.updateTrainer(dto);
+                return;
+            }
+
+            for (EntityController entityController : otherPlayers.keySet()) {
+                if (entityController.getTrainer()._id().equals(dto._id())) {
+                    entityController.updateTrainer(dto);
+                    return;
+                }
+            }
+        }));
     }
 
-    private void loadMap(List<Area> areas, Trainer myTrainer) {
+    private void loadMap(List<Area> areas, Trainer myTrainer, List<Trainer> trainers) {
         Area area = areas.stream().filter(a -> a._id().equals(myTrainer.area())).findFirst().orElseThrow();
         prefs.setArea(area);
-        this.map = area.map();
-        for (TileSetDescription tileSetDesc : map.tilesets()) {
-            TileSet tileSet = presetsService.getTileset(tileSetDesc).blockingFirst();
-            Image image = presetsService.getImage(tileSet).blockingFirst();
-            tileSets.add(new Pair<>(tileSetDesc, new Pair<>(tileSet, image)));
-        }
 
-        if (area.name().contains("Route")) {
-            soundController.play("bgm:route");
-        } else if (area.name().contains("House")) {
-            soundController.play("bgm:house");
-        } else {
-            soundController.play("bgm:city");
-        }
+        disposables.add(areaService.getArea(this.region._id(), area._id())
+                .observeOn(FX_SCHEDULER)
+                .subscribe(a -> {
+                            this.map = a.map();
+                            for (TileSetDescription tileSetDesc : map.tilesets()) {
+                                TileSet tileSet = presetsService.getTileset(tileSetDesc).blockingFirst();
+                                Image image = presetsService.getImage(tileSet).blockingFirst();
+                                tileSets.add(new Pair<>(tileSetDesc, new Pair<>(tileSet, image)));
+                            }
+                            drawMap();
+
+                            if (a.name().contains("Route")) {
+                                soundController.play("bgm:route");
+                            } else if (a.name().contains("House")) {
+                                soundController.play("bgm:house");
+                            } else {
+                                soundController.play("bgm:city");
+                            }
+
+                            beastListParent = beastListController.render();
+                            //scoreBoardParent = scoreBoardController.render();
+                            pauseMenuParent = pauseController.render();
+                            loadRemoteTrainer(trainers);
+                            listenToTrainerEvents();
+                            loadingPage.setDone();
+                        }
+                ));
     }
 
     /**
@@ -543,17 +621,20 @@ public class IngameController extends Controller {
         handlePauseMenu(keyEvent);
         handleScoreboard(keyEvent);
         handleBeastList(keyEvent);
+        handleBeastTeam(keyEvent);
         handleTalkToTrainer(keyEvent);
     }
 
     public void handleTalkToTrainer(KeyEvent keyEvent) {
         if (keyEvent.getCode().equals(KeyCode.T)) {
-            if (canTalkToNPC("Albert")) {
-                talkToAlbert();
-            } else if (canTalkToNPC("nurse")) {
-                talkToNurse();
-            } else {
-                closeTalk();
+            if (canTalkToNPC()) {
+                if (npcTalkPartner != null) {
+                    if (npcTalkPartner.npc().starters() != null) {
+                        talkToStartersNPC();
+                    } //else heal nurse //else tak to fight
+                } else {
+                    closeTalk();
+                }
             }
         }
     }
@@ -564,36 +645,61 @@ public class IngameController extends Controller {
         return Math.sqrt(dx * dx + dy * dy);
     }
 
-    private boolean canTalkToNPC(String npcName) {
+    private boolean canTalkToNPC() {
         Trainer me = cache.getTrainer();
-
         for (Trainer trainer : cache.getTrainers()) {
-            if (trainer.name().equals(npcName)
-                    && trainer.npc() != null) {
+            if (trainer.npc() != null && me.area().equals(trainer.area()) && distance(me, trainer) <= 1.5) {
                 npcTalkPartner = trainer;
-                break;
+                return true;
             }
         }
-
-        return me.area().equals(npcTalkPartner.area()) && !(distance(me, npcTalkPartner) > 1.5);
+        return false;
     }
 
-    private void talkToAlbert() {
-        disposables.add(presetsService.getCharacterSprites(npcTalkPartner.image(), true)
+    private void talkToStartersNPC() {
+        disposables.add(presetsService.getCharacterSprites(npcTalkPartner.image(), false)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(image -> {
-                    MonsterTypeDto monster1 = presetsService.getMonsterType(1).blockingFirst();
-                    Image monster1Image = presetsService.getMonsterImage(1).blockingFirst();
-                    MonsterTypeDto monster2 = presetsService.getMonsterType(2).blockingFirst();
-                    Image monster2Image = presetsService.getMonsterImage(2).blockingFirst();
-                    MonsterTypeDto monster3 = presetsService.getMonsterType(3).blockingFirst();
-                    Image monster3Image = presetsService.getMonsterImage(3).blockingFirst();
                     Rectangle2D viewPort = new Rectangle2D(3 * 96, 32, 16, 32);
                     PixelReader reader = image.getPixelReader();
                     WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
-                    talk(newImage, "Welcome! \t Please select a starter Beast.", List.of(monster1.name(), monster2.name(), monster3.name()), List.of(monster1Image, monster2Image, monster3Image), (i -> {
-                        talk(newImage, "Flamander", List.of("another Beast", "select Beast"), null, (j -> {
+                    if (npcTalkPartner.npc().encountered().contains(cache.getTrainer()._id())) {
+                        talk(newImage, "Welcome back! \n You already received one starter Beast, have a nice day!", null, null, null);
+                    } else {
+                        List<String> beastNames = new ArrayList<>();
+                        List<Image> beastImages = new ArrayList<>();
+                        for (int id : npcTalkPartner.npc().starters()) {
+                            MonsterTypeDto monsterTypeDto = presetsService.getMonsterType(id).blockingFirst();
+                            beastNames.add(monsterTypeDto.name());
+                            Image beastImage = presetsService.getMonsterImage(id).blockingFirst();
+                            beastImages.add(beastImage);
+                        }
+                        talk(newImage, "Welcome! \n Please select a starter Beast.", beastNames, beastImages, (i -> {
+                            int monsterType = npcTalkPartner.npc().starters().get(i);
+                            disposables.add(presetsService.getMonsterType(monsterType).observeOn(FX_SCHEDULER).subscribe(monsterTypeDTO -> { //unnötiger API call oben in liste speichern
+                                String message = "Details: ";
+                                message += monsterTypeDTO.name() + "\n";
+                                message += monsterTypeDTO.description();
+                                talk(newImage, message, List.of("Take it!", "I don't want this one"), null, (j -> {
+                                    if (j == 0) {
+                                        JsonObject data = new JsonObject();
+                                        data.add("_id", new JsonPrimitive(cache.getTrainer()._id()));
+                                        data.add("target", new JsonPrimitive(npcTalkPartner._id()));
+                                        data.add("selection", new JsonPrimitive(i));
 
+                                        JsonObject eventMessage = new JsonObject();
+                                        eventMessage.add("event", new JsonPrimitive("areas." + cache.getTrainer().area() + ".trainers." + cache.getTrainer()._id() + ".talked"));
+                                        eventMessage.add("data", data);
+
+                                        udpEventListener.send(eventMessage.toString());
+                                        closeTalk();
+                                    } else {
+                                        talkToStartersNPC();
+                                    }
+                                }));
+                            }));
+                        }));
+                    }
                         }));
                     }));
                 }));
@@ -627,20 +733,18 @@ public class IngameController extends Controller {
                 .setText(message)
                 .setOnButtonClicked(onButtonPressed);
         dialogWindowParent = dialogWindowController.render();
-        stackPane.getChildren().add(dialogWindowParent);
-        stackPane.setPrefWidth(600);
+        pauseMenuLayout.getChildren().add(dialogWindowParent);
+        pauseMenuLayout.setPrefWidth(600);
         currentMenu = MENU_DIALOGWINDOW;
 
-        dialogWindowController.setOnCloseRequested(() -> {
-            stackPane.getChildren().remove(dialogWindowParent);
-            dialogWindowController.destroy();
-        });
+        dialogWindowController.setOnCloseRequested(this::closeTalk);
     }
 
     private void closeTalk() {
-        if (stackPane.getChildren().contains(dialogWindowParent)) {
-            stackPane.getChildren().remove(dialogWindowParent);
+        if (pauseMenuLayout.getChildren().contains(dialogWindowParent)) {
+            pauseMenuLayout.getChildren().remove(dialogWindowParent);
             currentMenu = MENU_NONE;
+            dialogWindowController.destroy();
         }
     }
 
@@ -704,6 +808,13 @@ public class IngameController extends Controller {
             app.show(map);
         }
     }
+
+    private void handleBeastTeam(KeyEvent keyEvent) {
+        if (keyEvent.getCode().equals(KeyCode.X)) {
+            app.show(editBeastTeamControllerProvider.get());
+        }
+    }
+
 
     private void handlePlayerMovement(KeyEvent keyEvent) {
         if (!pressedKeys.contains(keyEvent.getCode())) {
