@@ -1,5 +1,6 @@
 package de.uniks.beastopia.teaml.controller.ingame;
 
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import de.uniks.beastopia.teaml.App;
@@ -631,7 +632,9 @@ public class IngameController extends Controller {
                 if (npcTalkPartner != null) {
                     if (npcTalkPartner.npc().starters() != null) {
                         talkToStartersNPC();
-                    } //else heal nurse //else tak to fight
+                    } else if (npcTalkPartner.npc().canHeal()) {
+                        talkToNurse();
+                    } //else tak to fight
                 } else {
                     closeTalk();
                 }
@@ -682,16 +685,7 @@ public class IngameController extends Controller {
                                 message += monsterTypeDTO.description();
                                 talk(newImage, message, List.of("Take it!", "I don't want this one"), null, (j -> {
                                     if (j == 0) {
-                                        JsonObject data = new JsonObject();
-                                        data.add("_id", new JsonPrimitive(cache.getTrainer()._id()));
-                                        data.add("target", new JsonPrimitive(npcTalkPartner._id()));
-                                        data.add("selection", new JsonPrimitive(i));
-
-                                        JsonObject eventMessage = new JsonObject();
-                                        eventMessage.add("event", new JsonPrimitive("areas." + cache.getTrainer().area() + ".trainers." + cache.getTrainer()._id() + ".talked"));
-                                        eventMessage.add("data", data);
-
-                                        udpEventListener.send(eventMessage.toString());
+                                        udpEventListener.send(createTalkMessage(cache.getTrainer()._id(), npcTalkPartner._id(), Optional.of(i)));
                                         closeTalk();
                                     } else {
                                         talkToStartersNPC();
@@ -700,8 +694,6 @@ public class IngameController extends Controller {
                             }));
                         }));
                     }
-                        }));
-                    }));
                 }));
     }
 
@@ -713,13 +705,28 @@ public class IngameController extends Controller {
                     PixelReader reader = image.getPixelReader();
                     WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
                     talk(newImage, "Hello! \t what can I do for you?", List.of("Heal all Beasts"), null, (i -> {
-                        disposables.add(presetsService.getAllBeasts().observeOn(FX_SCHEDULER).subscribe(beasts -> {
-                            for (MonsterTypeDto beast : beasts) {
-
-                            }
-                        }));
+                        udpEventListener.send(createTalkMessage(cache.getTrainer()._id(), npcTalkPartner._id(), Optional.empty()));
+                        closeTalk();
                     }));
                 }));
+    }
+
+    private String createTalkMessage(String _id, String target, @SuppressWarnings("OptionalUsedAsFieldOrParameterType") Optional<Integer> selection) {
+        JsonObject data = new JsonObject();
+        data.add("_id", new JsonPrimitive(_id));
+        data.add("target", new JsonPrimitive(target));
+
+        if (selection.isPresent()) {
+            data.add("selection", new JsonPrimitive(selection.get()));
+        } else {
+            data.add("selection", JsonNull.INSTANCE);
+        }
+
+        JsonObject eventMessage = new JsonObject();
+        eventMessage.add("event", new JsonPrimitive("areas." + cache.getTrainer().area() + ".trainers." + cache.getTrainer()._id() + ".talked"));
+        eventMessage.add("data", data);
+
+        return eventMessage.toString();
     }
 
     private void talk(Image image, String message, List<String> choices, List<Image> buttonImages, Consumer<Integer> onButtonPressed) {
