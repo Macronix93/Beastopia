@@ -1,6 +1,7 @@
 package de.uniks.beastopia.teaml.controller.ingame;
 
 import de.uniks.beastopia.teaml.controller.Controller;
+import de.uniks.beastopia.teaml.service.DataCache;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -39,6 +40,8 @@ public class DialogWindowController extends Controller {
     Provider<ResourceBundle> resourcesProvider;
     @Inject
     Provider<IngameController> ingameControllerProvider;
+    @Inject
+    DataCache cache;
 
     private Consumer<Integer> onButtonClicked;
     private Runnable onCloseRequested;
@@ -141,6 +144,7 @@ public class DialogWindowController extends Controller {
 
     @FXML
     public void close() {
+        cache.setNPCTalkPartner(null);
         if (onCloseRequested != null) {
             onCloseRequested.run();
         }
