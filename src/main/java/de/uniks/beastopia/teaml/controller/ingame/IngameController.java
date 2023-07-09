@@ -815,6 +815,63 @@ public class IngameController extends Controller {
         }
     }
 
+    @FXML
+    public void openMap() {
+        MapController map = mapControllerProvider.get();
+        app.show(map);
+    }
+
+    @FXML
+    public void openBeastlist() {
+        if (scoreBoardLayout.getChildren().contains(beastListParent)) {
+            scoreBoardLayout.getChildren().remove(beastListParent);
+            scoreBoardLayout.getChildren().remove(beastDetailParent);
+            lastMonster = null;
+            currentMenu = MENU_NONE;
+        } else {
+            scoreBoardLayout.getChildren().add(beastListParent);
+            currentMenu = MENU_BEASTLIST;
+        }
+    }
+
+    @FXML
+    public void openScoreboard() {
+        if (scoreBoardLayout.getChildren().contains(scoreBoardParent)) {
+            scoreBoardLayout.getChildren().remove(scoreBoardParent);
+            currentMenu = MENU_NONE;
+        } else {
+            scoreBoardLayout.getChildren().add(scoreBoardParent);
+            currentMenu = MENU_SCOREBOARD;
+        }
+    }
+
+    @FXML
+    public void openPauseMenu() {
+        if (pauseMenuLayout.getChildren().contains(pauseMenuParent)) {
+            for (Node tile : tilePane.getChildren()) {
+                if (tile instanceof ImageView imageView) {
+                    imageView.setFitWidth(TILE_SIZE + 1);
+                    imageView.setFitHeight(TILE_SIZE + 1);
+                }
+                tile.setOpacity(1);
+            }
+            pauseHint.setOpacity(1);
+            pauseMenuLayout.getChildren().remove(pauseMenuParent);
+            currentMenu = MENU_NONE;
+        } else {
+            for (Node tile : tilePane.getChildren()) {
+                if (tile instanceof ImageView imageView) {
+                    imageView.setFitWidth(TILE_SIZE);
+                    imageView.setFitHeight(TILE_SIZE);
+                }
+                tile.setOpacity(0.5);
+            }
+            pauseHint.setOpacity(0);
+            pauseMenuLayout.getChildren().add(pauseMenuParent);
+            currentMenu = MENU_PAUSE;
+        }
+    }
+
     @Override
     public String getTitle() {
         return resources.getString("titleIngame");
