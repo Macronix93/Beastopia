@@ -67,9 +67,7 @@ public class ChangeBeastElementController extends Controller {
 
         disposables.add(presetsService.getMonsterType(monster.type())
                 .observeOn(FX_SCHEDULER)
-                .subscribe(type -> {
-                    beastLabel.setText(type.name() + " " + type.type() + " Lv. " + monster.level());
-                }, Throwable::printStackTrace));
+                .subscribe(type -> beastLabel.setText(type.name() + " " + type.type() + " Lv. " + monster.level()), Throwable::printStackTrace));
         disposables.add(presetsService.getMonsterImage(monster.type())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(image -> beastImg.setImage(image),
