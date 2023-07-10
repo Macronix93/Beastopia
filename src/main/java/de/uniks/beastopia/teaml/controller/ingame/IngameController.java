@@ -800,7 +800,9 @@ public class IngameController extends Controller {
         if (pauseMenuLayout.getChildren().contains(dialogWindowParent)) {
             pauseMenuLayout.getChildren().remove(dialogWindowParent);
             currentMenu = MENU_NONE;
-            dialogWindowController.destroy();
+            if (dialogWindowController != null) {
+                dialogWindowController.destroy();
+            }
         }
     }
 
