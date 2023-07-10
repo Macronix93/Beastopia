@@ -92,7 +92,9 @@
 #left,
 #friendListContainer,
 #trainerContainer,
-#pauseMenuVBox {
+#pauseMenuVBox,
+#yourBeastsPane,
+#fightingBeastPane {
     -fx-background-color: #677878;
     -fx-border-color: #162326;
     -fx-border-width: 1px;
@@ -111,7 +113,8 @@
 #achievements,
 #VBoxBeastList,
 #scrollFriends,
-#VBoxBeastDetail {
+#VBoxBeastDetail,
+#changeBeastElement {
     -fx-background-color: #4C5250;
     -fx-border-color: #262928;
     -fx-border-width: 1px;

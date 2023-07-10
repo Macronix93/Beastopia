@@ -17,6 +17,7 @@ import de.uniks.beastopia.teaml.rest.Encounter;
 import de.uniks.beastopia.teaml.rest.Layer;
 import de.uniks.beastopia.teaml.rest.Map;
 import de.uniks.beastopia.teaml.rest.Monster;
+import de.uniks.beastopia.teaml.rest.MonsterTypeDto;
 import de.uniks.beastopia.teaml.rest.MoveTrainerDto;
 import de.uniks.beastopia.teaml.rest.Opponent;
 import de.uniks.beastopia.teaml.rest.Region;
@@ -66,9 +67,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.*;
 import java.util.function.Consumer;
 
 public class IngameController extends Controller {
@@ -377,8 +378,8 @@ public class IngameController extends Controller {
                             }
 
                             beastListParent = beastListController.render();
-                    scoreBoardParent = scoreBoardController.render();
-                    pauseMenuParent = pauseController.render();
+                            scoreBoardParent = scoreBoardController.render();
+                            pauseMenuParent = pauseController.render();
                             loadRemoteTrainer(trainers);
                             listenToTrainerEvents();
                             loadingPage.setDone();
@@ -1009,7 +1010,9 @@ public class IngameController extends Controller {
         playerController.destroy();
         scoreBoardController.destroy();
         beastListController.destroy();
-        dialogWindowController.destroy();
+        if (dialogWindowController != null) {
+            dialogWindowController.destroy();
+        }
         for (Controller controller : subControllers) {
             controller.destroy();
         }

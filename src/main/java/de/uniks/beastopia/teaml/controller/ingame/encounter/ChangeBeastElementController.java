@@ -13,6 +13,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 public class ChangeBeastElementController extends Controller {
     @FXML
@@ -22,13 +23,15 @@ public class ChangeBeastElementController extends Controller {
     @FXML
     public ProgressBar expProgress;
     @FXML
-    public GridPane gridPane;
+    public GridPane changeBeastElement;
     @FXML
     public Button addOrRemoveButton;
 
     @Inject
     PresetsService presetsService;
 
+    @Inject
+    Provider<ChangeBeastController> changeBeastControllerProvider;
     ChangeBeastController changeBeastController;
 
     private Monster monster;
@@ -56,18 +59,22 @@ public class ChangeBeastElementController extends Controller {
         return this;
     }
 
+    public ChangeBeastElementController setIcons(ImageView removeImage, ImageView addImage) {
+        this.removeImage = removeImage;
+        this.addImage = addImage;
+        return this;
+    }
+
     @Override
     public Parent render() {
         Parent parent = super.render();
 
-        teamPane = changeBeastController.beastTeam;
-        fightingPane = changeBeastController.currentBeasts;
-        removeImage = changeBeastController.removeImage;
-        addImage = changeBeastController.addImage;
-
         disposables.add(presetsService.getMonsterType(monster.type())
                 .observeOn(FX_SCHEDULER)
-                .subscribe(type -> beastLabel.setText(type.name() + " " + type.type() + " Lv. " + monster.level()), Throwable::printStackTrace));
+                .subscribe(type -> {
+                    beastLabel.setText(type.name() + " " + type.type() + " Lv. " + monster.level());
+                    beastLabel.setStyle("-fx-font-size: 16px");
+                }, Throwable::printStackTrace));
         disposables.add(presetsService.getMonsterImage(monster.type())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(image -> beastImg.setImage(image),
@@ -75,6 +82,9 @@ public class ChangeBeastElementController extends Controller {
 
         int maxExp = (int) Math.round(Math.pow(monster.level(), 3) - Math.pow((monster.level() - 1), 3));
         expProgress.setProgress((double) monster.experience() / maxExp);
+
+        teamPane = changeBeastController.beastTeam;
+        fightingPane = changeBeastController.currentBeasts;
 
         return parent;
     }
@@ -85,34 +95,16 @@ public class ChangeBeastElementController extends Controller {
             changeBeastController.getBankMonsters().remove(monster);
             changeBeastController.getFightingMonsters().add(monster);
 
-            teamPane.getChildren().remove(gridPane);
-            fightingPane.getChildren().add(gridPane);
+            teamPane.getChildren().remove(changeBeastElement);
+            fightingPane.getChildren().add(changeBeastElement);
             addOrRemoveButton.setGraphic(removeImage);
         } else {
             changeBeastController.getBankMonsters().add(monster);
             changeBeastController.getFightingMonsters().remove(monster);
 
-            fightingPane.getChildren().remove(gridPane);
-            teamPane.getChildren().add(gridPane);
+            fightingPane.getChildren().remove(changeBeastElement);
+            teamPane.getChildren().add(changeBeastElement);
             addOrRemoveButton.setGraphic(addImage);
         }
-
-        /*if (teamPane.getChildren().contains(gridPane)) {
-            changeBeastController.getBankMonsters().remove(monster);
-            changeBeastController.getFightingMonsters().add(monster);
-
-            teamPane.getChildren().remove(gridPane);
-            fightingPane.getChildren().add(gridPane);
-            addOrRemoveButton.setGraphic(removeImage);
-        } else {
-            changeBeastController.getBankMonsters().add(monster);
-            changeBeastController.getFightingMonsters().remove(monster);
-
-            fightingPane.getChildren().remove(gridPane);
-            teamPane.getChildren().add(gridPane);
-            addOrRemoveButton.setGraphic(addImage);
-        }*/
-
-        System.out.println("Fighting Monsters: " + changeBeastController.getFightingMonsters() + " | Bank monsters: " + changeBeastController.getBankMonsters());
     }
 }

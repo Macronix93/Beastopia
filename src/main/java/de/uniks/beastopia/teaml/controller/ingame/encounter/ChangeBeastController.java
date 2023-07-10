@@ -4,12 +4,14 @@ import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Monster;
 import de.uniks.beastopia.teaml.service.DataCache;
+import de.uniks.beastopia.teaml.service.EncounterOpponentsService;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import de.uniks.beastopia.teaml.service.TrainerService;
 import de.uniks.beastopia.teaml.utils.LoadingPage;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
@@ -20,12 +22,18 @@ import java.util.Objects;
 
 public class ChangeBeastController extends Controller {
     @FXML
+    public GridPane yourBeastsPane;
+    @FXML
+    public GridPane fightingBeastPane;
+    @FXML
     public VBox currentBeasts;
     @FXML
     public VBox beastTeam;
     public ImageView removeImage;
     public ImageView addImage;
 
+    @Inject
+    EncounterOpponentsService encounterOpponentsService;
     @Inject
     PresetsService presetsService;
     @Inject
@@ -46,22 +54,17 @@ public class ChangeBeastController extends Controller {
     public ChangeBeastController() {
     }
 
-    public ChangeBeastController setCurrentMonster(Monster currentMonster) {
+    public void setCurrentMonster(Monster currentMonster) {
         this.currentMonster = currentMonster;
-        return this;
     }
 
-    public ChangeBeastController setEncounterController(EncounterController controller) {
+    public void setEncounterController(EncounterController controller) {
         this.encounterController = controller;
-        return this;
     }
 
     @Override
     public void init() {
         super.init();
-
-        removeImage = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/minus.png")).toString());
-        addImage = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/plus.png")).toString());
     }
 
     @Override
@@ -73,6 +76,9 @@ public class ChangeBeastController extends Controller {
     public Parent render() {
         loadingPage = LoadingPage.makeLoadingPage(super.render());
 
+        removeImage = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/minus.png")).toString());
+        addImage = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/plus.png")).toString());
+
         disposables.add(trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), cache.getTrainer()._id())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(monsters -> {
@@ -81,7 +87,8 @@ public class ChangeBeastController extends Controller {
                     for (Monster monster : playerMonsters) {
                         ChangeBeastElementController controller = changeBeastElementControllerProvider.get()
                                 .setMonster(monster)
-                                .setParentController(this);
+                                .setParentController(this)
+                                .setIcons(removeImage, addImage);
 
                         if (monster._id().equals(currentMonster._id())) {
                             currentBeasts.getChildren().add(controller.render());
@@ -90,12 +97,11 @@ public class ChangeBeastController extends Controller {
                             fightingMonsters.add(monster);
                         } else {
                             beastTeam.getChildren().add(controller.render());
+                            controller.addOrRemoveButton.setGraphic(addImage);
 
                             bankMonsters.add(monster);
                         }
                     }
-
-                    System.out.println("Fighting Monsters: " + fightingMonsters + " | Bank Monsters: " + bankMonsters);
 
                     loadingPage.setDone();
                 }));
@@ -108,9 +114,32 @@ public class ChangeBeastController extends Controller {
         app.show(encounterController);
     }
 
+    @SuppressWarnings("CommentedOutCode")
     @FXML
     public void changeBeast() {
-        System.out.println("current monster: " + currentMonster._id());
+        if (fightingMonsters.isEmpty()) {
+            System.out.println("no monster selected!");
+        } else if (fightingMonsters.size() > 1) {
+            System.out.println("there are two monsters selected!");
+        } else if (fightingMonsters.get(0).currentAttributes().health() == 0) {
+            System.out.println("current monster has no health points left!");
+        } else if (currentMonster._id().equals(fightingMonsters.get(0)._id())) {
+            System.out.println("current monster is the same as initial monster!");
+        } else {
+            //TODO: Apply changes and send request to server
+            System.out.println("current monster: " + fightingMonsters.get(0)._id());
+
+            encounterController.setOwnMonster(fightingMonsters.get(0));
+            app.show(encounterController);
+
+            /*disposables.add(encounterOpponentsService.updateEncounterOpponent(cache.getJoinedRegion()._id(), cache.getCurrentEncounter()._id(), cache.getCurrentOpponents().get(1)._id(),
+                            currentMonster._id(), new ChangeMonsterMove("change-monster", fightingMonsters.get(0)._id()))
+                    .subscribe(update -> {
+                        System.out.println(update.monster());
+                        encounterController.setOwnMonster(fightingMonsters.get(0));
+                        app.show(encounterController);
+                    }, Throwable::printStackTrace));*/
+        }
     }
 
     public List<Monster> getFightingMonsters() {
