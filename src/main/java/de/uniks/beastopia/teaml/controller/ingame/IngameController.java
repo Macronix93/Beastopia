@@ -344,8 +344,8 @@ public class IngameController extends Controller {
                             }
 
                             beastListParent = beastListController.render();
-                            //scoreBoardParent = scoreBoardController.render();
-                            pauseMenuParent = pauseController.render();
+                    scoreBoardParent = scoreBoardController.render();
+                    pauseMenuParent = pauseController.render();
                             loadRemoteTrainer(trainers);
                             listenToTrainerEvents();
                             loadingPage.setDone();
