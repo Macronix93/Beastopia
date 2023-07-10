@@ -89,11 +89,11 @@ public class StartFightNPCController extends Controller {
         disposables.add(encounterOpponentsService.getTrainerOpponents(cache.getJoinedRegion()._id(),
                         cache.getTrainer()._id())
                 .map(o -> {
-                    if (o.size() == 2) {
-                        List<Monster> myMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(0).trainer()).blockingFirst();
-                        List<Monster> enemyMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(1).trainer()).blockingFirst();
-                        encounterController.setOwnMonster(myMonsters.stream().filter(m -> m._id().equals(o.get(0).monster())).findFirst().orElseThrow());
-                        encounterController.setEnemyMonster(enemyMonsters.stream().filter(m -> m._id().equals(o.get(1).monster())).findFirst().orElseThrow());
+                    if (o.size() == 1) {
+                        List<Monster> myMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), cache.getTrainer()._id()).blockingFirst();
+                        List<Monster> enemyMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(0).trainer()).blockingFirst();
+                        encounterController.setOwnMonster(myMonsters.get(0));//myMonsters.stream().filter(m -> m._id().equals(o.get(0).monster())).findFirst().orElseThrow());
+                        encounterController.setEnemyMonster(enemyMonsters.stream().filter(m -> m._id().equals(o.get(0).monster())).findFirst().orElseThrow());
                     } else if (o.size() == 3) {
                         List<Monster> myMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(0).trainer()).blockingFirst();
                         List<Monster> enemyMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(1).trainer()).blockingFirst();

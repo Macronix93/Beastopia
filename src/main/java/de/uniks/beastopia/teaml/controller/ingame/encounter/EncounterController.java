@@ -156,6 +156,7 @@ public class EncounterController extends Controller {
         setAllyMonster(monster2);
         setEnemyMonster(monster3);
         setEnemyAllyMonster(monster4);*/
+       // this.ownMonster = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), cache.getTrainer().team().get(0)).blockingFirst();
     }
 
     @Override
@@ -242,13 +243,13 @@ public class EncounterController extends Controller {
     }
 
     //onClicked leave encounter button
-    private void leaveEncounter() {
+    public void leaveEncounter() {
         //TODO: switch screen to map
         System.out.println("leave encounter");
     }
 
     //onClicked change monster button
-    private void changeMonster() {
+    public void changeMonster() {
         //TODO: switch screen to monster selection
         System.out.println("change monster");
     }
@@ -288,19 +289,19 @@ public class EncounterController extends Controller {
     }
 
     //methods for attack buttons
-    private void executeAttack1() {
+    public void executeAttack1() {
         System.out.println("attack1");
     }
 
-    private void executeAttack2() {
+    public void executeAttack2() {
         System.out.println("attack2");
     }
 
-    private void executeAttack3() {
+    public void executeAttack3() {
         System.out.println("attack3");
     }
 
-    private void executeAttack4() {
+    public void executeAttack4() {
         System.out.println("attack4");
     }
 
