@@ -42,8 +42,6 @@ public class DataCache {
     Region joinedRegion;
     private List<MonsterTypeDto> allBeasts = new ArrayList<>();
 
-    Trainer NPCTalkPartner;
-
     @Inject
     public DataCache() {
     }
@@ -157,14 +155,6 @@ public class DataCache {
                 .filter(trainer -> trainer._id().equals(id))
                 .findFirst()
                 .orElse(null);
-    }
-
-    public void setNPCTalkPartner(Trainer trainer) {
-        NPCTalkPartner = trainer;
-    }
-
-    public Trainer getNPCTalkPartner() {
-        return NPCTalkPartner;
     }
 
     public List<Pair<String, Image>> getCharacters() {

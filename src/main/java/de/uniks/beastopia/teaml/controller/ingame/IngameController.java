@@ -627,49 +627,43 @@ public class IngameController extends Controller {
 
     public void handleTalkToTrainer(KeyEvent keyEvent) {
         if (keyEvent.getCode().equals(KeyCode.T)) {
-            if (canTalkToNPC()) {
-                if (cache.getNPCTalkPartner() != null) {
-                    System.out.println(cache.getNPCTalkPartner().name());
-                    if(cache.getNPCTalkPartner().npc() == null || cache.getNPCTalkPartner().npc().encounterOnTalk()) {
-                        startEncounterOnTalk();
-                    } else if (cache.getNPCTalkPartner().npc().starters() != null) {
-                        talkToStartersNPC();
-                    } else if(cache.getNPCTalkPartner().npc().canHeal()) {
-                        healAllBeasts();
-                    }
-                } else {
-                    closeTalk();
+            Trainer trainer = canTalkToNPC();
+            if (trainer != null) {
+                if(trainer.npc() == null || trainer.npc().encounterOnTalk()) {
+                    startEncounterOnTalk(trainer);
+                } else if (trainer.npc().starters() != null) {
+                    talkToStartersNPC(trainer);
+                } else if(trainer.npc().canHeal()) {
+                    healAllBeasts(trainer);
                 }
+            } else {
+                closeTalk();
             }
         }
     }
 
-    private boolean canTalkToNPC() {
+    private Trainer canTalkToNPC() {
         Trainer me = cache.getTrainer();
         for (Trainer trainer : cache.getTrainers()) {
             if (me.direction() == 0) { // right
                 if (trainer.x() == me.x() + 1 && trainer.y() == me.y()) {
-                    cache.setNPCTalkPartner(trainer);
-                    return true;
+                    return trainer;
                 }
             } else if (me.direction() == 1) { //up
                 if (trainer.x() == me.x() && trainer.y() == me.y() - 1) {
-                    cache.setNPCTalkPartner(trainer);
-                    return true;
+                    return trainer;
                 }
             } else if (me.direction() == 2) { //left
                 if (trainer.x() == me.x() - 1 && trainer.y() == me.y()) {
-                    cache.setNPCTalkPartner(trainer);
-                    return true;
+                    return trainer;
                 }
             } else if (me.direction() == 3){ //down
                 if (trainer.x() == me.x() && trainer.y() == me.y() + 1) {
-                    cache.setNPCTalkPartner(trainer);
-                    return true;
+                    return trainer;
                 }
             }
         }
-        return false;
+        return null;
     }
 
     private String createTalkMessage(String _id, String target, @SuppressWarnings("OptionalUsedAsFieldOrParameterType") Optional<Integer> selection) {
@@ -689,8 +683,8 @@ public class IngameController extends Controller {
 
         return eventMessage.toString();
     }
-    private void healAllBeasts() {
-        disposables.add(presetsService.getCharacterSprites(cache.getNPCTalkPartner().image(), false)
+    private void healAllBeasts(Trainer trainer) {
+        disposables.add(presetsService.getCharacterSprites(trainer.image(), false)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(image -> {
                     Rectangle2D viewPort = new Rectangle2D(3 * 96, 32, 16, 32);
@@ -698,40 +692,39 @@ public class IngameController extends Controller {
                     WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
                     talk(newImage, resources.getString("hello") + "\n" + resources.getString("nurse"), null, null,
                             i -> {
-                                udpEventListener.send(createTalkMessage(cache.getTrainer()._id(), cache.getNPCTalkPartner()._id(), Optional.empty()));
-                                cache.setNPCTalkPartner(null);
+                                udpEventListener.send(createTalkMessage(cache.getTrainer()._id(), trainer._id(), Optional.empty()));
                             });
                 }));
     }
-    private void startEncounterOnTalk() {
-        disposables.add(presetsService.getCharacterSprites(cache.getNPCTalkPartner().image(), false)
+    private void startEncounterOnTalk(Trainer trainer) {
+        disposables.add(presetsService.getCharacterSprites(trainer.image(), false)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(image -> {
                     Rectangle2D viewPort = new Rectangle2D(3 * 96, 32, 16, 32);
                     PixelReader reader = image.getPixelReader();
                     WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
-                    talk(newImage, cache.getNPCTalkPartner().name() + " " + resources.getString("npcStart"), null, null,
+                    String askFight = resources.getString("ask") + " " + trainer.name() + " " + resources.getString("vs");
+                    talk(newImage, resources.getString("hello") + " \n" + resources.getString("nurse"), List.of(askFight), null,
                             i -> {
-                                udpEventListener.send(createTalkMessage(cache.getTrainer()._id(), cache.getNPCTalkPartner()._id(), Optional.empty()));
-                                cache.setNPCTalkPartner(null);
+                                udpEventListener.send(createTalkMessage(cache.getTrainer()._id(), trainer._id(), Optional.empty()));
                             });
                 }));
     }
 
-    private void talkToStartersNPC() {
-        disposables.add(presetsService.getCharacterSprites(cache.getNPCTalkPartner().image(), false)
+    private void talkToStartersNPC(Trainer trainer) {
+        disposables.add(presetsService.getCharacterSprites(trainer.image(), false)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(image -> {
                     Rectangle2D viewPort = new Rectangle2D(3 * 96, 32, 16, 32);
                     PixelReader reader = image.getPixelReader();
                     WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
-                    if (cache.getNPCTalkPartner().npc().encountered().contains(cache.getTrainer()._id())) {
+                    if (trainer.npc().encountered().contains(cache.getTrainer()._id())) {
                         talk(newImage, "Welcome back! \n You already received one starter Beast, have a nice day!", null, null, null);
                     } else {
                         List<String> beastNames = new ArrayList<>();
                         List<Image> beastImages = new ArrayList<>();
                         List<MonsterTypeDto> monsterTypeDtoList = new ArrayList<>();
-                        for (int id : cache.getNPCTalkPartner().npc().starters()) {
+                        for (int id : trainer.npc().starters()) {
                             MonsterTypeDto monsterTypeDto = presetsService.getMonsterType(id).blockingFirst();
                             beastNames.add(monsterTypeDto.name());
                             monsterTypeDtoList.add(monsterTypeDto);
@@ -742,11 +735,10 @@ public class IngameController extends Controller {
                             String message = "Details: " + monsterTypeDtoList.get(i).name() + "\n" + monsterTypeDtoList.get(i).description();
                             talk(newImage, message, List.of("Take it!", "I don't want this one"), null, (j -> {
                                 if (j == 0) {
-                                    udpEventListener.send(createTalkMessage(cache.getTrainer()._id(), cache.getNPCTalkPartner()._id(), Optional.of(i)));
+                                    udpEventListener.send(createTalkMessage(cache.getTrainer()._id(), trainer._id(), Optional.of(i)));
                                     closeTalk();
-                                    cache.setNPCTalkPartner(null);
                                 } else {
-                                    talkToStartersNPC();
+                                    talkToStartersNPC(trainer);
                                 }
                             }));
                         }));

@@ -40,8 +40,6 @@ public class DialogWindowController extends Controller {
     Provider<ResourceBundle> resourcesProvider;
     @Inject
     Provider<IngameController> ingameControllerProvider;
-    @Inject
-    DataCache cache;
 
     private Consumer<Integer> onButtonClicked;
     private Runnable onCloseRequested;
@@ -144,7 +142,6 @@ public class DialogWindowController extends Controller {
 
     @FXML
     public void close() {
-        cache.setNPCTalkPartner(null);
         if (onCloseRequested != null) {
             onCloseRequested.run();
         }
