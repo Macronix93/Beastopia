@@ -5,7 +5,6 @@ import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.rest.NPCInfo;
 import de.uniks.beastopia.teaml.rest.Trainer;
 import de.uniks.beastopia.teaml.service.PresetsService;
-import de.uniks.beastopia.teaml.sockets.UDPEventListener;
 import de.uniks.beastopia.teaml.utils.PlayerState;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.beans.property.ObjectProperty;
@@ -27,16 +26,16 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class EntityControllerTest extends ApplicationTest {
 
     @Mock
     PresetsService presetsService;
-    @Mock
-    UDPEventListener udpEventListener;
     @InjectMocks
     EntityController entityController;
     @Spy
@@ -50,7 +49,6 @@ class EntityControllerTest extends ApplicationTest {
     public void start(Stage stage) {
         AppPreparer.prepare(app);
         when(presetsService.getCharacterSprites(any(), anyBoolean())).thenReturn(Observable.just(image));
-        when(udpEventListener.listen(any(), any())).thenReturn(Observable.empty());
         entityController.setTrainer(trainer);
         entityController.playerState().bind(state);
         app.start(stage);
@@ -60,8 +58,7 @@ class EntityControllerTest extends ApplicationTest {
 
     @Test
     void render() {
-        lookup("#entityView");
-        verify(udpEventListener, atLeastOnce()).listen(any(), any());
+        assertNotNull(lookup("#entityView"));
     }
 
 

@@ -102,6 +102,8 @@ class IngameControllerTest extends ApplicationTest {
         when(tokenStorage.getCurrentUser()).thenReturn(user);
         when(trainerService.getAllTrainer(any())).thenReturn(Observable.just(List.of(trainer)));
         when(areaService.getArea(anyString(), anyString())).thenReturn(Observable.just(area));
+        when(areaService.getAreas(anyString())).thenReturn(Observable.just(List.of(area)));
+        when(udpEventListener.listen(anyString(), any())).thenReturn(Observable.empty());
         when(cache.getAreas()).thenReturn(List.of(area));
         doNothing().when(scoreboardController).init();
         when(scoreboardController.render()).thenReturn(new Pane());
