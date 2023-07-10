@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<StackPane xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="de.uniks.beastopia.teaml.controller.ingame.encounter.EndScreenController">
+    <VBox alignment="TOP_CENTER" prefHeight="600.0" prefWidth="800.0">
+        <Label fx:id="resultLabel" text="You won the game!">
+            <VBox.margin>
+                <Insets top="30.0"/>
+            </VBox.margin>
+            <font>
+                <Font size="60.0"/>
+            </font>
+        </Label>
+    </VBox>
+    <HBox alignment="CENTER" prefHeight="600.0" prefWidth="800.0">
+        <VBox alignment="BOTTOM_LEFT" prefHeight="600.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
+            <opaqueInsets>
+                <Insets/>
+            </opaqueInsets>
+            <HBox.margin>
+                <Insets/>
+            </HBox.margin>
+            <Button fx:id="leaveButton" alignment="CENTER" mnemonicParsing="false"
+                    onMouseClicked="#onLeaveButtonClicked" text="%leaveEncounter" textAlignment="CENTER"
+                    textOverrun="CLIP" wrapText="true">
+                <VBox.margin>
+                    <Insets bottom="30.0" left="10.0"/>
+                </VBox.margin>
+            </Button>
+        </VBox>
+        <VBox alignment="CENTER" prefHeight="550.0" prefWidth="600.0">
+            <HBox.margin>
+                <Insets/>
+            </HBox.margin>
+            <HBox prefHeight="550.0">
+                <VBox fx:id="leftMonsterContainer" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity"
+                      minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="200.0" spacing="20.0">
+                    <ImageView fx:id="winnerImg" fitHeight="125.0" fitWidth="125.0" pickOnBounds="true"
+                               preserveRatio="true"/>
+                </VBox>
+                <VBox alignment="CENTER">
+                    <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+                          minWidth="-Infinity" prefHeight="400.0" prefWidth="200.0">
+                        <Label text="VS">
+                            <font>
+                                <Font size="48.0"/>
+                            </font>
+                        </Label>
+                    </VBox>
+                </VBox>
+                <VBox fx:id="rightMonsterContainer" alignment="CENTER" layoutX="10.0" layoutY="10.0"
+                      maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+                      prefHeight="600.0" prefWidth="200.0" spacing="20.0">
+                    <ImageView fx:id="loserImg" fitHeight="125.0" fitWidth="125.0" pickOnBounds="true"
+                               preserveRatio="true"/>
+                </VBox>
+            </HBox>
+        </VBox>
+        <VBox prefHeight="600.0" prefWidth="100.0" HBox.hgrow="ALWAYS"/>
+    </HBox>
+</StackPane>
