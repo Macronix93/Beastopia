@@ -3,17 +3,8 @@ package de.uniks.beastopia.teaml.controller.ingame;
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.controller.menu.MenuController;
-import de.uniks.beastopia.teaml.rest.Achievement;
-import de.uniks.beastopia.teaml.rest.Chunk;
-import de.uniks.beastopia.teaml.rest.Layer;
 import de.uniks.beastopia.teaml.rest.Map;
-import de.uniks.beastopia.teaml.rest.MapObject;
-import de.uniks.beastopia.teaml.rest.NPCInfo;
-import de.uniks.beastopia.teaml.rest.Region;
-import de.uniks.beastopia.teaml.rest.Spawn;
-import de.uniks.beastopia.teaml.rest.TileSetDescription;
-import de.uniks.beastopia.teaml.rest.Trainer;
-import de.uniks.beastopia.teaml.rest.User;
+import de.uniks.beastopia.teaml.rest.*;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
@@ -41,23 +32,13 @@ import org.testfx.framework.junit5.ApplicationTest;
 import javax.inject.Provider;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import static javafx.scene.input.KeyCode.BACK_SPACE;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class TrainerControllerTest extends ApplicationTest {
@@ -146,7 +127,7 @@ class TrainerControllerTest extends ApplicationTest {
 
         when(trainerService.createTrainer(anyString(), anyString(), anyString()))
                 .thenReturn(Observable.just(
-                        new Trainer(null, null, "ID", "REGION", "USER", "TRAINER_NAME", "A.png", List.of(), 0, null, 0, 0, 0, new NPCInfo(false))));
+                        new Trainer(null, null, "ID", "REGION", "USER", "TRAINER_NAME", "A.png", List.of(), 0, null, 0, 0, 0, new NPCInfo(false, false, false, false, List.of(), List.of()))));
 
         clickOn("#trainerNameInput");
         write("MyTrainer");
@@ -166,7 +147,7 @@ class TrainerControllerTest extends ApplicationTest {
 
         when(trainerService.updateTrainer(anyString(), anyString(), anyString(), anyString(), anyList()))
                 .thenReturn(Observable.just(
-                        new Trainer(null, null, "ID", "REGION", "USER", "TRAINER_NAME", "B.png", List.of(""), 0, null, 0, 0, 0, new NPCInfo(false))));
+                        new Trainer(null, null, "ID", "REGION", "USER", "TRAINER_NAME", "B.png", List.of(""), 0, null, 0, 0, 0, new NPCInfo(false, false, false, false, List.of(), List.of()))));
 
         clickOn("#trainerNameInput");
         write("B");
