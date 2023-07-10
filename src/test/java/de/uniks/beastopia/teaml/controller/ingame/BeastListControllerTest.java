@@ -100,7 +100,7 @@ class BeastListControllerTest extends ApplicationTest {
         doNothing().when(onCloseRequest).run();
         when(trainerService.getTrainerMonsters(any(), any())).thenReturn(Observable.just(monsters));
         when(prefs.getRegionID()).thenReturn("");
-        when(cache.getTrainer()).thenReturn(new Trainer(null, null, "TRAINER_ID", null, null, null, null, null, 0, "", 0, 0, 0, new NPCInfo(false)));
+        when(cache.getTrainer()).thenReturn(new Trainer(null, null, "TRAINER_ID", null, null, null, null, null, 0, "", 0, 0, 0, new NPCInfo(false, false, false, false, List.of(), List.of())));
         app.start(stage);
         app.show(beastListController);
         stage.requestFocus();

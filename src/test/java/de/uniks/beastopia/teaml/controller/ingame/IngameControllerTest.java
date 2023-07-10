@@ -51,6 +51,9 @@ class IngameControllerTest extends ApplicationTest {
     SoundController soundController;
     @Mock
     EntityController playerController;
+    @SuppressWarnings("unused")
+    @Mock
+    DialogWindowController dialogWindowController;
     @Mock
     AreaService areaService;
     @Mock
@@ -91,7 +94,7 @@ class IngameControllerTest extends ApplicationTest {
     final Spawn spawn = new Spawn("ID_AREA", 0, 0);
     final Region region = new Region(null, null, "ID", "NAME", spawn, null);
     final Image image = createImage(2, 2, List.of(new Color(255, 0, 255), new Color(0, 255, 0), new Color(0, 0, 255), new Color(255, 255, 0)));
-    final Trainer trainer = new Trainer(null, null, "ID_TRAINER", "ID_REGION", "ID_USER", "TRAINER_NAME", "TRAINER_IMAGE", null, 0, "ID_AREA", 0, 0, 0, new NPCInfo(false));
+    final Trainer trainer = new Trainer(null, null, "ID_TRAINER", "ID_REGION", "ID_USER", "TRAINER_NAME", "TRAINER_IMAGE", null, 0, "ID_AREA", 0, 0, 0, new NPCInfo(false, false, false, false, List.of(), List.of()));
     final User user = new User(null, null, "ID_USER", "USER_NAME", "USER_STATUS", "USER_AVATAR", List.of());
     final Achievement achievement = new Achievement(null, null, "MoveCharacter", "ID_USER", null, 100);
 
@@ -102,6 +105,8 @@ class IngameControllerTest extends ApplicationTest {
         when(tokenStorage.getCurrentUser()).thenReturn(user);
         when(trainerService.getAllTrainer(any())).thenReturn(Observable.just(List.of(trainer)));
         when(areaService.getArea(anyString(), anyString())).thenReturn(Observable.just(area));
+        when(areaService.getAreas(anyString())).thenReturn(Observable.just(List.of(area)));
+        when(udpEventListener.listen(anyString(), any())).thenReturn(Observable.empty());
         when(cache.getAreas()).thenReturn(List.of(area));
         doNothing().when(scoreboardController).init();
         when(scoreboardController.render()).thenReturn(new Pane());
