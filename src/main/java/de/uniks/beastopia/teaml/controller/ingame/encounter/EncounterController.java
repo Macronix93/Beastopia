@@ -95,6 +95,8 @@ public class EncounterController extends Controller {
     @Inject
     Provider<IngameController> ingameControllerProvider;
     @Inject
+    Provider<ChangeBeastController> changeBeastControllerProvider;
+    @Inject
     DataCache cache;
     @Inject
     TrainerService trainerService;
@@ -272,6 +274,11 @@ public class EncounterController extends Controller {
     public void changeMonster() {
         //TODO: switch screen to monster selection
         System.out.println("change monster");
+
+        ChangeBeastController controller = changeBeastControllerProvider.get();
+        controller.setCurrentMonster(ownMonster);
+        controller.setEncounterController(this);
+        app.show(controller);
     }
 
     //setter methods for monsters

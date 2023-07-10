@@ -5,14 +5,14 @@ import dagger.Module;
 import dagger.Provides;
 import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.rest.AchievementsApiService;
-import de.uniks.beastopia.teaml.rest.RegionEncountersApiService;
-import de.uniks.beastopia.teaml.rest.EncounterOpponentsApiService;
 import de.uniks.beastopia.teaml.rest.AreaApiService;
 import de.uniks.beastopia.teaml.rest.AuthApiService;
+import de.uniks.beastopia.teaml.rest.EncounterOpponentsApiService;
 import de.uniks.beastopia.teaml.rest.GroupApiService;
 import de.uniks.beastopia.teaml.rest.MessageApiService;
 import de.uniks.beastopia.teaml.rest.PresetsApiService;
 import de.uniks.beastopia.teaml.rest.RegionApiService;
+import de.uniks.beastopia.teaml.rest.RegionEncountersApiService;
 import de.uniks.beastopia.teaml.rest.TrainerApiService;
 import de.uniks.beastopia.teaml.rest.UserApiService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
@@ -77,7 +77,7 @@ public class HttpModule {
         ALL_REQUESTS.get(endpointLimit.endpoint()).removeIf(pair -> pair.getKey().getTime() < timeBeginFrame);
     }
 
-    private static final int MAX_REQUESTS = 150;
+    private static final int MAX_REQUESTS = 1500;
 
     @Provides
     @Singleton
