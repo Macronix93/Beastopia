@@ -708,7 +708,8 @@ public class IngameController extends Controller {
                     PixelReader reader = image.getPixelReader();
                     WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
                     if (trainer.npc().encountered().contains(cache.getTrainer()._id())) {
-                        talk(newImage, "Welcome back! \n You already received one starter Beast, have a nice day!", null, null, null);
+                        talk(newImage, "Welcome back! \n You already received one starter Beast, have a nice day!"
+                                , null, null, null);
                     } else {
                         List<String> beastNames = new ArrayList<>();
                         List<Image> beastImages = new ArrayList<>();
