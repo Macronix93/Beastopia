@@ -629,11 +629,11 @@ public class IngameController extends Controller {
         if (keyEvent.getCode().equals(KeyCode.T)) {
             Trainer trainer = canTalkToNPC();
             if (trainer != null) {
-                if(trainer.npc() == null || trainer.npc().encounterOnTalk()) {
+                if (trainer.npc() == null || trainer.npc().encounterOnTalk()) {
                     startEncounterOnTalk(trainer);
                 } else if (trainer.npc().starters() != null) {
                     talkToStartersNPC(trainer);
-                } else if(trainer.npc().canHeal()) {
+                } else if (trainer.npc().canHeal()) {
                     healAllBeasts(trainer);
                 }
             } else {
@@ -657,7 +657,7 @@ public class IngameController extends Controller {
                 if (trainer.x() == me.x() - 1 && trainer.y() == me.y()) {
                     return trainer;
                 }
-            } else if (me.direction() == 3){ //down
+            } else if (me.direction() == 3) { //down
                 if (trainer.x() == me.x() && trainer.y() == me.y() + 1) {
                     return trainer;
                 }
@@ -683,6 +683,7 @@ public class IngameController extends Controller {
 
         return eventMessage.toString();
     }
+
     private void healAllBeasts(Trainer trainer) {
         disposables.add(presetsService.getCharacterSprites(trainer.image(), false)
                 .observeOn(FX_SCHEDULER)
@@ -691,11 +692,10 @@ public class IngameController extends Controller {
                     PixelReader reader = image.getPixelReader();
                     WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
                     talk(newImage, resources.getString("hello") + "\n" + resources.getString("nurse"), null, null,
-                            i -> {
-                                udpEventListener.send(createTalkMessage(cache.getTrainer()._id(), trainer._id(), Optional.empty()));
-                            });
+                            i -> udpEventListener.send(createTalkMessage(cache.getTrainer()._id(), trainer._id(), Optional.empty())));
                 }));
     }
+
     private void startEncounterOnTalk(Trainer trainer) {
         disposables.add(presetsService.getCharacterSprites(trainer.image(), false)
                 .observeOn(FX_SCHEDULER)
@@ -705,9 +705,7 @@ public class IngameController extends Controller {
                     WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
                     String askFight = resources.getString("ask") + " " + trainer.name() + " " + resources.getString("vs");
                     talk(newImage, resources.getString("hello") + " \n" + resources.getString("nurse"), List.of(askFight), null,
-                            i -> {
-                                udpEventListener.send(createTalkMessage(cache.getTrainer()._id(), trainer._id(), Optional.empty()));
-                            });
+                            i -> udpEventListener.send(createTalkMessage(cache.getTrainer()._id(), trainer._id(), Optional.empty())));
                 }));
     }
 
