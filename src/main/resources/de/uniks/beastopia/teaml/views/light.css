@@ -175,3 +175,7 @@
 .text-area .content {
     -fx-background-color: text-area-background;
 }
+
+#beastInfo, #abilityInfo {
+    -fx-background-color: #E8E8E8;
+}

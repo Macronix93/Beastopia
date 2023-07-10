@@ -26,4 +26,12 @@ public interface PresetsApiService {
 
     @GET("presets/monsters/{type}/image")
     Observable<ResponseBody> getMonsterImage(@Path("type") int type);
+
+    @GET("presets/abilities/{id}")
+    Observable<AbilityDto> getAbility(@Path("id") int type);
+
+    @GET("presets/abilities")
+    Observable<List<AbilityDto>> getAbilities();
+
+
 }

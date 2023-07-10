@@ -92,6 +92,9 @@ public class EditBeastTeamController extends Controller {
         beastListView.setPlaceholder(label);
         teamListView.setPlaceholder(label);
         List<String> prefTeam = cache.getTrainer().team();
+        if (prefTeam == null) {
+            prefTeam = List.of();
+        }
         for (Monster monster : monsters) {
             if (prefTeam.contains(monster._id())) {
                 teamList.add(monster);
