@@ -977,7 +977,7 @@ public class IngameController extends Controller {
         playerController.destroy();
         scoreBoardController.destroy();
         beastListController.destroy();
-        dialogWindowController.destroy();
+        //dialogWindowController.destroy();
         for (Controller controller : subControllers) {
             controller.destroy();
         }
