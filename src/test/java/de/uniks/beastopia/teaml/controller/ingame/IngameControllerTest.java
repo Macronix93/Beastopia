@@ -51,6 +51,9 @@ class IngameControllerTest extends ApplicationTest {
     SoundController soundController;
     @Mock
     EntityController playerController;
+    @SuppressWarnings("unused")
+    @Mock
+    DialogWindowController dialogWindowController;
     @Mock
     AreaService areaService;
     @Mock
