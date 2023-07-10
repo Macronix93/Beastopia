@@ -7,6 +7,7 @@ import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.ingame.beast.EditBeastTeamController;
 import de.uniks.beastopia.teaml.controller.ingame.encounter.FightWildBeastController;
+import de.uniks.beastopia.teaml.controller.ingame.encounter.LevelUpController;
 import de.uniks.beastopia.teaml.controller.ingame.encounter.StartFightNPCController;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
 import de.uniks.beastopia.teaml.rest.Map;
@@ -104,6 +105,8 @@ public class IngameController extends Controller {
     RegionEncountersService regionEncountersService;
     @Inject
     EncounterOpponentsService encounterOpponentsService;
+    @Inject
+    Provider<LevelUpController> levelUpControllerProvider;
     private Region region;
     private Map map;
     private final List<Pair<TileSetDescription, Pair<TileSet, Image>>> tileSets = new ArrayList<>();
@@ -340,7 +343,7 @@ public class IngameController extends Controller {
                             }
 
                             beastListParent = beastListController.render();
-                            //scoreBoardParent = scoreBoardController.render();
+                            scoreBoardParent = scoreBoardController.render();
                             pauseMenuParent = pauseController.render();
                             loadRemoteTrainer(trainers);
                             listenToTrainerEvents();
@@ -634,7 +637,7 @@ public class IngameController extends Controller {
                 } else if (trainer.npc().starters() != null) {
                     talkToStartersNPC(trainer);
                 } else if (trainer.npc().canHeal()) {
-                    healAllBeasts(trainer);
+                    talkToNurse(trainer);
                 }
             } else {
                 closeTalk();
@@ -684,18 +687,6 @@ public class IngameController extends Controller {
         return eventMessage.toString();
     }
 
-    private void healAllBeasts(Trainer trainer) {
-        disposables.add(presetsService.getCharacterSprites(trainer.image(), false)
-                .observeOn(FX_SCHEDULER)
-                .subscribe(image -> {
-                    Rectangle2D viewPort = new Rectangle2D(3 * 96, 32, 16, 32);
-                    PixelReader reader = image.getPixelReader();
-                    WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
-                    talk(newImage, resources.getString("hello") + "\n" + resources.getString("nurse"), null, null,
-                            i -> udpEventListener.send(createTalkMessage(cache.getTrainer()._id(), trainer._id(), Optional.empty())));
-                }));
-    }
-
     private void startEncounterOnTalk(Trainer trainer) {
         disposables.add(presetsService.getCharacterSprites(trainer.image(), false)
                 .observeOn(FX_SCHEDULER)
@@ -741,6 +732,20 @@ public class IngameController extends Controller {
                             }));
                         }));
                     }
+                }));
+    }
+
+    private void talkToNurse(Trainer trainer) {
+        disposables.add(presetsService.getCharacterSprites(trainer.image(), true)
+                .observeOn(FX_SCHEDULER)
+                .subscribe(image -> {
+                    Rectangle2D viewPort = new Rectangle2D(3 * 96, 32, 16, 32);
+                    PixelReader reader = image.getPixelReader();
+                    WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
+                    talk(newImage, "Hello! \t what can I do for you?", List.of("Heal all Beasts"), null, (i -> {
+                        udpEventListener.send(createTalkMessage(cache.getTrainer()._id(), trainer._id(), Optional.empty()));
+                        closeTalk();
+                    }));
                 }));
     }
 
@@ -972,6 +977,7 @@ public class IngameController extends Controller {
         playerController.destroy();
         scoreBoardController.destroy();
         beastListController.destroy();
+        dialogWindowController.destroy();
         for (Controller controller : subControllers) {
             controller.destroy();
         }
