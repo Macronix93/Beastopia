@@ -150,6 +150,7 @@ public class IngameController extends Controller {
     private final List<Controller> subControllers = new ArrayList<>();
     private Monster lastMonster;
     private int currentMenu = MENU_NONE;
+
     Direction direction;
     final ObjectProperty<PlayerState> state = new SimpleObjectProperty<>();
     Parent player;
