@@ -28,10 +28,7 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class EntityControllerTest extends ApplicationTest {
@@ -47,7 +44,7 @@ class EntityControllerTest extends ApplicationTest {
 
     final ObjectProperty<PlayerState> state = new SimpleObjectProperty<>(PlayerState.IDLE);
     final Image image = createImage(List.of(new Color(255, 0, 255), new Color(0, 255, 0), new Color(0, 0, 255), new Color(255, 255, 0)));
-    final Trainer trainer = new Trainer(null, null, "ID_TRAINER", "ID_REGION", "ID_USER", "TRAINER_NAME", "TRAINER_IMAGE", null, 0, "ID_AREA", 0, 0, 0, new NPCInfo(false));
+    final Trainer trainer = new Trainer(null, null, "ID_TRAINER", "ID_REGION", "ID_USER", "TRAINER_NAME", "TRAINER_IMAGE", null, 0, "ID_AREA", 0, 0, 0, new NPCInfo(false, false, false, false, List.of(), List.of()));
 
     @Override
     public void start(Stage stage) {
