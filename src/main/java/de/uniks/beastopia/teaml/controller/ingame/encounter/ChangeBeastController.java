@@ -2,11 +2,12 @@ package de.uniks.beastopia.teaml.controller.ingame.encounter;
 
 import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
+import de.uniks.beastopia.teaml.rest.ChangeMonsterMove;
 import de.uniks.beastopia.teaml.rest.Monster;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.EncounterOpponentsService;
-import de.uniks.beastopia.teaml.service.PresetsService;
 import de.uniks.beastopia.teaml.service.TrainerService;
+import de.uniks.beastopia.teaml.utils.Dialog;
 import de.uniks.beastopia.teaml.utils.LoadingPage;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -34,8 +35,6 @@ public class ChangeBeastController extends Controller {
 
     @Inject
     EncounterOpponentsService encounterOpponentsService;
-    @Inject
-    PresetsService presetsService;
     @Inject
     TrainerService trainerService;
     @Inject
@@ -114,31 +113,24 @@ public class ChangeBeastController extends Controller {
         app.show(encounterController);
     }
 
-    @SuppressWarnings("CommentedOutCode")
     @FXML
     public void changeBeast() {
         if (fightingMonsters.isEmpty()) {
-            System.out.println("no monster selected!");
+            Dialog.error(resources.getString("error"), resources.getString("noMonSelected"));
         } else if (fightingMonsters.size() > 1) {
-            System.out.println("there are two monsters selected!");
+            Dialog.error(resources.getString("error"), resources.getString("twoMonSelected"));
         } else if (fightingMonsters.get(0).currentAttributes().health() == 0) {
-            System.out.println("current monster has no health points left!");
+            Dialog.error(resources.getString("error"), resources.getString("monNoHPLeft"));
         } else if (currentMonster._id().equals(fightingMonsters.get(0)._id())) {
-            System.out.println("current monster is the same as initial monster!");
+            Dialog.error(resources.getString("error"), resources.getString("currentMonIsSame"));
         } else {
-            //TODO: Apply changes and send request to server
-            System.out.println("current monster: " + fightingMonsters.get(0)._id());
-
-            encounterController.setOwnMonster(fightingMonsters.get(0));
-            app.show(encounterController);
-
-            /*disposables.add(encounterOpponentsService.updateEncounterOpponent(cache.getJoinedRegion()._id(), cache.getCurrentEncounter()._id(), cache.getCurrentOpponents().get(1)._id(),
-                            currentMonster._id(), new ChangeMonsterMove("change-monster", fightingMonsters.get(0)._id()))
+            //TODO: Apply changes and send request to server (fix bug when sending request [variant])
+            disposables.add(encounterOpponentsService.updateEncounterOpponent(cache.getJoinedRegion()._id(), cache.getCurrentEncounter()._id(), cache.getCurrentOpponents().get(1)._id(),
+                            null, new ChangeMonsterMove("change-monster", fightingMonsters.get(0)._id()))
                     .subscribe(update -> {
-                        System.out.println(update.monster());
                         encounterController.setOwnMonster(fightingMonsters.get(0));
                         app.show(encounterController);
-                    }, Throwable::printStackTrace));*/
+                    }, Throwable::printStackTrace));
         }
     }
 
