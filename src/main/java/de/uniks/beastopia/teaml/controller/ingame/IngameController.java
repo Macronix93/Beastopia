@@ -137,7 +137,6 @@ public class IngameController extends Controller {
     private final String[] locationStrings = {"Moncenter", "House", "Store"};
     private long lastValueChangeTime = 0;
     private DialogWindowController dialogWindowController;
-    private Trainer npcTalkPartner;
 
     @Inject
     public IngameController() {
@@ -344,8 +343,8 @@ public class IngameController extends Controller {
                             }
 
                             beastListParent = beastListController.render();
-                    scoreBoardParent = scoreBoardController.render();
-                    pauseMenuParent = pauseController.render();
+                            scoreBoardParent = scoreBoardController.render();
+                            pauseMenuParent = pauseController.render();
                             loadRemoteTrainer(trainers);
                             listenToTrainerEvents();
                             loadingPage.setDone();
@@ -631,87 +630,42 @@ public class IngameController extends Controller {
 
     public void handleTalkToTrainer(KeyEvent keyEvent) {
         if (keyEvent.getCode().equals(KeyCode.T)) {
-            if (canTalkToNPC()) {
-                if (npcTalkPartner != null) {
-                    if (npcTalkPartner.npc().starters() != null) {
-                        talkToStartersNPC();
-                    } else if (npcTalkPartner.npc().canHeal()) {
-                        talkToNurse();
-                    } //else tak to fight
-                } else {
-                    closeTalk();
+            Trainer trainer = canTalkToNPC();
+            if (trainer != null) {
+                if (trainer.npc() == null || trainer.npc().encounterOnTalk()) {
+                    startEncounterOnTalk(trainer);
+                } else if (trainer.npc().starters() != null) {
+                    talkToStartersNPC(trainer);
+                } else if (trainer.npc().canHeal()) {
+                    talkToNurse(trainer);
+                }
+            } else {
+                closeTalk();
+            }
+        }
+    }
+
+    private Trainer canTalkToNPC() {
+        for (Trainer trainer : cache.getTrainers()) {
+            if (direction == Direction.RIGHT) { // right
+                if (trainer.x() == posx + 1 && trainer.y() == posy) {
+                    return trainer;
+                }
+            } else if (direction == Direction.UP) { //up
+                if (trainer.x() == posx && trainer.y() == posy - 1) {
+                    return trainer;
+                }
+            } else if (direction == Direction.LEFT) { //left
+                if (trainer.x() == posx - 1 && trainer.y() == posy) {
+                    return trainer;
+                }
+            } else if (direction == Direction.DOWN) { //down
+                if (trainer.x() == posx && trainer.y() == posy + 1) {
+                    return trainer;
                 }
             }
         }
-    }
-
-    private double distance(Trainer a, Trainer b) {
-        int dx = b.x() - a.x();
-        int dy = b.y() - a.y();
-        return Math.sqrt(dx * dx + dy * dy);
-    }
-
-    private boolean canTalkToNPC() {
-        Trainer me = cache.getTrainer();
-        for (Trainer trainer : cache.getTrainers()) {
-            if (trainer.npc() != null && me.area().equals(trainer.area()) && distance(me, trainer) <= 1.5) {
-                npcTalkPartner = trainer;
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private void talkToStartersNPC() {
-        disposables.add(presetsService.getCharacterSprites(npcTalkPartner.image(), false)
-                .observeOn(FX_SCHEDULER)
-                .subscribe(image -> {
-                    Rectangle2D viewPort = new Rectangle2D(3 * 96, 32, 16, 32);
-                    PixelReader reader = image.getPixelReader();
-                    WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
-                    if (npcTalkPartner.npc().encountered().contains(cache.getTrainer()._id())) {
-                        talk(newImage, "Welcome back! \n You already received one starter Beast, have a nice day!", null, null, null);
-                    } else {
-                        List<String> beastNames = new ArrayList<>();
-                        List<Image> beastImages = new ArrayList<>();
-                        for (int id : npcTalkPartner.npc().starters()) {
-                            MonsterTypeDto monsterTypeDto = presetsService.getMonsterType(id).blockingFirst();
-                            beastNames.add(monsterTypeDto.name());
-                            Image beastImage = presetsService.getMonsterImage(id).blockingFirst();
-                            beastImages.add(beastImage);
-                        }
-                        talk(newImage, "Welcome! \n Please select a starter Beast.", beastNames, beastImages, (i -> {
-                            int monsterType = npcTalkPartner.npc().starters().get(i);
-                            disposables.add(presetsService.getMonsterType(monsterType).observeOn(FX_SCHEDULER).subscribe(monsterTypeDTO -> { //unnötiger API call oben in liste speichern
-                                String message = "Details: ";
-                                message += monsterTypeDTO.name() + "\n";
-                                message += monsterTypeDTO.description();
-                                talk(newImage, message, List.of("Take it!", "I don't want this one"), null, (j -> {
-                                    if (j == 0) {
-                                        udpEventListener.send(createTalkMessage(cache.getTrainer()._id(), npcTalkPartner._id(), Optional.of(i)));
-                                        closeTalk();
-                                    } else {
-                                        talkToStartersNPC();
-                                    }
-                                }));
-                            }));
-                        }));
-                    }
-                }));
-    }
-
-    private void talkToNurse() {
-        disposables.add(presetsService.getCharacterSprites(npcTalkPartner.image(), true)
-                .observeOn(FX_SCHEDULER)
-                .subscribe(image -> {
-                    Rectangle2D viewPort = new Rectangle2D(3 * 96, 32, 16, 32);
-                    PixelReader reader = image.getPixelReader();
-                    WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
-                    talk(newImage, "Hello! \t what can I do for you?", List.of("Heal all Beasts"), null, (i -> {
-                        udpEventListener.send(createTalkMessage(cache.getTrainer()._id(), npcTalkPartner._id(), Optional.empty()));
-                        closeTalk();
-                    }));
-                }));
+        return null;
     }
 
     private String createTalkMessage(String _id, String target, @SuppressWarnings("OptionalUsedAsFieldOrParameterType") Optional<Integer> selection) {
@@ -730,6 +684,69 @@ public class IngameController extends Controller {
         eventMessage.add("data", data);
 
         return eventMessage.toString();
+    }
+
+    private void startEncounterOnTalk(Trainer trainer) {
+        disposables.add(presetsService.getCharacterSprites(trainer.image(), false)
+                .observeOn(FX_SCHEDULER)
+                .subscribe(image -> {
+                    Rectangle2D viewPort = new Rectangle2D(3 * 96, 32, 16, 32);
+                    PixelReader reader = image.getPixelReader();
+                    WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
+                    String askFight = resources.getString("ask") + " " + trainer.name() + " " + resources.getString("vs");
+                    talk(newImage, resources.getString("hello") + " \n" + resources.getString("nurse"), List.of(askFight), null,
+                            i -> udpEventListener.send(createTalkMessage(cache.getTrainer()._id(), trainer._id(), Optional.empty())));
+                }));
+    }
+
+    private void talkToStartersNPC(Trainer trainer) {
+        disposables.add(presetsService.getCharacterSprites(trainer.image(), false)
+                .observeOn(FX_SCHEDULER)
+                .subscribe(image -> {
+                    Rectangle2D viewPort = new Rectangle2D(3 * 96, 32, 16, 32);
+                    PixelReader reader = image.getPixelReader();
+                    WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
+                    if (trainer.npc().encountered().contains(cache.getTrainer()._id())) {
+                        talk(newImage, "Welcome back! \n You already received one starter Beast, have a nice day!"
+                                , null, null, null);
+                    } else {
+                        List<String> beastNames = new ArrayList<>();
+                        List<Image> beastImages = new ArrayList<>();
+                        List<MonsterTypeDto> monsterTypeDtoList = new ArrayList<>();
+                        for (int id : trainer.npc().starters()) {
+                            MonsterTypeDto monsterTypeDto = presetsService.getMonsterType(id).blockingFirst();
+                            beastNames.add(monsterTypeDto.name());
+                            monsterTypeDtoList.add(monsterTypeDto);
+                            Image beastImage = presetsService.getMonsterImage(id).blockingFirst();
+                            beastImages.add(beastImage);
+                        }
+                        talk(newImage, "Welcome! \n Please select a starter Beast.", beastNames, beastImages, (i -> {
+                            String message = "Details: " + monsterTypeDtoList.get(i).name() + "\n" + monsterTypeDtoList.get(i).description();
+                            talk(newImage, message, List.of("Take it!", "I don't want this one"), null, (j -> {
+                                if (j == 0) {
+                                    udpEventListener.send(createTalkMessage(cache.getTrainer()._id(), trainer._id(), Optional.of(i)));
+                                    closeTalk();
+                                } else {
+                                    talkToStartersNPC(trainer);
+                                }
+                            }));
+                        }));
+                    }
+                }));
+    }
+
+    private void talkToNurse(Trainer trainer) {
+        disposables.add(presetsService.getCharacterSprites(trainer.image(), true)
+                .observeOn(FX_SCHEDULER)
+                .subscribe(image -> {
+                    Rectangle2D viewPort = new Rectangle2D(3 * 96, 32, 16, 32);
+                    PixelReader reader = image.getPixelReader();
+                    WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
+                    talk(newImage, "Hello! \t what can I do for you?", List.of("Heal all Beasts"), null, (i -> {
+                        udpEventListener.send(createTalkMessage(cache.getTrainer()._id(), trainer._id(), Optional.empty()));
+                        closeTalk();
+                    }));
+                }));
     }
 
     private void talk(Image image, String message, List<String> choices, List<Image> buttonImages, Consumer<Integer> onButtonPressed) {
