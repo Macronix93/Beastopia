@@ -647,20 +647,23 @@ public class IngameController extends Controller {
 
     private Trainer canTalkToNPC() {
         Trainer me = cache.getTrainer();
+        System.out.println(direction);
         for (Trainer trainer : cache.getTrainers()) {
-            if (me.direction() == 0) { // right
+            if (direction == Direction.RIGHT) { // right
                 if (trainer.x() == me.x() + 1 && trainer.y() == me.y()) {
+                    System.out.println(trainer.name());
                     return trainer;
                 }
-            } else if (me.direction() == 1) { //up
+            } else if (direction == Direction.UP) { //up
                 if (trainer.x() == me.x() && trainer.y() == me.y() - 1) {
+                    System.out.println(trainer.name());
                     return trainer;
                 }
-            } else if (me.direction() == 2) { //left
+            } else if (direction == Direction.LEFT) { //left
                 if (trainer.x() == me.x() - 1 && trainer.y() == me.y()) {
                     return trainer;
                 }
-            } else if (me.direction() == 3) { //down
+            } else if (direction == Direction.DOWN) { //down
                 if (trainer.x() == me.x() && trainer.y() == me.y() + 1) {
                     return trainer;
                 }
