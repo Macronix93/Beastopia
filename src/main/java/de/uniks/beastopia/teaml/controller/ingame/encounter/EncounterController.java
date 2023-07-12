@@ -233,9 +233,9 @@ public class EncounterController extends Controller {
     }
 
     private void setAttackBoxes(int size) {
-        Stack<String> stack = new Stack<>();
+        Stack<Integer> stack = new Stack<>();
         Set<String> keys = ownMonster.abilities().keySet();
-        keys.forEach(stack::push);
+        keys.forEach(key -> stack.push(Integer.parseInt(key)));
         switch (size) {
             case 4:
                 setAttack4(presetsService.getAbility(stack.pop()).blockingFirst());
