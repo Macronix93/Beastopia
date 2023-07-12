@@ -164,6 +164,7 @@ public class EncounterController extends Controller {
         setAllyMonster(monster2);
         setEnemyMonster(monster3);
         setEnemyAllyMonster(monster4);*/
+       // this.ownMonster = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), cache.getTrainer().team().get(0)).blockingFirst();
     }
 
     @Override
@@ -236,7 +237,7 @@ public class EncounterController extends Controller {
     private void setAttackBoxes(int size) {
         Stack<Integer> stack = new Stack<>();
         Set<String> keys = ownMonster.abilities().keySet();
-        keys.stream().map(Integer::parseInt).forEach(stack::push);
+        keys.forEach(key -> stack.push(Integer.parseInt(key)));
         switch (size) {
             case 4:
                 setAttack4(presetsService.getAbility(stack.pop()).blockingFirst());
