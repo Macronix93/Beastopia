@@ -281,6 +281,13 @@ public class DataCache {
         return this.currentOpponents;
     }
 
+    public Opponent getOpponent(String trainerId) {
+        return currentOpponents.stream()
+                .filter(o -> o.trainer().equals(trainerId))
+                .findFirst()
+                .orElse(null);
+    }
+
     public void setCurrentEncounter(Encounter encounter) {
         this.currentEncounter = encounter;
     }
