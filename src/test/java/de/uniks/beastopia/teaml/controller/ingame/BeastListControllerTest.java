@@ -57,6 +57,7 @@ class BeastListControllerTest extends ApplicationTest {
     Monster monster1 = new Monster(null, null, "MONSTER_1", "TRAINER_ID", 0, 0, 0, null, attributes, currentAttributes);
     Monster monster2 = new Monster(null, null, "MONSTER_2", "TRAINER_ID", 0, 0, 0, null, attributes, currentAttributes);
     Monster monster3 = new Monster(null, null, "MONSTER_3", "TRAINER_ID", 0, 0, 0, null, attributes, currentAttributes);
+
     List<Monster> monsters = List.of(monster1, monster2, monster3);
     final BeastController mockedBeastController1 = mock();
     final BeastController mockedBeastController2 = mock();
