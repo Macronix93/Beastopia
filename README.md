@@ -47,6 +47,10 @@ perfect - Flaticon</a>
 <a href="https://www.flaticon.com/de/kostenlose-icons/gruppe" title="gruppe Icons">Gruppe Icons erstellt von Pixel
 perfect - Flaticon</a>
 
+<a href="https://www.flaticon.com/de/kostenlose-icons/star" title="star Icons">Star Icons erstellt von Smashicons - Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/herz" title="herz Icons">Herz Icons erstellt von Good Ware - Flaticon</a>
+
 <a href="https://www.flaticon.com/de/kostenlose-icons/ui" title="ui Icons">Ui Icons erstellt von Stasy - Flaticon</a>
 
 <a target="_blank" href="https://icons8.com/icon/8ggStxqyboK5/star">Star</a> icon

@@ -1,10 +1,12 @@
 package de.uniks.beastopia.teaml.controller.ingame.encounter;
 
 import de.uniks.beastopia.teaml.controller.Controller;
+import de.uniks.beastopia.teaml.controller.ingame.IngameController;
 import de.uniks.beastopia.teaml.rest.AbilityDto;
 import de.uniks.beastopia.teaml.rest.Monster;
 import de.uniks.beastopia.teaml.rest.Trainer;
 import de.uniks.beastopia.teaml.service.DataCache;
+import de.uniks.beastopia.teaml.service.EncounterOpponentsService;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import de.uniks.beastopia.teaml.service.TrainerService;
 import de.uniks.beastopia.teaml.utils.Prefs;
@@ -91,22 +93,26 @@ public class EncounterController extends Controller {
     @Inject
     Provider<RenderBeastController> renderBeastControllerProvider;
     @Inject
+    Provider<IngameController> ingameControllerProvider;
+    @Inject
     DataCache cache;
     @Inject
     TrainerService trainerService;
     @Inject
     PresetsService presetsService;
     @Inject
+    EncounterOpponentsService encounterOpponentsService;
+    @Inject
     Prefs prefs;
 
     //monster on the substitute's bench
-    @SuppressWarnings("FieldCanBeLocal")
+    @SuppressWarnings("FieldMayBeFinal")
     private List<Monster> ownMonsters = new ArrayList<>();
-    @SuppressWarnings("FieldCanBeLocal")
+    @SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal"})
     private List<Monster> allyMonsters = new ArrayList<>();
-    @SuppressWarnings("FieldCanBeLocal")
+    @SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal"})
     private List<Monster> enemyMonsters = new ArrayList<>();
-    @SuppressWarnings("FieldCanBeLocal")
+    @SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal"})
     private List<Monster> enemyAllyMonsters = new ArrayList<>();
 
     //monsters in the fight
@@ -243,44 +249,66 @@ public class EncounterController extends Controller {
     }
 
     //onClicked leave encounter button
+    @FXML
     public void leaveEncounter() {
         //TODO: switch screen to map
         System.out.println("leave encounter");
+
+        if (cache.getCurrentEncounter().isWild()) {
+            System.out.println("current encounter: " + cache.getCurrentEncounter() + " current opponent: " + cache.getCurrentOpponents().get(1));
+
+            disposables.add(encounterOpponentsService.deleteOpponent(cache.getJoinedRegion()._id(), cache.getCurrentEncounter()._id(), cache.getCurrentOpponents().get(1)._id()).subscribe());
+
+            cache.setCurrentEncounter(null);
+            cache.getCurrentOpponents().clear();
+
+            IngameController controller = ingameControllerProvider.get();
+            controller.setRegion(cache.getJoinedRegion());
+            app.show(controller);
+        }
     }
 
     //onClicked change monster button
+    @FXML
     public void changeMonster() {
         //TODO: switch screen to monster selection
         System.out.println("change monster");
     }
 
     //setter methods for monsters
-    public void setOwnMonster(Monster ownMonster) {
+    public EncounterController setOwnMonster(Monster ownMonster) {
         this.ownMonster = ownMonster;
+        return this;
     }
 
-    public void setAllyMonster(Monster allyMonster) {
+    public EncounterController setAllyMonster(Monster allyMonster) {
         this.allyMonster = allyMonster;
+        return this;
     }
 
-    public void setEnemyMonster(Monster enemyMonster) {
+    public EncounterController setEnemyMonster(Monster enemyMonster) {
         this.enemyMonster = enemyMonster;
+        return this;
     }
 
-    public void setEnemyAllyMonster(Monster enemyAllyMonster) {
+    public EncounterController setEnemyAllyMonster(Monster enemyAllyMonster) {
         this.enemyAllyMonster = enemyAllyMonster;
+        return this;
     }
 
-    public void setAllyTrainer(Trainer allyTrainer) {
+    public EncounterController setAllyTrainer(Trainer allyTrainer) {
         this.allyTrainer = allyTrainer;
+        return this;
     }
 
-    public void setEnemyTrainer(Trainer enemyTrainer) {
+    public EncounterController setEnemyTrainer(Trainer enemyTrainer) {
         this.enemyTrainer = enemyTrainer;
+        return this;
     }
 
-    public void setEnemyAllyTrainer(Trainer enemyAllyTrainer) {
+    public EncounterController setEnemyAllyTrainer(Trainer enemyAllyTrainer) {
         this.enemyAllyTrainer = enemyAllyTrainer;
+        return this;
     }
 
     @Override
@@ -289,18 +317,22 @@ public class EncounterController extends Controller {
     }
 
     //methods for attack buttons
+    @FXML
     public void executeAttack1() {
         System.out.println("attack1");
     }
 
+    @FXML
     public void executeAttack2() {
         System.out.println("attack2");
     }
 
+    @FXML
     public void executeAttack3() {
         System.out.println("attack3");
     }
 
+    @FXML
     public void executeAttack4() {
         System.out.println("attack4");
     }

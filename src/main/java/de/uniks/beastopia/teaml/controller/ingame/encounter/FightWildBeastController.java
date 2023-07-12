@@ -2,6 +2,7 @@ package de.uniks.beastopia.teaml.controller.ingame.encounter;
 
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Monster;
+import de.uniks.beastopia.teaml.rest.Trainer;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.EncounterOpponentsService;
 import de.uniks.beastopia.teaml.service.PresetsService;
@@ -14,6 +15,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import java.util.List;
 
 public class FightWildBeastController extends Controller {
@@ -34,6 +36,8 @@ public class FightWildBeastController extends Controller {
     EncounterOpponentsService encounterOpponentsService;
     @Inject
     EncounterController encounterController;
+    @Inject
+    Provider<EncounterController> encounterControllerProvider;
     @Inject
     DataCache cache;
     private String beastId;
@@ -85,43 +89,45 @@ public class FightWildBeastController extends Controller {
 
     @FXML
     public void startFight() {
-        disposables.add(encounterOpponentsService.getTrainerOpponents(cache.getJoinedRegion()._id(),
-                        cache.getTrainer()._id())
-                .map(o -> {
-                    if (o.size() == 2) {
-                        List<Monster> myMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(0).trainer()).blockingFirst();
-                        List<Monster> enemyMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(1).trainer()).blockingFirst();
-                        encounterController.setOwnMonster(myMonsters.stream().filter(m -> m._id().equals(o.get(0).monster())).findFirst().orElseThrow());
-                        encounterController.setEnemyMonster(enemyMonsters.stream().filter(m -> m._id().equals(o.get(1).monster())).findFirst().orElseThrow());
-                        encounterController.setEnemyTrainer(cache.getTrainer(o.get(1).trainer()));
-                    } else if (o.size() == 3) {
-                        List<Monster> myMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(0).trainer()).blockingFirst();
-                        List<Monster> enemyMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(1).trainer()).blockingFirst();
-                        List<Monster> enemyAllyMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(2).trainer()).blockingFirst();
-                        encounterController.setOwnMonster(myMonsters.stream().filter(m -> m._id().equals(o.get(0).monster())).findFirst().orElseThrow());
-                        encounterController.setEnemyMonster(enemyMonsters.stream().filter(m -> m._id().equals(o.get(1).monster())).findFirst().orElseThrow());
-                        encounterController.setEnemyAllyMonster(enemyAllyMonsters.stream().filter(m -> m._id().equals(o.get(2).monster())).findFirst().orElseThrow());
-                        encounterController.setEnemyTrainer(cache.getTrainer(o.get(1).trainer()));
-                        encounterController.setEnemyAllyTrainer(cache.getTrainer(o.get(2).trainer()));
-                    } else if (o.size() == 4) {
-                        List<Monster> myMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(0).trainer()).blockingFirst();
-                        List<Monster> myAllyMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(1).trainer()).blockingFirst();
-                        List<Monster> enemyMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(2).trainer()).blockingFirst();
-                        List<Monster> enemyAllyMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(3).trainer()).blockingFirst();
-                        encounterController.setOwnMonster(myMonsters.stream().filter(m -> m._id().equals(o.get(0).monster())).findFirst().orElseThrow());
-                        encounterController.setAllyMonster(myAllyMonsters.stream().filter(m -> m._id().equals(o.get(1).monster())).findFirst().orElseThrow());
-                        encounterController.setEnemyMonster(enemyMonsters.stream().filter(m -> m._id().equals(o.get(2).monster())).findFirst().orElseThrow());
-                        encounterController.setEnemyAllyMonster(enemyAllyMonsters.stream().filter(m -> m._id().equals(o.get(3).monster())).findFirst().orElseThrow());
-                        encounterController.setAllyTrainer(cache.getTrainer(o.get(1).trainer()));
-                        encounterController.setEnemyTrainer(cache.getTrainer(o.get(2).trainer()));
-                        encounterController.setEnemyAllyTrainer(cache.getTrainer(o.get(3).trainer()));
-                    }
-                    return o;
-                })
+        disposables.add(encounterOpponentsService.getEncounterOpponents(cache.getJoinedRegion()._id(), cache.getCurrentEncounter()._id())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(o -> {
-                    encounterController.init();
-                    app.show(encounterController);
+                    cache.setCurrentOpponents(o);
+
+                    Monster ownMonster = null;
+                    Monster enemyMonster = null;
+                    Monster allyMonster = null;
+                    Monster enemyAllyMonster = null;
+                    Trainer enemyTrainer = null;
+                    Trainer enemyAllyTrainer = null;
+                    Trainer allyTrainer = null;
+
+                    if (o.size() == 1) {
+                        List<Monster> myMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), cache.getTrainer()._id()).blockingFirst();
+                        List<Monster> enemyMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(0).trainer()).blockingFirst();
+                        //noinspection OptionalGetWithoutIsPresent
+                        encounterController.setOwnMonster(myMonsters.stream().filter(m -> m._id().equals(cache.getTrainer().team().stream().findFirst().get())).findFirst().orElseThrow());
+                        encounterController.setEnemyMonster(enemyMonsters.stream().filter(m -> m._id().equals(o.get(0).monster())).findFirst().orElseThrow());
+                    } else if (o.size() == 2) {
+                        List<Monster> myMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), cache.getTrainer()._id()).blockingFirst();
+                        List<Monster> enemyMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(0).trainer()).blockingFirst();
+                        List<Monster> enemyAllyMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(1).trainer()).blockingFirst();
+                        //noinspection OptionalGetWithoutIsPresent
+                        encounterController.setOwnMonster(myMonsters.stream().filter(m -> m._id().equals(cache.getTrainer().team().stream().findFirst().get())).findFirst().orElseThrow());
+                        encounterController.setEnemyMonster(enemyMonsters.stream().filter(m -> m._id().equals(o.get(0).monster())).findFirst().orElseThrow());
+                        encounterController.setEnemyAllyMonster(enemyAllyMonsters.stream().filter(m -> m._id().equals(o.get(1).monster())).findFirst().orElseThrow());
+                    }
+
+                    EncounterController controller = encounterControllerProvider.get()
+                            .setOwnMonster(ownMonster)
+                            .setEnemyMonster(enemyMonster)
+                            .setAllyMonster(allyMonster)
+                            .setEnemyAllyMonster(enemyAllyMonster)
+                            .setEnemyTrainer(enemyTrainer)
+                            .setAllyTrainer(allyTrainer)
+                            .setEnemyAllyTrainer(enemyAllyTrainer);
+
+                    app.show(controller);
                 }));
 
     }
