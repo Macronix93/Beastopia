@@ -1,7 +1,6 @@
 package de.uniks.beastopia.teaml.controller.ingame.encounter;
 
 import de.uniks.beastopia.teaml.controller.Controller;
-import de.uniks.beastopia.teaml.controller.ingame.IngameController;
 import de.uniks.beastopia.teaml.rest.Monster;
 import de.uniks.beastopia.teaml.rest.Trainer;
 import de.uniks.beastopia.teaml.service.DataCache;
@@ -27,8 +26,6 @@ public class FightWildBeastController extends Controller {
     public ImageView image;
     @FXML
     public Button startFight;
-    @FXML
-    public Button leaveFight;
     @Inject
     TrainerService trainerService;
     @Inject
@@ -41,8 +38,6 @@ public class FightWildBeastController extends Controller {
     EncounterController encounterController;
     @Inject
     Provider<EncounterController> encounterControllerProvider;
-    @Inject
-    Provider<IngameController> ingameControllerProvider;
     @Inject
     DataCache cache;
     private String beastId;
@@ -137,17 +132,4 @@ public class FightWildBeastController extends Controller {
 
     }
 
-    public void leaveFight() {
-        System.out.println("current encounter: " + cache.getCurrentEncounter() + " current opponent: " + cache.getCurrentOpponents().get(1));
-
-        disposables.add(encounterOpponentsService.deleteOpponent(cache.getJoinedRegion()._id(), cache.getCurrentEncounter()._id(), cache.getCurrentOpponents().get(1)._id()).subscribe());
-
-        cache.setCurrentEncounter(null);
-        cache.getCurrentOpponents().clear();
-
-        IngameController controller = ingameControllerProvider.get();
-        controller.setRegion(cache.getJoinedRegion());
-        app.show(controller);
-
-    }
 }
