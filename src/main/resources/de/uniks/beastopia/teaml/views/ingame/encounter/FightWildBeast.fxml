@@ -23,7 +23,8 @@
     <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="1">
         <ImageView fx:id="image" fitHeight="250.0" fitWidth="250.0" pickOnBounds="true" preserveRatio="true" />
     </HBox>
-    <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="2">
-        <Button fx:id="startFight" mnemonicParsing="false" onAction="#startFight" text="%Startfight" />
+    <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="50.0" GridPane.rowIndex="2">
+        <Button fx:id="startFight" mnemonicParsing="false" onAction="#startFight" text="%Startfight"/>
+        <Button fx:id="leaveFight" mnemonicParsing="false" onAction="#leaveFight" text="%leaveEncounter"/>
     </HBox>
 </GridPane>
