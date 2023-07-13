@@ -76,10 +76,14 @@ public class LoginController extends Controller {
             disposables.add(authService.refresh().observeOn(FX_SCHEDULER).subscribe(
                     lr -> {
                         app.show(menuControllerProvider.get());
-                        loadingPage.setDone();
+                        if (loadingPage != null) {
+                            loadingPage.setDone();
+                        }
                     },
                     error -> {
-                        loadingPage.setDone();
+                        if (loadingPage != null) {
+                            loadingPage.setDone();
+                        }
                         Dialog.error(error, "Remember me failed!");
                     }));
         }
@@ -157,6 +161,8 @@ public class LoginController extends Controller {
         prefs.setLocale(locale.toLanguageTag());
         resources = resourcesProvider.get();
         app.update();
-        loadingPage.setDone();
+        if (loadingPage != null) {
+            loadingPage.setDone();
+        }
     }
 }
