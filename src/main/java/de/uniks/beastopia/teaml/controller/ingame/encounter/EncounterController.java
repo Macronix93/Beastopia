@@ -263,16 +263,16 @@ public class EncounterController extends Controller {
         System.out.println("leave encounter");
 
         if (cache.getCurrentEncounter().isWild()) {
-            disposables.add(encounterOpponentsService.deleteOpponent(cache.getJoinedRegion()._id(), cache.getCurrentEncounter()._id(), cache.getOpponent(cache.getTrainer()._id())._id())
-                    .observeOn(FX_SCHEDULER)
-                    .subscribe(event -> {
-                        cache.setCurrentEncounter(null);
-                        cache.getCurrentOpponents().clear();
+            System.out.println("current encounter: " + cache.getCurrentEncounter() + " current opponent: " + cache.getCurrentOpponents().get(1));
 
-                        IngameController controller = ingameControllerProvider.get();
-                        controller.setRegion(cache.getJoinedRegion());
-                        app.show(controller);
-                    }));
+            disposables.add(encounterOpponentsService.deleteOpponent(cache.getJoinedRegion()._id(), cache.getCurrentEncounter()._id(), cache.getCurrentOpponents().get(1)._id()).subscribe());
+
+            cache.setCurrentEncounter(null);
+            cache.getCurrentOpponents().clear();
+
+            IngameController controller = ingameControllerProvider.get();
+            controller.setRegion(cache.getJoinedRegion());
+            app.show(controller);
         }
     }
 
@@ -295,8 +295,8 @@ public class EncounterController extends Controller {
         disposables.add(encounterOpponentsService.getEncounterOpponents(cache.getJoinedRegion()._id(), cache.getCurrentEncounter()._id())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(o -> {
+                    // When there is no opponent registered on the server anymore = lose
                     if (o.size() == 0) {
-                        System.out.println("battle over, we lost all mon!");
                         beastInfoController1.hpLabel.setText("0 / " + ownMonster.attributes().health() + " (HP)");
                         beastInfoController1.setLifeBarValue(0);
                     } else {
@@ -309,10 +309,10 @@ public class EncounterController extends Controller {
                                     beastInfoController1.hpLabel.setText(ownMonster.currentAttributes().health() + " / " + ownMonster.attributes().health() + " (HP)");
                                     beastInfoController1.setLifeBarValue(ownMonster.currentAttributes().health() / (double) ownMonster.attributes().health());
                                 } else {
-                                    System.out.println("set hp to 0");
                                     beastInfoController1.hpLabel.setText("0 / " + ownMonster.attributes().health() + " (HP)");
                                     beastInfoController1.setLifeBarValue(0);
                                 }
+                                break;
                             }
                         }
                     }

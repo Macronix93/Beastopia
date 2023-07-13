@@ -1,6 +1,5 @@
 package de.uniks.beastopia.teaml.controller.ingame.encounter;
 
-import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.ChangeMonsterMove;
 import de.uniks.beastopia.teaml.rest.Monster;
@@ -11,7 +10,6 @@ import de.uniks.beastopia.teaml.utils.Dialog;
 import de.uniks.beastopia.teaml.utils.LoadingPage;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 
@@ -19,7 +17,6 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class ChangeBeastController extends Controller {
     @FXML
@@ -30,8 +27,6 @@ public class ChangeBeastController extends Controller {
     public VBox currentBeasts;
     @FXML
     public VBox beastTeam;
-    public ImageView removeImage;
-    public ImageView addImage;
 
     @Inject
     EncounterOpponentsService encounterOpponentsService;
@@ -42,9 +37,9 @@ public class ChangeBeastController extends Controller {
     @Inject
     Provider<ChangeBeastElementController> changeBeastElementControllerProvider;
 
-    private final List<Monster> playerMonsters = new ArrayList<>();
     private final List<Monster> fightingMonsters = new ArrayList<>();
     private final List<Monster> bankMonsters = new ArrayList<>();
+    private final List<ChangeBeastElementController> subControllers = new ArrayList<>();
     private Monster currentMonster;
     private EncounterController encounterController;
     private LoadingPage loadingPage;
@@ -75,32 +70,22 @@ public class ChangeBeastController extends Controller {
     public Parent render() {
         loadingPage = LoadingPage.makeLoadingPage(super.render());
 
-        removeImage = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/minus.png")).toString());
-        addImage = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/plus.png")).toString());
-
         disposables.add(trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), cache.getTrainer()._id())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(monsters -> {
-                    playerMonsters.addAll(monsters);
-
-                    for (Monster monster : playerMonsters) {
-                        System.out.println("monster " + monster._id() + " hp: " + monster.currentAttributes().health());
-
+                    for (Monster monster : monsters) {
                         ChangeBeastElementController controller = changeBeastElementControllerProvider.get()
                                 .setMonster(monster)
-                                .setParentController(this)
-                                .setIcons(removeImage, addImage);
+                                .setParentController(this);
+
+                        subControllers.add(controller);
 
                         if (monster._id().equals(currentMonster._id())) {
-                            currentBeasts.getChildren().add(controller.render());
-                            controller.addOrRemoveButton.setGraphic(removeImage);
-
                             fightingMonsters.add(monster);
+                            currentBeasts.getChildren().add(controller.render());
                         } else {
-                            beastTeam.getChildren().add(controller.render());
-                            controller.addOrRemoveButton.setGraphic(addImage);
-
                             bankMonsters.add(monster);
+                            beastTeam.getChildren().add(controller.render());
                         }
                     }
 
@@ -127,28 +112,24 @@ public class ChangeBeastController extends Controller {
             Dialog.error(resources.getString("error"), resources.getString("currentMonIsSame"));
         } else {
             disposables.add(encounterOpponentsService.getTrainerOpponents(cache.getJoinedRegion()._id(), cache.getTrainer()._id())
-                    .subscribe(o -> {
-                                if (o.get(0).monster() == null) {
-                                    disposables.add(encounterOpponentsService.updateEncounterOpponent(cache.getJoinedRegion()._id(), cache.getCurrentEncounter()._id(), cache.getOpponent(cache.getTrainer()._id())._id(),
-                                                    fightingMonsters.get(0)._id(), new ChangeMonsterMove("change-monster", fightingMonsters.get(0)._id()))
-                                            .observeOn(FX_SCHEDULER)
-                                            .subscribe(update -> {
-                                                encounterController.setOwnMonster(fightingMonsters.get(0));
-                                                encounterController.setToUpdateUIOnChange();
-                                                app.show(encounterController);
-                                            }, Throwable::printStackTrace));
-                                } else {
-                                    disposables.add(encounterOpponentsService.updateEncounterOpponent(cache.getJoinedRegion()._id(), cache.getCurrentEncounter()._id(), cache.getOpponent(cache.getTrainer()._id())._id(),
-                                                    null, new ChangeMonsterMove("change-monster", fightingMonsters.get(0)._id()))
-                                            .observeOn(FX_SCHEDULER)
-                                            .subscribe(update -> {
-                                                encounterController.setOwnMonster(fightingMonsters.get(0));
-                                                encounterController.setToUpdateUIOnChange();
-                                                app.show(encounterController);
-                                            }, Throwable::printStackTrace));
-                                }
-                            }
-                    ));
+                    .subscribe(opponents -> {
+                        String opponentId = cache.getOpponent(cache.getTrainer()._id())._id();
+                        String monsterId = (opponents.get(0).monster() == null) ? fightingMonsters.get(0)._id() : null;
+
+                        disposables.add(encounterOpponentsService.updateEncounterOpponent(
+                                        cache.getJoinedRegion()._id(),
+                                        cache.getCurrentEncounter()._id(),
+                                        opponentId,
+                                        monsterId,
+                                        new ChangeMonsterMove("change-monster", fightingMonsters.get(0)._id())
+                                )
+                                .observeOn(FX_SCHEDULER)
+                                .subscribe(update -> {
+                                    encounterController.setOwnMonster(fightingMonsters.get(0));
+                                    encounterController.setToUpdateUIOnChange();
+                                    app.show(encounterController);
+                                }, Throwable::printStackTrace));
+                    }));
         }
     }
 
@@ -160,11 +141,14 @@ public class ChangeBeastController extends Controller {
         return this.bankMonsters;
     }
 
-    private ImageView createImage(String imageUrl) {
-        ImageView imageView = new ImageView(imageUrl);
-        imageView.setCache(false);
-        imageView.setFitHeight(25.0);
-        imageView.setFitWidth(25.0);
-        return imageView;
+    @Override
+    public void destroy() {
+        for (Controller controller : subControllers) {
+            controller.destroy();
+        }
+        subControllers.clear();
+        beastTeam.getChildren().clear();
+        fightingBeastPane.getChildren().clear();
+        super.destroy();
     }
 }

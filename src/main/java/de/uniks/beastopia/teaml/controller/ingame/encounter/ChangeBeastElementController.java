@@ -1,5 +1,6 @@
 package de.uniks.beastopia.teaml.controller.ingame.encounter;
 
+import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Monster;
 import de.uniks.beastopia.teaml.service.PresetsService;
@@ -14,6 +15,7 @@ import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+import java.util.Objects;
 
 public class ChangeBeastElementController extends Controller {
     @FXML
@@ -47,6 +49,7 @@ public class ChangeBeastElementController extends Controller {
     @Override
     public void init() {
         super.init();
+
     }
 
     public ChangeBeastElementController setMonster(Monster monster) {
@@ -59,15 +62,12 @@ public class ChangeBeastElementController extends Controller {
         return this;
     }
 
-    public ChangeBeastElementController setIcons(ImageView removeImage, ImageView addImage) {
-        this.removeImage = removeImage;
-        this.addImage = addImage;
-        return this;
-    }
-
     @Override
     public Parent render() {
         Parent parent = super.render();
+
+        removeImage = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/minus.png")).toString());
+        addImage = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/plus.png")).toString());
 
         disposables.add(presetsService.getMonsterType(monster.type())
                 .observeOn(FX_SCHEDULER)
@@ -85,6 +85,12 @@ public class ChangeBeastElementController extends Controller {
 
         teamPane = changeBeastController.beastTeam;
         fightingPane = changeBeastController.currentBeasts;
+
+        if (changeBeastController.getBankMonsters().contains(monster)) {
+            addOrRemoveButton.setGraphic(addImage);
+        } else {
+            addOrRemoveButton.setGraphic(removeImage);
+        }
 
         return parent;
     }
@@ -106,5 +112,13 @@ public class ChangeBeastElementController extends Controller {
             teamPane.getChildren().add(changeBeastElement);
             addOrRemoveButton.setGraphic(addImage);
         }
+    }
+
+    private ImageView createImage(String imageUrl) {
+        ImageView imageView = new ImageView(imageUrl);
+        imageView.setCache(false);
+        imageView.setFitHeight(25.0);
+        imageView.setFitWidth(25.0);
+        return imageView;
     }
 }
