@@ -84,6 +84,7 @@ public class StartFightNPCController extends Controller {
 
         return parent;
     }
+
     @FXML
     public void startFight() {
         disposables.add(encounterOpponentsService.getTrainerOpponents(cache.getJoinedRegion()._id(),

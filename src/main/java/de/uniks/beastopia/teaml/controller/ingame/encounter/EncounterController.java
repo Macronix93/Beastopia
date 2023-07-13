@@ -177,6 +177,10 @@ public class EncounterController extends Controller {
     public Parent render() {
         Parent parent = super.render();
 
+        if (!cache.getCurrentEncounter().isWild()) {
+            leaveEncounter.setVisible(false);
+        }
+
         beastInfoController1 = beastInfoControllerProvider.get().setMonster(ownMonster);
         beastInfoBox.getChildren().addAll(beastInfoController1.render());
         renderBeastController1 = renderBeastControllerProvider.get().setMonster1(ownMonster);
