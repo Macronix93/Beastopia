@@ -98,6 +98,8 @@ public class EncounterController extends Controller {
     @Inject
     Provider<ChangeBeastController> changeBeastControllerProvider;
     @Inject
+    Provider<EndScreenController> endScreenControllerProvider;
+    @Inject
     DataCache cache;
     @Inject
     TrainerService trainerService;
@@ -299,6 +301,18 @@ public class EncounterController extends Controller {
                     if (o.size() == 0) {
                         beastInfoController1.hpLabel.setText("0 / " + ownMonster.attributes().health() + " (HP)");
                         beastInfoController1.setLifeBarValue(0);
+
+                        EndScreenController controller = endScreenControllerProvider.get();
+                        controller.setWinner(false);
+                        controller.setLoserMonster1(ownMonster);
+                        if (allyMonster != null) {
+                            controller.setLoserMonster2(allyMonster);
+                        }
+                        controller.setWinnerMonster1(enemyMonster);
+                        if (enemyAllyMonster != null) {
+                            controller.setWinnerMonster2(enemyAllyMonster);
+                        }
+                        app.show(controller);
                     } else {
                         for (Opponent opponent : o) {
                             // Check if the opponent is our trainers id
