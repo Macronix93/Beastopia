@@ -498,6 +498,8 @@ public class IngameController extends Controller {
                             continue;
                         }
 
+                        // Some maps have "invalid" (or blank tiles) with ID 0 which we don't want to draw
+                        // This is to prevent the camera from showing the "extended" tile pane with those tiles
                         if (id != 0) {
                             drawTile(x, y, tileSet.getKey().getValue(), presetsService.getTileViewPort(tileSet.getValue(), tileSet.getKey().getKey()));
                         }
@@ -516,6 +518,8 @@ public class IngameController extends Controller {
                         continue;
                     }
 
+                    // Some maps have "invalid" (or blank tiles) with ID 0 which we don't want to draw
+                    // This is to prevent the camera from showing the "extended" tile pane with those tiles
                     if (id != 0) {
                         drawTile(x, y, tileSet.getKey().getValue(), presetsService.getTileViewPort(tileSet.getValue(), tileSet.getKey().getKey()));
                     }

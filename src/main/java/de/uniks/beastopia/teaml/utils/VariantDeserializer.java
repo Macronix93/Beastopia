@@ -26,7 +26,7 @@ public class VariantDeserializer<T, U> extends StdDeserializer<Variant<T, U>> {
         if (superClass instanceof ParameterizedType parameterizedType) {
             Type[] typeArguments = parameterizedType.getActualTypeArguments();
 
-            if (typeArguments.length >= 2) {
+            if (typeArguments.length == 2) {
                 Type tType = typeArguments[0];
                 Type uType = typeArguments[1];
 

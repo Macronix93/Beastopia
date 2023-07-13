@@ -113,7 +113,7 @@ public class ChangeBeastController extends Controller {
         } else {
             disposables.add(encounterOpponentsService.getTrainerOpponents(cache.getJoinedRegion()._id(), cache.getTrainer()._id())
                     .subscribe(opponents -> {
-                        String opponentId = cache.getOpponent(cache.getTrainer()._id())._id();
+                        String opponentId = cache.getOpponentByTrainerID(cache.getTrainer()._id())._id();
                         String monsterId = (opponents.get(0).monster() == null) ? fightingMonsters.get(0)._id() : null;
 
                         disposables.add(encounterOpponentsService.updateEncounterOpponent(

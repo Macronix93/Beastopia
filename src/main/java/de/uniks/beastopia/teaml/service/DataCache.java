@@ -281,7 +281,7 @@ public class DataCache {
         return this.currentOpponents;
     }
 
-    public Opponent getOpponent(String trainerId) {
+    public Opponent getOpponentByTrainerID(String trainerId) {
         return currentOpponents.stream()
                 .filter(o -> o.trainer().equals(trainerId))
                 .findFirst()
