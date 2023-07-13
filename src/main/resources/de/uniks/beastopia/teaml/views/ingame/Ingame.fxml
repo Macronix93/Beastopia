@@ -14,7 +14,7 @@
             <Pane fx:id="tilePane" prefHeight="200.0" prefWidth="200.0"/>
         </ScrollPane>
         <AnchorPane prefHeight="200.0" prefWidth="200.0">
-            <Button fx:id="mapHint" alignment="CENTER" minWidth="180.0" mnemonicParsing="false" onAction="#openMap"
+            <Button fx:id="mapHint" alignment="CENTER" minWidth="180.0" mnemonicParsing="false" onAction="#clickOnMapButton"
                     onKeyPressed="#keyDown" onKeyReleased="#keyUp"
                     style="-fx-background-color: transparent; -fx-border-color: black; -fx-border-radius: 10;"
                     text="%MforMap" textAlignment="CENTER" AnchorPane.bottomAnchor="90.0" AnchorPane.leftAnchor="0.0">
@@ -23,16 +23,16 @@
                 </font>
             </Button>
             <Button fx:id="scoreboardHint" alignment="CENTER" minWidth="180.0" mnemonicParsing="false"
-                    onAction="#openScoreboard" onKeyPressed="#keyDown" onKeyReleased="#keyUp"
+                    onAction="#clickOnScoreboardButton" onKeyPressed="#keyDown" onKeyReleased="#keyUp"
                     style="-fx-background-color: transparent; -fx-border-color: black; -fx-border-radius: 10;"
-                    text="%SforScoreboard" textAlignment="CENTER" AnchorPane.bottomAnchor="60.0"
+                    text="%NforScoreboard" textAlignment="CENTER" AnchorPane.bottomAnchor="60.0"
                     AnchorPane.leftAnchor="0.0">
                 <font>
                     <Font size="14.0"/>
                 </font>
             </Button>
             <Button fx:id="beastlistHint" alignment="CENTER" minWidth="180.0" mnemonicParsing="false"
-                    onAction="#openBeastlist" onKeyPressed="#keyDown" onKeyReleased="#keyUp"
+                    onAction="#clickOnBeastListButton" onKeyPressed="#keyDown" onKeyReleased="#keyUp"
                     style="-fx-background-color: transparent; -fx-border-color: black; -fx-border-radius: 10;"
                     text="%BforBeastlist" textAlignment="CENTER" AnchorPane.bottomAnchor="30.0"
                     AnchorPane.leftAnchor="0.0">
@@ -41,7 +41,7 @@
                 </font>
             </Button>
             <Button fx:id="pauseHint" alignment="CENTER" minWidth="180.0" mnemonicParsing="false"
-                    onAction="#openPauseMenu" onKeyPressed="#keyDown" onKeyReleased="#keyUp"
+                    onAction="#clickOnPauseMenuButton" onKeyPressed="#keyDown" onKeyReleased="#keyUp"
                     style="-fx-background-color: transparent; -fx-border-color: black; -fx-border-radius: 10;"
                     text="%ESCtoPause" textAlignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0">
                 <font>
