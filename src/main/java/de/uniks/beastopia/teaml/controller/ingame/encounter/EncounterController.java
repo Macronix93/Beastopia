@@ -2,13 +2,12 @@ package de.uniks.beastopia.teaml.controller.ingame.encounter;
 
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.ingame.IngameController;
-import de.uniks.beastopia.teaml.rest.AbilityDto;
-import de.uniks.beastopia.teaml.rest.AbilityMove;
-import de.uniks.beastopia.teaml.rest.Monster;
+import de.uniks.beastopia.teaml.rest.*;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.EncounterOpponentsService;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import de.uniks.beastopia.teaml.service.TrainerService;
+import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -91,6 +90,8 @@ public class EncounterController extends Controller {
     @Inject
     Provider<BeastInfoController> beastInfoControllerProvider;
     @Inject
+    Provider<EndScreenController> endScreenControllerProvider;
+    @Inject
     Provider<RenderBeastController> renderBeastControllerProvider;
     @Inject
     Provider<IngameController> ingameControllerProvider;
@@ -104,6 +105,8 @@ public class EncounterController extends Controller {
     EncounterOpponentsService encounterOpponentsService;
     @Inject
     Prefs prefs;
+    @Inject
+    EventListener eventListener;
 
     //monster on the substitute's bench
     @SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal"})
@@ -229,8 +232,6 @@ public class EncounterController extends Controller {
     }
 
     private void setNumberOfAttacks() {
-        //get no of possible attacks
-        System.out.println("no of attacks: " + ownMonster.abilities().size());
         if (ownMonster.abilities().size() == 1) {
             attackBox2.setVisible(false);
             attackBox3.setVisible(false);
@@ -402,13 +403,48 @@ public class EncounterController extends Controller {
                         , new AbilityMove("ability", abilityDto.id(), cache.getOpponent(enemyTrainer)._id()))
                 .observeOn(FX_SCHEDULER)
                 .subscribe(
-                        e -> {
-                            showOwnMonster(ownMonster);
-                            showEnemyMonster(enemyMonster); //TODO Update?
-                            if (ownMonster.currentAttributes().health() <= 0) {
-                                setNumberOfAttacks(); //Update AttackBoxes if changed beast or monster died
+                        e -> updateUIOnChange()
+                ));
+    }
+
+    public void updateUIOnChange() {
+        // Get the monster from the current opponents of the encounter
+        disposables.add(encounterOpponentsService.getEncounterOpponents(cache.getJoinedRegion()._id(), cache.getCurrentEncounter()._id())
+                .observeOn(FX_SCHEDULER)
+                .subscribe(o -> {
+                    // When there is no opponent registered on the server anymore = lose
+                    if (o.size() == 0) {
+                        beastInfoController1.hpLabel.setText("0 / " + ownMonster.attributes().health() + " (HP)");
+                        beastInfoController1.setLifeBarValue(0);
+
+                        EndScreenController controller = endScreenControllerProvider.get();
+                        controller.setWinner(false);
+                        controller.setLoserMonster1(ownMonster);
+                        if (allyMonster != null) {
+                            controller.setLoserMonster2(allyMonster);
+                        }
+                        controller.setWinnerMonster1(enemyMonster);
+                        if (enemyAllyMonster != null) {
+                            controller.setWinnerMonster2(enemyAllyMonster);
+                        }
+                        app.show(controller);
+                    } else {
+                        for (Opponent opponent : o) {
+                            // Check if the opponent is our trainers id
+                            if (opponent.trainer().equals(cache.getTrainer()._id())) {
+                                // If the monster has died during change, show 0 HP, otherwise the current HP of the monster
+                                if (opponent.monster() != null) {
+                                    ownMonster = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), opponent.monster()).blockingFirst();
+                                    beastInfoController1.hpLabel.setText(ownMonster.currentAttributes().health() + " / " + ownMonster.attributes().health() + " (HP)");
+                                    beastInfoController1.setLifeBarValue(ownMonster.currentAttributes().health() / (double) ownMonster.attributes().health());
+                                } else {
+                                    beastInfoController1.hpLabel.setText("0 / " + ownMonster.attributes().health() + " (HP)");
+                                    beastInfoController1.setLifeBarValue(0);
+                                }
+                                break;
                             }
                         }
-                ));
+                    }
+                }));
     }
 }
