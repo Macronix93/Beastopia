@@ -28,7 +28,7 @@ public class EncounterOpponentsService {
     }
 
     @SuppressWarnings("SameParameterValue")
-    Observable<Opponent> updateEncounterOpponent(String regionId, String encounterId, String opponentId, String monster, AbilityMove abilityMove) {
+    public Observable<Opponent> updateEncounterOpponent(String regionId, String encounterId, String opponentId, String monster, AbilityMove abilityMove) {
         Variant<AbilityMove, ChangeMonsterMove> move = new Variant<>();
         move.setT(abilityMove);
         return encounterOpponentsApiService.updateEncounterOpponent(regionId, encounterId, opponentId,
@@ -36,7 +36,7 @@ public class EncounterOpponentsService {
     }
 
     @SuppressWarnings("SameParameterValue")
-    Observable<Opponent> updateEncounterOpponent(String regionId, String encounterId, String opponentId, String monster, ChangeMonsterMove changeMonsterMove) {
+    public Observable<Opponent> updateEncounterOpponent(String regionId, String encounterId, String opponentId, String monster, ChangeMonsterMove changeMonsterMove) {
         Variant<AbilityMove, ChangeMonsterMove> move = new Variant<>();
         move.setU(changeMonsterMove);
         return encounterOpponentsApiService.updateEncounterOpponent(regionId, encounterId, opponentId,

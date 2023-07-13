@@ -3,8 +3,8 @@ package de.uniks.beastopia.teaml.controller.ingame.encounter;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.ingame.IngameController;
 import de.uniks.beastopia.teaml.rest.AbilityDto;
+import de.uniks.beastopia.teaml.rest.AbilityMove;
 import de.uniks.beastopia.teaml.rest.Monster;
-import de.uniks.beastopia.teaml.rest.Trainer;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.EncounterOpponentsService;
 import de.uniks.beastopia.teaml.service.PresetsService;
@@ -106,7 +106,7 @@ public class EncounterController extends Controller {
     Prefs prefs;
 
     //monster on the substitute's bench
-    @SuppressWarnings("FieldMayBeFinal")
+    @SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal"})
     private List<Monster> ownMonsters = new ArrayList<>();
     @SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal"})
     private List<Monster> allyMonsters = new ArrayList<>();
@@ -122,12 +122,16 @@ public class EncounterController extends Controller {
     private Monster enemyAllyMonster;
 
     @SuppressWarnings("FieldCanBeLocal")
-    private Trainer allyTrainer;
+    private String allyTrainer;
     @SuppressWarnings({"unused", "FieldCanBeLocal"})
-    private Trainer enemyTrainer;
+    private String enemyTrainer;
     @SuppressWarnings("FieldCanBeLocal")
-    private Trainer enemyAllyTrainer;
+    private String enemyAllyTrainer;
 
+    private AbilityDto ability1;
+    private AbilityDto ability2;
+    private AbilityDto ability3;
+    private AbilityDto ability4;
     EnemyBeastInfoController enemyBeastInfoController1;
     EnemyBeastInfoController enemyBeastInfoController2;
     RenderBeastController renderBeastController1;
@@ -162,7 +166,7 @@ public class EncounterController extends Controller {
         setAllyMonster(monster2);
         setEnemyMonster(monster3);
         setEnemyAllyMonster(monster4);*/
-       // this.ownMonster = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), cache.getTrainer().team().get(0)).blockingFirst();
+        // this.ownMonster = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), cache.getTrainer().team().get(0)).blockingFirst();
     }
 
     @Override
@@ -177,12 +181,7 @@ public class EncounterController extends Controller {
     public Parent render() {
         Parent parent = super.render();
 
-        beastInfoController1 = beastInfoControllerProvider.get().setMonster(ownMonster);
-        beastInfoBox.getChildren().addAll(beastInfoController1.render());
-        renderBeastController1 = renderBeastControllerProvider.get().setMonster1(ownMonster);
-        Parent ownMonster = renderBeastController1.render();
-        ownMonstersBox.getChildren().addAll(ownMonster);
-        HBox.setHgrow(ownMonster, Priority.ALWAYS);
+        showOwnMonster(ownMonster);
 
         if (allyMonster != null) {
             beastInfoController2 = beastInfoControllerProvider.get().setMonster(allyMonster);
@@ -194,12 +193,7 @@ public class EncounterController extends Controller {
             HBox.setHgrow(allyMonster, Priority.ALWAYS);
         }
 
-        enemyBeastInfoController1 = enemyBeastInfoControllerProvider.get().setMonster(enemyMonster);
-        enemyBeastInfo.getChildren().addAll(enemyBeastInfoController1.render());
-        renderBeastController2 = renderBeastControllerProvider.get().setMonster1(enemyMonster);
-        Parent enemyMonster = renderBeastController2.render();
-        enemyMonstersBox.getChildren().addAll(enemyMonster);
-        HBox.setHgrow(enemyMonster, Priority.ALWAYS);
+        showEnemyMonster(enemyMonster);
 
         if (enemyAllyMonster != null) {
             enemyBeastInfoController2 = enemyBeastInfoControllerProvider.get().setMonster(enemyAllyMonster);
@@ -214,6 +208,24 @@ public class EncounterController extends Controller {
         setNumberOfAttacks();
 
         return parent;
+    }
+
+    private void showOwnMonster(Monster ownMonster) {
+        beastInfoController1 = beastInfoControllerProvider.get().setMonster(ownMonster);
+        beastInfoBox.getChildren().addAll(beastInfoController1.render());
+        renderBeastController1 = renderBeastControllerProvider.get().setMonster1(ownMonster);
+        Parent parent = renderBeastController1.render();
+        ownMonstersBox.getChildren().addAll(parent);
+        HBox.setHgrow(parent, Priority.ALWAYS);
+    }
+
+    private void showEnemyMonster(Monster enemyMonster) {
+        enemyBeastInfoController1 = enemyBeastInfoControllerProvider.get().setMonster(enemyMonster);
+        enemyBeastInfo.getChildren().addAll(enemyBeastInfoController1.render());
+        renderBeastController2 = renderBeastControllerProvider.get().setMonster1(enemyMonster);
+        Parent parent = renderBeastController2.render();
+        enemyMonstersBox.getChildren().addAll(parent);
+        HBox.setHgrow(parent, Priority.ALWAYS);
     }
 
     private void setNumberOfAttacks() {
@@ -276,8 +288,18 @@ public class EncounterController extends Controller {
     }
 
     //setter methods for monsters
+    public EncounterController setOwnMonsters(List<Monster> ownMonsters) {
+        this.ownMonsters = ownMonsters;
+        return this;
+    }
+
     public EncounterController setOwnMonster(Monster ownMonster) {
         this.ownMonster = ownMonster;
+        return this;
+    }
+
+    public EncounterController setEnemyMonsters(List<Monster> enemyMonsters) {
+        this.enemyMonsters = enemyMonsters;
         return this;
     }
 
@@ -296,17 +318,17 @@ public class EncounterController extends Controller {
         return this;
     }
 
-    public EncounterController setAllyTrainer(Trainer allyTrainer) {
+    public EncounterController setAllyTrainer(String allyTrainer) {
         this.allyTrainer = allyTrainer;
         return this;
     }
 
-    public EncounterController setEnemyTrainer(Trainer enemyTrainer) {
+    public EncounterController setEnemyTrainer(String enemyTrainer) {
         this.enemyTrainer = enemyTrainer;
         return this;
     }
 
-    public EncounterController setEnemyAllyTrainer(Trainer enemyAllyTrainer) {
+    public EncounterController setEnemyAllyTrainer(String enemyAllyTrainer) {
         this.enemyAllyTrainer = enemyAllyTrainer;
         return this;
     }
@@ -319,22 +341,22 @@ public class EncounterController extends Controller {
     //methods for attack buttons
     @FXML
     public void executeAttack1() {
-        System.out.println("attack1");
+        setAttackWithClick(attackBox1, ability1);
     }
 
     @FXML
     public void executeAttack2() {
-        System.out.println("attack2");
+        setAttackWithClick(attackBox2, ability2);
     }
 
     @FXML
     public void executeAttack3() {
-        System.out.println("attack3");
+        setAttackWithClick(attackBox3, ability3);
     }
 
     @FXML
     public void executeAttack4() {
-        System.out.println("attack4");
+        setAttackWithClick(attackBox4, ability4);
     }
 
     //methods for setting labels in attack boxes
@@ -343,6 +365,7 @@ public class EncounterController extends Controller {
         attackTypeLabel1.setText("Type: " + abilityDto.type());
         accLabel1.setText("Accuracy: " + abilityDto.accuracy());
         powerLabel1.setText("Power: " + abilityDto.power());
+        ability1 = abilityDto;
     }
 
     private void setAttack2(AbilityDto abilityDto) {
@@ -350,6 +373,7 @@ public class EncounterController extends Controller {
         attackTypeLabel2.setText("Type: " + abilityDto.type());
         accLabel2.setText("Accuracy: " + abilityDto.accuracy());
         powerLabel2.setText("Power: " + abilityDto.power());
+        ability2 = abilityDto;
     }
 
     private void setAttack3(AbilityDto abilityDto) {
@@ -357,6 +381,7 @@ public class EncounterController extends Controller {
         attackTypeLabel3.setText("Type: " + abilityDto.type());
         accLabel3.setText("Accuracy: " + abilityDto.accuracy());
         powerLabel3.setText("Power: " + abilityDto.power());
+        ability3 = abilityDto;
     }
 
     private void setAttack4(AbilityDto abilityDto) {
@@ -364,5 +389,26 @@ public class EncounterController extends Controller {
         attackTypeLabel4.setText("Type: " + abilityDto.type());
         accLabel4.setText("Accuracy: " + abilityDto.accuracy());
         powerLabel4.setText("Power: " + abilityDto.power());
+        ability4 = abilityDto;
+    }
+
+    private void setAttackWithClick(VBox attackBox, AbilityDto abilityDto) {
+        System.out.println(abilityDto.toString());
+        System.out.println(cache.getOpponent(enemyTrainer).toString());
+        Monster before = ownMonster;
+        Monster beforeEnemy = enemyMonster;
+        disposables.add(encounterOpponentsService.updateEncounterOpponent(cache.getJoinedRegion()._id(),
+                        cache.getCurrentEncounter()._id(), cache.getOpponent(cache.getTrainer()._id())._id(), null
+                        , new AbilityMove("ability", abilityDto.id(), cache.getOpponent(enemyTrainer)._id()))
+                .observeOn(FX_SCHEDULER)
+                .subscribe(
+                        e -> {
+                            showOwnMonster(ownMonster);
+                            showEnemyMonster(enemyMonster); //TODO Update?
+                            if (ownMonster.currentAttributes().health() <= 0) {
+                                setNumberOfAttacks(); //Update AttackBoxes if changed beast or monster died
+                            }
+                        }
+                ));
     }
 }
