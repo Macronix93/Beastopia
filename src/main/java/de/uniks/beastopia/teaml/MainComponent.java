@@ -3,6 +3,9 @@ package de.uniks.beastopia.teaml;
 import dagger.BindsInstance;
 import dagger.Component;
 import de.uniks.beastopia.teaml.controller.auth.LoginController;
+import de.uniks.beastopia.teaml.controller.ingame.encounter.EndScreenController;
+import de.uniks.beastopia.teaml.controller.ingame.encounter.EncounterController;
+import de.uniks.beastopia.teaml.controller.ingame.encounter.EnemyBeastInfoController;
 import de.uniks.beastopia.teaml.modules.HttpModule;
 import de.uniks.beastopia.teaml.modules.MainModule;
 import de.uniks.beastopia.teaml.modules.PrefModule;
@@ -15,7 +18,15 @@ import javax.inject.Singleton;
 @Singleton
 public interface MainComponent {
 
+    //TODO: remove this
+    EndScreenController endScreenController();
+
     LoginController loginController();
+
+    //TODO: remove this
+    EnemyBeastInfoController enemyBeastInfoController();
+
+    EncounterController encounterController();
 
     Prefs prefs();
 

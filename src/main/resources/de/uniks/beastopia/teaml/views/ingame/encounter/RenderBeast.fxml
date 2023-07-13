@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Ellipse?>
+<VBox fx:id="monsterRenderBox" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="de.uniks.beastopia.teaml.controller.ingame.encounter.RenderBeastController">
+    <StackPane>
+        <Ellipse fx:id="ellipse" fill="#1fffca" radiusX="100.0" radiusY="125.0" stroke="BLACK" strokeType="INSIDE">
+            <StackPane.margin>
+                <Insets/>
+            </StackPane.margin>
+        </Ellipse>
+        <HBox fx:id="monsterContainer" alignment="CENTER" spacing="20.0">
+            <ImageView fx:id="firstMonster" fitHeight="125.0" fitWidth="125.0" pickOnBounds="true"
+                       preserveRatio="true"/>
+        </HBox>
+    </StackPane>
+</VBox>

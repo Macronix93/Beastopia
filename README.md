@@ -53,6 +53,12 @@ perfect - Flaticon</a>
 
 <a href="https://www.flaticon.com/de/kostenlose-icons/ui" title="ui Icons">Ui Icons erstellt von Stasy - Flaticon</a>
 
+<a target="_blank" href="https://icons8.com/icon/8ggStxqyboK5/star">Star</a> icon
+by <a target="_blank" href="https://icons8.com">Icons8</a>
+
+<a target="_blank" href="https://icons8.com/icon/4DpNVfpKdNK1/heart">Heart</a> icon
+by <a target="_blank" href="https://icons8.com">Icons8</a>
+
 Music
 by <a href="https://pixabay.com/users/geoffharvey-9096471/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=150611">
 Geoff Harvey</a>

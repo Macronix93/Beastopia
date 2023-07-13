@@ -102,6 +102,9 @@ public class App extends Application {
                 mainComponent.prefs().getTheme()
         );
 
+        //TODO: remove this, restore login screen
+        //show(mainComponent.enemyBeastInfoController());
+        //show(mainComponent.encounterController());
         show(mainComponent.loginController());
     }
 
