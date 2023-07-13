@@ -4,6 +4,7 @@ import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.ingame.IngameController;
 import de.uniks.beastopia.teaml.rest.AbilityDto;
 import de.uniks.beastopia.teaml.rest.Monster;
+import de.uniks.beastopia.teaml.rest.Opponent;
 import de.uniks.beastopia.teaml.rest.Trainer;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.EncounterOpponentsService;
@@ -130,6 +131,8 @@ public class EncounterController extends Controller {
     @SuppressWarnings("FieldCanBeLocal")
     private Trainer enemyAllyTrainer;
 
+    private boolean shouldUpdateUIOnChange = false;
+
     EnemyBeastInfoController enemyBeastInfoController1;
     EnemyBeastInfoController enemyBeastInfoController2;
     RenderBeastController renderBeastController1;
@@ -164,7 +167,7 @@ public class EncounterController extends Controller {
         setAllyMonster(monster2);
         setEnemyMonster(monster3);
         setEnemyAllyMonster(monster4);*/
-       // this.ownMonster = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), cache.getTrainer().team().get(0)).blockingFirst();
+        // this.ownMonster = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), cache.getTrainer().team().get(0)).blockingFirst();
     }
 
     @Override
@@ -215,6 +218,10 @@ public class EncounterController extends Controller {
 
         setNumberOfAttacks();
 
+        if (shouldUpdateUIOnChange) {
+            updateUIOnChange();
+        }
+
         return parent;
     }
 
@@ -253,33 +260,63 @@ public class EncounterController extends Controller {
     //onClicked leave encounter button
     @FXML
     public void leaveEncounter() {
-        //TODO: switch screen to map
         System.out.println("leave encounter");
 
         if (cache.getCurrentEncounter().isWild()) {
-            System.out.println("current encounter: " + cache.getCurrentEncounter() + " current opponent: " + cache.getCurrentOpponents().get(1));
+            disposables.add(encounterOpponentsService.deleteOpponent(cache.getJoinedRegion()._id(), cache.getCurrentEncounter()._id(), cache.getOpponent(cache.getTrainer()._id())._id())
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe(event -> {
+                        cache.setCurrentEncounter(null);
+                        cache.getCurrentOpponents().clear();
 
-            disposables.add(encounterOpponentsService.deleteOpponent(cache.getJoinedRegion()._id(), cache.getCurrentEncounter()._id(), cache.getCurrentOpponents().get(1)._id()).subscribe());
-
-            cache.setCurrentEncounter(null);
-            cache.getCurrentOpponents().clear();
-
-            IngameController controller = ingameControllerProvider.get();
-            controller.setRegion(cache.getJoinedRegion());
-            app.show(controller);
+                        IngameController controller = ingameControllerProvider.get();
+                        controller.setRegion(cache.getJoinedRegion());
+                        app.show(controller);
+                    }));
         }
     }
 
     //onClicked change monster button
     @FXML
     public void changeMonster() {
-        //TODO: switch screen to monster selection
-        System.out.println("change monster");
-
         ChangeBeastController controller = changeBeastControllerProvider.get();
         controller.setCurrentMonster(ownMonster);
         controller.setEncounterController(this);
         app.show(controller);
+    }
+
+    // Trying to update UI when monster changed
+    public void setToUpdateUIOnChange() {
+        this.shouldUpdateUIOnChange = true;
+    }
+
+    public void updateUIOnChange() {
+        // Get the monster from the current opponents of the encounter
+        disposables.add(encounterOpponentsService.getEncounterOpponents(cache.getJoinedRegion()._id(), cache.getCurrentEncounter()._id())
+                .observeOn(FX_SCHEDULER)
+                .subscribe(o -> {
+                    if (o.size() == 0) {
+                        System.out.println("battle over, we lost all mon!");
+                        beastInfoController1.hpLabel.setText("0 / " + ownMonster.attributes().health() + " (HP)");
+                        beastInfoController1.setLifeBarValue(0);
+                    } else {
+                        for (Opponent opponent : o) {
+                            // Check if the opponent is our trainers id
+                            if (opponent.trainer().equals(cache.getTrainer()._id())) {
+                                // If the monster has died during change, show 0 HP, otherwise the current HP of the monster
+                                if (opponent.monster() != null) {
+                                    ownMonster = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), opponent.monster()).blockingFirst();
+                                    beastInfoController1.hpLabel.setText(ownMonster.currentAttributes().health() + " / " + ownMonster.attributes().health() + " (HP)");
+                                    beastInfoController1.setLifeBarValue(ownMonster.currentAttributes().health() / (double) ownMonster.attributes().health());
+                                } else {
+                                    System.out.println("set hp to 0");
+                                    beastInfoController1.hpLabel.setText("0 / " + ownMonster.attributes().health() + " (HP)");
+                                    beastInfoController1.setLifeBarValue(0);
+                                }
+                            }
+                        }
+                    }
+                }));
     }
 
     //setter methods for monsters

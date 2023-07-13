@@ -84,11 +84,14 @@ public class StartFightNPCController extends Controller {
 
         return parent;
     }
+
     @FXML
     public void startFight() {
         disposables.add(encounterOpponentsService.getTrainerOpponents(cache.getJoinedRegion()._id(),
                         cache.getTrainer()._id())
                 .map(o -> {
+                    cache.setCurrentOpponents(o);
+
                     if (o.size() == 1) {
                         List<Monster> myMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), cache.getTrainer()._id()).blockingFirst();
                         List<Monster> enemyMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(0).trainer()).blockingFirst();

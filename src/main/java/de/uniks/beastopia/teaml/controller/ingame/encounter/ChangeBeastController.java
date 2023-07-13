@@ -84,6 +84,8 @@ public class ChangeBeastController extends Controller {
                     playerMonsters.addAll(monsters);
 
                     for (Monster monster : playerMonsters) {
+                        System.out.println("monster " + monster._id() + " hp: " + monster.currentAttributes().health());
+
                         ChangeBeastElementController controller = changeBeastElementControllerProvider.get()
                                 .setMonster(monster)
                                 .setParentController(this)
@@ -124,13 +126,29 @@ public class ChangeBeastController extends Controller {
         } else if (currentMonster._id().equals(fightingMonsters.get(0)._id())) {
             Dialog.error(resources.getString("error"), resources.getString("currentMonIsSame"));
         } else {
-            //TODO: Apply changes and send request to server (fix bug when sending request [variant])
-            disposables.add(encounterOpponentsService.updateEncounterOpponent(cache.getJoinedRegion()._id(), cache.getCurrentEncounter()._id(), cache.getCurrentOpponents().get(1)._id(),
-                            null, new ChangeMonsterMove("change-monster", fightingMonsters.get(0)._id()))
-                    .subscribe(update -> {
-                        encounterController.setOwnMonster(fightingMonsters.get(0));
-                        app.show(encounterController);
-                    }, Throwable::printStackTrace));
+            disposables.add(encounterOpponentsService.getTrainerOpponents(cache.getJoinedRegion()._id(), cache.getTrainer()._id())
+                    .subscribe(o -> {
+                                if (o.get(0).monster() == null) {
+                                    disposables.add(encounterOpponentsService.updateEncounterOpponent(cache.getJoinedRegion()._id(), cache.getCurrentEncounter()._id(), cache.getOpponent(cache.getTrainer()._id())._id(),
+                                                    fightingMonsters.get(0)._id(), new ChangeMonsterMove("change-monster", fightingMonsters.get(0)._id()))
+                                            .observeOn(FX_SCHEDULER)
+                                            .subscribe(update -> {
+                                                encounterController.setOwnMonster(fightingMonsters.get(0));
+                                                encounterController.setToUpdateUIOnChange();
+                                                app.show(encounterController);
+                                            }, Throwable::printStackTrace));
+                                } else {
+                                    disposables.add(encounterOpponentsService.updateEncounterOpponent(cache.getJoinedRegion()._id(), cache.getCurrentEncounter()._id(), cache.getOpponent(cache.getTrainer()._id())._id(),
+                                                    null, new ChangeMonsterMove("change-monster", fightingMonsters.get(0)._id()))
+                                            .observeOn(FX_SCHEDULER)
+                                            .subscribe(update -> {
+                                                encounterController.setOwnMonster(fightingMonsters.get(0));
+                                                encounterController.setToUpdateUIOnChange();
+                                                app.show(encounterController);
+                                            }, Throwable::printStackTrace));
+                                }
+                            }
+                    ));
         }
     }
 
