@@ -422,6 +422,19 @@ public class EncounterController extends Controller {
                             } else {
                                 enemyMonster = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), enemyTrainer, opponent.monster()).blockingFirst();
                                 enemyBeastInfoController1.setLifeBarValue((double) enemyMonster.currentAttributes().health() / (double) enemyMonster.attributes().health());
+                                if (enemyMonster.currentAttributes().health() <= 0) {
+                                    EndScreenController controller = endScreenControllerProvider.get();
+                                    controller.setWinner(true);
+                                    controller.setLoserMonster1(enemyMonster);
+                                    if (enemyAllyMonster != null) {
+                                        controller.setLoserMonster2(enemyAllyMonster);
+                                    }
+                                    controller.setWinnerMonster1(ownMonster);
+                                    if (allyMonster != null) {
+                                        controller.setWinnerMonster2(allyMonster);
+                                    }
+                                    app.show(controller);
+                                }
                             }
                         }
                     }
