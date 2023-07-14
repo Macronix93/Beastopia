@@ -3,9 +3,9 @@ package de.uniks.beastopia.teaml.controller.ingame.encounter;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.ingame.IngameController;
 import de.uniks.beastopia.teaml.rest.AbilityDto;
+import de.uniks.beastopia.teaml.rest.AbilityMove;
 import de.uniks.beastopia.teaml.rest.Monster;
 import de.uniks.beastopia.teaml.rest.Opponent;
-import de.uniks.beastopia.teaml.rest.Trainer;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.EncounterOpponentsService;
 import de.uniks.beastopia.teaml.service.PresetsService;
@@ -111,14 +111,13 @@ public class EncounterController extends Controller {
     Prefs prefs;
 
     //monster on the substitute's bench
-    @SuppressWarnings("FieldMayBeFinal")
+    @SuppressWarnings({"FieldCanBeLocal"})
     private List<Monster> ownMonsters = new ArrayList<>();
-    @SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal"})
-    private List<Monster> allyMonsters = new ArrayList<>();
-    @SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal"})
+    private final List<Monster> allyMonsters = new ArrayList<>();
+    @SuppressWarnings({"FieldCanBeLocal"})
     private List<Monster> enemyMonsters = new ArrayList<>();
-    @SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal"})
-    private List<Monster> enemyAllyMonsters = new ArrayList<>();
+
+    private final List<Monster> enemyAllyMonsters = new ArrayList<>();
 
     //monsters in the fight
     private Monster ownMonster;
@@ -126,15 +125,18 @@ public class EncounterController extends Controller {
     private Monster enemyMonster;
     private Monster enemyAllyMonster;
 
-    @SuppressWarnings("FieldCanBeLocal")
-    private Trainer allyTrainer;
-    @SuppressWarnings({"unused", "FieldCanBeLocal"})
-    private Trainer enemyTrainer;
-    @SuppressWarnings("FieldCanBeLocal")
-    private Trainer enemyAllyTrainer;
+    @SuppressWarnings({"FieldCanBeLocal"})
+    private String allyTrainer;
+    private String enemyTrainer;
+    @SuppressWarnings({"FieldCanBeLocal"})
+    private String enemyAllyTrainer;
 
     private boolean shouldUpdateUIOnChange = false;
 
+    private AbilityDto ability1;
+    private AbilityDto ability2;
+    private AbilityDto ability3;
+    private AbilityDto ability4;
     EnemyBeastInfoController enemyBeastInfoController1;
     EnemyBeastInfoController enemyBeastInfoController2;
     RenderBeastController renderBeastController1;
@@ -142,34 +144,8 @@ public class EncounterController extends Controller {
     BeastInfoController beastInfoController1;
     BeastInfoController beastInfoController2;
 
-    /*Trainer trainer = new Trainer(null, null, "1", "1", "user", "name", null, null,
-            1, null, 1, 1, 1, null);
-    Monster monster1 = new Monster(null, null,
-            "1", "1", 3, 1, 0, new MonsterAttributes(100, 100, 100, 100),
-            new MonsterAttributes(20, 10, 10, 5), Map.ofEntries(Map.entry("test1", 1), Map.entry("test2", 2), Map.entry("test3", 3)));
-    Monster monster2 = new Monster(null, null,
-            "1", "1", 1, 1, 0, new MonsterAttributes(100, 100, 100, 100),
-            new MonsterAttributes(20, 10, 10, 5), Map.ofEntries(Map.entry("1", 1), Map.entry("2", 2)));
-    Monster monster3 = new Monster(null, null,
-            "1", "1", 2, 1, 0, new MonsterAttributes(100, 100, 100, 100),
-            new MonsterAttributes(20, 10, 10, 5), Map.ofEntries(Map.entry("1", 1)));
-    Monster monster4 = new Monster(null, null,
-            "1", "1", 4, 1, 0, new MonsterAttributes(100, 100, 100, 100),
-            new MonsterAttributes(20, 10, 10, 5), Map.ofEntries(Map.entry("1", 1), Map.entry("2", 2), Map.entry("3", 3)));*/
-
-
     @Inject
     public EncounterController() {
-    }
-
-    @Override
-    public void init() {
-        super.init();
-        /*setOwnMonster(monster1);
-        setAllyMonster(monster2);
-        setEnemyMonster(monster3);
-        setEnemyAllyMonster(monster4);*/
-        // this.ownMonster = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), cache.getTrainer().team().get(0)).blockingFirst();
     }
 
     @Override
@@ -228,8 +204,6 @@ public class EncounterController extends Controller {
     }
 
     private void setNumberOfAttacks() {
-        //get no of possible attacks
-        System.out.println("no of attacks: " + ownMonster.abilities().size());
         if (ownMonster.abilities().size() == 1) {
             attackBox2.setVisible(false);
             attackBox3.setVisible(false);
@@ -292,6 +266,125 @@ public class EncounterController extends Controller {
         this.shouldUpdateUIOnChange = true;
     }
 
+    //setter methods for monsters
+    public EncounterController setOwnMonsters(List<Monster> ownMonsters) {
+        this.ownMonsters = ownMonsters;
+        return this;
+    }
+
+    public EncounterController setOwnMonster(Monster ownMonster) {
+        this.ownMonster = ownMonster;
+        return this;
+    }
+
+    public EncounterController setEnemyMonsters(List<Monster> enemyMonsters) {
+        this.enemyMonsters = enemyMonsters;
+        return this;
+    }
+
+    public EncounterController setAllyMonster(Monster allyMonster) {
+        this.allyMonster = allyMonster;
+        return this;
+    }
+
+    public EncounterController setEnemyMonster(Monster enemyMonster) {
+        this.enemyMonster = enemyMonster;
+        return this;
+    }
+
+    public EncounterController setEnemyAllyMonster(Monster enemyAllyMonster) {
+        this.enemyAllyMonster = enemyAllyMonster;
+        return this;
+    }
+
+    public EncounterController setAllyTrainer(String allyTrainer) {
+        this.allyTrainer = allyTrainer;
+        return this;
+    }
+
+    public EncounterController setEnemyTrainer(String enemyTrainer) {
+        this.enemyTrainer = enemyTrainer;
+        return this;
+    }
+
+    public EncounterController setEnemyAllyTrainer(String enemyAllyTrainer) {
+        this.enemyAllyTrainer = enemyAllyTrainer;
+        return this;
+    }
+
+    @Override
+    public String getTitle() {
+        return resources.getString("titleEncounter");
+    }
+
+    //methods for attack buttons
+    @FXML
+    public void executeAttack1() {
+        setAttackWithClick(attackBox1, ability1);
+    }
+
+    @FXML
+    public void executeAttack2() {
+        setAttackWithClick(attackBox2, ability2);
+    }
+
+    @FXML
+    public void executeAttack3() {
+        setAttackWithClick(attackBox3, ability3);
+    }
+
+    @FXML
+    public void executeAttack4() {
+        setAttackWithClick(attackBox4, ability4);
+    }
+
+    //methods for setting labels in attack boxes
+    private void setAttack1(AbilityDto abilityDto) {
+        attackNameLabel1.setText(abilityDto.name());
+        attackTypeLabel1.setText("Type: " + abilityDto.type());
+        accLabel1.setText("Accuracy: " + abilityDto.accuracy());
+        powerLabel1.setText("Power: " + abilityDto.power());
+        ability1 = abilityDto;
+    }
+
+    private void setAttack2(AbilityDto abilityDto) {
+        attackNameLabel2.setText(abilityDto.name());
+        attackTypeLabel2.setText("Type: " + abilityDto.type());
+        accLabel2.setText("Accuracy: " + abilityDto.accuracy());
+        powerLabel2.setText("Power: " + abilityDto.power());
+        ability2 = abilityDto;
+    }
+
+    private void setAttack3(AbilityDto abilityDto) {
+        attackNameLabel3.setText(abilityDto.name());
+        attackTypeLabel3.setText("Type: " + abilityDto.type());
+        accLabel3.setText("Accuracy: " + abilityDto.accuracy());
+        powerLabel3.setText("Power: " + abilityDto.power());
+        ability3 = abilityDto;
+    }
+
+    private void setAttack4(AbilityDto abilityDto) {
+        attackNameLabel4.setText(abilityDto.name());
+        attackTypeLabel4.setText("Type: " + abilityDto.type());
+        accLabel4.setText("Accuracy: " + abilityDto.accuracy());
+        powerLabel4.setText("Power: " + abilityDto.power());
+        ability4 = abilityDto;
+    }
+
+    private void setAttackWithClick(VBox attackBox, AbilityDto abilityDto) {
+        System.out.println(abilityDto.toString());
+        System.out.println(cache.getOpponentByTrainerID(enemyTrainer).toString());
+        Monster before = ownMonster;
+        Monster beforeEnemy = enemyMonster;
+        disposables.add(encounterOpponentsService.updateEncounterOpponent(cache.getJoinedRegion()._id(),
+                        cache.getCurrentEncounter()._id(), cache.getOpponentByTrainerID(cache.getTrainer()._id())._id(), null
+                        , new AbilityMove("ability", abilityDto.id(), enemyTrainer))
+                .observeOn(FX_SCHEDULER)
+                .subscribe(
+                        e -> updateUIOnChange()
+                ));
+    }
+
     public void updateUIOnChange() {
         // Get the monster from the current opponents of the encounter
         disposables.add(encounterOpponentsService.getEncounterOpponents(cache.getJoinedRegion()._id(), cache.getCurrentEncounter()._id())
@@ -327,100 +420,25 @@ public class EncounterController extends Controller {
                                     beastInfoController1.setLifeBarValue(0);
                                 }
                                 break;
+                            } else {
+                                enemyMonster = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), enemyTrainer, opponent.monster()).blockingFirst();
+                                enemyBeastInfoController1.setLifeBarValue((double) enemyMonster.currentAttributes().health() / (double) enemyMonster.attributes().health());
+                                if (enemyMonster.currentAttributes().health() <= 0) {
+                                    EndScreenController controller = endScreenControllerProvider.get();
+                                    controller.setWinner(true);
+                                    controller.setLoserMonster1(enemyMonster);
+                                    if (enemyAllyMonster != null) {
+                                        controller.setLoserMonster2(enemyAllyMonster);
+                                    }
+                                    controller.setWinnerMonster1(ownMonster);
+                                    if (allyMonster != null) {
+                                        controller.setWinnerMonster2(allyMonster);
+                                    }
+                                    app.show(controller);
+                                }
                             }
                         }
                     }
                 }));
-    }
-
-    //setter methods for monsters
-    public EncounterController setOwnMonster(Monster ownMonster) {
-        this.ownMonster = ownMonster;
-        return this;
-    }
-
-    public EncounterController setAllyMonster(Monster allyMonster) {
-        this.allyMonster = allyMonster;
-        return this;
-    }
-
-    public EncounterController setEnemyMonster(Monster enemyMonster) {
-        this.enemyMonster = enemyMonster;
-        return this;
-    }
-
-    public EncounterController setEnemyAllyMonster(Monster enemyAllyMonster) {
-        this.enemyAllyMonster = enemyAllyMonster;
-        return this;
-    }
-
-    public EncounterController setAllyTrainer(Trainer allyTrainer) {
-        this.allyTrainer = allyTrainer;
-        return this;
-    }
-
-    public EncounterController setEnemyTrainer(Trainer enemyTrainer) {
-        this.enemyTrainer = enemyTrainer;
-        return this;
-    }
-
-    public EncounterController setEnemyAllyTrainer(Trainer enemyAllyTrainer) {
-        this.enemyAllyTrainer = enemyAllyTrainer;
-        return this;
-    }
-
-    @Override
-    public String getTitle() {
-        return resources.getString("titleEncounter");
-    }
-
-    //methods for attack buttons
-    @FXML
-    public void executeAttack1() {
-        System.out.println("attack1");
-    }
-
-    @FXML
-    public void executeAttack2() {
-        System.out.println("attack2");
-    }
-
-    @FXML
-    public void executeAttack3() {
-        System.out.println("attack3");
-    }
-
-    @FXML
-    public void executeAttack4() {
-        System.out.println("attack4");
-    }
-
-    //methods for setting labels in attack boxes
-    private void setAttack1(AbilityDto abilityDto) {
-        attackNameLabel1.setText(abilityDto.name());
-        attackTypeLabel1.setText("Type: " + abilityDto.type());
-        accLabel1.setText("Accuracy: " + abilityDto.accuracy());
-        powerLabel1.setText("Power: " + abilityDto.power());
-    }
-
-    private void setAttack2(AbilityDto abilityDto) {
-        attackNameLabel2.setText(abilityDto.name());
-        attackTypeLabel2.setText("Type: " + abilityDto.type());
-        accLabel2.setText("Accuracy: " + abilityDto.accuracy());
-        powerLabel2.setText("Power: " + abilityDto.power());
-    }
-
-    private void setAttack3(AbilityDto abilityDto) {
-        attackNameLabel3.setText(abilityDto.name());
-        attackTypeLabel3.setText("Type: " + abilityDto.type());
-        accLabel3.setText("Accuracy: " + abilityDto.accuracy());
-        powerLabel3.setText("Power: " + abilityDto.power());
-    }
-
-    private void setAttack4(AbilityDto abilityDto) {
-        attackNameLabel4.setText(abilityDto.name());
-        attackTypeLabel4.setText("Type: " + abilityDto.type());
-        accLabel4.setText("Accuracy: " + abilityDto.accuracy());
-        powerLabel4.setText("Power: " + abilityDto.power());
     }
 }
