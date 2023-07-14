@@ -55,7 +55,6 @@ public class DirectMessageController extends Controller {
     ChatWindowController controller;
     private boolean preventDefaultGroupLoading = false;
 
-
     @Inject
     public DirectMessageController() {
 
