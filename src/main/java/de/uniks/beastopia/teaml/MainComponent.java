@@ -23,11 +23,6 @@ public interface MainComponent {
 
     LoginController loginController();
 
-    //TODO: remove this
-    EnemyBeastInfoController enemyBeastInfoController();
-
-    EncounterController encounterController();
-
     Prefs prefs();
 
     ThemeSettings themeSettings();

@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
-<VBox minWidth="-Infinity" prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: black;"
+<VBox minWidth="-Infinity" prefHeight="200.0" prefWidth="221.0" style="-fx-border-color: black;"
       xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="de.uniks.beastopia.teaml.controller.ingame.UserInfoController">
     <HBox alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="75.0" prefWidth="204.0"
@@ -17,7 +17,8 @@
         <ImageView fx:id="avatarImageView" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true"/>
         <Separator prefWidth="200.0" visible="false" HBox.hgrow="ALWAYS"/>
         <VBox alignment="CENTER">
-            <Text fx:id="nameText" strokeType="OUTSIDE" strokeWidth="0.0" text="Name">
+            <Text fx:id="nameText" strokeType="OUTSIDE" strokeWidth="0.0" text="Name" textAlignment="CENTER"
+                  wrappingWidth="90.0">
                 <font>
                     <Font name="System Bold" size="17.0"/>
                 </font>
