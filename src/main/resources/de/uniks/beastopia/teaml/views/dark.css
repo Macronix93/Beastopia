@@ -126,7 +126,7 @@
 #achievements,
 #VBoxBeastList,
 #VBoxBeastDetail {
-    -fx-background-color: #4C5250CF;
+    -fx-background-color: #4C5250;
 }
 
 #scoreBoardTitle {
@@ -180,7 +180,16 @@ Text {
 .scroll-pane .viewport {
     -fx-background-color: transparent;
     -fx-border-color: #4C5250CF;
-    -fx-border-width: 1;
+    -fx-border-width: 0;
+}
+
+#users,
+#users .viewport,
+#addedUsers,
+#addedUsers .viewport {
+    -fx-background-color: transparent;
+    -fx-border-color: #4C5250CF;
+    -fx-border-width: 2;
 }
 
 .text-area {
