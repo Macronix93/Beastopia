@@ -2,7 +2,10 @@ package de.uniks.beastopia.teaml.controller.ingame.encounter;
 
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.ingame.IngameController;
-import de.uniks.beastopia.teaml.rest.*;
+import de.uniks.beastopia.teaml.rest.AbilityDto;
+import de.uniks.beastopia.teaml.rest.AbilityMove;
+import de.uniks.beastopia.teaml.rest.Monster;
+import de.uniks.beastopia.teaml.rest.Opponent;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.EncounterOpponentsService;
 import de.uniks.beastopia.teaml.service.PresetsService;
@@ -376,7 +379,7 @@ public class EncounterController extends Controller {
         Monster before = ownMonster;
         Monster beforeEnemy = enemyMonster;
         disposables.add(encounterOpponentsService.updateEncounterOpponent(cache.getJoinedRegion()._id(),
-                        cache.getCurrentEncounter()._id(),cache.getOpponentByTrainerID(cache.getTrainer()._id())._id(), null
+                        cache.getCurrentEncounter()._id(), cache.getOpponentByTrainerID(cache.getTrainer()._id())._id(), null
                         , new AbilityMove("ability", abilityDto.id(), enemyTrainer))
                 .observeOn(FX_SCHEDULER)
                 .subscribe(
