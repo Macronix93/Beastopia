@@ -29,7 +29,7 @@
         </Label>
     </HBox>
     <HBox alignment="CENTER" GridPane.columnIndex="1">
-        <Label fx:id="chatName" text="ChatName">
+        <Label fx:id="chatNameLabel" text="ChatName">
             <font>
                 <Font size="18.0"/>
             </font>

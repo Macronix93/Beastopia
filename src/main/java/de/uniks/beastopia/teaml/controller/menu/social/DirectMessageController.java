@@ -3,6 +3,7 @@ package de.uniks.beastopia.teaml.controller.menu.social;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Group;
 import de.uniks.beastopia.teaml.rest.User;
+import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.GroupListService;
 import de.uniks.beastopia.teaml.service.MessageService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
@@ -39,6 +40,8 @@ public class DirectMessageController extends Controller {
     ChatListController chatListController;
     @Inject
     TokenStorage tokenStorage;
+    @Inject
+    DataCache cache;
     @FXML
     public GridPane grid;
     @FXML
@@ -46,7 +49,7 @@ public class DirectMessageController extends Controller {
     @FXML
     public TextField chatInput;
     @FXML
-    public Label chatName;
+    public Label chatNameLabel;
     private Node rightSide;
     private Group currentGroup;
     ChatWindowController controller;
@@ -163,6 +166,18 @@ public class DirectMessageController extends Controller {
             controller.destroy();
         }
         controller = chatWindowControllerProvider.get().setupChatWindowController(group);
+
+        if (!groupListService.isSingleChat(group)) {
+            chatNameLabel.setText(group.name());
+        } else {
+            List<String> memberList = group.members();
+            if (memberList.get(0).equals(tokenStorage.getCurrentUser()._id())) {
+                chatNameLabel.setText(cache.getUser(memberList.get(1)).name());
+            } else {
+                chatNameLabel.setText(cache.getUser(memberList.get(0)).name());
+            }
+        }
+
         controller.init();
         rightSide = controller.render();
         grid.add(rightSide, 1, 1);

@@ -5,6 +5,8 @@ import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.controller.menu.MenuController;
 import de.uniks.beastopia.teaml.rest.Group;
 import de.uniks.beastopia.teaml.rest.Message;
+import de.uniks.beastopia.teaml.service.DataCache;
+import de.uniks.beastopia.teaml.service.GroupListService;
 import de.uniks.beastopia.teaml.service.MessageService;
 import de.uniks.beastopia.teaml.sockets.EventListener;
 import io.reactivex.rxjava3.core.Observable;
@@ -38,6 +40,12 @@ class DirectMessageControllerTest extends ApplicationTest {
     EventListener eventListener;
     @Mock
     MessageService messageService;
+    @SuppressWarnings("unused")
+    @Mock
+    GroupListService groupListService;
+    @SuppressWarnings("unused")
+    @Mock
+    DataCache dataCache;
     @Spy
     @SuppressWarnings("unused")
     final
@@ -60,6 +68,7 @@ class DirectMessageControllerTest extends ApplicationTest {
         when(mocked.setupChatWindowController(any())).thenReturn(mocked);
         when(mocked.render()).thenReturn(new Label("chatWindow"));
         when(chatWindowControllerProvider.get()).thenReturn(mocked);
+
 
         app.start(stage);
         app.show(directMessageController);
