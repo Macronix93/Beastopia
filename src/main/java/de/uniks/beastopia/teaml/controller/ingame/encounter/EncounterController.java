@@ -143,34 +143,8 @@ public class EncounterController extends Controller {
     BeastInfoController beastInfoController1;
     BeastInfoController beastInfoController2;
 
-    /*Trainer trainer = new Trainer(null, null, "1", "1", "user", "name", null, null,
-            1, null, 1, 1, 1, null);
-    Monster monster1 = new Monster(null, null,
-            "1", "1", 3, 1, 0, new MonsterAttributes(100, 100, 100, 100),
-            new MonsterAttributes(20, 10, 10, 5), Map.ofEntries(Map.entry("test1", 1), Map.entry("test2", 2), Map.entry("test3", 3)));
-    Monster monster2 = new Monster(null, null,
-            "1", "1", 1, 1, 0, new MonsterAttributes(100, 100, 100, 100),
-            new MonsterAttributes(20, 10, 10, 5), Map.ofEntries(Map.entry("1", 1), Map.entry("2", 2)));
-    Monster monster3 = new Monster(null, null,
-            "1", "1", 2, 1, 0, new MonsterAttributes(100, 100, 100, 100),
-            new MonsterAttributes(20, 10, 10, 5), Map.ofEntries(Map.entry("1", 1)));
-    Monster monster4 = new Monster(null, null,
-            "1", "1", 4, 1, 0, new MonsterAttributes(100, 100, 100, 100),
-            new MonsterAttributes(20, 10, 10, 5), Map.ofEntries(Map.entry("1", 1), Map.entry("2", 2), Map.entry("3", 3)));*/
-
-
     @Inject
     public EncounterController() {
-    }
-
-    @Override
-    public void init() {
-        super.init();
-        /*setOwnMonster(monster1);
-        setAllyMonster(monster2);
-        setEnemyMonster(monster3);
-        setEnemyAllyMonster(monster4);*/
-       // this.ownMonster = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), cache.getTrainer().team().get(0)).blockingFirst();
     }
 
     @Override
@@ -402,8 +376,8 @@ public class EncounterController extends Controller {
         Monster before = ownMonster;
         Monster beforeEnemy = enemyMonster;
         disposables.add(encounterOpponentsService.updateEncounterOpponent(cache.getJoinedRegion()._id(),
-                        cache.getCurrentEncounter()._id(), cache.getOpponent(cache.getTrainer()._id())._id(), null
-                        , new AbilityMove("ability", abilityDto.id(), cache.getOpponent(enemyTrainer)._id()))
+                        cache.getCurrentEncounter()._id(),cache.getOpponentByTrainerID(cache.getTrainer()._id())._id(), null
+                        , new AbilityMove("ability", abilityDto.id(), enemyTrainer))
                 .observeOn(FX_SCHEDULER)
                 .subscribe(
                         e -> updateUIOnChange()
@@ -445,6 +419,9 @@ public class EncounterController extends Controller {
                                     beastInfoController1.setLifeBarValue(0);
                                 }
                                 break;
+                            } else {
+                                enemyMonster = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), enemyTrainer, opponent.monster()).blockingFirst();
+                                enemyBeastInfoController1.setLifeBarValue((double) enemyMonster.currentAttributes().health() / (double) enemyMonster.attributes().health());
                             }
                         }
                     }
