@@ -756,7 +756,7 @@ public class IngameController extends Controller {
                     PixelReader reader = image.getPixelReader();
                     WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
                     if (trainer.npc().encountered().contains(cache.getTrainer()._id())) {
-                        talk(newImage, "Welcome back! \n You already received one starter Beast, have a nice day!"
+                        talk(newImage, " Welcome back! \n You already received one starter Beast, have a nice day! "
                                 , null, null, null);
                     } else {
                         List<String> beastNames = new ArrayList<>();
@@ -769,7 +769,7 @@ public class IngameController extends Controller {
                             Image beastImage = presetsService.getMonsterImage(id).blockingFirst();
                             beastImages.add(beastImage);
                         }
-                        talk(newImage, "Welcome! \n Please select a starter Beast.", beastNames, beastImages, (i -> {
+                        talk(newImage, " Welcome! \n Please select a starter Beast. ", beastNames, beastImages, (i -> {
                             String message = "Details: " + monsterTypeDtoList.get(i).name() + "\n" + monsterTypeDtoList.get(i).description();
                             talk(newImage, message, List.of("Take it!", "I don't want this one"), null, (j -> {
                                 if (j == 0) {
@@ -791,7 +791,7 @@ public class IngameController extends Controller {
                     Rectangle2D viewPort = new Rectangle2D(3 * 96, 32, 16, 32);
                     PixelReader reader = image.getPixelReader();
                     WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
-                    talk(newImage, "Hello! \t what can I do for you?", List.of("Heal all Beasts"), null, (i -> {
+                    talk(newImage, " Hello! \n what can I do for you? ", List.of("Heal all Beasts"), null, (i -> {
                         udpEventListener.send(createTalkMessage(cache.getTrainer()._id(), trainer._id(), Optional.empty()));
                         closeTalk();
                     }));
