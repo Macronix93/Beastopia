@@ -168,7 +168,16 @@
 .scroll-pane .viewport {
     -fx-background-color: transparent;
     -fx-border-color: #82B366;
-    -fx-border-width: 1;
+    -fx-border-width: 0;
+}
+
+#users,
+#users .viewport,
+#addedUsers,
+#addedUsers .viewport {
+    -fx-background-color: transparent;
+    -fx-border-color: #82B366;
+    -fx-border-width: 2;
 }
 
 .text-area {
