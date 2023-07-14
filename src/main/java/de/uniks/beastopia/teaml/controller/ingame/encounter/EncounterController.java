@@ -200,6 +200,10 @@ public class EncounterController extends Controller {
             updateUIOnChange();
         }
 
+        if (!cache.getCurrentEncounter().isWild()) {
+            leaveEncounter.setVisible(false);
+        }
+
         return parent;
     }
 
