@@ -36,9 +36,9 @@ public class StartFightNPCController extends Controller {
     EncounterController encounterController;
     @Inject
     PresetsService presetsService;
-    private int myTrainer = -5;
-    private int enemyTrainer = -5;
-    private int enemyAllyTrainer = -5;
+    private int myTrainerOpponentIndex = -5;
+    private int enemyTrainerOpponentIndex = -5;
+    private int enemyAllyTrainerOpponentIndex = -5;
 
     @Inject
     public StartFightNPCController() {
@@ -94,36 +94,36 @@ public class StartFightNPCController extends Controller {
                     if (o.size() == 2) {
                         for (int i = 0; i < o.size(); i++) {
                             if (o.get(i).trainer().equals(cache.getTrainer()._id())) {
-                                myTrainer = i;
+                                myTrainerOpponentIndex = i;
                             } else {
-                                enemyTrainer = i;
+                                enemyTrainerOpponentIndex = i;
                             }
                         }
                     } else if (o.size() == 3) {
                         for (int i = 0; i < o.size(); i++) {
                             if (o.get(i).trainer().equals(cache.getTrainer()._id())) {
-                                myTrainer = i;
+                                myTrainerOpponentIndex = i;
                             } else {
-                                if (enemyTrainer == -5) {
-                                    enemyTrainer = i;
+                                if (enemyTrainerOpponentIndex == -5) {
+                                    enemyTrainerOpponentIndex = i;
                                 } else {
-                                    enemyAllyTrainer = i;
+                                    enemyAllyTrainerOpponentIndex = i;
                                 }
                             }
                         }
                     }
 
                     List<Monster> myMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), cache.getTrainer()._id()).blockingFirst();
-                    List<Monster> enemyMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(enemyTrainer).trainer()).blockingFirst();
-                    encounterController.setEnemyTrainer(o.get(enemyTrainer).trainer());
+                    List<Monster> enemyMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(enemyTrainerOpponentIndex).trainer()).blockingFirst();
+                    encounterController.setEnemyTrainer(o.get(enemyTrainerOpponentIndex).trainer());
                     //noinspection OptionalGetWithoutIsPresent
                     encounterController.setOwnMonster(myMonsters.stream().filter(m -> m._id().equals(cache.getTrainer().team().stream().findFirst().get())).findFirst().orElseThrow());
-                    encounterController.setEnemyMonster(enemyMonsters.stream().filter(m -> m._id().equals(o.get(enemyTrainer).monster())).findFirst().orElseThrow());
+                    encounterController.setEnemyMonster(enemyMonsters.stream().filter(m -> m._id().equals(o.get(enemyTrainerOpponentIndex).monster())).findFirst().orElseThrow());
 
                     if (o.size() == 3) {
                         List<Monster> enemyAllyMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(1).trainer()).blockingFirst();
-                        encounterController.setEnemyAllyTrainer((o.get(enemyAllyTrainer).trainer()));
-                        encounterController.setEnemyAllyMonster(enemyAllyMonsters.stream().filter(m -> m._id().equals(o.get(enemyAllyTrainer).monster())).findFirst().orElseThrow());
+                        encounterController.setEnemyAllyTrainer((o.get(enemyAllyTrainerOpponentIndex).trainer()));
+                        encounterController.setEnemyAllyMonster(enemyAllyMonsters.stream().filter(m -> m._id().equals(o.get(enemyAllyTrainerOpponentIndex).monster())).findFirst().orElseThrow());
                     }
                     return o;
                 })

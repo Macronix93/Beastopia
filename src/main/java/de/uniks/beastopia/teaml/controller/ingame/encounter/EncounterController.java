@@ -111,14 +111,13 @@ public class EncounterController extends Controller {
     Prefs prefs;
 
     //monster on the substitute's bench
-    @SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal"})
+    @SuppressWarnings({"FieldCanBeLocal"})
     private List<Monster> ownMonsters = new ArrayList<>();
-    @SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal"})
-    private List<Monster> allyMonsters = new ArrayList<>();
-    @SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal"})
+    private final List<Monster> allyMonsters = new ArrayList<>();
+    @SuppressWarnings({"FieldCanBeLocal"})
     private List<Monster> enemyMonsters = new ArrayList<>();
-    @SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal"})
-    private List<Monster> enemyAllyMonsters = new ArrayList<>();
+
+    private final List<Monster> enemyAllyMonsters = new ArrayList<>();
 
     //monsters in the fight
     private Monster ownMonster;
@@ -126,11 +125,10 @@ public class EncounterController extends Controller {
     private Monster enemyMonster;
     private Monster enemyAllyMonster;
 
-    @SuppressWarnings("FieldCanBeLocal")
+    @SuppressWarnings({"FieldCanBeLocal"})
     private String allyTrainer;
-    @SuppressWarnings({"unused", "FieldCanBeLocal"})
     private String enemyTrainer;
-    @SuppressWarnings("FieldCanBeLocal")
+    @SuppressWarnings({"FieldCanBeLocal"})
     private String enemyAllyTrainer;
 
     private boolean shouldUpdateUIOnChange = false;
