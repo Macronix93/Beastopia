@@ -828,55 +828,19 @@ public class IngameController extends Controller {
 
     public void handleBeastList(KeyEvent keyEvent) {
         if (keyEvent.getCode().equals(KeyCode.B) && (currentMenu == MENU_NONE || currentMenu == MENU_BEASTLIST)) {
-            if (scoreBoardLayout.getChildren().contains(beastListParent)) {
-                scoreBoardLayout.getChildren().remove(beastListParent);
-                scoreBoardLayout.getChildren().remove(beastDetailParent);
-                lastMonster = null;
-                currentMenu = MENU_NONE;
-            } else {
-                scoreBoardLayout.getChildren().add(beastListParent);
-                currentMenu = MENU_BEASTLIST;
-            }
+            openBeastlist();
         }
     }
 
     private void handleScoreboard(KeyEvent keyEvent) {
         if (keyEvent.getCode().equals(KeyCode.N) && (currentMenu == MENU_NONE || currentMenu == MENU_SCOREBOARD)) {
-            if (scoreBoardLayout.getChildren().contains(scoreBoardParent)) {
-                scoreBoardLayout.getChildren().remove(scoreBoardParent);
-                currentMenu = MENU_NONE;
-            } else {
-                scoreBoardLayout.getChildren().add(scoreBoardParent);
-                currentMenu = MENU_SCOREBOARD;
-            }
+            openScoreboard();
         }
     }
 
     private void handlePauseMenu(KeyEvent keyEvent) {
         if (keyEvent.getCode().equals(KeyCode.ESCAPE) && (currentMenu == MENU_NONE || currentMenu == MENU_PAUSE)) {
-            if (pauseMenuLayout.getChildren().contains(pauseMenuParent)) {
-                for (Node tile : tilePane.getChildren()) {
-                    if (tile instanceof ImageView imageView) {
-                        imageView.setFitWidth(TILE_SIZE + 1);
-                        imageView.setFitHeight(TILE_SIZE + 1);
-                    }
-                    tile.setOpacity(1);
-                }
-                pauseHint.setOpacity(1);
-                pauseMenuLayout.getChildren().remove(pauseMenuParent);
-                currentMenu = MENU_NONE;
-            } else {
-                for (Node tile : tilePane.getChildren()) {
-                    if (tile instanceof ImageView imageView) {
-                        imageView.setFitWidth(TILE_SIZE);
-                        imageView.setFitHeight(TILE_SIZE);
-                    }
-                    tile.setOpacity(0.5);
-                }
-                pauseHint.setOpacity(0);
-                pauseMenuLayout.getChildren().add(pauseMenuParent);
-                currentMenu = MENU_PAUSE;
-            }
+            openPauseMenu();
         }
     }
 
@@ -1018,6 +982,75 @@ public class IngameController extends Controller {
                     }
                 }
             }
+        }
+    }
+
+    @FXML
+    public void clickOnMapButton() {
+        MapController map = mapControllerProvider.get();
+        app.show(map);
+    }
+
+    @FXML
+    public void clickOnBeastListButton() {
+        openBeastlist();
+    }
+
+    @FXML
+    public void clickOnScoreboardButton() {
+        openScoreboard();
+    }
+
+    @FXML
+    public void clickOnPauseMenuButton() {
+        openPauseMenu();
+    }
+
+    public void openBeastlist() {
+        if (scoreBoardLayout.getChildren().contains(beastListParent)) {
+            scoreBoardLayout.getChildren().remove(beastListParent);
+            scoreBoardLayout.getChildren().remove(beastDetailParent);
+            lastMonster = null;
+            currentMenu = MENU_NONE;
+        } else {
+            scoreBoardLayout.getChildren().add(beastListParent);
+            currentMenu = MENU_BEASTLIST;
+        }
+    }
+
+    public void openScoreboard() {
+        if (scoreBoardLayout.getChildren().contains(scoreBoardParent)) {
+            scoreBoardLayout.getChildren().remove(scoreBoardParent);
+            currentMenu = MENU_NONE;
+        } else {
+            scoreBoardLayout.getChildren().add(scoreBoardParent);
+            currentMenu = MENU_SCOREBOARD;
+        }
+    }
+
+    public void openPauseMenu() {
+        if (pauseMenuLayout.getChildren().contains(pauseMenuParent)) {
+            for (Node tile : tilePane.getChildren()) {
+                if (tile instanceof ImageView imageView) {
+                    imageView.setFitWidth(TILE_SIZE + 1);
+                    imageView.setFitHeight(TILE_SIZE + 1);
+                }
+                tile.setOpacity(1);
+            }
+            pauseHint.setOpacity(1);
+            pauseMenuLayout.getChildren().remove(pauseMenuParent);
+            currentMenu = MENU_NONE;
+        } else {
+            for (Node tile : tilePane.getChildren()) {
+                if (tile instanceof ImageView imageView) {
+                    imageView.setFitWidth(TILE_SIZE);
+                    imageView.setFitHeight(TILE_SIZE);
+                }
+                tile.setOpacity(0.5);
+            }
+            pauseHint.setOpacity(0);
+            pauseMenuLayout.getChildren().add(pauseMenuParent);
+            currentMenu = MENU_PAUSE;
         }
     }
 
