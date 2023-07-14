@@ -7,7 +7,6 @@ import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.EncounterOpponentsService;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import de.uniks.beastopia.teaml.service.TrainerService;
-import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -90,11 +89,13 @@ public class EncounterController extends Controller {
     @Inject
     Provider<BeastInfoController> beastInfoControllerProvider;
     @Inject
-    Provider<EndScreenController> endScreenControllerProvider;
-    @Inject
     Provider<RenderBeastController> renderBeastControllerProvider;
     @Inject
     Provider<IngameController> ingameControllerProvider;
+    @Inject
+    Provider<ChangeBeastController> changeBeastControllerProvider;
+    @Inject
+    Provider<EndScreenController> endScreenControllerProvider;
     @Inject
     DataCache cache;
     @Inject
@@ -105,8 +106,6 @@ public class EncounterController extends Controller {
     EncounterOpponentsService encounterOpponentsService;
     @Inject
     Prefs prefs;
-    @Inject
-    EventListener eventListener;
 
     //monster on the substitute's bench
     @SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal"})
@@ -130,6 +129,8 @@ public class EncounterController extends Controller {
     private String enemyTrainer;
     @SuppressWarnings("FieldCanBeLocal")
     private String enemyAllyTrainer;
+
+    private boolean shouldUpdateUIOnChange = false;
 
     private AbilityDto ability1;
     private AbilityDto ability2;
@@ -169,7 +170,7 @@ public class EncounterController extends Controller {
         setAllyMonster(monster2);
         setEnemyMonster(monster3);
         setEnemyAllyMonster(monster4);*/
-        // this.ownMonster = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), cache.getTrainer().team().get(0)).blockingFirst();
+       // this.ownMonster = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), cache.getTrainer().team().get(0)).blockingFirst();
     }
 
     @Override
@@ -184,7 +185,12 @@ public class EncounterController extends Controller {
     public Parent render() {
         Parent parent = super.render();
 
-        showOwnMonster(ownMonster);
+        beastInfoController1 = beastInfoControllerProvider.get().setMonster(ownMonster);
+        beastInfoBox.getChildren().addAll(beastInfoController1.render());
+        renderBeastController1 = renderBeastControllerProvider.get().setMonster1(ownMonster);
+        Parent ownMonster = renderBeastController1.render();
+        ownMonstersBox.getChildren().addAll(ownMonster);
+        HBox.setHgrow(ownMonster, Priority.ALWAYS);
 
         if (allyMonster != null) {
             beastInfoController2 = beastInfoControllerProvider.get().setMonster(allyMonster);
@@ -196,7 +202,12 @@ public class EncounterController extends Controller {
             HBox.setHgrow(allyMonster, Priority.ALWAYS);
         }
 
-        showEnemyMonster(enemyMonster);
+        enemyBeastInfoController1 = enemyBeastInfoControllerProvider.get().setMonster(enemyMonster);
+        enemyBeastInfo.getChildren().addAll(enemyBeastInfoController1.render());
+        renderBeastController2 = renderBeastControllerProvider.get().setMonster1(enemyMonster);
+        Parent enemyMonster = renderBeastController2.render();
+        enemyMonstersBox.getChildren().addAll(enemyMonster);
+        HBox.setHgrow(enemyMonster, Priority.ALWAYS);
 
         if (enemyAllyMonster != null) {
             enemyBeastInfoController2 = enemyBeastInfoControllerProvider.get().setMonster(enemyAllyMonster);
@@ -210,25 +221,11 @@ public class EncounterController extends Controller {
 
         setNumberOfAttacks();
 
+        if (shouldUpdateUIOnChange) {
+            updateUIOnChange();
+        }
+
         return parent;
-    }
-
-    private void showOwnMonster(Monster ownMonster) {
-        beastInfoController1 = beastInfoControllerProvider.get().setMonster(ownMonster);
-        beastInfoBox.getChildren().addAll(beastInfoController1.render());
-        renderBeastController1 = renderBeastControllerProvider.get().setMonster1(ownMonster);
-        Parent parent = renderBeastController1.render();
-        ownMonstersBox.getChildren().addAll(parent);
-        HBox.setHgrow(parent, Priority.ALWAYS);
-    }
-
-    private void showEnemyMonster(Monster enemyMonster) {
-        enemyBeastInfoController1 = enemyBeastInfoControllerProvider.get().setMonster(enemyMonster);
-        enemyBeastInfo.getChildren().addAll(enemyBeastInfoController1.render());
-        renderBeastController2 = renderBeastControllerProvider.get().setMonster1(enemyMonster);
-        Parent parent = renderBeastController2.render();
-        enemyMonstersBox.getChildren().addAll(parent);
-        HBox.setHgrow(parent, Priority.ALWAYS);
     }
 
     private void setNumberOfAttacks() {
@@ -264,7 +261,6 @@ public class EncounterController extends Controller {
     //onClicked leave encounter button
     @FXML
     public void leaveEncounter() {
-        //TODO: switch screen to map
         System.out.println("leave encounter");
 
         if (cache.getCurrentEncounter().isWild()) {
@@ -284,8 +280,15 @@ public class EncounterController extends Controller {
     //onClicked change monster button
     @FXML
     public void changeMonster() {
-        //TODO: switch screen to monster selection
-        System.out.println("change monster");
+        ChangeBeastController controller = changeBeastControllerProvider.get();
+        controller.setCurrentMonster(ownMonster);
+        controller.setEncounterController(this);
+        app.show(controller);
+    }
+
+    // Trying to update UI when monster changed
+    public void setToUpdateUIOnChange() {
+        this.shouldUpdateUIOnChange = true;
     }
 
     //setter methods for monsters
@@ -395,7 +398,7 @@ public class EncounterController extends Controller {
 
     private void setAttackWithClick(VBox attackBox, AbilityDto abilityDto) {
         System.out.println(abilityDto.toString());
-        System.out.println(cache.getOpponent(enemyTrainer).toString());
+        System.out.println(cache.getOpponentByTrainerID(enemyTrainer).toString());
         Monster before = ownMonster;
         Monster beforeEnemy = enemyMonster;
         disposables.add(encounterOpponentsService.updateEncounterOpponent(cache.getJoinedRegion()._id(),

@@ -23,8 +23,6 @@ public class RegionInfoController extends Controller {
     @Override
     public void init() {
         super.init();
-        this.place = new Text();
-        this.description = new Text();
     }
 
     @Override

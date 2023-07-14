@@ -80,6 +80,7 @@ public class UserInfoController extends Controller {
         for (Achievement achievement : userAchievements) {
             String buttonText = cache.getAchievementDescriptions().get(achievement.id()) + (achievement.progress() < 100.0 ? (" (" + achievement.progress() + "/100)") : "");
             Button button = new Button(buttonText);
+            button.setStyle("-fx-font-size: 12px;");
             button.setPrefWidth(Double.MAX_VALUE);
             achievementPane.getChildren().add(button);
         }

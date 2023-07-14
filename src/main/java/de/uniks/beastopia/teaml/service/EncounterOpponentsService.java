@@ -1,6 +1,10 @@
 package de.uniks.beastopia.teaml.service;
 
-import de.uniks.beastopia.teaml.rest.*;
+import de.uniks.beastopia.teaml.rest.AbilityMove;
+import de.uniks.beastopia.teaml.rest.ChangeMonsterMove;
+import de.uniks.beastopia.teaml.rest.EncounterOpponentsApiService;
+import de.uniks.beastopia.teaml.rest.Opponent;
+import de.uniks.beastopia.teaml.rest.UpdateOpponentDto;
 import de.uniks.beastopia.teaml.utils.Variant;
 import io.reactivex.rxjava3.core.Observable;
 

@@ -13,18 +13,21 @@
 <HBox alignment="CENTER_RIGHT" onKeyPressed="#handleKeyEvent" prefHeight="317.0" prefWidth="516.0" spacing="5.0"
       xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="de.uniks.beastopia.teaml.controller.ingame.ScoreboardController">
-    <ScrollPane fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: transparent;" HBox.hgrow="ALWAYS">
+    <ScrollPane fitToWidth="true" hbarPolicy="NEVER" prefHeight="317.0" prefWidth="236.0"
+                style="-fx-background-color: transparent;" HBox.hgrow="ALWAYS">
         <VBox fx:id="achievements" prefWidth="200.0" style="-fx-border-color: black;"/>
     </ScrollPane>
     <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: transparent;"
                 HBox.hgrow="ALWAYS">
-        <VBox fx:id="scoreBoard" alignment="TOP_CENTER" prefHeight="200.0" prefWidth="200.0" spacing="3.0"
+        <VBox fx:id="scoreBoard" alignment="TOP_CENTER" prefHeight="315.0" prefWidth="258.0" spacing="3.0"
               style="-fx-border-color: black;">
             <padding>
                 <Insets top="5.0"/>
             </padding>
-            <HBox alignment="CENTER" prefHeight="35.0" prefWidth="251.0" spacing="15.0">
-                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Scoreboard:" underline="true">
+            <HBox alignment="CENTER" prefHeight="35.0" prefWidth="251.0" spacing="10.0">
+                <!--suppress JavaFxUnresolvedFxIdReference -->
+                <Text fx:id="scoreBoardTitle" strokeType="OUTSIDE" strokeWidth="0.0" text="Scoreboard:"
+                      underline="true">
                     <font>
                         <Font size="23.0"/>
                     </font>
@@ -40,7 +43,7 @@
                         </ImageView>
                     </graphic>
                 </Button>
-                <Separator opacity="0.0" prefHeight="0.0" prefWidth="0.0"/>
+                <Separator opacity="0.0" prefHeight="2.0" prefWidth="35.0"/>
             </HBox>
         </VBox>
     </ScrollPane>
