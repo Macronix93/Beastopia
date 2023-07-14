@@ -98,7 +98,9 @@ public class EndScreenController extends Controller {
     }
 
     public void onLeaveButtonClicked() {
-        app.show(ingameControllerProvider.get());
+        IngameController controller = ingameControllerProvider.get();
+        controller.setRegion(dataCache.getJoinedRegion());
+        app.show(controller);
     }
 
     @SuppressWarnings("unused")

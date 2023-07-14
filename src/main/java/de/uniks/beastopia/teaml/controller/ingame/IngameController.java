@@ -10,12 +10,36 @@ import de.uniks.beastopia.teaml.controller.ingame.encounter.FightWildBeastContro
 import de.uniks.beastopia.teaml.controller.ingame.encounter.LevelUpController;
 import de.uniks.beastopia.teaml.controller.ingame.encounter.StartFightNPCController;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
+import de.uniks.beastopia.teaml.rest.Achievement;
+import de.uniks.beastopia.teaml.rest.Area;
+import de.uniks.beastopia.teaml.rest.Chunk;
+import de.uniks.beastopia.teaml.rest.Encounter;
+import de.uniks.beastopia.teaml.rest.Layer;
 import de.uniks.beastopia.teaml.rest.Map;
-import de.uniks.beastopia.teaml.rest.*;
-import de.uniks.beastopia.teaml.service.*;
+import de.uniks.beastopia.teaml.rest.Monster;
+import de.uniks.beastopia.teaml.rest.MonsterTypeDto;
+import de.uniks.beastopia.teaml.rest.MoveTrainerDto;
+import de.uniks.beastopia.teaml.rest.Opponent;
+import de.uniks.beastopia.teaml.rest.Region;
+import de.uniks.beastopia.teaml.rest.TileSet;
+import de.uniks.beastopia.teaml.rest.TileSetDescription;
+import de.uniks.beastopia.teaml.rest.Trainer;
+import de.uniks.beastopia.teaml.service.AchievementsService;
+import de.uniks.beastopia.teaml.service.AreaService;
+import de.uniks.beastopia.teaml.service.DataCache;
+import de.uniks.beastopia.teaml.service.EncounterOpponentsService;
+import de.uniks.beastopia.teaml.service.PresetsService;
+import de.uniks.beastopia.teaml.service.RegionEncountersService;
+import de.uniks.beastopia.teaml.service.TokenStorage;
+import de.uniks.beastopia.teaml.service.TrainerService;
 import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.sockets.UDPEventListener;
-import de.uniks.beastopia.teaml.utils.*;
+import de.uniks.beastopia.teaml.utils.Dialog;
+import de.uniks.beastopia.teaml.utils.Direction;
+import de.uniks.beastopia.teaml.utils.LoadingPage;
+import de.uniks.beastopia.teaml.utils.PlayerState;
+import de.uniks.beastopia.teaml.utils.Prefs;
+import de.uniks.beastopia.teaml.utils.SoundController;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
@@ -37,11 +61,19 @@ import javafx.util.Pair;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.function.Consumer;
 
 public class IngameController extends Controller {
-    static final double TILE_SIZE = 20;
+    static final double TILE_SIZE = 32;
     static final int MENU_NONE = 0;
     static final int MENU_SCOREBOARD = 1;
     static final int MENU_BEASTLIST = 2;
@@ -50,8 +82,6 @@ public class IngameController extends Controller {
 
     @FXML
     public Pane tilePane;
-    @FXML
-    public StackPane stackPane;
     @FXML
     private HBox scoreBoardLayout;
     @FXML
@@ -158,8 +188,6 @@ public class IngameController extends Controller {
     public void init() {
         super.init();
 
-        currentMenu = MENU_NONE;
-
         scoreBoardController.setOnCloseRequested(() -> {
             scoreBoardLayout.getChildren().remove(scoreBoardParent);
             currentMenu = MENU_NONE;
@@ -220,6 +248,8 @@ public class IngameController extends Controller {
     public Parent render() {
         loadingPage = LoadingPage.makeLoadingPage(super.render());
 
+        currentMenu = MENU_NONE;
+
         disposables.add(trainerService.getAllTrainer(this.region._id())
                 .subscribe(this::loadTrainers));
 
@@ -230,14 +260,11 @@ public class IngameController extends Controller {
         Trainer myTrainer = loadMyTrainer(trainers);
         cache.setTrainers(trainers);
 
-        if (cache.getAreas().isEmpty()) {
-            disposables.add(areaService.getAreas(this.region._id()).observeOn(FX_SCHEDULER).subscribe(areas -> {
-                cache.setAreas(areas);
-                loadMap(cache.getAreas(), myTrainer, trainers);
-            }));
-        } else {
+        disposables.add(areaService.getAreas(this.region._id()).observeOn(FX_SCHEDULER).subscribe(areas -> {
+            cache.setAreas(areas);
             loadMap(cache.getAreas(), myTrainer, trainers);
-        }
+        }));
+
         disposables.add(eventListener.listen("encounters.*.trainers." + cache.getTrainer()._id()
                         + ".opponents.*.created", Opponent.class)
                 .observeOn(FX_SCHEDULER)
@@ -394,6 +421,7 @@ public class IngameController extends Controller {
             }
         });
         controller.init();
+        controller.setDirection(trainer.direction());
         Parent parent = drawRemotePlayer(controller, trainer.x(), trainer.y());
         otherPlayers.put(controller, parent);
         if (prefs.getArea() != null && !prefs.getArea()._id().equals(trainer.area())) {
@@ -470,7 +498,11 @@ public class IngameController extends Controller {
                             continue;
                         }
 
-                        drawTile(x, y, tileSet.getKey().getValue(), presetsService.getTileViewPort(tileSet.getValue(), tileSet.getKey().getKey()));
+                        // Some maps have "invalid" (or blank tiles) with ID 0 which we don't want to draw
+                        // This is to prevent the camera from showing the "extended" tile pane with those tiles
+                        if (id != 0) {
+                            drawTile(x, y, tileSet.getKey().getValue(), presetsService.getTileViewPort(tileSet.getValue(), tileSet.getKey().getKey()));
+                        }
                     }
                 }
             } else if (layer.data() != null) {
@@ -486,7 +518,11 @@ public class IngameController extends Controller {
                         continue;
                     }
 
-                    drawTile(x, y, tileSet.getKey().getValue(), presetsService.getTileViewPort(tileSet.getValue(), tileSet.getKey().getKey()));
+                    // Some maps have "invalid" (or blank tiles) with ID 0 which we don't want to draw
+                    // This is to prevent the camera from showing the "extended" tile pane with those tiles
+                    if (id != 0) {
+                        drawTile(x, y, tileSet.getKey().getValue(), presetsService.getTileViewPort(tileSet.getValue(), tileSet.getKey().getKey()));
+                    }
                 }
             }
         }
@@ -507,7 +543,6 @@ public class IngameController extends Controller {
 
     private void drawTile(int x, int y, Image image, Rectangle2D viewPort) {
         ImageView view = new ImageView();
-        view.setPreserveRatio(true);
         view.setSmooth(true);
         view.setImage(image);
         view.setFitWidth(TILE_SIZE + 1);
@@ -519,12 +554,19 @@ public class IngameController extends Controller {
     }
 
     public void setOrigin(int tilex, int tiley) {
-        double parentWidth = width;
-        double parentHeight = height;
-        double originX = parentWidth / 2 - TILE_SIZE / 2;
-        double originY = parentHeight / 2 - TILE_SIZE / 2;
+        double originX = (double) width / 2 - TILE_SIZE / 2;
+        double originY = (double) height / 2 - TILE_SIZE / 2;
         double tilePaneTranslationX = originX - tilex * TILE_SIZE;
         double tilePaneTranslationY = originY - tiley * TILE_SIZE;
+
+        // Calculate the maximum translation values based on the map dimensions and visible area
+        double maxTranslationX = Math.max(0, tilePane.getBoundsInLocal().getWidth() - width + (TILE_SIZE / 2));
+        double maxTranslationY = Math.max(0, tilePane.getBoundsInLocal().getHeight() - height + TILE_SIZE);
+
+        // Clamp the translation values within the maximum range
+        tilePaneTranslationX = Math.max(-maxTranslationX, Math.min(0, tilePaneTranslationX));
+        tilePaneTranslationY = Math.max(-maxTranslationY, Math.min(0, tilePaneTranslationY));
+
         tilePane.setTranslateX(tilePaneTranslationX);
         tilePane.setTranslateY(tilePaneTranslationY);
         movePlayer(tilex, tiley);
@@ -786,55 +828,19 @@ public class IngameController extends Controller {
 
     public void handleBeastList(KeyEvent keyEvent) {
         if (keyEvent.getCode().equals(KeyCode.B) && (currentMenu == MENU_NONE || currentMenu == MENU_BEASTLIST)) {
-            if (scoreBoardLayout.getChildren().contains(beastListParent)) {
-                scoreBoardLayout.getChildren().remove(beastListParent);
-                scoreBoardLayout.getChildren().remove(beastDetailParent);
-                lastMonster = null;
-                currentMenu = MENU_NONE;
-            } else {
-                scoreBoardLayout.getChildren().add(beastListParent);
-                currentMenu = MENU_BEASTLIST;
-            }
+            openBeastlist();
         }
     }
 
     private void handleScoreboard(KeyEvent keyEvent) {
         if (keyEvent.getCode().equals(KeyCode.N) && (currentMenu == MENU_NONE || currentMenu == MENU_SCOREBOARD)) {
-            if (scoreBoardLayout.getChildren().contains(scoreBoardParent)) {
-                scoreBoardLayout.getChildren().remove(scoreBoardParent);
-                currentMenu = MENU_NONE;
-            } else {
-                scoreBoardLayout.getChildren().add(scoreBoardParent);
-                currentMenu = MENU_SCOREBOARD;
-            }
+            openScoreboard();
         }
     }
 
     private void handlePauseMenu(KeyEvent keyEvent) {
         if (keyEvent.getCode().equals(KeyCode.ESCAPE) && (currentMenu == MENU_NONE || currentMenu == MENU_PAUSE)) {
-            if (pauseMenuLayout.getChildren().contains(pauseMenuParent)) {
-                for (Node tile : tilePane.getChildren()) {
-                    if (tile instanceof ImageView imageView) {
-                        imageView.setFitWidth(TILE_SIZE + 1);
-                        imageView.setFitHeight(TILE_SIZE + 1);
-                    }
-                    tile.setOpacity(1);
-                }
-                pauseHint.setOpacity(1);
-                pauseMenuLayout.getChildren().remove(pauseMenuParent);
-                currentMenu = MENU_NONE;
-            } else {
-                for (Node tile : tilePane.getChildren()) {
-                    if (tile instanceof ImageView imageView) {
-                        imageView.setFitWidth(TILE_SIZE);
-                        imageView.setFitHeight(TILE_SIZE);
-                    }
-                    tile.setOpacity(0.5);
-                }
-                pauseHint.setOpacity(0);
-                pauseMenuLayout.getChildren().add(pauseMenuParent);
-                currentMenu = MENU_PAUSE;
-            }
+            openPauseMenu();
         }
     }
 
@@ -912,6 +918,10 @@ public class IngameController extends Controller {
     public void setIdleState() {
         state.setValue(PlayerState.IDLE);
         drawPlayer(posx, posy);
+
+        if (currentMenu == MENU_PAUSE) {
+            player.setOpacity(0.5);
+        }
     }
 
     private void checkMovementAchievement() {
@@ -972,6 +982,75 @@ public class IngameController extends Controller {
                     }
                 }
             }
+        }
+    }
+
+    @FXML
+    public void clickOnMapButton() {
+        MapController map = mapControllerProvider.get();
+        app.show(map);
+    }
+
+    @FXML
+    public void clickOnBeastListButton() {
+        openBeastlist();
+    }
+
+    @FXML
+    public void clickOnScoreboardButton() {
+        openScoreboard();
+    }
+
+    @FXML
+    public void clickOnPauseMenuButton() {
+        openPauseMenu();
+    }
+
+    public void openBeastlist() {
+        if (scoreBoardLayout.getChildren().contains(beastListParent)) {
+            scoreBoardLayout.getChildren().remove(beastListParent);
+            scoreBoardLayout.getChildren().remove(beastDetailParent);
+            lastMonster = null;
+            currentMenu = MENU_NONE;
+        } else {
+            scoreBoardLayout.getChildren().add(beastListParent);
+            currentMenu = MENU_BEASTLIST;
+        }
+    }
+
+    public void openScoreboard() {
+        if (scoreBoardLayout.getChildren().contains(scoreBoardParent)) {
+            scoreBoardLayout.getChildren().remove(scoreBoardParent);
+            currentMenu = MENU_NONE;
+        } else {
+            scoreBoardLayout.getChildren().add(scoreBoardParent);
+            currentMenu = MENU_SCOREBOARD;
+        }
+    }
+
+    public void openPauseMenu() {
+        if (pauseMenuLayout.getChildren().contains(pauseMenuParent)) {
+            for (Node tile : tilePane.getChildren()) {
+                if (tile instanceof ImageView imageView) {
+                    imageView.setFitWidth(TILE_SIZE + 1);
+                    imageView.setFitHeight(TILE_SIZE + 1);
+                }
+                tile.setOpacity(1);
+            }
+            pauseHint.setOpacity(1);
+            pauseMenuLayout.getChildren().remove(pauseMenuParent);
+            currentMenu = MENU_NONE;
+        } else {
+            for (Node tile : tilePane.getChildren()) {
+                if (tile instanceof ImageView imageView) {
+                    imageView.setFitWidth(TILE_SIZE);
+                    imageView.setFitHeight(TILE_SIZE);
+                }
+                tile.setOpacity(0.5);
+            }
+            pauseHint.setOpacity(0);
+            pauseMenuLayout.getChildren().add(pauseMenuParent);
+            currentMenu = MENU_PAUSE;
         }
     }
 

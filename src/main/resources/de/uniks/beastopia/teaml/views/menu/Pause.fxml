@@ -44,7 +44,7 @@
                 </ImageView>
                 <Button alignment="CENTER" mnemonicParsing="false" onAction="#editProfileButtonPressed"
                         prefWidth="200.0" style="-fx-background-color: transparent; -fx-border-color: transparent;"
-                        text="%EditProfile" textAlignment="CENTER" HBox.hgrow="ALWAYS">
+                        text="%EditProfileIngame" textAlignment="CENTER" HBox.hgrow="ALWAYS">
                     <font>
                         <Font size="14.0"/>
                     </font>

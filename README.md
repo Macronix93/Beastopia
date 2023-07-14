@@ -6,7 +6,7 @@ short game description
 
 install instructions
 
-## Use of licensed .png files and sounds
+## Use of licensed .png files, sounds and font
 
 We used several .png files for our buttons and also sound files, such as listed below:
 
@@ -83,3 +83,6 @@ Freepik - Flaticon</a>
 
 <a href="https://www.flaticon.com/de/kostenlose-icons/nutzer" title="nutzer Icons">Nutzer Icons erstellt von Freepik -
 Flaticon</a>
+
+<a href="https://fonts.google.com/specimen/Happy+Monkey?query=Brenda+Gallo">Happy Monkey Font erstellt von Brenda
+Gallo</a>
