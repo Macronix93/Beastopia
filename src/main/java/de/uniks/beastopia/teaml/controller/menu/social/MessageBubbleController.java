@@ -25,7 +25,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.function.Consumer;
 
 public class MessageBubbleController extends Controller {
-    private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm");
+    private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
     @FXML
     public Text senderName;
     @FXML
