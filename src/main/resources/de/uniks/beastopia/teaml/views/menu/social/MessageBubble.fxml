@@ -12,11 +12,7 @@
       <TextField fx:id="editMessageBody" />
       <Text fx:id="messageBody" strokeType="OUTSIDE" strokeWidth="0.0" />
       <HBox prefHeight="29.0" prefWidth="228.0">
-         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="created:  " />
-         <Text fx:id="created" strokeType="OUTSIDE" strokeWidth="0.0" />
-         <Separator orientation="VERTICAL" prefWidth="10.0" visible="false" />
-         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="updated:  " />
-         <Text fx:id="updated" strokeType="OUTSIDE" strokeWidth="0.0" />
+         <Text fx:id="timestamp" strokeType="OUTSIDE" strokeWidth="0.0" />
       </HBox>
    </VBox>
    <Button fx:id="editButton" mnemonicParsing="false" onAction="#editMessage">

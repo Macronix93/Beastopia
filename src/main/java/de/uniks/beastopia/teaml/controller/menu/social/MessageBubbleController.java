@@ -35,9 +35,7 @@ public class MessageBubbleController extends Controller {
     @FXML
     public VBox elementsBox;
     @FXML
-    public Text created;
-    @FXML
-    public Text updated;
+    public Text timestamp;
     @FXML
     public Button editButton;
     @FXML
@@ -91,22 +89,18 @@ public class MessageBubbleController extends Controller {
         cache.getAllUsers().stream().filter(user -> user._id().equals(message.sender())).findFirst().ifPresent(user -> senderName.setText(user.name()));
         messageBody.setText(message.body());
         LocalDateTime localDateTimeCreated = LocalDateTime.ofInstant(message.createdAt().toInstant(), ZoneId.systemDefault());
-        LocalDateTime localDateTimeUpdated = LocalDateTime.ofInstant(message.createdAt().toInstant(), ZoneId.systemDefault());
-        DateTimeFormatter dateTimeFormatter = TIME_FORMAT;
-        String createdAt = localDateTimeCreated.format(dateTimeFormatter);
-        String updatedAt = localDateTimeUpdated.format(dateTimeFormatter);
-        created.setText(createdAt);
-        updated.setText(updatedAt);
+        String createdAt = localDateTimeCreated.format(TIME_FORMAT);
+        timestamp.setText(createdAt);
 
         return parent;
     }
 
     public void updateMessage(Event<Message> event) {
-        Message message = event.data();
+        message = event.data();
         messageBody.setText(message.body());
-        LocalDateTime localDateTimeUpdated = LocalDateTime.ofInstant(message.createdAt().toInstant(), ZoneId.systemDefault());
-        String updatedAt = localDateTimeUpdated.format(TIME_FORMAT);
-        updated.setText(updatedAt);
+        LocalDateTime localDateTimeUpdated = LocalDateTime.ofInstant(message.updatedAt().toInstant(), ZoneId.systemDefault());
+        String updatedAt = localDateTimeUpdated.format(TIME_FORMAT) + " " + resources.getString("edited");
+        timestamp.setText(updatedAt);
     }
 
     @FXML
