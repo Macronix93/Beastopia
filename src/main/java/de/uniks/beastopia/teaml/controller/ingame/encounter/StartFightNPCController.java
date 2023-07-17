@@ -121,7 +121,7 @@ public class StartFightNPCController extends Controller {
                     encounterController.setEnemyMonster(enemyMonsters.stream().filter(m -> m._id().equals(o.get(enemyTrainerOpponentIndex).monster())).findFirst().orElseThrow());
 
                     if (o.size() == 3) {
-                        List<Monster> enemyAllyMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(1).trainer()).blockingFirst();
+                        List<Monster> enemyAllyMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(enemyAllyTrainerOpponentIndex).trainer()).blockingFirst();
                         encounterController.setEnemyAllyTrainer((o.get(enemyAllyTrainerOpponentIndex).trainer()));
                         encounterController.setEnemyAllyMonster(enemyAllyMonsters.stream().filter(m -> m._id().equals(o.get(enemyAllyTrainerOpponentIndex).monster())).findFirst().orElseThrow());
                     }

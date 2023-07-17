@@ -12,6 +12,7 @@ import de.uniks.beastopia.teaml.service.PresetsService;
 import de.uniks.beastopia.teaml.service.TrainerService;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
+import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -166,6 +167,8 @@ public class EncounterController extends Controller {
         Parent ownMonster = renderBeastController1.render();
         ownMonstersBox.getChildren().addAll(ownMonster);
         HBox.setHgrow(ownMonster, Priority.ALWAYS);
+
+        ownMonstersBox.setCursor(Cursor.HAND);
 
         if (allyMonster != null) {
             beastInfoController2 = beastInfoControllerProvider.get().setMonster(allyMonster);
@@ -423,7 +426,6 @@ public class EncounterController extends Controller {
                                     beastInfoController1.hpLabel.setText("0 / " + ownMonster.attributes().health() + " (HP)");
                                     beastInfoController1.setLifeBarValue(0);
                                 }
-                                break;
                             } else {
                                 enemyMonster = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), enemyTrainer, opponent.monster()).blockingFirst();
                                 enemyBeastInfoController1.setLifeBarValue((double) enemyMonster.currentAttributes().health() / (double) enemyMonster.attributes().health());
