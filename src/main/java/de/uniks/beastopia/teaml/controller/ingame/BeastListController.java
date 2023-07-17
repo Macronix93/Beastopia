@@ -48,6 +48,7 @@ public class BeastListController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
+
         disposables.add(trainerService.getTrainerMonsters(prefs.getRegionID(), cache.getTrainer()._id())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(monsters -> {
