@@ -18,7 +18,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
@@ -106,9 +105,6 @@ public class MapController extends Controller {
         for (MapObject object : layer.objects()) {
             RegionInfoController regionInfo = regionInfoControllerProvider.get();
             regionInfo.init();
-            if (object.name().equals(currentArea.name())) {
-                markOwnPlayer(object);
-            }
             if (object.polygon() == null) {
                 drawRectangle(object, regionInfo);
             } else {
@@ -123,6 +119,11 @@ public class MapController extends Controller {
         r.setY(object.y());
         r.setWidth(object.width());
         r.setHeight(object.height());
+        //noinspection DuplicatedCode
+        if (object.name().equals(currentArea.name())) {
+            r.setStroke(Color.BLUEVIOLET);
+            r.setStrokeWidth(3);
+        }
         r.setFill(Color.TRANSPARENT);
         r.setOnMouseEntered(event -> setRegionInfo(r, object, regionInfo, event));
         r.setOnMouseExited(event -> anchorPane.getChildren().remove(anchorPane.getChildren().size() - 1));
@@ -136,19 +137,15 @@ public class MapController extends Controller {
             double y = point.get("y") + object.y();
             p.getPoints().addAll(x, y);
         }
+        //noinspection DuplicatedCode
+        if (object.name().equals(currentArea.name())) {
+            p.setStroke(Color.BLUEVIOLET);
+            p.setStrokeWidth(3);
+        }
         p.setFill(Color.TRANSPARENT);
         p.setOnMouseEntered(event -> setRegionInfo(p, object, regionInfo, event));
         p.setOnMouseExited(event -> anchorPane.getChildren().remove(anchorPane.getChildren().size() - 1));
         anchorPane.getChildren().add(p);
-    }
-
-    private void markOwnPlayer(MapObject object) {
-        Circle c = new Circle();
-        c.setRadius(5);
-        c.setCenterX(object.x());
-        c.setCenterY(object.y());
-        c.setFill(Color.BLUEVIOLET);
-        anchorPane.getChildren().add(c);
     }
 
     private void setRegionInfo(Shape shape, MapObject object, RegionInfoController regionInfo, MouseEvent event) {
