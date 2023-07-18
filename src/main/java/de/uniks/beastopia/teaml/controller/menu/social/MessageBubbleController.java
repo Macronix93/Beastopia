@@ -89,14 +89,14 @@ public class MessageBubbleController extends Controller {
         cache.getAllUsers().stream().filter(user -> user._id().equals(message.sender())).findFirst().ifPresent(user -> senderName.setText(user.name()));
         messageBody.setText(message.body());
 
-        if (message.updatedAt() == null) {
+        if (message.updatedAt().equals(message.createdAt())) {
             LocalDateTime localDateTimeCreated = LocalDateTime.ofInstant(message.createdAt().toInstant(), ZoneId.systemDefault());
             String createdAt = localDateTimeCreated.format(TIME_FORMAT);
             timestamp.setText(createdAt);
         } else {
             LocalDateTime localDateTime = LocalDateTime.ofInstant(message.updatedAt().toInstant(), ZoneId.systemDefault());
             String time = localDateTime.format(TIME_FORMAT);
-            timestamp.setText(time);
+            timestamp.setText(time  + " " + resources.getString("edited"));
         }
 
         return parent;
