@@ -221,7 +221,7 @@ public class MapController extends Controller {
     }
 
     private void setFastTravelTarget(String areaName) {
-        if (!cache.areaVisited(areaName)) {
+        if (!cache.areaVisited(areaName) || areaName.equals(currentArea.name())) {
             areaName = null;
         }
 
