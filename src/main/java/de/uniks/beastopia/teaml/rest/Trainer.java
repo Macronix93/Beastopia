@@ -12,6 +12,7 @@ public record Trainer(
         String name,
         String image,
         List<String> team,
+        List<String> visitedAreas,
         int coins,
         String area,
         int x,
