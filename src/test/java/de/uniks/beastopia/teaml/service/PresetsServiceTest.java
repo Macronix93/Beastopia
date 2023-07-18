@@ -1,8 +1,8 @@
 package de.uniks.beastopia.teaml.service;
 
-import de.uniks.beastopia.teaml.rest.AbilityDto;
-import de.uniks.beastopia.teaml.rest.PresetsApiService;
+import de.uniks.beastopia.teaml.rest.*;
 import io.reactivex.rxjava3.core.Observable;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
 import okhttp3.MediaType;
 import okhttp3.ResponseBody;
@@ -34,6 +34,10 @@ class PresetsServiceTest {
     final ResponseBody responseBody = ResponseBody.create(MediaType.parse("text/html"), "<h1>Fake</h1>");
 
     final AbilityDto abilityDto = new AbilityDto(0, "name", "desc", "ice", 1, 2, 3);
+
+    final TileSet tileSet = new TileSet(1, null, 1, 1, 1, "A.png", 1, 1, 1);
+
+    final TileSetDescription tileSetDescription = new TileSetDescription(1, "s");
 
     @Test
     void getCharacters() {
@@ -70,5 +74,92 @@ class PresetsServiceTest {
         AbilityDto result = presetsService.getAbility(1).blockingFirst();
         assertEquals(abilityDto, result);
         verify(presetsApiService).getAbility(1);
+    }
+
+    @Test
+    void getItems() {
+        when(presetsApiService.getItems()).thenReturn(Observable.just(List.of(new Item(null, null, "ID", "trainer", 1, 2))));
+        List<Item> result = presetsService.getItems().blockingFirst();
+        assertEquals(1, result.size());
+        assertEquals("ID", result.get(0)._id());
+        assertEquals("trainer", result.get(0).trainer());
+        assertEquals(1, result.get(0).type());
+        assertEquals(2, result.get(0).amount());
+        verify(presetsApiService).getItems();
+    }
+
+    @Test
+    void getItem() {
+        when(presetsApiService.getItem(3))
+                .thenReturn(Observable.just(new Item(null, null, "ID", "trainer", 1, 2)));
+        Item result = presetsService.getItem(3).blockingFirst();
+        assertEquals("ID", result._id());
+        assertEquals("trainer", result.trainer());
+        assertEquals(1, result.type());
+        assertEquals(2, result.amount());
+        verify(presetsApiService).getItem(3);
+    }
+
+    @Test
+    void getItemImage() {
+        when(presetsApiService.getItemImage(3))
+                .thenReturn(Observable.just(responseBody));
+        Image result = presetsService.getItemImage(3).blockingFirst();
+        assertNull(result.getUrl());
+        verify(presetsApiService).getItemImage(3);
+    }
+
+    @Test
+    void getImage() {
+        when(presetsApiService.getTileset(tileSet.image()))
+                .thenReturn(Observable.just(responseBody));
+        Image result = presetsService.getImage(tileSet).blockingFirst();
+        assertNull(result.getUrl());
+        verify(presetsApiService).getTileset(tileSet.image());
+    }
+
+    @Test
+    void getTileViewPort() {
+        Rectangle2D result = presetsService.getTileViewPort(1, tileSet);
+        assertEquals(0, result.getMinX());
+        assertEquals(0, result.getMinY());
+        assertEquals(1, result.getWidth());
+        assertEquals(1, result.getHeight());
+    }
+
+    @Test
+    void getMonsterType() {
+        when(presetsApiService.getMonsterType(1))
+                .thenReturn(Observable.just(new MonsterTypeDto(1, "name", "image", List.of("a"), "as")));
+        MonsterTypeDto result = presetsService.getMonsterType(1).blockingFirst();
+        assertEquals(1, result.id());
+        assertEquals("name", result.name());
+        assertEquals("image", result.image());
+        assertEquals(List.of("a"), result.type());
+        assertEquals("as", result.description());
+        verify(presetsApiService).getMonsterType(1);
+    }
+
+    @Test
+    void getMonsterImage() {
+        when(presetsApiService.getMonsterImage(1))
+                .thenReturn(Observable.just(responseBody));
+        Image result = presetsService.getMonsterImage(1).blockingFirst();
+        assertNull(result.getUrl());
+        verify(presetsApiService).getMonsterImage(1);
+    }
+
+    @Test
+    void getAllBeasts() {
+        when(presetsApiService.getMonsters())
+                .thenReturn(Observable.just(List.of(new MonsterTypeDto(1, "name", "image", List.of("a"), "as"))));
+        List<MonsterTypeDto> result = presetsService.getAllBeasts().blockingFirst();
+        assertEquals(1, result.size());
+        assertEquals(1, result.get(0).id());
+        assertEquals("name", result.get(0).name());
+        assertEquals("image", result.get(0).image());
+        assertEquals(List.of("a"), result.get(0).type());
+        assertEquals("as", result.get(0).description());
+        verify(presetsApiService).getMonsters();
     }
 }

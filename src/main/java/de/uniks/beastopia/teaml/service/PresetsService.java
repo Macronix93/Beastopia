@@ -69,4 +69,17 @@ public class PresetsService {
     public Observable<List<AbilityDto>> getAbilities() {
         return presetsApiService.getAbilities();
     }
+
+    public Observable<List<Item>> getItems() {
+        return presetsApiService.getItems();
+    }
+
+    public Observable<Item> getItem(int itemId) {
+        return presetsApiService.getItem(itemId);
+    }
+
+    public Observable<Image> getItemImage(int itemId) {
+        return presetsApiService.getItemImage(itemId)
+                .map((ResponseBody body) -> new Image(body.byteStream()));
+    }
 }
