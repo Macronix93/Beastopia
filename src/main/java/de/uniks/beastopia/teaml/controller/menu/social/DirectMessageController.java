@@ -15,6 +15,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -181,5 +182,7 @@ public class DirectMessageController extends Controller {
         controller.init();
         rightSide = controller.render();
         grid.add(rightSide, 1, 1);
+        GridPane.setVgrow(rightSide, Priority.ALWAYS);
+        GridPane.setHgrow(rightSide, Priority.ALWAYS);
     }
 }

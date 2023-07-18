@@ -9,6 +9,7 @@ import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.utils.LoadingPage;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.layout.VBox;
 
@@ -85,7 +86,17 @@ public class ChatWindowController extends Controller {
                 });
         subController.init();
         subControllers.add(subController);
-        msgList.getChildren().add(subController.render());
+        Parent chatBubble = subController.render();
+        VBox box = new VBox();
+        box.getChildren().add(chatBubble);
+
+        if (messageService.isSentByMe(message)) {
+            box.setAlignment(Pos.TOP_RIGHT);
+        } else {
+            box.setAlignment(Pos.TOP_LEFT);
+        }
+
+        msgList.getChildren().add(box);
     }
 
     private void fillInMessages(List<Message> msgs) {
