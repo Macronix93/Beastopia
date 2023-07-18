@@ -96,7 +96,7 @@ public class MessageBubbleController extends Controller {
         } else {
             LocalDateTime localDateTime = LocalDateTime.ofInstant(message.updatedAt().toInstant(), ZoneId.systemDefault());
             String time = localDateTime.format(TIME_FORMAT);
-            timestamp.setText(time + " " + resources.getString("edited"));
+            timestamp.setText(time);
         }
 
         return parent;
@@ -115,6 +115,9 @@ public class MessageBubbleController extends Controller {
         if (editMode) {
             return;
         }
+
+        editButton.setVisible(false);
+
         elementsBox.getChildren().add(1, editMessageBody);
         elementsBox.getChildren().remove(messageBody);
         editMessageBody.setText(message.body());
@@ -143,6 +146,7 @@ public class MessageBubbleController extends Controller {
             elementsBox.getChildren().add(1, messageBody);
             elementsBox.getChildren().remove(editMessageBody);
             editMode = false;
+            editButton.setVisible(true);
         }, throwable -> Dialog.error(throwable, "Problem while updating message")));
     }
 
@@ -154,6 +158,7 @@ public class MessageBubbleController extends Controller {
         elementsBox.getChildren().add(1, messageBody);
         elementsBox.getChildren().remove(editMessageBody);
         editMode = false;
+        editButton.setVisible(true);
     }
 
     @FXML
