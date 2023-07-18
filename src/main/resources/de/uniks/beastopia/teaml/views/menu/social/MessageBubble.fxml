@@ -1,41 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0"
-      prefWidth="300.0" style="-fx-border-color: black;" xmlns="http://javafx.com/javafx/19"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="de.uniks.beastopia.teaml.controller.menu.social.MessageBubbleController">
+
+<HBox maxWidth="300" maxHeight="50" prefWidth="300" prefHeight="50" style="-fx-border-color: black;" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.uniks.beastopia.teaml.controller.menu.social.MessageBubbleController">
    <VBox fx:id="elementsBox" onKeyPressed="#keyEvent" prefHeight="100.0" prefWidth="231.0">
-      <Text fx:id="senderName" strokeType="OUTSIDE" strokeWidth="0.0"/>
-      <TextField fx:id="editMessageBody"/>
-      <Text fx:id="messageBody" strokeType="OUTSIDE" strokeWidth="0.0"/>
+      <Text fx:id="senderName" strokeType="OUTSIDE" strokeWidth="0.0" />
+      <TextField fx:id="editMessageBody" />
+      <Text fx:id="messageBody" strokeType="OUTSIDE" strokeWidth="0.0" />
       <HBox prefHeight="29.0" prefWidth="228.0">
-         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="created at:  "/>
-         <Text fx:id="created" strokeType="OUTSIDE" strokeWidth="0.0"/>
-         <Separator orientation="VERTICAL" prefWidth="10.0" visible="false"/>
-         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="updated at:  "/>
-         <Text fx:id="updated" strokeType="OUTSIDE" strokeWidth="0.0"/>
+         <Text fx:id="timestamp" strokeType="OUTSIDE" strokeWidth="0.0" />
       </HBox>
    </VBox>
    <Button fx:id="editButton" mnemonicParsing="false" onAction="#editMessage">
       <graphic>
          <ImageView fitHeight="20.0" fitWidth="20.0">
-            <Image url="@../../../assets/buttons/edit.png"/>
+            <Image url="@../../../assets/buttons/edit.png" />
          </ImageView>
       </graphic>
    </Button>
    <Button fx:id="deleteButton" mnemonicParsing="false" onAction="#deleteMessage">
       <graphic>
          <ImageView fitHeight="20.0" fitWidth="20.0">
-            <Image url="@../../../assets/buttons/close.png"/>
+            <Image url="@../../../assets/buttons/close.png" />
          </ImageView>
       </graphic>
    </Button>
+   <padding>
+      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+   </padding>
 </HBox>

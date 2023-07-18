@@ -25,7 +25,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.function.Consumer;
 
 public class MessageBubbleController extends Controller {
-    private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm");
+    private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
     @FXML
     public Text senderName;
     @FXML
@@ -35,9 +35,7 @@ public class MessageBubbleController extends Controller {
     @FXML
     public VBox elementsBox;
     @FXML
-    public Text created;
-    @FXML
-    public Text updated;
+    public Text timestamp;
     @FXML
     public Button editButton;
     @FXML
@@ -90,23 +88,26 @@ public class MessageBubbleController extends Controller {
 
         cache.getAllUsers().stream().filter(user -> user._id().equals(message.sender())).findFirst().ifPresent(user -> senderName.setText(user.name()));
         messageBody.setText(message.body());
-        LocalDateTime localDateTimeCreated = LocalDateTime.ofInstant(message.createdAt().toInstant(), ZoneId.systemDefault());
-        LocalDateTime localDateTimeUpdated = LocalDateTime.ofInstant(message.createdAt().toInstant(), ZoneId.systemDefault());
-        DateTimeFormatter dateTimeFormatter = TIME_FORMAT;
-        String createdAt = localDateTimeCreated.format(dateTimeFormatter);
-        String updatedAt = localDateTimeUpdated.format(dateTimeFormatter);
-        created.setText(createdAt);
-        updated.setText(updatedAt);
+
+        if (message.updatedAt().equals(message.createdAt())) {
+            LocalDateTime localDateTimeCreated = LocalDateTime.ofInstant(message.createdAt().toInstant(), ZoneId.systemDefault());
+            String createdAt = localDateTimeCreated.format(TIME_FORMAT);
+            timestamp.setText(createdAt);
+        } else {
+            LocalDateTime localDateTime = LocalDateTime.ofInstant(message.updatedAt().toInstant(), ZoneId.systemDefault());
+            String time = localDateTime.format(TIME_FORMAT);
+            timestamp.setText(time  + " " + resources.getString("edited"));
+        }
 
         return parent;
     }
 
     public void updateMessage(Event<Message> event) {
-        Message message = event.data();
+        message = event.data();
         messageBody.setText(message.body());
-        LocalDateTime localDateTimeUpdated = LocalDateTime.ofInstant(message.createdAt().toInstant(), ZoneId.systemDefault());
-        String updatedAt = localDateTimeUpdated.format(TIME_FORMAT);
-        updated.setText(updatedAt);
+        LocalDateTime localDateTimeUpdated = LocalDateTime.ofInstant(message.updatedAt().toInstant(), ZoneId.systemDefault());
+        String updatedAt = localDateTimeUpdated.format(TIME_FORMAT) + " " + resources.getString("edited");
+        timestamp.setText(updatedAt);
     }
 
     @FXML
@@ -114,6 +115,9 @@ public class MessageBubbleController extends Controller {
         if (editMode) {
             return;
         }
+
+        editButton.setVisible(false);
+
         elementsBox.getChildren().add(1, editMessageBody);
         elementsBox.getChildren().remove(messageBody);
         editMessageBody.setText(message.body());
@@ -142,6 +146,7 @@ public class MessageBubbleController extends Controller {
             elementsBox.getChildren().add(1, messageBody);
             elementsBox.getChildren().remove(editMessageBody);
             editMode = false;
+            editButton.setVisible(true);
         }, throwable -> Dialog.error(throwable, "Problem while updating message")));
     }
 
@@ -153,6 +158,7 @@ public class MessageBubbleController extends Controller {
         elementsBox.getChildren().add(1, messageBody);
         elementsBox.getChildren().remove(editMessageBody);
         editMode = false;
+        editButton.setVisible(true);
     }
 
     @FXML
