@@ -8,6 +8,7 @@ import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.ingame.beast.EditBeastTeamController;
 import de.uniks.beastopia.teaml.controller.ingame.encounter.FightWildBeastController;
 import de.uniks.beastopia.teaml.controller.ingame.encounter.StartFightNPCController;
+import de.uniks.beastopia.teaml.controller.ingame.items.ShopController;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
 import de.uniks.beastopia.teaml.rest.Map;
 import de.uniks.beastopia.teaml.rest.*;
@@ -45,6 +46,7 @@ public class IngameController extends Controller {
     static final int MENU_SCOREBOARD = 1;
     static final int MENU_BEASTLIST = 2;
     static final int MENU_PAUSE = 3;
+    static final int MENU_SHOP = 4;
     static final int MENU_DIALOGWINDOW = 3;
 
     @FXML
@@ -71,6 +73,8 @@ public class IngameController extends Controller {
     Provider<StartFightNPCController> startFightNPCControllerProvider;
     @Inject
     BeastListController beastListController;
+    @Inject
+    ShopController shopController;
     @Inject
     Provider<BeastDetailController> beastDetailControllerProvider;
     @Inject
@@ -126,6 +130,7 @@ public class IngameController extends Controller {
     SoundController soundController;
     Parent scoreBoardParent;
     Parent pauseMenuParent;
+    Parent shopParent;
     Parent dialogWindowParent;
     final java.util.Map<EntityController, Parent> otherPlayers = new HashMap<>();
     private final List<KeyCode> pressedKeys = new ArrayList<>();
@@ -171,6 +176,11 @@ public class IngameController extends Controller {
             currentMenu = MENU_NONE;
         });
         pauseController.init();
+
+        shopController.setOnCloseRequest(() -> {
+            pauseMenuLayout.getChildren().remove(shopParent);
+            currentMenu = MENU_NONE;
+        });
 
         state.setValue(PlayerState.IDLE);
         playerController = entityControllerProvider.get();
@@ -370,6 +380,7 @@ public class IngameController extends Controller {
                             beastListParent = beastListController.render();
                             scoreBoardParent = scoreBoardController.render();
                             pauseMenuParent = pauseController.render();
+                            shopParent = shopController.render();
                             loadRemoteTrainer(trainers);
                             listenToTrainerEvents();
                             loadingPage.setDone();
@@ -662,6 +673,7 @@ public class IngameController extends Controller {
         handlePlayerMovement(keyEvent);
         handleMap(keyEvent);
         handlePauseMenu(keyEvent);
+        //TODO inv
         handleScoreboard(keyEvent);
         handleBeastList(keyEvent);
         handleBeastTeam(keyEvent);
@@ -687,6 +699,8 @@ public class IngameController extends Controller {
                     talkToStartersNPC(trainer);
                 } else if (trainer.npc().canHeal()) {
                     talkToNurse(trainer);
+                } else if (trainer.npc().sells() > 0) {
+                    openShop(trainer);
                 }
             } else {
                 closeTalk();
@@ -931,7 +945,7 @@ public class IngameController extends Controller {
         state.setValue(PlayerState.IDLE);
         drawPlayer(posx, posy);
 
-        if (currentMenu == MENU_PAUSE) {
+        if (currentMenu == MENU_PAUSE || currentMenu == MENU_SHOP) {
             player.setOpacity(0.5);
         }
     }
@@ -1064,6 +1078,12 @@ public class IngameController extends Controller {
             pauseMenuLayout.getChildren().add(pauseMenuParent);
             currentMenu = MENU_PAUSE;
         }
+    }
+
+    public void openShop(Trainer trainer) {
+        pauseMenuLayout.getChildren().add(shopParent);
+        currentMenu = MENU_SHOP;
+        shopController.setTrainer(trainer);
     }
 
     @Override

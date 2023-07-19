@@ -7,6 +7,7 @@ public record NPCInfo(
         boolean encounterOnSight,
         boolean encounterOnTalk,
         boolean canHeal,
+        int sells,
         List<String> encountered,
         List<Integer> starters
 ) {
