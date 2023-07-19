@@ -70,11 +70,11 @@ public class PresetsService {
         return presetsApiService.getAbilities();
     }
 
-    public Observable<List<Item>> getItems() {
+    public Observable<List<ItemTypeDto>> getItems() {
         return presetsApiService.getItems();
     }
 
-    public Observable<Item> getItem(int itemId) {
+    public Observable<ItemTypeDto> getItem(int itemId) {
         return presetsApiService.getItem(itemId);
     }
 

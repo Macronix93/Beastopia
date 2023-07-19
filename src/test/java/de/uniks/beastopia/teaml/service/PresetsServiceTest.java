@@ -37,8 +37,6 @@ class PresetsServiceTest {
 
     final TileSet tileSet = new TileSet(1, null, 1, 1, 1, "A.png", 1, 1, 1);
 
-    final TileSetDescription tileSetDescription = new TileSetDescription(1, "s");
-
     @Test
     void getCharacters() {
         when(presetsApiService.getCharacters()).thenReturn(Observable.just(allSprites));
@@ -78,25 +76,29 @@ class PresetsServiceTest {
 
     @Test
     void getItems() {
-        when(presetsApiService.getItems()).thenReturn(Observable.just(List.of(new Item(null, null, "ID", "trainer", 1, 2))));
-        List<Item> result = presetsService.getItems().blockingFirst();
+        when(presetsApiService.getItems()).thenReturn(Observable.just(List.of((new ItemTypeDto(1, "image", "name", 3, "desc", "ball")))));
+        List<ItemTypeDto> result = presetsService.getItems().blockingFirst();
         assertEquals(1, result.size());
-        assertEquals("ID", result.get(0)._id());
-        assertEquals("trainer", result.get(0).trainer());
-        assertEquals(1, result.get(0).type());
-        assertEquals(2, result.get(0).amount());
+        assertEquals(1, result.get(0).id());
+        assertEquals("image", result.get(0).image());
+        assertEquals("name", result.get(0).name());
+        assertEquals(3, result.get(0).price());
+        assertEquals("desc", result.get(0).description());
+        assertEquals("desc", result.get(0).use());
         verify(presetsApiService).getItems();
     }
 
     @Test
     void getItem() {
         when(presetsApiService.getItem(3))
-                .thenReturn(Observable.just(new Item(null, null, "ID", "trainer", 1, 2)));
-        Item result = presetsService.getItem(3).blockingFirst();
-        assertEquals("ID", result._id());
-        assertEquals("trainer", result.trainer());
-        assertEquals(1, result.type());
-        assertEquals(2, result.amount());
+                .thenReturn(Observable.just(new ItemTypeDto(1, "image", "name", 3, "desc", "ball")));
+        ItemTypeDto result = presetsService.getItem(3).blockingFirst();
+        assertEquals(1, result.id());
+        assertEquals("image", result.image());
+        assertEquals("name", result.name());
+        assertEquals(3, result.price());
+        assertEquals("desc", result.description());
+        assertEquals("desc", result.use());
         verify(presetsApiService).getItem(3);
     }
 
