@@ -354,6 +354,7 @@ public class IngameController extends Controller {
                             this.map = a.map();
                             for (TileSetDescription tileSetDesc : map.tilesets()) {
                                 TileSet tileSet = presetsService.getTileset(tileSetDesc).blockingFirst();
+                                //TODO remove this later
                                 List<Tile> tileTypes = tileSet.tiles();
                                 for (Tile tile : tileTypes) {
                                     System.out.println(tile.properties().get(0).name());
@@ -481,48 +482,33 @@ public class IngameController extends Controller {
         for (Layer layer : map.layers()) {
             if (layer.chunks() != null) {
                 for (Chunk chunk : layer.chunks()) {
-                    int chunkX = chunk.x();
-                    int chunkY = chunk.y();
-                    int index = 0;
-                    for (int id : chunk.data()) {
-                        int x = index % chunk.width() + chunkX;
-                        int y = index / chunk.width() + chunkY;
-                        index++;
-                        Pair<Pair<TileSet, Image>, Integer> tileSet = findTileSet(id);
-                        if (tileSet == null) {
-                            continue;
-                        }
-
-                        // Some maps have "invalid" (or blank tiles) with ID 0 which we don't want to draw
-                        // This is to prevent the camera from showing the "extended" tile pane with those tiles
-                        if (id != 0) {
-                            drawTile(x, y, tileSet.getKey().getValue(), presetsService.getTileViewPort(tileSet.getValue(), tileSet.getKey().getKey()));
-                        }
-                    }
+                    layTiles(chunk.x(), chunk.y(), chunk.data(), chunk.width());
                 }
             } else if (layer.data() != null) {
-                int chunkX = layer.x();
-                int chunkY = layer.y();
-                int index = 0;
-                for (int id : layer.data()) {
-                    int x = index % layer.width() + chunkX;
-                    int y = index / layer.width() + chunkY;
-                    index++;
-                    Pair<Pair<TileSet, Image>, Integer> tileSet = findTileSet(id);
-                    if (tileSet == null) {
-                        continue;
-                    }
-
-                    // Some maps have "invalid" (or blank tiles) with ID 0 which we don't want to draw
-                    // This is to prevent the camera from showing the "extended" tile pane with those tiles
-                    if (id != 0) {
-                        drawTile(x, y, tileSet.getKey().getValue(), presetsService.getTileViewPort(tileSet.getValue(), tileSet.getKey().getKey()));
-                    }
-                }
+                layTiles(layer.x(), layer.y(), layer.data(), layer.width());
             }
         }
 
         updateOrigin();
+    }
+
+    private void layTiles(int chunkX, int chunkY, List<Integer> data, int width) {
+        int index = 0;
+        for (int id : data) {
+            int x = index % width + chunkX;
+            int y = index / width + chunkY;
+            index++;
+            Pair<Pair<TileSet, Image>, Integer> tileSet = findTileSet(id);
+            if (tileSet == null) {
+                continue;
+            }
+
+            // Some maps have "invalid" (or blank tiles) with ID 0 which we don't want to draw
+            // This is to prevent the camera from showing the "extended" tile pane with those tiles
+            if (id != 0) {
+                drawTile(x, y, tileSet.getKey().getValue(), presetsService.getTileViewPort(tileSet.getValue(), tileSet.getKey().getKey()));
+            }
+        }
     }
 
     private Pair<Pair<TileSet, Image>, Integer> findTileSet(int id) {
