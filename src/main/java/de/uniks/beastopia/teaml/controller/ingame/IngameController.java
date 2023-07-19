@@ -177,11 +177,6 @@ public class IngameController extends Controller {
         });
         pauseController.init();
 
-        shopController.setOnCloseRequest(() -> {
-            pauseMenuLayout.getChildren().remove(shopParent);
-            currentMenu = MENU_NONE;
-        });
-
         state.setValue(PlayerState.IDLE);
         playerController = entityControllerProvider.get();
         playerController.playerState().bind(state);
@@ -380,7 +375,6 @@ public class IngameController extends Controller {
                             beastListParent = beastListController.render();
                             scoreBoardParent = scoreBoardController.render();
                             pauseMenuParent = pauseController.render();
-                            shopParent = shopController.render();
                             loadRemoteTrainer(trainers);
                             listenToTrainerEvents();
                             loadingPage.setDone();

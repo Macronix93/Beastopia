@@ -110,4 +110,10 @@ public class TestModule {
     EncounterOpponentsApiService encounterOpponents() {
         return null;
     }
+
+    @Provides
+    @SuppressWarnings("unused")
+    TrainerItemsApiService trainerItems() {
+        return null;
+    }
 }

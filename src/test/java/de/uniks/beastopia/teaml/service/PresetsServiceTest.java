@@ -37,8 +37,6 @@ class PresetsServiceTest {
 
     final TileSet tileSet = new TileSet(1, null, 1, 1, 1, "A.png", 1, 1, 1);
 
-    final TileSetDescription tileSetDescription = new TileSetDescription(1, "s");
-
     @Test
     void getCharacters() {
         when(presetsApiService.getCharacters()).thenReturn(Observable.just(allSprites));
@@ -86,7 +84,7 @@ class PresetsServiceTest {
         assertEquals("name", result.get(0).name());
         assertEquals(3, result.get(0).price());
         assertEquals("desc", result.get(0).description());
-        assertEquals("desc", result.get(0).use());
+        assertEquals("ball", result.get(0).use());
         verify(presetsApiService).getItems();
     }
 
@@ -100,7 +98,7 @@ class PresetsServiceTest {
         assertEquals("name", result.name());
         assertEquals(3, result.price());
         assertEquals("desc", result.description());
-        assertEquals("desc", result.use());
+        assertEquals("ball", result.use());
         verify(presetsApiService).getItem(3);
     }
 

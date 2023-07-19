@@ -61,7 +61,7 @@ public class ScoreboardController extends Controller {
     public Parent render() {
         Parent parent = super.render();
         achievements.setVisible(clicked);
-        //w         loadAchievements();
+        loadAchievements();
         return parent;
     }
 
