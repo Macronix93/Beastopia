@@ -7,7 +7,6 @@ import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.ingame.beast.EditBeastTeamController;
 import de.uniks.beastopia.teaml.controller.ingame.encounter.FightWildBeastController;
-import de.uniks.beastopia.teaml.controller.ingame.encounter.LevelUpController;
 import de.uniks.beastopia.teaml.controller.ingame.encounter.StartFightNPCController;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
 import de.uniks.beastopia.teaml.rest.Map;
@@ -71,8 +70,6 @@ public class IngameController extends Controller {
     @Inject
     Provider<StartFightNPCController> startFightNPCControllerProvider;
     @Inject
-    Provider<PauseController> pauseControllerProvider;
-    @Inject
     BeastListController beastListController;
     @Inject
     Provider<BeastDetailController> beastDetailControllerProvider;
@@ -105,8 +102,6 @@ public class IngameController extends Controller {
     RegionEncountersService regionEncountersService;
     @Inject
     EncounterOpponentsService encounterOpponentsService;
-    @Inject
-    Provider<LevelUpController> levelUpControllerProvider;
     private Region region;
     private Map map;
     private final List<Pair<TileSetDescription, Pair<TileSet, Image>>> tileSets = new ArrayList<>();
@@ -181,6 +176,33 @@ public class IngameController extends Controller {
         playerController = entityControllerProvider.get();
         playerController.playerState().bind(state);
         playerController.setOnTrainerUpdate(trainer -> {
+            Trainer myTrainer = cache.getTrainer();
+            List<String> visited = new ArrayList<>(myTrainer.visitedAreas());
+
+            if (!visited.contains(trainer.area())) {
+                visited.add(trainer.area());
+            }
+
+            Trainer updatedTrainer = new Trainer(
+                    myTrainer.createdAt(),
+                    myTrainer.updatedAt(),
+                    myTrainer._id(),
+                    myTrainer.region(),
+                    myTrainer.user(),
+                    myTrainer.name(),
+                    myTrainer.image(),
+                    myTrainer.team(),
+                    visited,
+                    myTrainer.coins(),
+                    trainer.area(),
+                    trainer.x(),
+                    trainer.y(),
+                    trainer.direction(),
+                    myTrainer.npc()
+            );
+
+            cache.setTrainer(updatedTrainer);
+
             if (!trainer.area().equals(prefs.getArea()._id())) {
                 if (Arrays.stream(locationStrings).anyMatch(cache.getArea(trainer.area()).name()::contains)) {
                     soundController.play("sfx:opendoor");
@@ -226,6 +248,7 @@ public class IngameController extends Controller {
 
     private void loadTrainers(List<Trainer> trainers) {
         Trainer myTrainer = loadMyTrainer(trainers);
+        cache.setTrainer(myTrainer);
         cache.setTrainers(trainers);
 
         disposables.add(areaService.getAreas(this.region._id()).observeOn(FX_SCHEDULER).subscribe(areas -> {
