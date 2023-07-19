@@ -58,7 +58,7 @@ class EditBeastTeamControllerTest extends ApplicationTest {
     Monster monster1 = new Monster(null, null, "MONSTER_1", "TRAINER_ID", 2, 1, 1, null,  attributes, currentAttributes);
     Monster monster2 = new Monster(null, null, "MONSTER_2", "TRAINER_ID", 4, 2, 5, null, attributes, currentAttributes);
     Monster monster3 = new Monster(null, null, "MONSTER_3", "TRAINER_ID", 0, 3, 2, null, attributes, currentAttributes);
-    final Trainer trainer = new Trainer(null, null, "123", "A", "123", "A", "A.png", List.of("MONSTER_1"), 0, null, 0, 0, 0, null);
+    final Trainer trainer = new Trainer(null, null, "123", "A", "123", "A", "A.png", List.of("MONSTER_1"), List.of(), 0, null, 0, 0, 0, null);
     MonsterTypeDto monsterTypeDto = new MonsterTypeDto(0, "MONSTER_1", "MONSTER_TYPE.png", List.of(""), "");
 
     @Override

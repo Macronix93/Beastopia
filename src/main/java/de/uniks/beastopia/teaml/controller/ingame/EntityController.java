@@ -3,7 +3,6 @@ package de.uniks.beastopia.teaml.controller.ingame;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.MoveTrainerDto;
 import de.uniks.beastopia.teaml.rest.Trainer;
-import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import de.uniks.beastopia.teaml.sockets.UDPEventListener;
 import de.uniks.beastopia.teaml.utils.Direction;
@@ -44,8 +43,6 @@ public class EntityController extends Controller {
     PresetsService presetsService;
     @Inject
     UDPEventListener udpEventListener;
-    @Inject
-    DataCache cache;
     Disposable eventListener;
     Timer timer = null;
 
@@ -90,7 +87,7 @@ public class EntityController extends Controller {
         updateViewPort();
         if (!data.area().equals(trainer.area())) {
             trainer = new Trainer(trainer.createdAt(), trainer.updatedAt(), trainer._id(), trainer.region(),
-                    trainer.user(), trainer.name(), trainer.image(), trainer.team(), trainer.coins(), data.area(), trainer.x(),
+                    trainer.user(), trainer.name(), trainer.image(), trainer.team(), trainer.visitedAreas(), trainer.coins(), data.area(), trainer.x(),
                     trainer.y(), trainer.direction(), trainer.npc());
         }
         onTrainerUpdate.accept(data);

@@ -6,18 +6,21 @@ import de.uniks.beastopia.teaml.rest.*;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import de.uniks.beastopia.teaml.service.RegionService;
+import de.uniks.beastopia.teaml.service.TrainerService;
+import de.uniks.beastopia.teaml.utils.Dialog;
 import de.uniks.beastopia.teaml.utils.LoadingPage;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -29,6 +32,8 @@ public class MapController extends Controller {
     public Pane mapPane;
     @FXML
     public AnchorPane anchorPane;
+    @FXML
+    public Button fastTravelButton;
     @Inject
     App app;
     @Inject
@@ -39,12 +44,16 @@ public class MapController extends Controller {
     RegionService regionService;
     @Inject
     Provider<RegionInfoController> regionInfoControllerProvider;
-
+    @Inject
+    TrainerService trainerService;
+    @SuppressWarnings("unused")
+    private Region region;
     private LoadingPage loadingPage;
     private TileSet tileSet;
     private Image image;
     private Map map;
     private Area currentArea;
+    private String fastTravelAreaName;
 
     @Inject
     public MapController() {
@@ -65,9 +74,11 @@ public class MapController extends Controller {
     @Override
     public Parent render() {
         loadingPage = LoadingPage.makeLoadingPage(super.render());
+        fastTravelButton.setVisible(false);
         disposables.add(regionService.getRegion(cache.getJoinedRegion()._id())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(region -> {
+                            this.region = region;
                             this.map = region.map();
                             this.tileSet = presetsService.getTileset(map.tilesets().get(0)).blockingFirst();
                             this.image = presetsService.getImage(tileSet).blockingFirst();
@@ -95,9 +106,6 @@ public class MapController extends Controller {
         for (MapObject object : layer.objects()) {
             RegionInfoController regionInfo = regionInfoControllerProvider.get();
             regionInfo.init();
-            if (object.name().equals(currentArea.name())) {
-                markOwnPlayer(object);
-            }
             if (object.polygon() == null) {
                 drawRectangle(object, regionInfo);
             } else {
@@ -112,8 +120,16 @@ public class MapController extends Controller {
         r.setY(object.y());
         r.setWidth(object.width());
         r.setHeight(object.height());
+        //noinspection DuplicatedCode
+        if (object.name().equals(currentArea.name())) {
+            r.setStroke(Color.BLUEVIOLET);
+            r.setStrokeWidth(3);
+        } else if (cache.areaVisited(object.name())) {
+            r.setStroke(Color.DARKGREEN);
+            r.setStrokeWidth(3);
+        }
         r.setFill(Color.TRANSPARENT);
-        r.setOnMouseEntered(event -> setRegionInfo(object, regionInfo, event));
+        r.setOnMouseEntered(event -> setRegionInfo(r, object, regionInfo, event));
         r.setOnMouseExited(event -> anchorPane.getChildren().remove(anchorPane.getChildren().size() - 1));
         anchorPane.getChildren().add(r);
     }
@@ -125,24 +141,28 @@ public class MapController extends Controller {
             double y = point.get("y") + object.y();
             p.getPoints().addAll(x, y);
         }
+        //noinspection DuplicatedCode
+        if (object.name().equals(currentArea.name())) {
+            p.setStroke(Color.BLUEVIOLET);
+            p.setStrokeWidth(3);
+        } else if (cache.areaVisited(object.name())) {
+            p.setStroke(Color.DARKGREEN);
+            p.setStrokeWidth(3);
+        }
         p.setFill(Color.TRANSPARENT);
-        p.setOnMouseEntered(event -> setRegionInfo(object, regionInfo, event));
+        p.setOnMouseEntered(event -> setRegionInfo(p, object, regionInfo, event));
         p.setOnMouseExited(event -> anchorPane.getChildren().remove(anchorPane.getChildren().size() - 1));
         anchorPane.getChildren().add(p);
     }
 
-    private void markOwnPlayer(MapObject object) {
-        Circle c = new Circle();
-        c.setRadius(5);
-        c.setCenterX(object.x());
-        c.setCenterY(object.y());
-        c.setFill(Color.BLUEVIOLET);
-        anchorPane.getChildren().add(c);
-    }
-
-    private void setRegionInfo(MapObject object, RegionInfoController regionInfo, MouseEvent event) {
+    private void setRegionInfo(Shape shape, MapObject object, RegionInfoController regionInfo, MouseEvent event) {
         String name = object.name();
         String description = object.properties().get(0).get("value");
+        if (!cache.areaVisited(name)) {
+            name = "Unknown area";
+            description = "This area is unknown. New mysteries, adventures and dangers are awaiting you!";
+        }
+        shape.setOnMouseClicked(clickEvent -> setFastTravelTarget(cache.isFastTravelable(object.name()) ? object.name() : null));
         regionInfo.setText(name, description);
         double maxX = anchorPane.widthProperty().getValue();
         double maxY = anchorPane.heightProperty().getValue();
@@ -196,7 +216,39 @@ public class MapController extends Controller {
         }
     }
 
-    public void closeMap() {
+    private void setFastTravelTarget(String areaName) {
+        if (!cache.areaVisited(areaName) || areaName.equals(currentArea.name())) {
+            areaName = null;
+        }
+
+        fastTravelAreaName = areaName;
+        fastTravelButton.setVisible(areaName != null);
+
+        if (areaName != null) {
+            fastTravelButton.setText(resources.getString("FastTravel") + " " + areaName);
+        } else {
+            fastTravelButton.setText(resources.getString("FastTravel"));
+        }
+    }
+
+    @FXML
+    private void fastTravel() {
+        if (fastTravelAreaName == null) {
+            return;
+        }
+
+        Trainer trainer = cache.getTrainer();
+        Area newArea = cache.getAreaByName(fastTravelAreaName);
+        disposables.add(trainerService.fastTravelTrainer(trainer.region(), trainer._id(), trainer.name(), trainer.image(), trainer.team(), newArea._id())
+                .observeOn(FX_SCHEDULER)
+                .subscribe(newTrainer -> {
+                    cache.setTrainer(newTrainer);
+                    app.showPrevious();
+                }, error -> Dialog.error(error, "Fast travel failed")));
+    }
+
+    @FXML
+    private void closeMap() {
         app.showPrevious();
     }
 }

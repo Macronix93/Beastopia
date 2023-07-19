@@ -23,8 +23,8 @@ public class TrainerServiceTest {
     @InjectMocks
     TrainerService trainerService;
 
-    final List<Trainer> allTrainer = List.of(new Trainer(null, null, "123", "A", "123", "A", "A", null, 0, null, 0, 0, 0, null),
-            new Trainer(null, null, "456", "B", "456", "B", "B", null, 1, null, 0, 0, 0, null));
+    final List<Trainer> allTrainer = List.of(new Trainer(null, null, "123", "A", "123", "A", "A", null, List.of(), 0, null, 0, 0, 0, null),
+            new Trainer(null, null, "456", "B", "456", "B", "B", null, List.of(), 1, null, 0, 0, 0, null));
 
     final List<Monster> monsters = List.of(new Monster(null, null, "ID", "trainer",
             1, 1, 1, null, null, null));
@@ -91,7 +91,7 @@ public class TrainerServiceTest {
     @Test
     void updateTrainer() {
         when(trainerApiService.updateTrainer("region", "trainer",
-                new UpdateTrainerDto("A", "A", List.of())))
+                new UpdateTrainerDto("A", "A", List.of(), null)))
                 .thenReturn(Observable.just(allTrainer.get(0)));
 
         Trainer result = trainerService.updateTrainer("region", "trainer", "A", "A", List.of())
@@ -101,7 +101,7 @@ public class TrainerServiceTest {
         assertEquals("A", result.image());
 
         verify(trainerApiService).updateTrainer("region", "trainer",
-                new UpdateTrainerDto("A", "A", List.of()));
+                new UpdateTrainerDto("A", "A", List.of(), null));
     }
 
     @Test
