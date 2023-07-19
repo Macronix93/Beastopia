@@ -2,14 +2,7 @@ package de.uniks.beastopia.teaml.controller.ingame;
 
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.AppPreparer;
-import de.uniks.beastopia.teaml.rest.Chunk;
-import de.uniks.beastopia.teaml.rest.Layer;
-import de.uniks.beastopia.teaml.rest.Map;
-import de.uniks.beastopia.teaml.rest.MapObject;
-import de.uniks.beastopia.teaml.rest.Region;
-import de.uniks.beastopia.teaml.rest.Spawn;
-import de.uniks.beastopia.teaml.rest.TileSetDescription;
-import de.uniks.beastopia.teaml.rest.Trainer;
+import de.uniks.beastopia.teaml.rest.*;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.TrainerService;
 import io.reactivex.rxjava3.core.Observable;
@@ -38,15 +31,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class DeleteTrainerControllerTest extends ApplicationTest {
@@ -66,7 +52,7 @@ class DeleteTrainerControllerTest extends ApplicationTest {
     TrainerService trainerService;
 
     final Image image = createImage(2, 2, List.of(new Color(255, 0, 255), new Color(0, 255, 0), new Color(0, 0, 255), new Color(255, 255, 0)));
-    final Trainer trainer = new Trainer(null, null, "123", "A", "123", "A", "A.png", null, 0, null, 0, 0, 0, null);
+    final Trainer trainer = new Trainer(null, null, "123", "A", "123", "A", "A.png", null, List.of(), 0, null, 0, 0, 0, null);
     final TileSetDescription tileSetDescription = new TileSetDescription(0, "SOURCE");
     final List<HashMap<String, Double>> polygon = List.of(new HashMap<>() {{
         put("x", 0.0);
