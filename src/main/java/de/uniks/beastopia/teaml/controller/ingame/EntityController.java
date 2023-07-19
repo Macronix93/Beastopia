@@ -85,19 +85,13 @@ public class EntityController extends Controller {
     }
 
     public void updateTrainer(MoveTrainerDto data) {
-        switch (data.direction()) {
-            case 0 -> direction = Direction.RIGHT;
-            case 1 -> direction = Direction.UP;
-            case 2 -> direction = Direction.LEFT;
-            case 3 -> direction = Direction.DOWN;
-        }
+        setDirection(data.direction());
         index = (index + 1) % 6;
         updateViewPort();
         if (!data.area().equals(trainer.area())) {
             trainer = new Trainer(trainer.createdAt(), trainer.updatedAt(), trainer._id(), trainer.region(),
                     trainer.user(), trainer.name(), trainer.image(), trainer.team(), trainer.coins(), data.area(), trainer.x(),
                     trainer.y(), trainer.direction(), trainer.npc());
-//            listenToMovements();
         }
         onTrainerUpdate.accept(data);
     }
@@ -108,7 +102,6 @@ public class EntityController extends Controller {
             timer.purge();
         }
         timer = new Timer();
-//        System.out.println("Resetting timer for trainer: " + trainer._id() + " in area: " + trainer.area());
         timer.schedule(createUpdateTimerTask(), 3000);
     }
 
@@ -126,7 +119,6 @@ public class EntityController extends Controller {
             @Override
             public void run() {
                 self.onUI(() -> {
-//                    System.out.println("Reconnecting to trainer update for: " + trainer._id() + " in area: " + trainer.area());
                     listenToMovements();
                 });
             }

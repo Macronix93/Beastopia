@@ -331,6 +331,10 @@ public class IngameController extends Controller {
                             this.map = a.map();
                             for (TileSetDescription tileSetDesc : map.tilesets()) {
                                 TileSet tileSet = presetsService.getTileset(tileSetDesc).blockingFirst();
+                                List<Tile> tileTypes = tileSet.tiles();
+                                for (Tile tile : tileTypes) {
+                                    System.out.println(tile.properties().get(0).name());
+                                }
                                 Image image = presetsService.getImage(tileSet).blockingFirst();
                                 tileSets.add(new Pair<>(tileSetDesc, new Pair<>(tileSet, image)));
                             }
