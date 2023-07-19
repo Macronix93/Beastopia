@@ -1072,8 +1072,8 @@ public class IngameController extends Controller {
     public void openPauseMenu() {
         if (pauseMenuLayout.getChildren().contains(pauseMenuParent)) {
             removePause();
-            pauseMenuLayout.getChildren().add(pauseMenuParent);
-            currentMenu = MENU_PAUSE;
+            pauseMenuLayout.getChildren().remove(pauseMenuParent);
+            currentMenu = MENU_NONE;
         } else {
             for (Node tile : tilePane.getChildren()) {
                 if (tile instanceof ImageView imageView) {
@@ -1083,6 +1083,8 @@ public class IngameController extends Controller {
                 tile.setOpacity(0.5);
             }
             pauseHint.setOpacity(0);
+            pauseMenuLayout.getChildren().add(pauseMenuParent);
+            currentMenu = MENU_PAUSE;
         }
     }
 
@@ -1095,8 +1097,6 @@ public class IngameController extends Controller {
             tile.setOpacity(1);
         }
         pauseHint.setOpacity(1);
-        pauseMenuLayout.getChildren().remove(pauseMenuParent);
-        currentMenu = MENU_NONE;
     }
 
     @Override
