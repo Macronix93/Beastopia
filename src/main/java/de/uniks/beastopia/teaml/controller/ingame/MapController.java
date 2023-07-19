@@ -123,6 +123,9 @@ public class MapController extends Controller {
         if (object.name().equals(currentArea.name())) {
             r.setStroke(Color.BLUEVIOLET);
             r.setStrokeWidth(3);
+        } else if (cache.areaVisited(object.name())) {
+            r.setStroke(Color.DARKGREEN);
+            r.setStrokeWidth(3);
         }
         r.setFill(Color.TRANSPARENT);
         r.setOnMouseEntered(event -> setRegionInfo(r, object, regionInfo, event));
@@ -140,6 +143,9 @@ public class MapController extends Controller {
         //noinspection DuplicatedCode
         if (object.name().equals(currentArea.name())) {
             p.setStroke(Color.BLUEVIOLET);
+            p.setStrokeWidth(3);
+        } else if (cache.areaVisited(object.name())) {
+            p.setStroke(Color.DARKGREEN);
             p.setStrokeWidth(3);
         }
         p.setFill(Color.TRANSPARENT);
