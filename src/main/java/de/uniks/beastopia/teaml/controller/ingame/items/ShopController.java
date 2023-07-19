@@ -2,10 +2,10 @@ package de.uniks.beastopia.teaml.controller.ingame.items;
 
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Item;
+import de.uniks.beastopia.teaml.rest.ItemTypeDto;
 import de.uniks.beastopia.teaml.rest.Trainer;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
-import de.uniks.beastopia.teaml.service.TrainerItemsService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -30,13 +30,11 @@ public class ShopController extends Controller {
     DataCache cache;
     @Inject
     Provider<ItemController> itemControllerProvider;
-    @Inject
-    TrainerItemsService trainerItemsService;
     private Runnable onCloseRequest;
     private Trainer seller;
-    private final List<Item> sellerItems = new ArrayList<>();
+    private final List<ItemTypeDto> sellerItems = new ArrayList<>();
     private final List<Controller> subControllers = new ArrayList<>();
-    private Consumer<Item> onItemClicked;
+    private Consumer<ItemTypeDto> onItemClicked;
 
     public void setTrainer(Trainer trainer) {
         this.seller = trainer;
@@ -50,18 +48,21 @@ public class ShopController extends Controller {
     public Parent render() {
         Parent parent = super.render();
 
-        disposables.add(trainerItemsService.getItems(cache.getJoinedRegion()._id(), seller._id())
+        disposables.add(presetsService.getItems()
                 .observeOn(FX_SCHEDULER)
                 .subscribe(items -> {
-                    this.sellerItems.addAll(items);
+                    for (ItemTypeDto itemType : items) {
+                        if (seller.npc().sells().contains(itemType.id())) {
+                            sellerItems.add(itemType);
+                        }
+                    }
                     reload();
                 }));
-
         return parent;
     }
 
     private void reload() {
-        for (Item item : sellerItems) {
+        for (ItemTypeDto item : sellerItems) {
             ItemController itemController = itemControllerProvider.get().setItem(item);
             itemController.setOnItemClicked(onItemClicked);
             itemController.init();

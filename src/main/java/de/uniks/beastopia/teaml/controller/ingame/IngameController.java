@@ -938,7 +938,7 @@ public class IngameController extends Controller {
         state.setValue(PlayerState.IDLE);
         drawPlayer(posx, posy);
 
-        if (currentMenu == MENU_PAUSE) {
+        if (currentMenu == MENU_PAUSE || currentMenu == MENU_SHOP) {
             player.setOpacity(0.5);
         }
     }
@@ -1049,25 +1049,31 @@ public class IngameController extends Controller {
 
     public void openShop(Trainer trainer) {
         shopController.init();
+        shopController.setTrainer(trainer);
+        for (Node tile : tilePane.getChildren()) {
+            if (tile instanceof ImageView imageView) {
+                imageView.setFitWidth(TILE_SIZE);
+                imageView.setFitHeight(TILE_SIZE);
+            }
+            tile.setOpacity(0.5);
+        }
+        pauseHint.setOpacity(0);
+        shopController.setOnCloseRequest(() -> {
+            removePause();
+            pauseMenuLayout.getChildren().remove(shopParent);
+            currentMenu = MENU_NONE;
+        });
         //TODO close shop
         shopParent = shopController.render();
         pauseMenuLayout.getChildren().add(shopParent);
         currentMenu = MENU_SHOP;
-        shopController.setTrainer(trainer);
     }
 
     public void openPauseMenu() {
         if (pauseMenuLayout.getChildren().contains(pauseMenuParent)) {
-            for (Node tile : tilePane.getChildren()) {
-                if (tile instanceof ImageView imageView) {
-                    imageView.setFitWidth(TILE_SIZE + 1);
-                    imageView.setFitHeight(TILE_SIZE + 1);
-                }
-                tile.setOpacity(1);
-            }
-            pauseHint.setOpacity(1);
-            pauseMenuLayout.getChildren().remove(pauseMenuParent);
-            currentMenu = MENU_NONE;
+            removePause();
+            pauseMenuLayout.getChildren().add(pauseMenuParent);
+            currentMenu = MENU_PAUSE;
         } else {
             for (Node tile : tilePane.getChildren()) {
                 if (tile instanceof ImageView imageView) {
@@ -1077,9 +1083,20 @@ public class IngameController extends Controller {
                 tile.setOpacity(0.5);
             }
             pauseHint.setOpacity(0);
-            pauseMenuLayout.getChildren().add(pauseMenuParent);
-            currentMenu = MENU_PAUSE;
         }
+    }
+
+    public void removePause() {
+        for (Node tile : tilePane.getChildren()) {
+            if (tile instanceof ImageView imageView) {
+                imageView.setFitWidth(TILE_SIZE + 1);
+                imageView.setFitHeight(TILE_SIZE + 1);
+            }
+            tile.setOpacity(1);
+        }
+        pauseHint.setOpacity(1);
+        pauseMenuLayout.getChildren().remove(pauseMenuParent);
+        currentMenu = MENU_NONE;
     }
 
     @Override

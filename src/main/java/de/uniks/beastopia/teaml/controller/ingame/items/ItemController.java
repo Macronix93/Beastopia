@@ -9,6 +9,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
 
 import javax.inject.Inject;
 import java.util.function.Consumer;
@@ -20,9 +21,10 @@ public class ItemController extends Controller {
     public Label name;
     @FXML
     public Label count;
-    private Item item;
+    @FXML
+    public GridPane _ItemRootElement;
     private ItemTypeDto itemType;
-    private Consumer<Item> onItemClicked;
+    private Consumer<ItemTypeDto> onItemClicked;
     @Inject
     PresetsService presetsService;
 
@@ -31,12 +33,12 @@ public class ItemController extends Controller {
 
     }
 
-    public ItemController setItem(Item item) {
-        this.item = item;
+    public ItemController setItem(ItemTypeDto itemType) {
+        this.itemType = itemType;
         return this;
     }
 
-    public void setOnItemClicked(Consumer<Item> onItemClicked) {
+    public void setOnItemClicked(Consumer<ItemTypeDto> onItemClicked) {
         this.onItemClicked = onItemClicked;
     }
 
@@ -44,13 +46,9 @@ public class ItemController extends Controller {
     public Parent render() {
         Parent parent = super.render();
 
-        disposables.add(presetsService.getItem(item.type())
-                .observeOn(FX_SCHEDULER)
-                .subscribe(i -> itemType = i));
-
         name.setText(itemType.name());
         //TODO count
-        disposables.add(presetsService.getItemImage(item.type())
+        disposables.add(presetsService.getItemImage(itemType.id())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(itemImage -> img.setImage(itemImage)));
 
@@ -59,6 +57,6 @@ public class ItemController extends Controller {
 
     @FXML
     public void toggleDetails(MouseEvent mouseEvent) {
-        onItemClicked.accept(item);
+        onItemClicked.accept(itemType);
     }
 }

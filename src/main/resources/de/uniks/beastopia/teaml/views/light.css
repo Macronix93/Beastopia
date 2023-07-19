@@ -92,7 +92,9 @@
 #trainerContainer,
 #pauseMenuVBox,
 #yourBeastsPane,
-#fightingBeastPane {
+#fightingBeastPane,
+#VBoxShopList,
+#VBoxInvList {
     -fx-background-color: linear-gradient(to bottom, #CEEDC7, #DBF0EB);
     -fx-border-color: #82B366;
     -fx-border-width: 1px;
@@ -112,7 +114,8 @@
 #VBoxBeastList,
 #VBoxBeastDetail,
 #scrollFriends,
-#changeBeastElement {
+#changeBeastElement,
+#_ItemRootElement {
     -fx-background-color: #FFD4B2;
     -fx-border-color: #D79B00;
     -fx-border-width: 1px;

@@ -20,8 +20,6 @@ public class InventoryController extends Controller {
     public VBox VBoxInvList;
     @FXML
     public VBox VBoxItems;
-    private final List<Item> items = new ArrayList<>();
-    private final List<Controller> subControllers = new ArrayList<>();
 
     @Inject
     public InventoryController() {
