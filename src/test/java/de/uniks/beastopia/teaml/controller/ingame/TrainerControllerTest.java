@@ -88,8 +88,8 @@ class TrainerControllerTest extends ApplicationTest {
     final Map map = new Map(List.of(tileSetDescription), List.of(tilelayer, objectGroup), 2, 24, 4);
     final Region region = new Region(null, null, "ID", "NAME", new Spawn(null, 0, 0), map);
     final List<Trainer> allTrainer = List.of(
-            new Trainer(null, null, "123", "A", "123", "A", "A.png", List.of(), 0, null, 0, 0, 0, null),
-            new Trainer(null, null, "456", "B", "456", "B", "B.png", List.of(), 1, null, 0, 0, 0, null)
+            new Trainer(null, null, "123", "A", "123", "A", "A.png", List.of(), List.of(), 0, null, 0, 0, 0, null),
+            new Trainer(null, null, "456", "B", "456", "B", "B.png", List.of(), List.of(), 1, null, 0, 0, 0, null)
     );
     final List<Achievement> achievements = List.of(
             new Achievement(null, null, "FirstTrainer", "123", null, 100),
@@ -127,7 +127,7 @@ class TrainerControllerTest extends ApplicationTest {
 
         when(trainerService.createTrainer(anyString(), anyString(), anyString()))
                 .thenReturn(Observable.just(
-                        new Trainer(null, null, "ID", "REGION", "USER", "TRAINER_NAME", "A.png", List.of(), 0, null, 0, 0, 0, new NPCInfo(false, false, false, false, List.of(), List.of()))));
+                        new Trainer(null, null, "ID", "REGION", "USER", "TRAINER_NAME", "A.png", List.of(), List.of(), 0, null, 0, 0, 0, new NPCInfo(false, false, false, false, List.of(), List.of()))));
 
         clickOn("#trainerNameInput");
         write("MyTrainer");
@@ -147,7 +147,7 @@ class TrainerControllerTest extends ApplicationTest {
 
         when(trainerService.updateTrainer(anyString(), anyString(), anyString(), anyString(), anyList()))
                 .thenReturn(Observable.just(
-                        new Trainer(null, null, "ID", "REGION", "USER", "TRAINER_NAME", "B.png", List.of(""), 0, null, 0, 0, 0, new NPCInfo(false, false, false, false, List.of(), List.of()))));
+                        new Trainer(null, null, "ID", "REGION", "USER", "TRAINER_NAME", "B.png", List.of(""), List.of(), 0, null, 0, 0, 0, new NPCInfo(false, false, false, false, List.of(), List.of()))));
 
         clickOn("#trainerNameInput");
         write("B");

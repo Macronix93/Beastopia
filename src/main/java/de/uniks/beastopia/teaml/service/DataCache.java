@@ -2,14 +2,7 @@ package de.uniks.beastopia.teaml.service;
 
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.Main;
-import de.uniks.beastopia.teaml.rest.Achievement;
-import de.uniks.beastopia.teaml.rest.Area;
-import de.uniks.beastopia.teaml.rest.Encounter;
-import de.uniks.beastopia.teaml.rest.MonsterTypeDto;
-import de.uniks.beastopia.teaml.rest.Opponent;
-import de.uniks.beastopia.teaml.rest.Region;
-import de.uniks.beastopia.teaml.rest.Trainer;
-import de.uniks.beastopia.teaml.rest.User;
+import de.uniks.beastopia.teaml.rest.*;
 import javafx.scene.image.Image;
 import javafx.stage.FileChooser;
 import javafx.util.Pair;
@@ -23,12 +16,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Singleton
 public class DataCache {
@@ -82,6 +72,35 @@ public class DataCache {
     @SuppressWarnings("unused")
     public void removeUser(User user) {
         users.remove(user);
+    }
+
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    public boolean areaVisited(String areaName) {
+        String areaID = areas.stream()
+                .filter(area -> area.name().equals(areaName))
+                .findFirst()
+                .map(Area::_id)
+                .orElse(null);
+
+        if (areaID == null)
+            return false;
+
+        return trainer.visitedAreas().contains(areaID);
+    }
+
+    public boolean isFastTravelable(String areaName) {
+        return areas.stream()
+                .filter(area -> area.name().equals(areaName))
+                .findFirst()
+                .map(area -> area.spawn() != null)
+                .orElse(false);
+    }
+
+    public Area getAreaByName(String areaName) {
+        return areas.stream()
+                .filter(area -> area.name().equals(areaName))
+                .findFirst()
+                .orElse(null);
     }
 
     public List<User> getAllUsers() {
