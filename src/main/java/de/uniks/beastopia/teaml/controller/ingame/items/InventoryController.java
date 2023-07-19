@@ -14,6 +14,8 @@ import java.util.List;
 
 public class InventoryController extends Controller {
 
+    private final List<Item> items = new ArrayList<>();
+    private final List<Controller> subControllers = new ArrayList<>();
     @FXML
     public VBox VBoxInvList;
     @FXML
