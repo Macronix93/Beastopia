@@ -1,14 +1,13 @@
 package de.uniks.beastopia.teaml.controller.ingame.items;
 
 import de.uniks.beastopia.teaml.controller.Controller;
-import de.uniks.beastopia.teaml.rest.Item;
 import de.uniks.beastopia.teaml.rest.ItemTypeDto;
 import de.uniks.beastopia.teaml.rest.Trainer;
-import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 
@@ -24,10 +23,10 @@ public class ShopController extends Controller {
     public VBox VBoxShopList;
     @FXML
     public VBox VBoxItems;
+    @FXML
+    public Button CloseButtonTest;
     @Inject
     PresetsService presetsService;
-    @Inject
-    DataCache cache;
     @Inject
     Provider<ItemController> itemControllerProvider;
     private Runnable onCloseRequest;
@@ -78,16 +77,15 @@ public class ShopController extends Controller {
     }
 
     @FXML
-    public void close(ActionEvent actionEvent) {
+    public void close() {
         onCloseRequest.run();
-    }
-
-    @FXML
-    public void handleKeyEvent(KeyEvent keyEvent) {
     }
 
     public void setOnCloseRequest(Runnable onCloseRequest) {
         this.onCloseRequest = onCloseRequest;
+    }
+    @FXML
+    public void handleKeyEvent(KeyEvent keyEvent) {
     }
 
     @Override

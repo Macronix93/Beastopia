@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<GridPane fx:id="_ItemRootElement" alignment="CENTER" hgap="5.0" maxHeight="60.0" minHeight="60.0" onMouseClicked="#toggleDetails" prefHeight="60.0" style="-fx-border-color: black;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.uniks.beastopia.teaml.controller.ingame.items.ItemController">
+<GridPane fx:id="_ItemRootElement" alignment="CENTER" hgap="5.0" maxHeight="60.0" minHeight="60.0" onMouseClicked="#toggleDetails" style="-fx-border-color: black;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.uniks.beastopia.teaml.controller.ingame.items.ItemController">
     <columnConstraints>
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="20.0" />
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="80.0" />

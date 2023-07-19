@@ -23,7 +23,8 @@ public class ItemController extends Controller {
     public Label count;
     @FXML
     public GridPane _ItemRootElement;
-    private ItemTypeDto itemType;
+    public ItemTypeDto itemType;
+    public int score;
     private Consumer<ItemTypeDto> onItemClicked;
     @Inject
     PresetsService presetsService;
@@ -38,6 +39,18 @@ public class ItemController extends Controller {
         return this;
     }
 
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    public ItemTypeDto getItemType() {
+        return itemType;
+    }
+
+    public int getItemScore() {
+        return score;
+    }
+
     public void setOnItemClicked(Consumer<ItemTypeDto> onItemClicked) {
         this.onItemClicked = onItemClicked;
     }
@@ -46,8 +59,12 @@ public class ItemController extends Controller {
     public Parent render() {
         Parent parent = super.render();
 
+        if (score != 0) {
+            count.setText("x" + score);
+        }
+
         name.setText(itemType.name());
-        //TODO count
+
         disposables.add(presetsService.getItemImage(itemType.id())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(itemImage -> img.setImage(itemImage)));

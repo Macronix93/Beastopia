@@ -8,6 +8,7 @@ import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.ingame.beast.EditBeastTeamController;
 import de.uniks.beastopia.teaml.controller.ingame.encounter.FightWildBeastController;
 import de.uniks.beastopia.teaml.controller.ingame.encounter.StartFightNPCController;
+import de.uniks.beastopia.teaml.controller.ingame.items.InventoryController;
 import de.uniks.beastopia.teaml.controller.ingame.items.ShopController;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
 import de.uniks.beastopia.teaml.rest.Map;
@@ -47,6 +48,7 @@ public class IngameController extends Controller {
     static final int MENU_BEASTLIST = 2;
     static final int MENU_PAUSE = 3;
     static final int MENU_SHOP = 4;
+    static final int MENU_INVENTORY = 5;
     static final int MENU_DIALOGWINDOW = 3;
 
     @FXML
@@ -57,6 +59,15 @@ public class IngameController extends Controller {
     private StackPane pauseMenuLayout;
     @FXML
     private Button pauseHint;
+    @FXML
+    private Button beastlistHint;
+    @FXML
+    private Button scoreboardHint;
+    @FXML
+    private Button mapHint;
+
+    @FXML
+    private HBox shopLayout;
     @Inject
     App app;
     @Inject
@@ -75,6 +86,8 @@ public class IngameController extends Controller {
     BeastListController beastListController;
     @Inject
     ShopController shopController;
+    @Inject
+    InventoryController inventoryController;
     @Inject
     Provider<BeastDetailController> beastDetailControllerProvider;
     @Inject
@@ -132,6 +145,7 @@ public class IngameController extends Controller {
     Parent pauseMenuParent;
     Parent dialogWindowParent;
     Parent shopParent;
+    Parent inventoryParent;
     final java.util.Map<EntityController, Parent> otherPlayers = new HashMap<>();
     private final List<KeyCode> pressedKeys = new ArrayList<>();
     private final String[] locationStrings = {"Moncenter", "House", "Store"};
@@ -1047,6 +1061,66 @@ public class IngameController extends Controller {
         }
     }
 
+    public void openInv(boolean isShop) {
+        pauseHint.setOpacity(0);
+        beastlistHint.setOpacity(0);
+        scoreboardHint.setOpacity(0);
+        mapHint.setOpacity(0);
+        if (isShop) {
+            if (scoreBoardLayout.getChildren().contains(scoreBoardLayout)) {
+                scoreBoardLayout.getChildren().remove(scoreBoardParent);
+                currentMenu = MENU_NONE;
+            } else if (scoreBoardLayout.getChildren().contains(beastListParent)) {
+                scoreBoardLayout.getChildren().remove(beastListParent);
+                currentMenu = MENU_NONE;
+            } else {
+                inventoryController.init();
+                inventoryController.setIfShop(true);
+                for (Node tile : tilePane.getChildren()) {
+                    if (tile instanceof ImageView imageView) {
+                        imageView.setFitWidth(TILE_SIZE);
+                        imageView.setFitHeight(TILE_SIZE);
+                    }
+                    tile.setOpacity(0.5);
+                }
+                scoreBoardLayout.getChildren().add(inventoryParent);
+            }
+        } else {
+            currentMenu = MENU_INVENTORY;
+            if (scoreBoardLayout.getChildren().contains(scoreBoardLayout)) {
+                scoreBoardLayout.getChildren().remove(scoreBoardParent);
+                currentMenu = MENU_NONE;
+            } else if (scoreBoardLayout.getChildren().contains(beastListParent)) {
+                scoreBoardLayout.getChildren().remove(beastListParent);
+                currentMenu = MENU_NONE;
+            } else {
+                inventoryController.init();
+                inventoryController.setIfShop(false);
+                for (Node tile : tilePane.getChildren()) {
+                    if (tile instanceof ImageView imageView) {
+                        imageView.setFitWidth(TILE_SIZE);
+                        imageView.setFitHeight(TILE_SIZE);
+                    }
+                    tile.setOpacity(0.5);
+                }
+                scoreBoardLayout.getChildren().add(inventoryParent);
+            }
+        }
+        inventoryController.setOnCloseRequest(() -> {
+            setCloseRequests(scoreBoardLayout, inventoryParent);
+        });
+    }
+
+    public void setCloseRequests(HBox hBox, Parent parent) {
+        removePause();
+        hBox.getChildren().remove(parent);
+        currentMenu = MENU_NONE;
+        pauseHint.setOpacity(1);
+        beastlistHint.setOpacity(1);
+        scoreboardHint.setOpacity(1);
+        mapHint.setOpacity(1);
+    }
+
     public void openShop(Trainer trainer) {
         shopController.init();
         shopController.setTrainer(trainer);
@@ -1058,15 +1132,16 @@ public class IngameController extends Controller {
             tile.setOpacity(0.5);
         }
         pauseHint.setOpacity(0);
+        beastlistHint.setOpacity(0);
+        scoreboardHint.setOpacity(0);
+        mapHint.setOpacity(0);
         shopController.setOnCloseRequest(() -> {
-            removePause();
-            pauseMenuLayout.getChildren().remove(shopParent);
-            currentMenu = MENU_NONE;
+            setCloseRequests(shopLayout, shopParent);
         });
-        //TODO close shop
         shopParent = shopController.render();
-        pauseMenuLayout.getChildren().add(shopParent);
+        shopLayout.getChildren().add(shopParent);
         currentMenu = MENU_SHOP;
+        openInv(true);
     }
 
     public void openPauseMenu() {
