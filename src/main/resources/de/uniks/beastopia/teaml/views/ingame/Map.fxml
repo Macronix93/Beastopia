@@ -6,9 +6,9 @@
 <GridPane pickOnBounds="false" prefHeight="600.0" prefWidth="750.0" xmlns="http://javafx.com/javafx/19"
           xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.uniks.beastopia.teaml.controller.ingame.MapController">
     <columnConstraints>
-        <ColumnConstraints hgrow="SOMETIMES" minWidth="100.0" prefWidth="100.0"/>
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="80.0" prefWidth="80.0"/>
         <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="600.0" prefWidth="100.0"/>
-        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="150.0" prefWidth="150.0"/>
+        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="120.0" prefWidth="120.0"/>
     </columnConstraints>
     <rowConstraints>
         <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES"/>
@@ -19,18 +19,18 @@
         <Pane fx:id="mapPane" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0"
               AnchorPane.topAnchor="10.0"/>
     </AnchorPane>
-    <VBox alignment="BOTTOM_CENTER" spacing="10.0" GridPane.columnIndex="2" GridPane.rowIndex="1"
+    <VBox alignment="BOTTOM_LEFT" spacing="10.0" GridPane.columnIndex="2" GridPane.rowIndex="1"
           GridPane.valignment="BOTTOM">
         <padding>
             <Insets bottom="2.0" left="2.0" right="2.0" top="2.0"/>
         </padding>
         <!--suppress JavaFxUnresolvedFxIdReference -->
         <Button fx:id="fastTravelButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false"
-                onAction="#fastTravel" prefHeight="55.0" prefWidth="140.0" text="%FastTravel" textAlignment="CENTER"
+                onAction="#fastTravel" prefHeight="55.0" prefWidth="120.0" text="%FastTravel" textAlignment="CENTER"
                 wrapText="true"/>
         <!--suppress JavaFxUnresolvedFxIdReference -->
         <Button fx:id="closeMapButton" alignment="CENTER" contentDisplay="CENTER" layoutX="20.0" layoutY="494.0"
-                mnemonicParsing="false" onAction="#closeMap" prefHeight="35.0" prefWidth="140.0" text="%CloseMap"
+                mnemonicParsing="false" onAction="#closeMap" prefHeight="35.0" prefWidth="120.0" text="%CloseMap"
                 wrapText="true"/>
     </VBox>
 </GridPane>
