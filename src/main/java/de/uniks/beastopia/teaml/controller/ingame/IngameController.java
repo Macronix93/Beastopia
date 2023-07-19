@@ -8,6 +8,7 @@ import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.ingame.beast.EditBeastTeamController;
 import de.uniks.beastopia.teaml.controller.ingame.encounter.FightWildBeastController;
 import de.uniks.beastopia.teaml.controller.ingame.encounter.StartFightNPCController;
+import de.uniks.beastopia.teaml.controller.ingame.items.ShopController;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
 import de.uniks.beastopia.teaml.rest.Map;
 import de.uniks.beastopia.teaml.rest.*;
@@ -45,6 +46,7 @@ public class IngameController extends Controller {
     static final int MENU_SCOREBOARD = 1;
     static final int MENU_BEASTLIST = 2;
     static final int MENU_PAUSE = 3;
+    static final int MENU_SHOP = 4;
     static final int MENU_DIALOGWINDOW = 3;
 
     @FXML
@@ -71,6 +73,8 @@ public class IngameController extends Controller {
     Provider<StartFightNPCController> startFightNPCControllerProvider;
     @Inject
     BeastListController beastListController;
+    @Inject
+    ShopController shopController;
     @Inject
     Provider<BeastDetailController> beastDetailControllerProvider;
     @Inject
@@ -127,6 +131,7 @@ public class IngameController extends Controller {
     Parent scoreBoardParent;
     Parent pauseMenuParent;
     Parent dialogWindowParent;
+    Parent shopParent;
     final java.util.Map<EntityController, Parent> otherPlayers = new HashMap<>();
     private final List<KeyCode> pressedKeys = new ArrayList<>();
     private final String[] locationStrings = {"Moncenter", "House", "Store"};
@@ -687,6 +692,8 @@ public class IngameController extends Controller {
                     talkToStartersNPC(trainer);
                 } else if (trainer.npc().canHeal()) {
                     talkToNurse(trainer);
+                } else if (trainer.npc().sells() != null) {
+                    openShop(trainer);
                 }
             } else {
                 closeTalk();
@@ -1040,6 +1047,15 @@ public class IngameController extends Controller {
         }
     }
 
+    public void openShop(Trainer trainer) {
+        shopController.init();
+        //TODO close shop
+        shopParent = shopController.render();
+        pauseMenuLayout.getChildren().add(shopParent);
+        currentMenu = MENU_SHOP;
+        shopController.setTrainer(trainer);
+    }
+
     public void openPauseMenu() {
         if (pauseMenuLayout.getChildren().contains(pauseMenuParent)) {
             for (Node tile : tilePane.getChildren()) {
@@ -1077,6 +1093,7 @@ public class IngameController extends Controller {
         playerController.destroy();
         scoreBoardController.destroy();
         beastListController.destroy();
+        shopController.destroy();
         if (dialogWindowController != null) {
             dialogWindowController.destroy();
         }
