@@ -28,6 +28,15 @@
     -fx-effect: dropshadow(gaussian, #D79B00, 5, 0, 0, 1);
 }
 
+#infoTextBox {
+    -fx-background-color: linear-gradient(to bottom, rgba(206, 237, 199, 0.5), rgba(219, 240, 235, 0.5));
+    -fx-border-color: #82B366;
+    -fx-border-width: 1px;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-effect: dropshadow(gaussian, #D6B656, 5, 0, 0, 1);
+}
+
 #rememberMe .box {
     -fx-background-color: #FFD4B2;
     -fx-border-color: #D79B00;
