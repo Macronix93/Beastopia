@@ -755,7 +755,7 @@ public class IngameController extends Controller {
                     Rectangle2D viewPort = new Rectangle2D(3 * 96, 32, 16, 32);
                     PixelReader reader = image.getPixelReader();
                     WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
-                    talk(newImage, "I am currently fighting, come back later!"
+                    talk(newImage, " I am currently fighting, come back later! "
                             , null, null, null);
                 }));
     }
@@ -797,7 +797,7 @@ public class IngameController extends Controller {
     }
 
     private void talkToNurse(Trainer trainer) {
-        disposables.add(presetsService.getCharacterSprites(trainer.image(), true)
+        disposables.add(presetsService.getCharacterSprites(trainer.image(), false)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(image -> {
                     Rectangle2D viewPort = new Rectangle2D(3 * 96, 32, 16, 32);
