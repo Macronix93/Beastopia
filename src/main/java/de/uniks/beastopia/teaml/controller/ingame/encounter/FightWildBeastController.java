@@ -98,11 +98,11 @@ public class FightWildBeastController extends Controller {
                     String enemyAllyTrainer = null;
                     String allyTrainer = null;
 
-                    String enemyTrainer = o.get(0).trainer();
-                    List<Monster> myMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(1).trainer()).blockingFirst();
-                    List<Monster> enemyMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(0).trainer()).blockingFirst();
-                    Monster ownMonster = myMonsters.stream().filter(m -> m._id().equals(o.get(1).monster())).findFirst().orElseThrow();
-                    Monster enemyMonster = enemyMonsters.stream().filter(m -> m._id().equals(o.get(0).monster())).findFirst().orElseThrow();
+                    String enemyTrainer = o.get(1).trainer();
+                    List<Monster> myMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(0).trainer()).blockingFirst();
+                    List<Monster> enemyMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(1).trainer()).blockingFirst();
+                    Monster ownMonster = myMonsters.stream().filter(m -> m._id().equals(o.get(0).monster())).findFirst().orElseThrow();
+                    Monster enemyMonster = enemyMonsters.stream().filter(m -> m._id().equals(o.get(1).monster())).findFirst().orElseThrow();
 
                     if (o.size() == 3) {
                         List<Monster> enemyAllyMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(2).trainer()).blockingFirst();
