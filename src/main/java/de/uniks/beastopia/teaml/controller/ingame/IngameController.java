@@ -9,6 +9,7 @@ import de.uniks.beastopia.teaml.controller.ingame.beast.EditBeastTeamController;
 import de.uniks.beastopia.teaml.controller.ingame.encounter.FightWildBeastController;
 import de.uniks.beastopia.teaml.controller.ingame.encounter.StartFightNPCController;
 import de.uniks.beastopia.teaml.controller.ingame.items.InventoryController;
+import de.uniks.beastopia.teaml.controller.ingame.items.ItemDetailController;
 import de.uniks.beastopia.teaml.controller.ingame.items.ShopController;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
 import de.uniks.beastopia.teaml.rest.Map;
@@ -34,6 +35,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.util.Pair;
 
 import javax.inject.Inject;
@@ -65,9 +67,10 @@ public class IngameController extends Controller {
     private Button scoreboardHint;
     @FXML
     private Button mapHint;
-
     @FXML
     private HBox shopLayout;
+    @FXML
+    private VBox itemDetailLayout;
     @Inject
     App app;
     @Inject
@@ -92,11 +95,14 @@ public class IngameController extends Controller {
     Provider<BeastDetailController> beastDetailControllerProvider;
     @Inject
     Provider<DialogWindowController> dialogWindowControllerProvider;
+    @Inject
     Provider<EditBeastTeamController> editBeastTeamControllerProvider;
     @Inject
     Provider<EntityController> entityControllerProvider;
     @Inject
     Provider<MapController> mapControllerProvider;
+    @Inject
+    Provider<ItemDetailController> itemDetailControllerProvider;
     @Inject
     Prefs prefs;
     @Inject
@@ -132,6 +138,7 @@ public class IngameController extends Controller {
     private LoadingPage loadingPage;
     private final List<Controller> subControllers = new ArrayList<>();
     private Monster lastMonster;
+    private ItemTypeDto lastItemTypeDto;
     private int currentMenu = MENU_NONE;
 
     Direction direction;
@@ -139,6 +146,7 @@ public class IngameController extends Controller {
     Parent player;
     Parent beastListParent;
     Parent beastDetailParent;
+    Parent itemDetailParent;
     EntityController playerController;
     SoundController soundController;
     Parent scoreBoardParent;
@@ -660,6 +668,25 @@ public class IngameController extends Controller {
         scoreBoardLayout.getChildren().add(0, beastDetailParent);
     }
 
+    private void toggleItemDetails(ItemTypeDto itemTypeDto) {
+        if (Objects.equals(lastItemTypeDto, itemTypeDto)) {
+            itemDetailLayout.getChildren().remove(itemDetailParent);
+            lastItemTypeDto = null;
+            return;
+        }
+        lastItemTypeDto = itemTypeDto;
+
+        ItemDetailController controller = itemDetailControllerProvider.get();
+        subControllers.add(controller);
+        controller.setItem(itemTypeDto);
+        //controller.setBooleanShop(isShop);
+        controller.init();
+
+        scoreBoardLayout.getChildren().remove(itemDetailParent);
+        itemDetailParent = controller.render();
+        itemDetailLayout.getChildren().add(0, itemDetailParent);
+    }
+
     private void updateTrainerPos(Direction direction) {
         Trainer trainer = cache.getTrainer();
         JsonObject data = new JsonObject();
@@ -1083,7 +1110,11 @@ public class IngameController extends Controller {
             } else {
                 inventoryController.init();
                 inventoryController.setIfShop(true);
-                inventoryController.setOnCloseRequest(() -> setCloseRequests(scoreBoardLayout, inventoryParent));
+                inventoryController.setOnItemClicked(this::toggleItemDetails);
+                inventoryController.setOnCloseRequest(() -> {
+                    setCloseRequests(scoreBoardLayout, inventoryParent);
+                    lastMonster = null;
+                });
                 inventoryParent = inventoryController.render();
                 scoreBoardLayout.getChildren().add(inventoryParent);
             }
@@ -1098,7 +1129,10 @@ public class IngameController extends Controller {
             } else {
                 inventoryController.init();
                 inventoryController.setIfShop(false);
-                inventoryController.setOnCloseRequest(() -> setCloseRequests(scoreBoardLayout, inventoryParent));
+                inventoryController.setOnCloseRequest(() -> {
+                    setCloseRequests(scoreBoardLayout, inventoryParent);
+                    lastMonster = null;
+                });
                 inventoryParent = inventoryController.render();
                 scoreBoardLayout.getChildren().add(inventoryParent);
             }
@@ -1129,7 +1163,10 @@ public class IngameController extends Controller {
         beastlistHint.setOpacity(0);
         scoreboardHint.setOpacity(0);
         mapHint.setOpacity(0);
-        shopController.setOnCloseRequest(() -> setCloseRequests(shopLayout, shopParent));
+        shopController.setOnCloseRequest(() -> {
+            setCloseRequests(shopLayout, shopParent);
+            inventoryController.close();
+        });
         shopParent = shopController.render();
         shopLayout.getChildren().add(shopParent);
         currentMenu = MENU_SHOP;

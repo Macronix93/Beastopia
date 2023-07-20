@@ -62,7 +62,7 @@ public class ItemController extends Controller {
         return parent;
     }
 
-    private String formatStringIfTooLong(String itemName) {
+    private String formatStringIfTooLong(String itemName) { //If name is too long
         if (itemName.length() > 12) {
             int lastSpace = itemName.lastIndexOf(' ', 12);
             if (lastSpace != -1) { //\n after last space

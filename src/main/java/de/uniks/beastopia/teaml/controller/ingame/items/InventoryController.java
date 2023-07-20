@@ -109,7 +109,9 @@ public class InventoryController extends Controller {
             subController.destroy();
         }
     }
-
+    public void setOnItemClicked(Consumer<ItemTypeDto> onItemClicked) {
+        this.onItemClicked = onItemClicked;
+    }
     public void setIfShop(boolean b) {
         this.isShop = b;
     }
