@@ -52,9 +52,9 @@ public class JoinFightInfoController extends Controller {
 
         pointingArrow.setRotate(30);
 
-        helpCaption.setText("Help another Trainer");
+        helpCaption.setText(resources.getString("helpTrainerCaption"));
         helpCaption.setStyle("-fx-font-size: 16px;");
-        helpText.setText("This trainer could use your help! Talk to the trainer to join the fight!");
+        helpText.setText(resources.getString("helpTrainerText"));
         helpText.setStyle("-fx-font-size: 12px;");
 
         return parent;

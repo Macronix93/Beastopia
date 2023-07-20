@@ -483,13 +483,11 @@ public class IngameController extends Controller {
 
     private void checkOpponents(List<Opponent> opponents, Trainer trainer) {
         if (trainer.area().equals(cache.getTrainer().area())) {
+            System.out.println("Trainer " + trainer.name() + " is in my area " + cache.getTrainer().area() + " and has started a fight!");
+
             disposables.add(encounterOpponentsService.getEncounterOpponents(cache.getJoinedRegion()._id(), opponents.get(0).encounter())
                     .observeOn(FX_SCHEDULER)
                     .subscribe(this::checkForHelpNeeded));
-
-            if (opponents.size() != 0) {
-                System.out.println("opponents with size " + opponents.size());
-            }
         }
     }
 
