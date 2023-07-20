@@ -43,7 +43,7 @@ class EntityControllerTest extends ApplicationTest {
 
     final ObjectProperty<PlayerState> state = new SimpleObjectProperty<>(PlayerState.IDLE);
     final Image image = createImage(List.of(new Color(255, 0, 255), new Color(0, 255, 0), new Color(0, 0, 255), new Color(255, 255, 0)));
-    final Trainer trainer = new Trainer(null, null, "ID_TRAINER", "ID_REGION", "ID_USER", "TRAINER_NAME", "TRAINER_IMAGE", null, List.of(), 0, "ID_AREA", 0, 0, 0, new NPCInfo(false, false, false, false, 3, List.of(), List.of()));
+    final Trainer trainer = new Trainer(null, null, "ID_TRAINER", "ID_REGION", "ID_USER", "TRAINER_NAME", "TRAINER_IMAGE", null, List.of(), 0, "ID_AREA", 0, 0, 0, new NPCInfo(false, false, false, false, List.of(), List.of(), List.of()));
 
     @Override
     public void start(Stage stage) {
