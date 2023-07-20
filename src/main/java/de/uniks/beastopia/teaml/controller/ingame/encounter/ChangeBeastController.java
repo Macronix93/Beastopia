@@ -99,7 +99,7 @@ public class ChangeBeastController extends Controller {
 
     @FXML
     public void back() {
-        app.show(encounterController);
+        app.show(encounterController.setOwnMonster(currentMonster));
     }
 
     @FXML
