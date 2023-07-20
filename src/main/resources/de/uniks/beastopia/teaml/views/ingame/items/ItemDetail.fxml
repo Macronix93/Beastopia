@@ -33,7 +33,7 @@
             <VBox alignment="CENTER">
                 <Label fx:id="name" textAlignment="CENTER">
                     <font>
-                        <Font size="16.0"/>
+                        <Font size="16.0" />
                     </font>
                 </Label>
             </VBox>
@@ -43,7 +43,7 @@
                         <Font size="16.0" />
                     </font>
                     <HBox.margin>
-                        <Insets left="35.0" />
+                        <Insets left="25.0" />
                     </HBox.margin>
                 </Label>
                 <ImageView fx:id="coinImg" fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">

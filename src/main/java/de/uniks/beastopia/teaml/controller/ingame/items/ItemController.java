@@ -62,12 +62,16 @@ public class ItemController extends Controller {
         return parent;
     }
 
-    private String formatStringIfTooLong(String itemName) { //If name is too long
+    public String formatStringIfTooLong(String itemName) { // If name is too long // TODO
         if (itemName.length() > 12) {
             int lastSpace = itemName.lastIndexOf(' ', 12);
-            if (lastSpace != -1) { //\n after last space
-                return itemName.substring(0, lastSpace) + "\n" + itemName.substring(lastSpace + 1);
-            } else { //if too long and no space
+            if (lastSpace != -1) { // \n after last space
+                return itemName.substring(0, lastSpace) + "\n" + formatStringIfTooLong(itemName.substring(lastSpace + 1));
+            } else { // if too long and no space
+                if (itemName.length() > 24) {
+                    String lastPart = itemName.substring(12);
+                    return itemName.substring(0, 12) + "-\n" + formatStringIfTooLong(lastPart);
+                }
                 return itemName.substring(0, 12) + "-\n" + itemName.substring(12);
             }
         }
