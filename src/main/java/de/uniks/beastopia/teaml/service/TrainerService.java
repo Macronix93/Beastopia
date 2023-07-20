@@ -31,7 +31,11 @@ public class TrainerService {
     }
 
     public Observable<Trainer> updateTrainer(String regionId, String trainerId, String name, String image, List<String> team) {
-        return trainerApiService.updateTrainer(regionId, trainerId, new UpdateTrainerDto(name, image, team));
+        return trainerApiService.updateTrainer(regionId, trainerId, new UpdateTrainerDto(name, image, team, null));
+    }
+
+    public Observable<Trainer> fastTravelTrainer(String regionId, String trainerID, String name, String image, List<String> team, String area) {
+        return trainerApiService.updateTrainer(regionId, trainerID, new UpdateTrainerDto(name, image, team, area));
     }
 
     public Observable<List<Monster>> getTrainerMonsters(String regionId, String trainerId) {

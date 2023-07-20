@@ -16,7 +16,6 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
-import org.glassfish.grizzly.utils.ObjectPool;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,11 +24,14 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
 
-import javax.inject.Inject;
-import java.util.*;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.ResourceBundle;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -43,6 +45,7 @@ class StartFightNPCControllerTest extends ApplicationTest {
     ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang", Locale.forLanguageTag("en"));
     @InjectMocks
     StartFightNPCController startFightNPCController;
+    @SuppressWarnings("unused")
     @Mock
     Prefs prefs;
     @Mock
@@ -59,7 +62,7 @@ class StartFightNPCControllerTest extends ApplicationTest {
             "t", true, true, "m", null, null, 0);
 
     Trainer trainer = new Trainer(null, null, "tid", "tr", "tu", "tn",
-            "ti", null, 0, "tarea", 2, 3, 0, null);
+            "ti", null, List.of(), 0, "tarea", 2, 3, 0, null);
     List<Opponent> ops = List.of(opponent);
 
     Region region = new Region(null, null, "id", "Alb", null, null);
