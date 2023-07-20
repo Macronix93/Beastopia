@@ -1039,7 +1039,7 @@ public class IngameController extends Controller {
         openPauseMenu();
     }
 
-    public void openBeastlist() {
+    public void openBeastlist() { //TODO INV
         if (scoreBoardLayout.getChildren().contains(beastListParent)) {
             scoreBoardLayout.getChildren().remove(beastListParent);
             scoreBoardLayout.getChildren().remove(beastDetailParent);
@@ -1051,7 +1051,7 @@ public class IngameController extends Controller {
         }
     }
 
-    public void openScoreboard() {
+    public void openScoreboard() { //TODO INV
         if (scoreBoardLayout.getChildren().contains(scoreBoardParent)) {
             scoreBoardLayout.getChildren().remove(scoreBoardParent);
             currentMenu = MENU_NONE;
@@ -1061,7 +1061,7 @@ public class IngameController extends Controller {
         }
     }
 
-    public void openInv(boolean isShop) {
+    public void openInv(boolean isShop) { //TODO nur INV
         pauseHint.setOpacity(0);
         beastlistHint.setOpacity(0);
         scoreboardHint.setOpacity(0);
@@ -1083,6 +1083,7 @@ public class IngameController extends Controller {
                     }
                     tile.setOpacity(0.5);
                 }
+                inventoryParent = inventoryController.render();
                 scoreBoardLayout.getChildren().add(inventoryParent);
             }
         } else {
@@ -1103,12 +1104,11 @@ public class IngameController extends Controller {
                     }
                     tile.setOpacity(0.5);
                 }
+                inventoryController.setOnCloseRequest(() -> setCloseRequests(scoreBoardLayout, inventoryParent));
+                inventoryParent = inventoryController.render();
                 scoreBoardLayout.getChildren().add(inventoryParent);
             }
         }
-        inventoryController.setOnCloseRequest(() -> {
-            setCloseRequests(scoreBoardLayout, inventoryParent);
-        });
     }
 
     public void setCloseRequests(HBox hBox, Parent parent) {
@@ -1135,9 +1135,7 @@ public class IngameController extends Controller {
         beastlistHint.setOpacity(0);
         scoreboardHint.setOpacity(0);
         mapHint.setOpacity(0);
-        shopController.setOnCloseRequest(() -> {
-            setCloseRequests(shopLayout, shopParent);
-        });
+        shopController.setOnCloseRequest(() -> setCloseRequests(shopLayout, shopParent));
         shopParent = shopController.render();
         shopLayout.getChildren().add(shopParent);
         currentMenu = MENU_SHOP;

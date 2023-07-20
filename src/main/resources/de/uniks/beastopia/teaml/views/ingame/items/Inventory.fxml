@@ -23,6 +23,8 @@
             </padding>
         </VBox>
     </ScrollPane>
-    <!--suppress JavaFxUnresolvedFxIdReference -->
-    <Button fx:id="CloseButtonTestId" mnemonicParsing="false" onAction="#close" text="%Close" />
+    <Button fx:id="CloseButton" mnemonicParsing="false" onAction="#close" text="%Close">
+      <VBox.margin>
+         <Insets bottom="5.0" />
+      </VBox.margin></Button>
 </VBox>

@@ -3,16 +3,14 @@ package de.uniks.beastopia.teaml.controller.ingame.items;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Item;
 import de.uniks.beastopia.teaml.rest.ItemTypeDto;
-import de.uniks.beastopia.teaml.rest.TrainerItemsApiService;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import de.uniks.beastopia.teaml.service.TrainerItemsService;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
-import okhttp3.Cache;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -28,6 +26,8 @@ public class InventoryController extends Controller {
     public VBox VBoxInvList;
     @FXML
     public VBox VBoxItems;
+    @FXML
+    public Button CloseButton;
     @Inject
     TrainerItemsService trainerItemsService;
     @Inject
@@ -48,8 +48,11 @@ public class InventoryController extends Controller {
     public Parent render() {
         Parent parent = super.render();
 
+        if (this.isShop) {
+            CloseButton.setDisable(true);
+            CloseButton.setOpacity(0);
+        }
         List<ItemTypeDto> itemTypes = presetsService.getItems().blockingFirst();
-
         disposables.add(trainerItemsService.getItems(cache.getJoinedRegion()._id(), cache.getTrainer()._id())
                 .observeOn(FX_SCHEDULER).subscribe(
                         i -> {
@@ -97,9 +100,10 @@ public class InventoryController extends Controller {
     }
 
     @FXML
-    public void close () {
+    public void close() {
         onCloseRequest.run();
     }
+
     public void setOnCloseRequest(Runnable onCloseRequest) {
         this.onCloseRequest = onCloseRequest;
     }
