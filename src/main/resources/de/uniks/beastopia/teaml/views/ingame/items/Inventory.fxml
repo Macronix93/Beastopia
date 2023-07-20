@@ -4,18 +4,26 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
 <VBox fx:id="VBoxInvList" alignment="CENTER" onKeyPressed="#handleKeyEvent" style="-fx-border-radius: 10; -fx-border-color: black;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.uniks.beastopia.teaml.controller.ingame.items.InventoryController">
-    <Label text="%inv">
-        <font>
-            <Font name="System Bold" size="22.0" />
-        </font>
-      <VBox.margin>
-         <Insets top="15.0" />
-      </VBox.margin>
-    </Label>
+    <HBox alignment="CENTER">
+        <Label fx:id="inv">
+            <font>
+                <Font name="System Bold" size="22.0" />
+            </font>
+          <HBox.margin>
+              <Insets left="35.0" />
+          </HBox.margin>
+        </Label>
+        <ImageView fx:id="coinImg" fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+         <HBox.margin>
+            <Insets left="5.0" />
+         </HBox.margin></ImageView>
+    </HBox>
     <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS">
         <VBox fx:id="VBoxItems" spacing="10.0">
             <padding>

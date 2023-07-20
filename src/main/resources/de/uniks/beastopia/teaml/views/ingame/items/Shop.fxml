@@ -23,7 +23,7 @@
          </padding>
       </VBox>
    </ScrollPane>
-   <Button fx:id="CloseButtonTest" mnemonicParsing="false" onAction="#close" text="%Close">
+   <Button fx:id="CloseButtonTest" mnemonicParsing="false" onAction="#close" text="%leave">
       <VBox.margin>
          <Insets bottom="5.0" />
       </VBox.margin></Button>

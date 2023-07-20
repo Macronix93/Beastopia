@@ -1,5 +1,6 @@
 package de.uniks.beastopia.teaml.controller.ingame.items;
 
+import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Item;
 import de.uniks.beastopia.teaml.rest.ItemTypeDto;
@@ -9,15 +10,15 @@ import de.uniks.beastopia.teaml.service.TrainerItemsService;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class InventoryController extends Controller {
@@ -30,6 +31,10 @@ public class InventoryController extends Controller {
     public VBox VBoxItems;
     @FXML
     public Button CloseButton;
+    @FXML
+    public Label inv;
+    @FXML
+    public ImageView coinImg;
     @Inject
     TrainerItemsService trainerItemsService;
     @Inject
@@ -50,6 +55,8 @@ public class InventoryController extends Controller {
     public Parent render() {
         Parent parent = super.render();
 
+        coinImg.setImage(new Image(Objects.requireNonNull(Main.class.getResourceAsStream("assets/coin.png"))));
+        showTrainerCoins();
         if (this.isShop) {
             CloseButton.setDisable(true);
             CloseButton.setOpacity(0);
@@ -67,6 +74,10 @@ public class InventoryController extends Controller {
                 ));
 
         return parent;
+    }
+
+    public void showTrainerCoins() {
+        inv.setText(resources.getString("inv") + "\t" + cache.getTrainer().coins());
     }
 
     private void reload() {
@@ -110,9 +121,11 @@ public class InventoryController extends Controller {
             subController.destroy();
         }
     }
+
     public void setOnItemClicked(Consumer<ItemTypeDto> onItemClicked) {
         this.onItemClicked = onItemClicked;
     }
+
     public void setIfShop(boolean b) {
         this.isShop = b;
     }

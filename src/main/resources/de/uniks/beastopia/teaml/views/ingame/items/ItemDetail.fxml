@@ -6,11 +6,12 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox fx:id="VBoxItemDetail" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="200.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.uniks.beastopia.teaml.controller.ingame.items.ItemDetailController">
+<VBox fx:id="VBoxItemDetail" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="200.0" prefWidth="300.0" style="-fx-border-color: black;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.uniks.beastopia.teaml.controller.ingame.items.ItemDetailController">
     <GridPane prefHeight="300.0" prefWidth="300.0">
         <columnConstraints>
             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -29,18 +30,28 @@
             <rowConstraints>
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
             </rowConstraints>
-            <VBox alignment="CENTER" GridPane.columnIndex="1">
-                <Label fx:id="cost" textAlignment="CENTER">
-               <font>
-                  <Font size="16.0" />
-               </font></Label>
-            </VBox>
             <VBox alignment="CENTER">
                 <Label fx:id="name" textAlignment="CENTER">
-               <font>
-                  <Font size="16.0" />
-               </font></Label>
+                    <font>
+                        <Font size="16.0"/>
+                    </font>
+                </Label>
             </VBox>
+            <HBox alignment="CENTER" GridPane.columnIndex="1">
+                <Label fx:id="cost">
+                    <font>
+                        <Font size="16.0" />
+                    </font>
+                    <HBox.margin>
+                        <Insets left="35.0" />
+                    </HBox.margin>
+                </Label>
+                <ImageView fx:id="coinImg" fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                    <HBox.margin>
+                        <Insets left="5.0" />
+                    </HBox.margin>
+                </ImageView>
+            </HBox>
         </GridPane>
         <VBox alignment="CENTER" GridPane.rowIndex="1">
             <ImageView fx:id="itemImage" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" />
