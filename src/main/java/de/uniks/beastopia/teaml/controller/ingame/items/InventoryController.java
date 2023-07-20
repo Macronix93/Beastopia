@@ -90,6 +90,7 @@ public class InventoryController extends Controller {
         }
     }
 
+    @SuppressWarnings("unused")
     @FXML
     public void handleKeyEvent(KeyEvent keyEvent) {
     }
