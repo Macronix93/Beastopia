@@ -26,8 +26,8 @@ public class RenderBeastController extends Controller {
     @Inject
     PresetsService presetsService;
 
-    private Monster monster1;
-    private Monster monster2;
+    public Monster monster1;
+    public Monster monster2;
 
     @Inject
     public RenderBeastController() {
