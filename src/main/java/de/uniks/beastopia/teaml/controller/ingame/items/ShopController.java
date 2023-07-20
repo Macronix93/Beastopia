@@ -4,7 +4,6 @@ import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.ItemTypeDto;
 import de.uniks.beastopia.teaml.rest.Trainer;
 import de.uniks.beastopia.teaml.service.PresetsService;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -84,8 +83,14 @@ public class ShopController extends Controller {
     public void setOnCloseRequest(Runnable onCloseRequest) {
         this.onCloseRequest = onCloseRequest;
     }
+
+    @SuppressWarnings("unused")
     @FXML
     public void handleKeyEvent(KeyEvent keyEvent) {
+    }
+
+    public void setOnItemClicked(Consumer<ItemTypeDto> onItemClicked) {
+        this.onItemClicked = onItemClicked;
     }
 
     @Override

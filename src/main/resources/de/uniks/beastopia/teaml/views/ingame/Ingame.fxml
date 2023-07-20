@@ -2,14 +2,12 @@
 
 <!--suppress JavaFxUnresolvedFxIdReference -->
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
 <HBox fx:id="ingame" alignment="BOTTOM_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="750.0" spacing="20.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.uniks.beastopia.teaml.controller.ingame.IngameController">
@@ -41,10 +39,5 @@
             <HBox fx:id="scoreBoardLayout" alignment="TOP_RIGHT" prefHeight="510.0" prefWidth="523.0" AnchorPane.bottomAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="25.0" />
             <HBox fx:id="shopLayout" prefHeight="510.0" prefWidth="523.0" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="25.0" AnchorPane.topAnchor="25.0" />
         </AnchorPane>
-      <VBox fx:id="itemDetailLayout" maxWidth="300.0" minWidth="300.0" prefHeight="200.0" prefWidth="300.0">
-         <StackPane.margin>
-            <Insets bottom="350.0" top="25.0" />
-         </StackPane.margin>
-      </VBox>
     </StackPane>
 </HBox>
