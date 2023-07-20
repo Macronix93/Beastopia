@@ -100,6 +100,8 @@ public class EncounterController extends Controller {
     @Inject
     Provider<EndScreenController> endScreenControllerProvider;
     @Inject
+    Provider<LevelUpController> levelUpControllerProvider;
+    @Inject
     DataCache cache;
     @Inject
     TrainerService trainerService;
@@ -413,19 +415,31 @@ public class EncounterController extends Controller {
                             }
                             app.show(controller);
                         } else {
-                            EndScreenController controller = endScreenControllerProvider.get();
-                            controller.setWinner(true);
-                            controller.setLoserMonster1(enemyMonster);
+                            EndScreenController endScreenController = endScreenControllerProvider.get();
+                            endScreenController.setWinner(true);
+                            endScreenController.setLoserMonster1(enemyMonster);
                             if (enemyAllyMonster != null) {
-                                controller.setLoserMonster2(enemyAllyMonster);
+                                endScreenController.setLoserMonster2(enemyAllyMonster);
                             }
-                            controller.setWinnerMonster1(ownMonster);
+                            endScreenController.setWinnerMonster1(ownMonster);
                             if (allyMonster != null) {
-                                controller.setWinnerMonster2(allyMonster);
+                                endScreenController.setWinnerMonster2(allyMonster);
                             }
-                            app.show(controller);
+                            if (myMon.level() > ownMonster.level()) { //Level Up
+                                LevelUpController controller = levelUpControllerProvider.get();
+                                if (myMon.abilities().size() > ownMonster.abilities().size()) { //new attack
+                                    if (myMon.type() != ownMonster.type()) { // Evolved
+                                        controller.setBeast(myMon, true, true, myMon.attributes().attack() - ownMonster.attributes().health(), endScreenController);
+                                    } else {
+                                        controller.setBeast(myMon, true, false, 0, endScreenController);
+                                    }
+                                } else {
+                                    controller.setBeast(myMon, false, false, 0, endScreenController);
+                                }
 
-                            //TODO level up
+                            } else {
+                                app.show(endScreenController);
+                            }
                         }
                     } else {
                         for (Opponent opponent : o) {
@@ -439,23 +453,25 @@ public class EncounterController extends Controller {
                                 } else {
                                     beastInfoController1.hpLabel.setText("0 / " + ownMonster.attributes().health() + " (HP)");
                                     beastInfoController1.setLifeBarValue(0);
+                                    //TODO Change beast from Sylvan
                                 }
-                                break;
                             } else {
-                                Monster beforeMonster = enemyMonster;
-                                enemyMonster = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), enemyTrainer, opponent.monster()).blockingFirst();
-                                enemyBeastInfoController1.setLifeBarValue((double) enemyMonster.currentAttributes().health() / (double) enemyMonster.attributes().health());
-                                if (beforeMonster.type() != enemyMonster.type()) {
-                                    enemyMonstersBox.getChildren().removeAll();
-                                    renderBeastController2.destroy();
-                                    if (renderBeastController2.monster1 == beforeMonster) {
-                                        renderBeastController2 = renderBeastControllerProvider.get().setMonster1(enemyMonster);
-                                    } else {
-                                        renderBeastController2 = renderBeastControllerProvider.get().setMonster2(enemyMonster);
+                                if (opponent.monster() != null) {
+                                    Monster beforeMonster = enemyMonster;
+                                    enemyMonster = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), enemyTrainer, opponent.monster()).blockingFirst();
+                                    enemyBeastInfoController1.setLifeBarValue((double) enemyMonster.currentAttributes().health() / (double) enemyMonster.attributes().health());
+                                    if (beforeMonster.type() != enemyMonster.type()) {
+                                        enemyMonstersBox.getChildren().removeAll();
+                                        renderBeastController2.destroy();
+                                        if (renderBeastController2.monster1 == beforeMonster) {
+                                            renderBeastController2 = renderBeastControllerProvider.get().setMonster1(enemyMonster);
+                                        } else {
+                                            renderBeastController2 = renderBeastControllerProvider.get().setMonster2(enemyMonster);
+                                        }
+                                        Parent enemyMonster = renderBeastController2.render();
+                                        enemyMonstersBox.getChildren().addAll(enemyMonster);
+                                        HBox.setHgrow(enemyMonster, Priority.ALWAYS);
                                     }
-                                    Parent enemyMonster = renderBeastController2.render();
-                                    enemyMonstersBox.getChildren().addAll(enemyMonster);
-                                    HBox.setHgrow(enemyMonster, Priority.ALWAYS);
                                 }
                             }
                         }
