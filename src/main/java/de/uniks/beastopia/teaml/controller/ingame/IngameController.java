@@ -67,6 +67,8 @@ public class IngameController extends Controller {
     @FXML
     private Button mapHint;
     @FXML
+    private Button invHint;
+    @FXML
     private HBox shopLayout;
     @Inject
     App app;
@@ -688,6 +690,7 @@ public class IngameController extends Controller {
         handlePauseMenu(keyEvent);
         handleScoreboard(keyEvent);
         handleBeastList(keyEvent);
+        handleInventory(keyEvent);
         handleBeastTeam(keyEvent);
         handleTalkToTrainer(keyEvent);
     }
@@ -870,6 +873,12 @@ public class IngameController extends Controller {
         }
     }
 
+    public void handleInventory(KeyEvent keyEvent) {
+        if (keyEvent.getCode().equals(KeyCode.I) && (currentMenu == MENU_NONE || currentMenu == MENU_INVENTORY)) {
+            openInv(false);
+        }
+    }
+
     private void handleScoreboard(KeyEvent keyEvent) {
         if (keyEvent.getCode().equals(KeyCode.N) && (currentMenu == MENU_NONE || currentMenu == MENU_SCOREBOARD)) {
             openScoreboard();
@@ -1044,6 +1053,11 @@ public class IngameController extends Controller {
         openPauseMenu();
     }
 
+    @FXML
+    void clickOnInvButton() {
+        openInv(false);
+    }
+
     public void openBeastlist() {
         if (scoreBoardLayout.getChildren().contains(beastListParent)) {
             scoreBoardLayout.getChildren().remove(beastListParent);
@@ -1066,19 +1080,44 @@ public class IngameController extends Controller {
         }
     }
 
-    public void openInv(boolean isShop) { //TODO nur INV
-        pauseHint.setOpacity(0);
-        beastlistHint.setOpacity(0);
-        scoreboardHint.setOpacity(0);
-        mapHint.setOpacity(0);
-        for (Node tile : tilePane.getChildren()) {
-            if (tile instanceof ImageView imageView) {
-                imageView.setFitWidth(TILE_SIZE);
-                imageView.setFitHeight(TILE_SIZE);
+    public void openInv(boolean isShop) {
+        if (!isShop) {
+            if (scoreBoardLayout.getChildren().contains(inventoryParent)) {
+                scoreBoardLayout.getChildren().remove(inventoryParent);
+                currentMenu = MENU_NONE;
+            } else {
+                currentMenu = MENU_INVENTORY;
+                if (scoreBoardLayout.getChildren().contains(scoreBoardLayout)) {
+                    scoreBoardLayout.getChildren().remove(scoreBoardParent);
+                    currentMenu = MENU_NONE;
+                } else if (scoreBoardLayout.getChildren().contains(beastListParent)) {
+                    scoreBoardLayout.getChildren().remove(beastListParent);
+                    currentMenu = MENU_NONE;
+                } else {
+                    inventoryController.init();
+                    inventoryController.setIfShop(false);
+                    inventoryController.setOnCloseRequest(() -> {
+                        setCloseRequests(scoreBoardLayout, inventoryParent);
+                        lastMonster = null;
+                        setCloseRequests(scoreBoardLayout, itemDetailParent);
+                    });
+                    inventoryParent = inventoryController.render();
+                    scoreBoardLayout.getChildren().add(inventoryParent);
+                }
             }
-            tile.setOpacity(0.5);
-        }
-        if (isShop) {
+        } else {
+            pauseHint.setOpacity(0);
+            beastlistHint.setOpacity(0);
+            scoreboardHint.setOpacity(0);
+            mapHint.setOpacity(0);
+            invHint.setOpacity(0);
+            for (Node tile : tilePane.getChildren()) {
+                if (tile instanceof ImageView imageView) {
+                    imageView.setFitWidth(TILE_SIZE);
+                    imageView.setFitHeight(TILE_SIZE);
+                }
+                tile.setOpacity(0.5);
+            }
             if (scoreBoardLayout.getChildren().contains(scoreBoardLayout)) {
                 scoreBoardLayout.getChildren().remove(scoreBoardParent);
                 currentMenu = MENU_NONE;
@@ -1100,25 +1139,6 @@ public class IngameController extends Controller {
                 inventoryParent = inventoryController.render();
                 scoreBoardLayout.getChildren().add(inventoryParent);
             }
-        } else {
-            currentMenu = MENU_INVENTORY;
-            if (scoreBoardLayout.getChildren().contains(scoreBoardLayout)) {
-                scoreBoardLayout.getChildren().remove(scoreBoardParent);
-                currentMenu = MENU_NONE;
-            } else if (scoreBoardLayout.getChildren().contains(beastListParent)) {
-                scoreBoardLayout.getChildren().remove(beastListParent);
-                currentMenu = MENU_NONE;
-            } else {
-                inventoryController.init();
-                inventoryController.setIfShop(false);
-                inventoryController.setOnCloseRequest(() -> {
-                    setCloseRequests(scoreBoardLayout, inventoryParent);
-                    lastMonster = null;
-                    setCloseRequests(scoreBoardLayout, itemDetailParent);
-                });
-                inventoryParent = inventoryController.render();
-                scoreBoardLayout.getChildren().add(inventoryParent);
-            }
         }
     }
 
@@ -1130,6 +1150,7 @@ public class IngameController extends Controller {
         beastlistHint.setOpacity(1);
         scoreboardHint.setOpacity(1);
         mapHint.setOpacity(1);
+        invHint.setOpacity(1);
     }
 
     public void openShop(Trainer trainer) {
@@ -1146,6 +1167,7 @@ public class IngameController extends Controller {
         beastlistHint.setOpacity(0);
         scoreboardHint.setOpacity(0);
         mapHint.setOpacity(0);
+        invHint.setOpacity(0);
         shopController.setOnItemClicked(this::toggleShopItemDetails);
         shopController.setOnCloseRequest(() -> {
             setCloseRequests(shopLayout, shopParent);
