@@ -15,12 +15,14 @@ import javafx.scene.layout.VBox;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public class InventoryController extends Controller {
 
-    private final List<ItemTypeDto> items = new ArrayList<>();
+    private final Map<ItemTypeDto, Integer> itemMap = new HashMap<>();
     private final List<ItemController> subControllers = new ArrayList<>();
     @FXML
     public VBox VBoxInvList;
@@ -56,9 +58,9 @@ public class InventoryController extends Controller {
         disposables.add(trainerItemsService.getItems(cache.getJoinedRegion()._id(), cache.getTrainer()._id())
                 .observeOn(FX_SCHEDULER).subscribe(
                         i -> {
-                            this.items.clear();
+                            itemMap.clear();
                             for (Item item : i) {
-                                items.add(itemTypes.get(item.type()));
+                                itemMap.put(itemTypes.get(item.type()), item.amount());
                             }
                             reload();
                         }
@@ -68,16 +70,9 @@ public class InventoryController extends Controller {
     }
 
     private void reload() {
-        for (ItemTypeDto itemTypeDto : items) {
-            int score = 1;
-            for (ItemController itemController : subControllers) {
-                if (itemController.getItemType().id() == itemTypeDto.id()) {
-                    score = itemController.getItemScore() + 1;
-                    itemController.destroy();
-                }
-            }
+        for (ItemTypeDto itemTypeDto : itemMap.keySet()) {
             ItemController itemController = itemControllerProvider.get().setItem(itemTypeDto);
-            itemController.setScore(score);
+            itemController.setScore(itemMap.get(itemTypeDto));
             itemController.setOnItemClicked(onItemClicked);
             itemController.init();
             subControllers.add(itemController);

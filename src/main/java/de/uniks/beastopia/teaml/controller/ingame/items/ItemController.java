@@ -1,14 +1,12 @@
 package de.uniks.beastopia.teaml.controller.ingame.items;
 
 import de.uniks.beastopia.teaml.controller.Controller;
-import de.uniks.beastopia.teaml.rest.Item;
 import de.uniks.beastopia.teaml.rest.ItemTypeDto;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 
 import javax.inject.Inject;
@@ -43,14 +41,6 @@ public class ItemController extends Controller {
         this.score = score;
     }
 
-    public ItemTypeDto getItemType() {
-        return itemType;
-    }
-
-    public int getItemScore() {
-        return score;
-    }
-
     public void setOnItemClicked(Consumer<ItemTypeDto> onItemClicked) {
         this.onItemClicked = onItemClicked;
     }
@@ -63,7 +53,7 @@ public class ItemController extends Controller {
             count.setText("x" + score);
         }
 
-        name.setText(itemType.name());
+        name.setText(formatStringIfTooLong(itemType.name()));
 
         disposables.add(presetsService.getItemImage(itemType.id())
                 .observeOn(FX_SCHEDULER)
@@ -72,8 +62,20 @@ public class ItemController extends Controller {
         return parent;
     }
 
+    private String formatStringIfTooLong(String itemName) {
+        if (itemName.length() > 12) {
+            int lastSpace = itemName.lastIndexOf(' ', 12);
+            if (lastSpace != -1) { //\n after last space
+                return itemName.substring(0, lastSpace) + "\n" + itemName.substring(lastSpace + 1);
+            } else { //if too long and no space
+                return itemName.substring(0, 12) + "-\n" + itemName.substring(12);
+            }
+        }
+        return itemName;
+    }
+
     @FXML
-    public void toggleDetails(MouseEvent mouseEvent) {
+    public void toggleDetails() {
         onItemClicked.accept(itemType);
     }
 }

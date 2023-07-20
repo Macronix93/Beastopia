@@ -1066,6 +1066,13 @@ public class IngameController extends Controller {
         beastlistHint.setOpacity(0);
         scoreboardHint.setOpacity(0);
         mapHint.setOpacity(0);
+        for (Node tile : tilePane.getChildren()) {
+            if (tile instanceof ImageView imageView) {
+                imageView.setFitWidth(TILE_SIZE);
+                imageView.setFitHeight(TILE_SIZE);
+            }
+            tile.setOpacity(0.5);
+        }
         if (isShop) {
             if (scoreBoardLayout.getChildren().contains(scoreBoardLayout)) {
                 scoreBoardLayout.getChildren().remove(scoreBoardParent);
@@ -1076,13 +1083,7 @@ public class IngameController extends Controller {
             } else {
                 inventoryController.init();
                 inventoryController.setIfShop(true);
-                for (Node tile : tilePane.getChildren()) {
-                    if (tile instanceof ImageView imageView) {
-                        imageView.setFitWidth(TILE_SIZE);
-                        imageView.setFitHeight(TILE_SIZE);
-                    }
-                    tile.setOpacity(0.5);
-                }
+                inventoryController.setOnCloseRequest(() -> setCloseRequests(scoreBoardLayout, inventoryParent));
                 inventoryParent = inventoryController.render();
                 scoreBoardLayout.getChildren().add(inventoryParent);
             }
@@ -1097,13 +1098,6 @@ public class IngameController extends Controller {
             } else {
                 inventoryController.init();
                 inventoryController.setIfShop(false);
-                for (Node tile : tilePane.getChildren()) {
-                    if (tile instanceof ImageView imageView) {
-                        imageView.setFitWidth(TILE_SIZE);
-                        imageView.setFitHeight(TILE_SIZE);
-                    }
-                    tile.setOpacity(0.5);
-                }
                 inventoryController.setOnCloseRequest(() -> setCloseRequests(scoreBoardLayout, inventoryParent));
                 inventoryParent = inventoryController.render();
                 scoreBoardLayout.getChildren().add(inventoryParent);
