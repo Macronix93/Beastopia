@@ -3,6 +3,7 @@ package de.uniks.beastopia.teaml.controller.ingame;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Monster;
 import de.uniks.beastopia.teaml.rest.MonsterTypeDto;
+import de.uniks.beastopia.teaml.service.ImageService;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
@@ -16,6 +17,8 @@ public class MondexElementController extends Controller{
     ResourceBundle resourceBundle;
     @Inject
     PresetsService presetsService;
+    @Inject
+    ImageService imageService;
     public ImageView imageView_avatar;
     public Label label_name;
     public Label label_id;
@@ -47,7 +50,7 @@ public class MondexElementController extends Controller{
             label_name.setText(resources.getString("Unknown"));
             disposables.add(presetsService.getMonsterImage(monster.id())
                     .observeOn(FX_SCHEDULER)
-                    .subscribe(monsterImage -> imageView_avatar.setImage(monsterImage)));
+                    .subscribe(monsterImage -> imageView_avatar.setImage(imageService.makeImageBlack(monsterImage))));
         }
 
 
