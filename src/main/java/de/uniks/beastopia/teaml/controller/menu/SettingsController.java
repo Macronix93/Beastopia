@@ -92,6 +92,7 @@ public class SettingsController extends Controller {
         vboxKeybindings.getChildren().add(createController("D", "MoveRight").render());
         vboxKeybindings.getChildren().add(createController("B", "OpensBeastList").render());
         vboxKeybindings.getChildren().add(createController("M", "OpenMap").render());
+        vboxKeybindings.getChildren().add(createController("I", "OpenInventory").render());
     }
 
     @FXML

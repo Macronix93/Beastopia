@@ -2,6 +2,7 @@ package de.uniks.beastopia.teaml.controller.ingame;
 
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.AppPreparer;
+import de.uniks.beastopia.teaml.controller.ingame.items.ShopController;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
 import de.uniks.beastopia.teaml.rest.*;
 import de.uniks.beastopia.teaml.service.*;
@@ -76,6 +77,9 @@ class IngameControllerTest extends ApplicationTest {
     @Mock
     final
     ScoreboardController scoreboardController = mock();
+    @SuppressWarnings("unused")
+    @Mock
+    final ShopController shopController = mock();
     @Mock
     TokenStorage tokenStorage;
     @Spy
