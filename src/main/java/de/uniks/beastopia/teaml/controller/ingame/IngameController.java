@@ -46,6 +46,7 @@ public class IngameController extends Controller {
     static final int MENU_BEASTLIST = 2;
     static final int MENU_PAUSE = 3;
     static final int MENU_DIALOGWINDOW = 3;
+    static final int MENU_MONDEXLIST = 4;
 
     @FXML
     public Pane tilePane;
@@ -71,6 +72,8 @@ public class IngameController extends Controller {
     Provider<StartFightNPCController> startFightNPCControllerProvider;
     @Inject
     BeastListController beastListController;
+    @Inject
+    MondexListController mondexListController;
     @Inject
     Provider<BeastDetailController> beastDetailControllerProvider;
     @Inject
@@ -122,6 +125,7 @@ public class IngameController extends Controller {
     Parent player;
     Parent beastListParent;
     Parent beastDetailParent;
+    Parent mondexListParent;
     EntityController playerController;
     SoundController soundController;
     Parent scoreBoardParent;
@@ -165,6 +169,14 @@ public class IngameController extends Controller {
         });
         beastListController.setOnBeastClicked(this::toggleBeastDetails);
         beastListController.init();
+
+        mondexListController.setOnCloseRequest(() -> {
+
+            scoreBoardLayout.getChildren().remove(mondexListParent);
+            //ToDo add mondexDetailParent
+            currentMenu = MENU_NONE;
+        });
+        mondexListController.init();
 
         pauseController.setOnCloseRequest(() -> {
             pauseMenuLayout.getChildren().remove(pauseMenuParent);
@@ -370,6 +382,7 @@ public class IngameController extends Controller {
                             beastListParent = beastListController.render();
                             scoreBoardParent = scoreBoardController.render();
                             pauseMenuParent = pauseController.render();
+                            mondexListParent = mondexListController.render();
                             loadRemoteTrainer(trainers);
                             listenToTrainerEvents();
                             loadingPage.setDone();
@@ -666,6 +679,7 @@ public class IngameController extends Controller {
         handleBeastList(keyEvent);
         handleBeastTeam(keyEvent);
         handleTalkToTrainer(keyEvent);
+        handleMondexList(keyEvent);
     }
 
     public void handleTalkToTrainer(KeyEvent keyEvent) {
@@ -869,6 +883,12 @@ public class IngameController extends Controller {
         }
     }
 
+    private void handleMondexList(KeyEvent keyEvent) {
+        if (keyEvent.getCode().equals(KeyCode.L) && (currentMenu == MENU_NONE || currentMenu == MENU_MONDEXLIST)) {
+            openMondexList();
+        }
+    }
+
 
     private void handlePlayerMovement(KeyEvent keyEvent) {
         if (!pressedKeys.contains(keyEvent.getCode())) {
@@ -1063,6 +1083,18 @@ public class IngameController extends Controller {
             pauseHint.setOpacity(0);
             pauseMenuLayout.getChildren().add(pauseMenuParent);
             currentMenu = MENU_PAUSE;
+        }
+    }
+
+    public void openMondexList() {
+        if (scoreBoardLayout.getChildren().contains(mondexListParent)) {
+            scoreBoardLayout.getChildren().remove(mondexListParent);
+            scoreBoardLayout.getChildren().remove(mondexListParent);
+            lastMonster = null;
+            currentMenu = MENU_NONE;
+        } else {
+            scoreBoardLayout.getChildren().add(mondexListParent);
+            currentMenu = MENU_MONDEXLIST;
         }
     }
 
