@@ -7,6 +7,7 @@ import de.uniks.beastopia.teaml.service.PresetsService;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 
@@ -49,6 +50,7 @@ public class ShopController extends Controller {
         disposables.add(presetsService.getItems()
                 .observeOn(FX_SCHEDULER)
                 .subscribe(items -> {
+                    sellerItems.clear();
                     for (ItemTypeDto itemType : items) {
                         if (seller.npc().sells().contains(itemType.id())) {
                             sellerItems.add(itemType);
@@ -84,9 +86,11 @@ public class ShopController extends Controller {
         this.onCloseRequest = onCloseRequest;
     }
 
-    @SuppressWarnings("unused")
     @FXML
     public void handleKeyEvent(KeyEvent keyEvent) {
+        if (keyEvent.getCode().equals(KeyCode.ESCAPE)) {
+            onCloseRequest.run();
+        }
     }
 
     public void setOnItemClicked(Consumer<ItemTypeDto> onItemClicked) {
@@ -95,6 +99,7 @@ public class ShopController extends Controller {
 
     @Override
     public void destroy() {
+        super.destroy();
         for (Controller subController : subControllers) {
             subController.destroy();
         }

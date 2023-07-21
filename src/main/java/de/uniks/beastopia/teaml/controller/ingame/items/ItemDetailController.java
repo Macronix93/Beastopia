@@ -4,7 +4,7 @@ import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.ItemTypeDto;
 import de.uniks.beastopia.teaml.service.DataCache;
-import de.uniks.beastopia.teaml.service.PresetsService;
+import de.uniks.beastopia.teaml.utils.FormatString;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -15,8 +15,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 public class ItemDetailController extends Controller {
@@ -35,8 +33,6 @@ public class ItemDetailController extends Controller {
     public Label desc;
     @FXML
     public ImageView coinImg;
-    @Inject
-    PresetsService presetsService;
     @Inject
     DataCache cache;
     private ItemTypeDto itemType;
@@ -72,47 +68,16 @@ public class ItemDetailController extends Controller {
                 cost.setText(resources.getString("val") + ": " + (int) (itemType.price() * 0.5));
             }
         }
-        Map<Integer, Image> itemImages = new HashMap<>();
-        if (cache.getItemImages().containsKey(itemType.id())) {
-            name.setText(itemType.name());
-            desc.setText(formatStringIfTooLong(itemType.description()));
-            itemImage.setImage(cache.getItemImages().get(itemType.id()));
-        } else {
-            name.setText(itemType.name());
-            desc.setText(formatStringIfTooLong(itemType.description()));
-            disposables.add(presetsService.getItemImage(itemType.id())
-                    .observeOn(FX_SCHEDULER)
-                    .subscribe(img -> {
-                        itemImage.setImage(img);
-                        itemImages.put(itemType.id(), img);
-                        cache.setItemImages(itemImages);
-                    }));
-        }
+        name.setText(itemType.name());
+        desc.setText(FormatString.formatString(itemType.description(), 25));
+        itemImage.setImage(cache.getItemImages().get(itemType.id()));
 
         return parent;
     }
 
-    public String formatStringIfTooLong(String itemName) {
-        if (itemName.length() > 25) {
-            int lastSpace = itemName.lastIndexOf(' ', 25);
-            if (lastSpace != -1) { // \n after last space
-                if (itemName.length() > 50) {
-                    String lastPart = itemName.substring(lastSpace + 1);
-                    return itemName.substring(0, lastSpace) + "\n" + formatStringIfTooLong(lastPart);
-                }
-                return itemName.substring(0, lastSpace) + "\n" + formatStringIfTooLong(itemName.substring(lastSpace + 1));
-            } else { // if too long and no space
-                if (itemName.length() > 50) {
-                    String lastPart = itemName.substring(25);
-                    return itemName.substring(0, 25) + "-\n" + formatStringIfTooLong(lastPart);
-                }
-                return itemName.substring(0, 25) + "-\n" + itemName.substring(25);
-            }
-        }
-        return itemName;
-    }
     @SuppressWarnings("unused")
     @FXML
     public void shopFunction(ActionEvent actionEvent) {
+        //TODO: Implement shop function
     }
 }

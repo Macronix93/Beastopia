@@ -58,26 +58,4 @@ public class ItemControllerTest extends ApplicationTest {
         assertEquals("x100", lookup("#count").queryAs(javafx.scene.control.Label.class).getText());
         assertEquals(expectedImage, lookup("#img").queryAs(ImageView.class).getImage());
     }
-
-    @Test
-    void testFormatStringIfTooLong() {
-        // name < 12 characters
-        String shortName = "Name";
-        assertEquals(shortName, itemController.formatStringIfTooLong(shortName));
-
-        // name > 12 characters with space
-        String longNameWithSpaces = "This is a long name";
-        String expectedFormattedNameWithSpaces = "This is a\nlong name";
-        assertEquals(expectedFormattedNameWithSpaces, itemController.formatStringIfTooLong(longNameWithSpaces));
-
-        // name > 12 characters without space
-        String longNameWithoutSpaces = "ThisIsALongName";
-        String expectedFormattedNameWithoutSpaces = "ThisIsALongN-\name";
-        assertEquals(expectedFormattedNameWithoutSpaces, itemController.formatStringIfTooLong(longNameWithoutSpaces));
-
-        // name > 24 characters without space
-        String longLongNameWithoutSpaces = "ThisIsALongNameWithoutSpaces";
-        String expectedLongFormattedNameWithoutSpaces = "ThisIsALongN-\nameWithoutSp-\naces";
-        assertEquals(expectedLongFormattedNameWithoutSpaces, itemController.formatStringIfTooLong(longLongNameWithoutSpaces));
-    }
 }

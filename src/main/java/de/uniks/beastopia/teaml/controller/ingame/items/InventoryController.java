@@ -13,6 +13,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 
@@ -101,9 +102,13 @@ public class InventoryController extends Controller {
         }
     }
 
-    @SuppressWarnings("unused")
     @FXML
     public void handleKeyEvent(KeyEvent keyEvent) {
+        if (!isShop) {
+            if (keyEvent.getCode().equals(KeyCode.B)) {
+                onCloseRequest.run();
+            }
+        }
     }
 
     @FXML
@@ -115,18 +120,19 @@ public class InventoryController extends Controller {
         this.onCloseRequest = onCloseRequest;
     }
 
-    @Override
-    public void destroy() {
-        for (ItemController subController : subControllers) {
-            subController.destroy();
-        }
-    }
-
     public void setOnItemClicked(Consumer<ItemTypeDto> onItemClicked) {
         this.onItemClicked = onItemClicked;
     }
 
     public void setIfShop(boolean b) {
         this.isShop = b;
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        for (ItemController subController : subControllers) {
+            subController.destroy();
+        }
     }
 }

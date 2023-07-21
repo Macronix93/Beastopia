@@ -31,7 +31,7 @@
                     <Font size="14.0" />
                 </font>
             </Button>
-         <Button fx:id="invHint" alignment="CENTER" layoutY="446.0" minWidth="180.0" mnemonicParsing="false" onAction="#clickOnInvButton" onKeyPressed="#keyDown" onKeyReleased="#keyUp" style="-fx-background-color: transparent; -fx-border-color: black; -fx-border-radius: 10;" text="%IforInv" textAlignment="CENTER" AnchorPane.bottomAnchor="120.0">
+         <Button fx:id="invHint" alignment="CENTER" layoutY="446.0" minWidth="180.0" mnemonicParsing="false" onAction="#clickOnInventoryButton" onKeyPressed="#keyDown" onKeyReleased="#keyUp" style="-fx-background-color: transparent; -fx-border-color: black; -fx-border-radius: 10;" text="%IforInv" textAlignment="CENTER" AnchorPane.bottomAnchor="120.0">
             <font>
                <Font size="14.0" />
             </font>
