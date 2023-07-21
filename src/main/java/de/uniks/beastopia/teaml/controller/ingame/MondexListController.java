@@ -2,6 +2,8 @@ package de.uniks.beastopia.teaml.controller.ingame;
 
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Monster;
+import de.uniks.beastopia.teaml.rest.MonsterTypeDto;
+import de.uniks.beastopia.teaml.service.PresetsService;
 import javafx.scene.Parent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -14,10 +16,12 @@ import java.util.List;
 
 public class MondexListController extends Controller {
 
-    private final List<Monster> monsters = new ArrayList<>();
+    private final List<MonsterTypeDto> monsters = new ArrayList<>();
     private final List<Controller> subControllers = new ArrayList<>();
     @Inject
     Provider<MondexElementController> mondexElementControllerProvider;
+    @Inject
+    PresetsService presetsService;
     public VBox VBoxMondexList;
     public VBox VBoxBeasts;
     private Runnable onCloseRequest;
@@ -28,10 +32,26 @@ public class MondexListController extends Controller {
     }
 
     @Override
+    public void init() {
+        disposables.add(presetsService.getAllBeasts()
+                .observeOn(FX_SCHEDULER)
+                .subscribe(this.monsters::addAll));
+    }
+
+    @Override
     public Parent render() {
         Parent parent = super.render();
+
         VBoxBeasts.getChildren().clear();
-        VBoxBeasts.getChildren().add(mondexElementControllerProvider.get().render());
+        for (MonsterTypeDto monster : monsters) {
+            MondexElementController mondexElementController = mondexElementControllerProvider.get()
+                            .setMonster(monster);
+            mondexElementController.init();
+            subControllers.add(mondexElementController);
+            Parent render = mondexElementController.render();
+            VBoxBeasts.getChildren().add(render);
+        }
+
         return parent;
     }
 
