@@ -59,7 +59,7 @@ public class ShopController extends Controller {
         return parent;
     }
 
-    private void reload() {
+    public void reload() {
         for (ItemTypeDto item : sellerItems) {
             ItemController itemController = itemControllerProvider.get().setItem(item);
             itemController.setOnItemClicked(onItemClicked);

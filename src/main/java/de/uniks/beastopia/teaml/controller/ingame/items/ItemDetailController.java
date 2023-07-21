@@ -81,6 +81,10 @@ public class ItemDetailController extends Controller {
         if (itemName.length() > 25) {
             int lastSpace = itemName.lastIndexOf(' ', 25);
             if (lastSpace != -1) { // \n after last space
+                if (itemName.length() > 50) {
+                    String lastPart = itemName.substring(lastSpace + 1);
+                    return itemName.substring(0, lastSpace) + "\n" + formatStringIfTooLong(lastPart);
+                }
                 return itemName.substring(0, lastSpace) + "\n" + formatStringIfTooLong(itemName.substring(lastSpace + 1));
             } else { // if too long and no space
                 if (itemName.length() > 50) {
