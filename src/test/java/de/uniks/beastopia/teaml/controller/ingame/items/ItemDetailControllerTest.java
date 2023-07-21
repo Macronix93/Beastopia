@@ -4,8 +4,6 @@ import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.rest.ItemTypeDto;
 import de.uniks.beastopia.teaml.service.DataCache;
-import de.uniks.beastopia.teaml.service.PresetsService;
-import io.reactivex.rxjava3.core.Observable;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
@@ -32,12 +30,9 @@ public class ItemDetailControllerTest extends ApplicationTest {
     App app;
     @SuppressWarnings("unused")
     @Spy
-    final
-    ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang", Locale.forLanguageTag("en"));
+    final ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang", Locale.forLanguageTag("en"));
     @InjectMocks
     ItemDetailController itemDetailController;
-    @Mock
-    PresetsService presetsService;
     @Mock
     DataCache cache;
     final ItemTypeDto itemTypeDto = new ItemTypeDto(1, "img", "name", 32, "desc", "use");
@@ -48,8 +43,7 @@ public class ItemDetailControllerTest extends ApplicationTest {
         AppPreparer.prepare(app);
         itemDetailController.setItem(itemTypeDto);
         itemDetailController.setBooleanShop(false);
-        when(presetsService.getItemImage(1)).thenReturn(Observable.just(expectedImage));
-        when(cache.getItemImages()).thenReturn(Map.of());
+        when(cache.getItemImages()).thenReturn((Map.of(1, expectedImage)));
         app.start(stage);
         app.show(itemDetailController);
         stage.requestFocus();
