@@ -92,7 +92,7 @@ public class EntityController extends Controller {
         updateViewPort();
         if (!data.area().equals(trainer.area())) {
             trainer = new Trainer(trainer.createdAt(), trainer.updatedAt(), trainer._id(), trainer.region(),
-                    trainer.user(), trainer.name(), trainer.image(), trainer.team(), trainer.visitedAreas(), trainer.coins(), data.area(), trainer.x(),
+                    trainer.user(), trainer.name(), trainer.image(), trainer.team(), trainer.encounteredMonsterTypes(), trainer.visitedAreas(), trainer.coins(), data.area(), trainer.x(),
                     trainer.y(), trainer.direction(), trainer.npc());
 //            listenToMovements();
         }

@@ -2,6 +2,8 @@ package de.uniks.beastopia.teaml.controller.ingame;
 
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.MonsterTypeDto;
+import de.uniks.beastopia.teaml.rest.Trainer;
+import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import javafx.scene.Parent;
 import javafx.scene.input.KeyCode;
@@ -23,7 +25,10 @@ public class MondexListController extends Controller {
     Provider<MondexElementController> mondexElementControllerProvider;
     @Inject
     PresetsService presetsService;
+    @Inject
+    DataCache dataCache;
     private Runnable onCloseRequest;
+    private Trainer trainer;
 
     @Inject
     public MondexListController() {
@@ -35,6 +40,7 @@ public class MondexListController extends Controller {
         disposables.add(presetsService.getAllBeasts()
                 .observeOn(FX_SCHEDULER)
                 .subscribe(this.monsters::addAll));
+        this.trainer = dataCache.getTrainer();
     }
 
     @Override
@@ -44,7 +50,7 @@ public class MondexListController extends Controller {
         VBoxBeasts.getChildren().clear();
         for (MonsterTypeDto monster : monsters) {
             MondexElementController mondexElementController = mondexElementControllerProvider.get()
-                    .setMonster(monster, false);
+                    .setMonster(monster, checkKnown(monster.id()));
             mondexElementController.init();
             subControllers.add(mondexElementController);
             Parent render = mondexElementController.render();
@@ -52,6 +58,10 @@ public class MondexListController extends Controller {
         }
 
         return parent;
+    }
+
+    public boolean checkKnown(int id) {
+        return trainer.encounteredMonsterTypes().contains(id);
     }
 
     public void setOnCloseRequest(Runnable onCloseRequest) {

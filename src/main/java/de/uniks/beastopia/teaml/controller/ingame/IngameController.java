@@ -204,6 +204,7 @@ public class IngameController extends Controller {
                     myTrainer.name(),
                     myTrainer.image(),
                     myTrainer.team(),
+                    myTrainer.encounteredMonsterTypes(),
                     visited,
                     myTrainer.coins(),
                     trainer.area(),
