@@ -1,7 +1,6 @@
 package de.uniks.beastopia.teaml.controller.ingame;
 
 import de.uniks.beastopia.teaml.controller.Controller;
-import de.uniks.beastopia.teaml.rest.Monster;
 import de.uniks.beastopia.teaml.rest.MonsterTypeDto;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import javafx.scene.Parent;
@@ -18,12 +17,12 @@ public class MondexListController extends Controller {
 
     private final List<MonsterTypeDto> monsters = new ArrayList<>();
     private final List<Controller> subControllers = new ArrayList<>();
+    public VBox VBoxMondexList;
+    public VBox VBoxBeasts;
     @Inject
     Provider<MondexElementController> mondexElementControllerProvider;
     @Inject
     PresetsService presetsService;
-    public VBox VBoxMondexList;
-    public VBox VBoxBeasts;
     private Runnable onCloseRequest;
 
     @Inject
@@ -45,7 +44,7 @@ public class MondexListController extends Controller {
         VBoxBeasts.getChildren().clear();
         for (MonsterTypeDto monster : monsters) {
             MondexElementController mondexElementController = mondexElementControllerProvider.get()
-                            .setMonster(monster, false);
+                    .setMonster(monster, false);
             mondexElementController.init();
             subControllers.add(mondexElementController);
             Parent render = mondexElementController.render();
