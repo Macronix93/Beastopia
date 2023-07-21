@@ -75,6 +75,7 @@ public class IngameController extends Controller {
     Provider<BeastDetailController> beastDetailControllerProvider;
     @Inject
     Provider<DialogWindowController> dialogWindowControllerProvider;
+    @Inject
     Provider<EditBeastTeamController> editBeastTeamControllerProvider;
     @Inject
     Provider<EntityController> entityControllerProvider;
@@ -116,7 +117,7 @@ public class IngameController extends Controller {
     private final List<Controller> subControllers = new ArrayList<>();
     private Monster lastMonster;
     private int currentMenu = MENU_NONE;
-
+    private final java.util.Map<Pair<Integer, Integer>, Tile> mapInfo = new HashMap<>();
     Direction direction;
     final ObjectProperty<PlayerState> state = new SimpleObjectProperty<>();
     Parent player;
@@ -354,11 +355,6 @@ public class IngameController extends Controller {
                             this.map = a.map();
                             for (TileSetDescription tileSetDesc : map.tilesets()) {
                                 TileSet tileSet = presetsService.getTileset(tileSetDesc).blockingFirst();
-                                //TODO remove this later
-                                List<Tile> tileTypes = tileSet.tiles();
-                                for (Tile tile : tileTypes) {
-                                    System.out.println(tile.properties().get(0).name());
-                                }
                                 Image image = presetsService.getImage(tileSet).blockingFirst();
                                 tileSets.add(new Pair<>(tileSetDesc, new Pair<>(tileSet, image)));
                             }
@@ -506,6 +502,8 @@ public class IngameController extends Controller {
             // Some maps have "invalid" (or blank tiles) with ID 0 which we don't want to draw
             // This is to prevent the camera from showing the "extended" tile pane with those tiles
             if (id != 0) {
+                List<Tile> tileInformation = tileSet.getKey().getKey().tiles();
+                tileInformation.stream().filter(t -> t.id() == tileSet.getValue()).findFirst().ifPresent(tile -> mapInfo.put(new Pair<>(x, y), tile));
                 drawTile(x, y, tileSet.getKey().getValue(), presetsService.getTileViewPort(tileSet.getValue(), tileSet.getKey().getKey()));
             }
         }
@@ -639,6 +637,17 @@ public class IngameController extends Controller {
         data.add("x", new JsonPrimitive(posx));
         data.add("y", new JsonPrimitive(posy));
         data.add("direction", new JsonPrimitive(direction.ordinal()));
+
+        Pair<Integer, Integer> posXY = new Pair<>(posx, posy);
+        if (mapInfo.containsKey(posXY)) {
+            Tile tile = mapInfo.get(posXY);
+            Optional<TileProperty> jumpableTileProp = tile.properties().stream().filter(tileProperty -> tileProperty.name().equals("Jumpable")).findFirst();
+            if (jumpableTileProp.isPresent()) {
+                String value = jumpableTileProp.get().value();
+                System.out.println("pos " + posXY);
+                System.out.println("jumpable direction " + value);
+            }
+        }
 
         JsonObject message = new JsonObject();
         message.add("event", new JsonPrimitive("areas." + trainer.area() + ".trainers." + trainer._id() + ".moved"));
