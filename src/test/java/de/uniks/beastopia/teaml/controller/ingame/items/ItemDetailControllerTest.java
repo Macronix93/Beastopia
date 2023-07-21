@@ -3,6 +3,7 @@ package de.uniks.beastopia.teaml.controller.ingame.items;
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.rest.ItemTypeDto;
+import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.scene.image.Image;
@@ -17,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
 
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
@@ -36,6 +38,8 @@ public class ItemDetailControllerTest extends ApplicationTest {
     ItemDetailController itemDetailController;
     @Mock
     PresetsService presetsService;
+    @Mock
+    DataCache cache;
     final ItemTypeDto itemTypeDto = new ItemTypeDto(1, "img", "name", 32, "desc", "use");
     Image expectedImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/de/uniks/beastopia/teaml/assets/group.png")));
 
@@ -45,6 +49,7 @@ public class ItemDetailControllerTest extends ApplicationTest {
         itemDetailController.setItem(itemTypeDto);
         itemDetailController.setBooleanShop(false);
         when(presetsService.getItemImage(1)).thenReturn(Observable.just(expectedImage));
+        when(cache.getItemImages()).thenReturn(Map.of());
         app.start(stage);
         app.show(itemDetailController);
         stage.requestFocus();

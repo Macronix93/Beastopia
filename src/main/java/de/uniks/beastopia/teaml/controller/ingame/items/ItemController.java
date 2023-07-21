@@ -2,14 +2,18 @@ package de.uniks.beastopia.teaml.controller.ingame.items;
 
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.ItemTypeDto;
+import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 
 import javax.inject.Inject;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public class ItemController extends Controller {
@@ -26,6 +30,8 @@ public class ItemController extends Controller {
     private Consumer<ItemTypeDto> onItemClicked;
     @Inject
     PresetsService presetsService;
+    @Inject
+    DataCache cache;
 
     @Inject
     public ItemController() {
@@ -55,9 +61,18 @@ public class ItemController extends Controller {
 
         name.setText(formatStringIfTooLong(itemType.name()));
 
-        disposables.add(presetsService.getItemImage(itemType.id())
-                .observeOn(FX_SCHEDULER)
-                .subscribe(itemImage -> img.setImage(itemImage)));
+        if (cache.getItemImages().containsKey(itemType.id())) {
+            img.setImage(cache.getItemImages().get(itemType.id()));
+        } else {
+            disposables.add(presetsService.getItemImage(itemType.id())
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe(itemImage -> {
+                        img.setImage(itemImage);
+                        Map<Integer, Image> itemImages = new HashMap<>();
+                        itemImages.put(itemType.id(), itemImage);
+                        cache.setItemImages(itemImages);
+                    }));
+        }
 
         return parent;
     }

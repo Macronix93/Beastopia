@@ -23,6 +23,9 @@
          <HBox.margin>
             <Insets left="5.0" />
          </HBox.margin></ImageView>
+      <VBox.margin>
+         <Insets top="15.0" />
+      </VBox.margin>
     </HBox>
     <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS">
         <VBox fx:id="VBoxItems" spacing="10.0">

@@ -3,6 +3,7 @@ package de.uniks.beastopia.teaml.controller.ingame.items;
 import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.ItemTypeDto;
+import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -14,6 +15,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class ItemDetailController extends Controller {
@@ -34,6 +37,8 @@ public class ItemDetailController extends Controller {
     public ImageView coinImg;
     @Inject
     PresetsService presetsService;
+    @Inject
+    DataCache cache;
     private ItemTypeDto itemType;
     private boolean isShop;
 
@@ -67,17 +72,27 @@ public class ItemDetailController extends Controller {
                 cost.setText(resources.getString("val") + ": " + (int) (itemType.price() * 0.5));
             }
         }
-
-        name.setText(itemType.name());
-        desc.setText(formatStringIfTooLong(itemType.description()));
-        disposables.add(presetsService.getItemImage(itemType.id())
-                .observeOn(FX_SCHEDULER)
-                .subscribe(itemImage -> this.itemImage.setImage(itemImage)));
+        Map<Integer, Image> itemImages = new HashMap<>();
+        if (cache.getItemImages().containsKey(itemType.id())) {
+            name.setText(itemType.name());
+            desc.setText(formatStringIfTooLong(itemType.description()));
+            itemImage.setImage(cache.getItemImages().get(itemType.id()));
+        } else {
+            name.setText(itemType.name());
+            desc.setText(formatStringIfTooLong(itemType.description()));
+            disposables.add(presetsService.getItemImage(itemType.id())
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe(img -> {
+                        itemImage.setImage(img);
+                        itemImages.put(itemType.id(), img);
+                        cache.setItemImages(itemImages);
+                    }));
+        }
 
         return parent;
     }
 
-    public String formatStringIfTooLong(String itemName) { // If name is too long // TODO
+    public String formatStringIfTooLong(String itemName) {
         if (itemName.length() > 25) {
             int lastSpace = itemName.lastIndexOf(' ', 25);
             if (lastSpace != -1) { // \n after last space
