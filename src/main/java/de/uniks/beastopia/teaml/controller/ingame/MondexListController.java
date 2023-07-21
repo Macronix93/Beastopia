@@ -45,7 +45,7 @@ public class MondexListController extends Controller {
         VBoxBeasts.getChildren().clear();
         for (MonsterTypeDto monster : monsters) {
             MondexElementController mondexElementController = mondexElementControllerProvider.get()
-                            .setMonster(monster);
+                            .setMonster(monster, false);
             mondexElementController.init();
             subControllers.add(mondexElementController);
             Parent render = mondexElementController.render();
