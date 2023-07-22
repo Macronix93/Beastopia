@@ -134,7 +134,7 @@ class IngameControllerTest extends ApplicationTest {
         doNothing().when(beastListController).init();
         when(beastListController.render()).thenReturn(new Pane());
         doNothing().when(mondexListController).setOnCloseRequest(any());
-        //doNothing().when(mondexListController).setOnBeastClicked(any());
+        doNothing().when(mondexListController).setOnBeastClicked(any());
         doNothing().when(mondexListController).init();
         when(mondexListController.render()).thenReturn(new Pane());
         when(soundControllerProvider.get()).thenReturn(soundController);
