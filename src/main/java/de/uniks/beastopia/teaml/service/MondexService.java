@@ -24,4 +24,8 @@ public class MondexService {
         }
     }
 
+    public boolean checkKnown(int id) {
+        return dataCache.getTrainer().encounteredMonsterTypes().contains(id);
+    }
+
 }

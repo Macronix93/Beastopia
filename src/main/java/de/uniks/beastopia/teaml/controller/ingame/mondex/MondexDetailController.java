@@ -1,8 +1,10 @@
 package de.uniks.beastopia.teaml.controller.ingame.mondex;
 
 import de.uniks.beastopia.teaml.controller.Controller;
-import de.uniks.beastopia.teaml.rest.Monster;
 import de.uniks.beastopia.teaml.rest.MonsterTypeDto;
+import de.uniks.beastopia.teaml.service.ImageService;
+import de.uniks.beastopia.teaml.service.MondexService;
+import de.uniks.beastopia.teaml.service.PresetsService;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
@@ -28,6 +30,13 @@ public class MondexDetailController extends Controller {
     public TextArea textArea_description;
 
     private MonsterTypeDto monster;
+    private boolean known;
+    @Inject
+    MondexService mondexService;
+    @Inject
+    PresetsService presetsService;
+    @Inject
+    ImageService imageService;
 
 
     @Inject
@@ -43,14 +52,33 @@ public class MondexDetailController extends Controller {
     @Override
     public void init() {
         super.init();
-
+        known = mondexService.checkKnown(monster.id());
     }
 
     @Override
     public Parent render() {
         Parent parent = super.render();
-        label_name.setText(monster.name());
-        label_type.setText("Type:" + monster.type());
+        //ToDo Change if to known
+        if (monster.id() % 2 == 0) {
+            label_name.setText(monster.name());
+            label_type.setText("Type: " + monster.type().get(0));
+            if (monster.type().size() == 2) {
+                label_type.setText(label_type.getText() + ", " + monster.type().get(1));
+            }
+            textArea_description.setText(monster.description());
+            disposables.add(presetsService.getMonsterImage(monster.id())
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe(monsterImage -> imageView_Avatar.setImage(monsterImage)));
+        } else {
+            label_name.setText("???");
+            label_type.setText("Type: ???");
+            textArea_description.setText("Unknown monster");
+            disposables.add(presetsService.getMonsterImage(monster.id())
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe(monsterImage -> imageView_Avatar.setImage(imageService.makeImageBlack(monsterImage))));
+        }
+
+
         return parent;
     }
 

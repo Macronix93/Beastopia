@@ -3,6 +3,7 @@ package de.uniks.beastopia.teaml.controller.ingame.mondex;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.MonsterTypeDto;
 import de.uniks.beastopia.teaml.service.DataCache;
+import de.uniks.beastopia.teaml.service.MondexService;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import javafx.scene.Parent;
 import javafx.scene.input.KeyCode;
@@ -27,6 +28,9 @@ public class MondexListController extends Controller {
     PresetsService presetsService;
     @Inject
     DataCache dataCache;
+    @Inject
+    MondexService mondexService;
+
     private Runnable onCloseRequest;
     private Consumer<MonsterTypeDto> onBeastClicked;
 
@@ -53,7 +57,7 @@ public class MondexListController extends Controller {
         VBoxBeasts.getChildren().clear();
         for (MonsterTypeDto monster : monsters) {
             MondexElementController mondexElementController = mondexElementControllerProvider.get()
-                    .setMonster(monster, checkKnown(monster.id()));
+                    .setMonster(monster, mondexService.checkKnown(monster.id()));
             mondexElementController.setOnBeastClicked(onBeastClicked);
             mondexElementController.init();
             subControllers.add(mondexElementController);
@@ -62,10 +66,6 @@ public class MondexListController extends Controller {
         }
 
         return parent;
-    }
-
-    public boolean checkKnown(int id) {
-        return dataCache.getTrainer().encounteredMonsterTypes().contains(id);
     }
 
     public void setOnCloseRequest(Runnable onCloseRequest) {

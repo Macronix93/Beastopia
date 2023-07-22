@@ -46,7 +46,8 @@ public class MondexElementController extends Controller {
     public Parent render() {
         Parent parent = super.render();
         label_id.setText("#" + (monster.id()));
-        if (known) {
+        //ToDo Change if to known
+        if (monster.id() % 2 == 0) {
             label_name.setText(monster.name());
             disposables.add(presetsService.getMonsterImage(monster.id())
                     .observeOn(FX_SCHEDULER)
