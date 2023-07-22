@@ -1,4 +1,4 @@
-package de.uniks.beastopia.teaml.controller.ingame;
+package de.uniks.beastopia.teaml.controller.ingame.mondex;
 
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.MonsterTypeDto;

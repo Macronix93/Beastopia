@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<GridPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/19" fx:controller="de.uniks.beastopia.teaml.controller.ingame.MondexElementController">
+<GridPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/19" fx:controller="de.uniks.beastopia.teaml.controller.ingame.mondex.MondexElementController">
   <columnConstraints>
     <ColumnConstraints hgrow="SOMETIMES" percentWidth="30.0" />
     <ColumnConstraints hgrow="SOMETIMES" percentWidth="50.0" />
