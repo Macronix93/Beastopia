@@ -86,3 +86,22 @@ Flaticon</a>
 
 <a href="https://fonts.google.com/specimen/Happy+Monkey?query=Brenda+Gallo">Happy Monkey Font erstellt von Brenda
 Gallo</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/feuer" title="feuer Icons">Feuer Icons erstellt von msidiqf - Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/wasser" title="wasser Icons">Wasser Icons erstellt von Vitaly Gorbachev - Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/gras" title="gras Icons">Gras Icons erstellt von IYIKON - Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/blitz" title="blitz Icons">Blitz Icons erstellt von Smashicons - Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/fee" title="fee Icons">Fee Icons erstellt von Freepik - Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/wolkig" title="wolkig Icons">Wolkig Icons erstellt von circle-studio - Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/konstruktion-und-werkzeuge" title="konstruktion und werkzeuge Icons">Konstruktion und werkzeuge Icons erstellt von Vector Squad - Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/drachen" title="drachen Icons">Drachen Icons erstellt von Freepik - Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/schadel" title="schädel Icons">Schädel Icons erstellt von Freepik - Flaticon</a>
+
