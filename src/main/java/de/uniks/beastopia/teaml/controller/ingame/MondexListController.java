@@ -2,7 +2,6 @@ package de.uniks.beastopia.teaml.controller.ingame;
 
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.MonsterTypeDto;
-import de.uniks.beastopia.teaml.rest.Trainer;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import javafx.scene.Parent;
@@ -28,7 +27,6 @@ public class MondexListController extends Controller {
     @Inject
     DataCache dataCache;
     private Runnable onCloseRequest;
-    private Trainer trainer;
 
     @Inject
     public MondexListController() {
@@ -40,7 +38,6 @@ public class MondexListController extends Controller {
         disposables.add(presetsService.getAllBeasts()
                 .observeOn(FX_SCHEDULER)
                 .subscribe(this.monsters::addAll));
-        this.trainer = dataCache.getTrainer();
     }
 
     @Override
@@ -61,7 +58,7 @@ public class MondexListController extends Controller {
     }
 
     public boolean checkKnown(int id) {
-        return trainer.encounteredMonsterTypes().contains(id);
+        return dataCache.getTrainer().encounteredMonsterTypes().contains(id);
     }
 
     public void setOnCloseRequest(Runnable onCloseRequest) {
