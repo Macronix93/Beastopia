@@ -62,7 +62,7 @@ class StartFightNPCControllerTest extends ApplicationTest {
             "t", true, true, "m", null, null, 0);
 
     Trainer trainer = new Trainer(null, null, "tid", "tr", "tu", "tn",
-            "ti", null, List.of(), 0, "tarea", 2, 3, 0, null);
+            "ti", null, List.of(), List.of(), 0, "tarea", 2, 3, 0, null);
     List<Opponent> ops = List.of(opponent);
 
     Region region = new Region(null, null, "id", "Alb", null, null);

@@ -1,7 +1,9 @@
-package de.uniks.beastopia.teaml.controller.ingame;
+package de.uniks.beastopia.teaml.controller.ingame.scoreboard;
 
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.AppPreparer;
+import de.uniks.beastopia.teaml.controller.ingame.scoreboard.ScoreboardFilterController;
+import de.uniks.beastopia.teaml.controller.ingame.scoreboard.ScoreboardUserItemController;
 import de.uniks.beastopia.teaml.rest.Achievement;
 import de.uniks.beastopia.teaml.rest.AchievementsSummary;
 import de.uniks.beastopia.teaml.service.DataCache;

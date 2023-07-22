@@ -1,7 +1,8 @@
-package de.uniks.beastopia.teaml.controller.ingame;
+package de.uniks.beastopia.teaml.controller.ingame.beastlist;
 
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.AppPreparer;
+import de.uniks.beastopia.teaml.controller.ingame.beastlist.BeastDetailController;
 import de.uniks.beastopia.teaml.rest.Monster;
 import de.uniks.beastopia.teaml.rest.MonsterAttributes;
 import de.uniks.beastopia.teaml.service.PresetsService;
@@ -16,40 +17,46 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
 
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class BeastControllerTest extends ApplicationTest {
+class BeastDetailControllerTest extends ApplicationTest {
 
     @Spy
     App app;
     @InjectMocks
-    BeastController beastController;
+    BeastDetailController beastDetailController;
     @Mock
     PresetsService presetsService;
+
     MonsterAttributes attributes = new MonsterAttributes(1, 1, 1, 1);
     MonsterAttributes currentAttributes = new MonsterAttributes(0, 0, 0, 0);
-    Monster monster = new Monster(null, null, "MONSTER_ID", "TRAINER_ID", 0, 0, 0, null, attributes, currentAttributes);
-
+    Monster monster = new Monster(null, null, "MONSTER_ID", "TRAINER_ID", 0, 0, 0, Map.of("1", 1, "2", 2), attributes, currentAttributes);
 
     @Override
     public void start(Stage stage) throws Exception {
         AppPreparer.prepare(app);
 
-        beastController.setBeast(monster);
+        beastDetailController.setBeast(monster);
         when(presetsService.getMonsterType(anyInt())).thenReturn(Observable.empty());
         when(presetsService.getMonsterImage(anyInt())).thenReturn(Observable.empty());
+        when(presetsService.getAbility(anyInt())).thenReturn(Observable.empty());
 
         app.start(stage);
-        app.show(beastController);
+        app.show(beastDetailController);
         stage.requestFocus();
     }
 
     @Test
     void setBeastAndRenderTest() {
+        assertEquals("Level: 0", lookup("#level").queryAs(Label.class).getText());
         assertEquals("HP: 0 / 1", lookup("#hp").queryAs(Label.class).getText());
-        assertEquals("0", lookup("#level").queryAs(Label.class).getText());
+        assertEquals("Attack: 0", lookup("#attack").queryAs(Label.class).getText());
+        assertEquals("Defense: 0", lookup("#defense").queryAs(Label.class).getText());
+        assertEquals("Speed: 0", lookup("#speed").queryAs(Label.class).getText());
     }
 }

@@ -1,6 +1,7 @@
 package de.uniks.beastopia.teaml.controller.ingame.mondex;
 
 import de.uniks.beastopia.teaml.controller.Controller;
+import de.uniks.beastopia.teaml.rest.Monster;
 import de.uniks.beastopia.teaml.rest.MonsterTypeDto;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
@@ -13,6 +14,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class MondexListController extends Controller {
 
@@ -79,5 +81,8 @@ public class MondexListController extends Controller {
 
     public void close() {
         onCloseRequest.run();
+    }
+
+    public void setOnBeastClicked(Consumer<Monster> onBeastClicked) {
     }
 }
