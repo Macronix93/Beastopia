@@ -54,6 +54,8 @@ public class MondexListController extends Controller {
     public Parent render() {
         Parent parent = super.render();
 
+        mondexService.listMonsterTypes(monsters);
+
         VBoxBeasts.getChildren().clear();
         for (MonsterTypeDto monster : monsters) {
             MondexElementController mondexElementController = mondexElementControllerProvider.get()
