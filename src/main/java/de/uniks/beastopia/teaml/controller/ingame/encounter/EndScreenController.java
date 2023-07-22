@@ -12,6 +12,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -30,6 +31,8 @@ public class EndScreenController extends Controller {
     VBox leftMonsterContainer;
     @FXML
     VBox rightMonsterContainer;
+    @FXML
+    Text coinInfo;
     @Inject
     Provider<IngameController> ingameControllerProvider;
     @Inject
@@ -126,6 +129,10 @@ public class EndScreenController extends Controller {
     @SuppressWarnings("unused")
     public void setLoserMonster2(Monster loser2) {
         this.loser2 = loser2;
+    }
+
+    public void setGainedCoins(String gainedCoins) {
+        coinInfo.setText(gainedCoins);
     }
 
 }

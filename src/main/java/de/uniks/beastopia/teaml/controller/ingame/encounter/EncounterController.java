@@ -135,6 +135,8 @@ public class EncounterController extends Controller {
 
     private boolean shouldUpdateUIOnChange = false;
 
+    private int oldCoinNum;
+
     private AbilityDto ability1;
     private AbilityDto ability2;
     private AbilityDto ability3;
@@ -392,6 +394,8 @@ public class EncounterController extends Controller {
     }
 
     public void updateUIOnChange() {
+        disposables.add(trainerService.getTrainer(cache.getJoinedRegion()._id(), cache.getTrainer()._id()).observeOn(FX_SCHEDULER)
+                .subscribe(t -> oldCoinNum = t.coins()));
         // Get the monster from the current opponents of the encounter
         disposables.add(encounterOpponentsService.getEncounterOpponents(cache.getJoinedRegion()._id(), cache.getCurrentEncounter()._id())
                 .observeOn(FX_SCHEDULER)
@@ -418,6 +422,9 @@ public class EncounterController extends Controller {
                             EndScreenController endScreenController = endScreenControllerProvider.get();
                             endScreenController.setWinner(true);
                             endScreenController.setLoserMonster1(enemyMonster);
+                            disposables.add(trainerService.getTrainer(cache.getJoinedRegion()._id(), cache.getTrainer()._id())
+                                    .observeOn(FX_SCHEDULER)
+                                    .subscribe(t -> endScreenController.setGainedCoins("Congratulations! You gained " + (t.coins() - oldCoinNum) + "coins!")));
                             if (enemyAllyMonster != null) {
                                 endScreenController.setLoserMonster2(enemyAllyMonster);
                             }
