@@ -2,6 +2,7 @@ package de.uniks.beastopia.teaml.controller.ingame.mondex;
 
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Monster;
+import de.uniks.beastopia.teaml.rest.MonsterTypeDto;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
@@ -26,7 +27,7 @@ public class MondexDetailController extends Controller {
     @FXML
     public TextArea textArea_description;
 
-    private Monster monster;
+    private MonsterTypeDto monster;
 
 
     @Inject
@@ -34,7 +35,7 @@ public class MondexDetailController extends Controller {
 
     }
 
-    public MondexDetailController setMonster(Monster monster) {
+    public MondexDetailController setMonster(MonsterTypeDto monster) {
         this.monster = monster;
         return this;
     }
@@ -48,6 +49,7 @@ public class MondexDetailController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
+        label_name.setText(monster.name());
         label_type.setText("Type:" + monster.type());
         return parent;
     }

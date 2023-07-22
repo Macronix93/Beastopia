@@ -1,7 +1,6 @@
 package de.uniks.beastopia.teaml.controller.ingame.mondex;
 
 import de.uniks.beastopia.teaml.controller.Controller;
-import de.uniks.beastopia.teaml.rest.Monster;
 import de.uniks.beastopia.teaml.rest.MonsterTypeDto;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
@@ -29,7 +28,7 @@ public class MondexListController extends Controller {
     @Inject
     DataCache dataCache;
     private Runnable onCloseRequest;
-    private Consumer<Monster> onBeastClicked;
+    private Consumer<MonsterTypeDto> onBeastClicked;
 
     @Inject
     public MondexListController() {
@@ -43,6 +42,10 @@ public class MondexListController extends Controller {
                 .subscribe(this.monsters::addAll));
     }
 
+    public void setOnBeastClicked(Consumer<MonsterTypeDto> onBeastClicked) {
+        this.onBeastClicked = onBeastClicked;
+    }
+
     @Override
     public Parent render() {
         Parent parent = super.render();
@@ -51,6 +54,7 @@ public class MondexListController extends Controller {
         for (MonsterTypeDto monster : monsters) {
             MondexElementController mondexElementController = mondexElementControllerProvider.get()
                     .setMonster(monster, checkKnown(monster.id()));
+            mondexElementController.setOnBeastClicked(onBeastClicked);
             mondexElementController.init();
             subControllers.add(mondexElementController);
             Parent render = mondexElementController.render();
@@ -82,9 +86,5 @@ public class MondexListController extends Controller {
 
     public void close() {
         onCloseRequest.run();
-    }
-
-    public void setOnBeastClicked(Consumer<Monster> onBeastClicked) {
-        this.onBeastClicked = onBeastClicked;
     }
 }

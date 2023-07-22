@@ -4,12 +4,14 @@ import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.MonsterTypeDto;
 import de.uniks.beastopia.teaml.service.ImageService;
 import de.uniks.beastopia.teaml.service.PresetsService;
+import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 
 import javax.inject.Inject;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 
 public class MondexElementController extends Controller {
     public ImageView imageView_avatar;
@@ -23,10 +25,15 @@ public class MondexElementController extends Controller {
     ImageService imageService;
     private MonsterTypeDto monster;
     private boolean known;
+    private Consumer<MonsterTypeDto> onBeastClicked;
 
     @Inject
     public MondexElementController() {
 
+    }
+
+    public void setOnBeastClicked(Consumer<MonsterTypeDto> onBeastClicked) {
+        this.onBeastClicked = onBeastClicked;
     }
 
     public MondexElementController setMonster(MonsterTypeDto monsterTypeDto, boolean known) {
@@ -52,6 +59,11 @@ public class MondexElementController extends Controller {
         }
 
         return parent;
+    }
+
+    @FXML
+    public void toggleDetails() {
+        onBeastClicked.accept(monster);
     }
 
 }

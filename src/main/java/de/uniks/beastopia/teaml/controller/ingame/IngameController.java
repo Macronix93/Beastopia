@@ -146,6 +146,7 @@ public class IngameController extends Controller {
     private final String[] locationStrings = {"Moncenter", "House", "Store"};
     private long lastValueChangeTime = 0;
     private DialogWindowController dialogWindowController;
+    private MonsterTypeDto lastMondexMonster;
 
     @Inject
     public IngameController() {
@@ -183,7 +184,7 @@ public class IngameController extends Controller {
         mondexListController.setOnCloseRequest(() -> {
             scoreBoardLayout.getChildren().remove(mondexListParent);
             scoreBoardLayout.getChildren().remove(mondexDetailParent);
-            lastMonster = null;
+            lastMondexMonster = null;
             currentMenu = MENU_NONE;
         });
         mondexListController.setOnBeastClicked(this::toggleMondexDetails);
@@ -666,14 +667,14 @@ public class IngameController extends Controller {
         scoreBoardLayout.getChildren().add(0, beastDetailParent);
     }
 
-    private void toggleMondexDetails(Monster monster) {
-        if (Objects.equals(lastMonster, monster)) {
+    private void toggleMondexDetails(MonsterTypeDto monster) {
+        if (Objects.equals(lastMondexMonster, monster)) {
             scoreBoardLayout.getChildren().remove(mondexDetailParent);
-            lastMonster = null;
+            lastMondexMonster = null;
             return;
         }
 
-        lastMonster = monster;
+        lastMondexMonster = monster;
 
         MondexDetailController controller = mondexDetailControllerProvider.get();
         subControllers.add(controller);
@@ -1122,7 +1123,7 @@ public class IngameController extends Controller {
         if (scoreBoardLayout.getChildren().contains(mondexListParent)) {
             scoreBoardLayout.getChildren().remove(mondexListParent);
             scoreBoardLayout.getChildren().remove(mondexDetailParent);
-            lastMonster = null;
+            lastMondexMonster = null;
             currentMenu = MENU_NONE;
         } else {
             scoreBoardLayout.getChildren().add(mondexListParent);
