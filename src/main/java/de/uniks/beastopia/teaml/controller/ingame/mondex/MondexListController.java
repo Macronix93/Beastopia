@@ -29,6 +29,7 @@ public class MondexListController extends Controller {
     @Inject
     DataCache dataCache;
     private Runnable onCloseRequest;
+    private Consumer<Monster> onBeastClicked;
 
     @Inject
     public MondexListController() {
@@ -84,5 +85,6 @@ public class MondexListController extends Controller {
     }
 
     public void setOnBeastClicked(Consumer<Monster> onBeastClicked) {
+        this.onBeastClicked = onBeastClicked;
     }
 }

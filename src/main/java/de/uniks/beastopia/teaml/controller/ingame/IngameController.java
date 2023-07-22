@@ -10,6 +10,7 @@ import de.uniks.beastopia.teaml.controller.ingame.beastlist.BeastDetailControlle
 import de.uniks.beastopia.teaml.controller.ingame.beastlist.BeastListController;
 import de.uniks.beastopia.teaml.controller.ingame.encounter.FightWildBeastController;
 import de.uniks.beastopia.teaml.controller.ingame.encounter.StartFightNPCController;
+import de.uniks.beastopia.teaml.controller.ingame.mondex.MondexDetailController;
 import de.uniks.beastopia.teaml.controller.ingame.mondex.MondexListController;
 import de.uniks.beastopia.teaml.controller.ingame.scoreboard.ScoreboardController;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
@@ -79,6 +80,8 @@ public class IngameController extends Controller {
     @Inject
     MondexListController mondexListController;
     @Inject
+    Provider<MondexDetailController> mondexDetailControllerProvider;
+    @Inject
     Provider<BeastDetailController> beastDetailControllerProvider;
     @Inject
     Provider<DialogWindowController> dialogWindowControllerProvider;
@@ -131,6 +134,7 @@ public class IngameController extends Controller {
     Parent player;
     Parent beastListParent;
     Parent beastDetailParent;
+    Parent mondexDetailParent;
     Parent mondexListParent;
     EntityController playerController;
     SoundController soundController;
@@ -177,11 +181,12 @@ public class IngameController extends Controller {
         beastListController.init();
 
         mondexListController.setOnCloseRequest(() -> {
-
             scoreBoardLayout.getChildren().remove(mondexListParent);
-            //ToDo add mondexDetailParent
+            scoreBoardLayout.getChildren().remove(mondexDetailParent);
+            lastMonster = null;
             currentMenu = MENU_NONE;
         });
+        mondexListController.setOnBeastClicked(this::toggleMondexDetails);
         mondexListController.init();
 
         pauseController.setOnCloseRequest(() -> {
@@ -661,6 +666,25 @@ public class IngameController extends Controller {
         scoreBoardLayout.getChildren().add(0, beastDetailParent);
     }
 
+    private void toggleMondexDetails(Monster monster) {
+        if (Objects.equals(lastMonster, monster)) {
+            scoreBoardLayout.getChildren().remove(mondexDetailParent);
+            lastMonster = null;
+            return;
+        }
+
+        lastMonster = monster;
+
+        MondexDetailController controller = mondexDetailControllerProvider.get();
+        subControllers.add(controller);
+        controller.setMonster(monster);
+        controller.init();
+
+        scoreBoardLayout.getChildren().remove(mondexDetailParent);
+        mondexDetailParent = controller.render();
+        scoreBoardLayout.getChildren().add(0, mondexDetailParent);
+    }
+
     private void updateTrainerPos(Direction direction) {
         Trainer trainer = cache.getTrainer();
         JsonObject data = new JsonObject();
@@ -1097,7 +1121,7 @@ public class IngameController extends Controller {
     public void openMondexList() {
         if (scoreBoardLayout.getChildren().contains(mondexListParent)) {
             scoreBoardLayout.getChildren().remove(mondexListParent);
-            scoreBoardLayout.getChildren().remove(mondexListParent);
+            scoreBoardLayout.getChildren().remove(mondexDetailParent);
             lastMonster = null;
             currentMenu = MENU_NONE;
         } else {
