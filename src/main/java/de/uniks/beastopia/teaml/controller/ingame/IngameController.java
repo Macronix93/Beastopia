@@ -105,6 +105,8 @@ public class IngameController extends Controller {
     RegionEncountersService regionEncountersService;
     @Inject
     EncounterOpponentsService encounterOpponentsService;
+    @Inject
+    MondexService mondexService;
     private Region region;
     private Map map;
     private final List<Pair<TileSetDescription, Pair<TileSet, Image>>> tileSets = new ArrayList<>();
@@ -795,6 +797,7 @@ public class IngameController extends Controller {
                             monsterTypeDtoList.add(monsterTypeDto);
                             Image beastImage = presetsService.getMonsterImage(id).blockingFirst();
                             beastImages.add(beastImage);
+                            mondexService.addKnownMonster(id);
                         }
                         talk(newImage, " Welcome! \n Please select a starter Beast. ", beastNames, beastImages, (i -> {
                             String message = "Details: " + monsterTypeDtoList.get(i).name() + "\n" + monsterTypeDtoList.get(i).description();

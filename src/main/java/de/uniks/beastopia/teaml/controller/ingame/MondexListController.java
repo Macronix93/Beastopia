@@ -72,7 +72,7 @@ public class MondexListController extends Controller {
     }
 
     public void handleKeyEvent(KeyEvent event) {
-        if (event.getCode().equals(KeyCode.X)) {
+        if (event.getCode().equals(KeyCode.L)) {
             close();
         }
     }
