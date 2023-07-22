@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<HBox alignment="CENTER_RIGHT" onKeyPressed="#handleKeyEvent" prefHeight="317.0" prefWidth="516.0" spacing="5.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.uniks.beastopia.teaml.controller.ingame.ScoreboardController">
+<HBox alignment="CENTER_RIGHT" onKeyPressed="#handleKeyEvent" prefHeight="317.0" prefWidth="516.0" spacing="5.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.uniks.beastopia.teaml.controller.ingame.scoreboard.ScoreboardController">
     <ScrollPane fitToWidth="true" hbarPolicy="NEVER" prefHeight="317.0" prefWidth="236.0" style="-fx-background-color: transparent;" HBox.hgrow="ALWAYS">
         <VBox fx:id="achievements" prefWidth="200.0" style="-fx-border-color: black;" />
     </ScrollPane>
@@ -30,7 +30,7 @@
                 <Button fx:id="filterIcon" mnemonicParsing="false" onAction="#showFilterOptions">
                     <graphic>
                         <ImageView fitHeight="19.0" fitWidth="19.0" pickOnBounds="true" preserveRatio="true">
-                            <Image url="@../../assets/buttons/filter_icon.png" />
+                            <Image url="@../../../assets/buttons/filter_icon.png" />
                         </ImageView>
                     </graphic>
                 </Button>

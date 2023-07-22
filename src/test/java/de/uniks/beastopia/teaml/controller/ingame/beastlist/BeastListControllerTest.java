@@ -1,7 +1,9 @@
-package de.uniks.beastopia.teaml.controller.ingame;
+package de.uniks.beastopia.teaml.controller.ingame.beastlist;
 
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.AppPreparer;
+import de.uniks.beastopia.teaml.controller.ingame.beastlist.BeastController;
+import de.uniks.beastopia.teaml.controller.ingame.beastlist.BeastListController;
 import de.uniks.beastopia.teaml.rest.Monster;
 import de.uniks.beastopia.teaml.rest.MonsterAttributes;
 import de.uniks.beastopia.teaml.rest.NPCInfo;
@@ -100,7 +102,7 @@ class BeastListControllerTest extends ApplicationTest {
         doNothing().when(onCloseRequest).run();
         when(trainerService.getTrainerMonsters(any(), any())).thenReturn(Observable.just(monsters));
         when(prefs.getRegionID()).thenReturn("");
-        when(cache.getTrainer()).thenReturn(new Trainer(null, null, "TRAINER_ID", null, null, null, null, null, List.of(), 0, "", 0, 0, 0, new NPCInfo(false, false, false, false, List.of(), List.of())));
+        when(cache.getTrainer()).thenReturn(new Trainer(null, null, "TRAINER_ID", null, null, null, null, null, List.of(), List.of(), 0, "", 0, 0, 0, new NPCInfo(false, false, false, false, List.of(), List.of())));
         app.start(stage);
         app.show(beastListController);
         stage.requestFocus();
