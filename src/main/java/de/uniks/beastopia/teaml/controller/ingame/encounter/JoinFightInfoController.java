@@ -44,8 +44,9 @@ public class JoinFightInfoController extends Controller {
     public Parent render() {
         Parent parent = super.render();
 
-        infoSign.setTranslateX(posX - 110);
-        infoSign.setTranslateY(posY + 32);
+        infoSign.setTranslateX(posX - 96);
+        infoSign.setTranslateY(posY + 48);
+        infoSign.toFront();
 
         infoTextBox.getChildren().clear();
         infoTextBox.getChildren().addAll(helpCaption, helpText);
