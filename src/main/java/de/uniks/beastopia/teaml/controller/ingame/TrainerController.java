@@ -175,7 +175,7 @@ public class TrainerController extends Controller {
                     disposables.add(delay().subscribe(t -> {
                         for (Pair<String, Image> pair : cache.getCharacters()) {
                             if (cache.getCharacterImage(pair.getKey()).getValue() == null) {
-                                disposables.add(presetsService.getCharacterSprites(pair.getKey(), true).subscribe(image -> {
+                                disposables.add(presetsService.getCharacterSprites(pair.getKey(), 3).subscribe(image -> {
                                     cache.setCharacterImage(pair.getKey(), image);
                                     onUI(this::updateImages);
                                 }));
