@@ -46,8 +46,6 @@ public class MapController extends Controller {
     Provider<RegionInfoController> regionInfoControllerProvider;
     @Inject
     TrainerService trainerService;
-    @SuppressWarnings("unused")
-    private Region region;
     private LoadingPage loadingPage;
     private TileSet tileSet;
     private Image image;
@@ -69,26 +67,17 @@ public class MapController extends Controller {
         super.init();
         Trainer trainerData = cache.getTrainer();
         currentArea = cache.getArea(trainerData.area());
+        this.map = cache.getJoinedRegion().map();
+        this.tileSet = cache.getMapTileset();
+        this.image = cache.getMapImage();
     }
 
     @Override
     public Parent render() {
         loadingPage = LoadingPage.makeLoadingPage(super.render());
         fastTravelButton.setVisible(false);
-        disposables.add(regionService.getRegion(cache.getJoinedRegion()._id())
-                .observeOn(FX_SCHEDULER)
-                .subscribe(region -> {
-                            this.region = region;
-                            this.map = region.map();
-                            this.tileSet = presetsService.getTileset(map.tilesets().get(0)).blockingFirst();
-                            this.image = presetsService.getImage(tileSet).blockingFirst();
-                            loadingPage.setDone();
-                            drawMap();
-                        },
-                        error -> {
-                            throw new RuntimeException(error);
-                        }
-                ));
+        drawMap();
+
         return loadingPage.parent();
     }
 
@@ -100,6 +89,7 @@ public class MapController extends Controller {
                 drawObjectGroup(layer);
             }
         }
+        loadingPage.setDone();
     }
 
     private void drawObjectGroup(Layer layer) {
