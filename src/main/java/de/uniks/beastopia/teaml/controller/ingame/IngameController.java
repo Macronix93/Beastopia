@@ -74,7 +74,7 @@ import java.util.TimerTask;
 import java.util.function.Consumer;
 
 public class IngameController extends Controller {
-    static final double TILE_SIZE = 32;
+    static final double TILE_SIZE = 48;
     static final int MENU_NONE = 0;
     static final int MENU_SCOREBOARD = 1;
     static final int MENU_BEASTLIST = 2;
@@ -455,16 +455,7 @@ public class IngameController extends Controller {
             hideRemotePlayer(trainer);
         }
 
-        if (trainer.area().equals(cache.getTrainer().area())) {
-            JoinFightInfoController joinFightInfoController = joinFightInfoControllerProvider.get();
-            joinFightInfoController.setX(trainer.x() * TILE_SIZE);
-            joinFightInfoController.setY(trainer.y() * TILE_SIZE);
-            joinFightInfoController.setParent(tilePane);
-            joinFightInfoController.init();
-
-            Parent parentView = joinFightInfoController.render();
-            tilePane.getChildren().add(parentView);
-
+        if (trainer.area().equals(cache.getTrainer().area()) && trainer.npc() == null) {
             disposables.add(eventListener.listen("encounters.*.trainers." + trainer._id()
                             + ".opponents.*.created", Opponent.class)
                     .observeOn(FX_SCHEDULER)
@@ -475,19 +466,38 @@ public class IngameController extends Controller {
         }
     }
 
-    private void checkForHelpNeeded(List<Opponent> opponents) {
-        if (opponents.size() > 1) { // DEBUG SIZE 1, otherwise == 3
-            System.out.println("There are " + opponents.size() + " opponents!");
-        }
-    }
-
     private void checkOpponents(List<Opponent> opponents, Trainer trainer) {
         if (trainer.area().equals(cache.getTrainer().area())) {
-            System.out.println("Trainer " + trainer.name() + " is in my area " + cache.getTrainer().area() + " and has started a fight!");
+            //System.out.println("Trainer " + trainer.name() + " is in my area " + cache.getTrainer().area() + " and has started a fight!");
 
             disposables.add(encounterOpponentsService.getEncounterOpponents(cache.getJoinedRegion()._id(), opponents.get(0).encounter())
                     .observeOn(FX_SCHEDULER)
-                    .subscribe(this::checkForHelpNeeded));
+                    .subscribe(o -> {
+                        //System.out.println("There are " + o.size() + " opponents!");
+
+                        if (o.size() == 3) {
+                            for (Opponent opponent : o) {
+                                if (opponent.trainer().equals(trainer._id()) && !opponent.isAttacker()) {
+                                    // This is to get the current position of the trainer, because it gives the wrong
+                                    // coordinates when using "trainer.x()" and "trainer.y()" (trainer creation coordinates?)
+                                    disposables.add(trainerService.getTrainer(cache.getJoinedRegion()._id(), trainer._id())
+                                            .observeOn(FX_SCHEDULER)
+                                            .subscribe(t -> {
+                                                        JoinFightInfoController joinFightInfoController = joinFightInfoControllerProvider.get();
+                                                        joinFightInfoController.setX(t.x() * TILE_SIZE);
+                                                        joinFightInfoController.setY(t.y() * TILE_SIZE);
+                                                        joinFightInfoController.setParent(tilePane);
+                                                        joinFightInfoController.init();
+
+                                                        Parent parentView = joinFightInfoController.render();
+                                                        tilePane.getChildren().add(parentView);
+                                                    }
+                                            ));
+                                    break;
+                                }
+                            }
+                        }
+                    }));
         }
     }
 
@@ -744,16 +754,38 @@ public class IngameController extends Controller {
             Trainer trainer = canTalkToNPC();
             if (trainer != null) {
                 if (trainer.npc() == null || trainer.npc().encounterOnTalk()) {
-                    if (trainer.npc() != null) {
-                        List<Opponent> trainerOpponents = encounterOpponentsService.getTrainerOpponents(cache.getJoinedRegion()._id(), trainer._id()).blockingFirst();
-                        if (!(trainerOpponents.equals(List.of()))) {
-                            talkToFightingNPC(trainer);
+                    List<Opponent> trainerOpponents = encounterOpponentsService.getTrainerOpponents(cache.getJoinedRegion()._id(), trainer._id()).blockingFirst();
+
+                    if (!(trainerOpponents.equals(List.of()))) {
+                        List<Opponent> allOpponents = encounterOpponentsService.getEncounterOpponents(cache.getJoinedRegion()._id(), trainerOpponents.get(0).encounter()).blockingFirst();
+
+                        if (allOpponents.size() == 3) {
+                            talkToJoinFight(trainer);
                         } else {
-                            startEncounterOnTalk(trainer);
+                            talkToFightingNPC(trainer);
                         }
                     } else {
                         startEncounterOnTalk(trainer);
                     }
+
+                    /*if (trainer.npc() != null) {
+                        if (!(trainerOpponents.equals(List.of()))) {
+                            List<Opponent> allOpponents = encounterOpponentsService.getEncounterOpponents(cache.getJoinedRegion()._id(), trainerOpponents.get(0).encounter()).blockingFirst();
+
+                            if (allOpponents.size() == 3) {
+                                System.out.println("Join fight");
+                                talkToJoinFight(trainer);
+                            } else {
+                                System.out.println("fightingNPC");
+                                talkToFightingNPC(trainer);
+                            }
+                        } else {
+                            startEncounterOnTalk(trainer);
+                        }
+                        //startEncounterOnTalk(trainer);
+                    } else {
+                        startEncounterOnTalk(trainer);
+                    }*/
                 } else if (trainer.npc().starters() != null) {
                     talkToStartersNPC(trainer);
                 } else if (trainer.npc().canHeal()) {
@@ -807,7 +839,7 @@ public class IngameController extends Controller {
     }
 
     private void startEncounterOnTalk(Trainer trainer) {
-        disposables.add(presetsService.getCharacterSprites(trainer.image(), false)
+        disposables.add(presetsService.getCharacterSprites(trainer.image(), 1)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(image -> {
                     Rectangle2D viewPort = new Rectangle2D(3 * 96, 32, 16, 32);
@@ -819,8 +851,21 @@ public class IngameController extends Controller {
                 }));
     }
 
+    private void talkToJoinFight(Trainer trainer) {
+        disposables.add(presetsService.getCharacterSprites(trainer.image(), 1)
+                .observeOn(FX_SCHEDULER)
+                .subscribe(image -> {
+                    Rectangle2D viewPort = new Rectangle2D(3 * 96, 32, 16, 32);
+                    PixelReader reader = image.getPixelReader();
+                    WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
+                    String askJoinFight = "Join the fight of " + trainer.name();
+                    talk(newImage, resources.getString("hello") + " \n" + "You can try to join the fight!", List.of(askJoinFight), null,
+                            i -> udpEventListener.send(createTalkMessage(cache.getTrainer()._id(), trainer._id(), Optional.empty())));
+                }));
+    }
+
     private void talkToFightingNPC(Trainer trainer) {
-        disposables.add(presetsService.getCharacterSprites(trainer.image(), false)
+        disposables.add(presetsService.getCharacterSprites(trainer.image(), 1)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(image -> {
                     Rectangle2D viewPort = new Rectangle2D(3 * 96, 32, 16, 32);
@@ -832,7 +877,7 @@ public class IngameController extends Controller {
     }
 
     private void talkToStartersNPC(Trainer trainer) {
-        disposables.add(presetsService.getCharacterSprites(trainer.image(), false)
+        disposables.add(presetsService.getCharacterSprites(trainer.image(), 1)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(image -> {
                     Rectangle2D viewPort = new Rectangle2D(3 * 96, 32, 16, 32);
@@ -868,7 +913,7 @@ public class IngameController extends Controller {
     }
 
     private void talkToNurse(Trainer trainer) {
-        disposables.add(presetsService.getCharacterSprites(trainer.image(), false)
+        disposables.add(presetsService.getCharacterSprites(trainer.image(), 1)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(image -> {
                     Rectangle2D viewPort = new Rectangle2D(3 * 96, 32, 16, 32);

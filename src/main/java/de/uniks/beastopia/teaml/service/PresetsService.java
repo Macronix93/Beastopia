@@ -1,7 +1,11 @@
 package de.uniks.beastopia.teaml.service;
 
 import com.google.gson.Gson;
-import de.uniks.beastopia.teaml.rest.*;
+import de.uniks.beastopia.teaml.rest.AbilityDto;
+import de.uniks.beastopia.teaml.rest.MonsterTypeDto;
+import de.uniks.beastopia.teaml.rest.PresetsApiService;
+import de.uniks.beastopia.teaml.rest.TileSet;
+import de.uniks.beastopia.teaml.rest.TileSetDescription;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
@@ -24,11 +28,10 @@ public class PresetsService {
         return presetsApiService.getCharacters();
     }
 
-    public Observable<Image> getCharacterSprites(String fileName, boolean useConstantValues) {
+    public Observable<Image> getCharacterSprites(String fileName, int scalingFactor) {
         return presetsApiService.getCharacterSprites(fileName)
                 .map((ResponseBody body) ->
-                        (useConstantValues ? new Image(body.byteStream(), 384 * PREVIEW_SCALING, 96 * PREVIEW_SCALING, true, false)
-                                : new Image(body.byteStream())));
+                        new Image(body.byteStream(), 384 * scalingFactor, 96 * scalingFactor, true, false));
     }
 
     public Observable<Image> getImage(TileSet tileSet) {
