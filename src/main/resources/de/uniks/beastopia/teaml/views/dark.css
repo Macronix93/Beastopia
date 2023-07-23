@@ -124,6 +124,10 @@
     -fx-background-radius: 5px;
 }
 
+#textArea_description {
+    -fx-background-color: #4C5250;
+}
+
 #scoreBoard,
 #achievements,
 #VBoxBeastList,
