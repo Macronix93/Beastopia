@@ -65,4 +65,8 @@ public class EnemyBeastInfoController extends Controller {
         lifeBarValue.setMaxWidth(lifeBar.getWidth() * value);
         lifeBarValue.setPrefWidth(lifeBar.getWidth() * value);
     }
+
+    public Monster getMonster() {
+        return this.monster;
+    }
 }
