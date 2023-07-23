@@ -105,3 +105,22 @@ Gallo</a>
 
 <a href="https://www.flaticon.com/de/kostenlose-icons/schadel" title="schädel Icons">Schädel Icons erstellt von Freepik - Flaticon</a>
 
+<a href="https://www.flaticon.com/de/kostenlose-icons/gehirn" title="gehirn Icons">Gehirn Icons erstellt von Smashicons - Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/frost" title="frost Icons">Frost Icons erstellt von Ardiansyah - Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/dunkel" title="dunkel Icons">Dunkel Icons erstellt von adriansyah - Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/ui" title="ui Icons">Ui Icons erstellt von Icon mania - Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/kampfen" title="kämpfen Icons">Kämpfen Icons erstellt von yut1655 - Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/felsen" title="felsen Icons">Felsen Icons erstellt von Good Ware - Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/stahl" title="stahl Icons">Stahl Icons erstellt von PLANBSTUDIO - Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/malware" title="malware Icons">Malware Icons erstellt von Anggara - Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/angst" title="angst Icons">Angst Icons erstellt von Freepik - Flaticon</a>
+
+
