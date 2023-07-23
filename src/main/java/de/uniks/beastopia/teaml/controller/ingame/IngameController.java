@@ -152,6 +152,11 @@ public class IngameController extends Controller {
     public void init() {
         super.init();
 
+        if (cache.getMapImage() == null || cache.getMapTileset() == null) {
+            cache.setTileset(presetsService.getTileset(cache.getJoinedRegion().map().tilesets().get(0)).blockingFirst());
+            cache.setMapImage(presetsService.getImage(cache.getMapTileset()).blockingFirst());
+        }
+
         scoreBoardController.setOnCloseRequested(() -> {
             scoreBoardLayout.getChildren().remove(scoreBoardParent);
             currentMenu = MENU_NONE;
@@ -643,9 +648,10 @@ public class IngameController extends Controller {
             Tile tile = mapInfo.get(posXY);
             Optional<TileProperty> jumpableTileProp = tile.properties().stream().filter(tileProperty -> tileProperty.name().equals("Jumpable")).findFirst();
             if (jumpableTileProp.isPresent()) {
-                String value = jumpableTileProp.get().value();
-                System.out.println("pos " + posXY);
-                System.out.println("jumpable direction " + value);
+                state.setValue(PlayerState.JUMP);
+                drawPlayer(posx, posy);
+                movePlayer(posx, posy);
+                updateOrigin();
             }
         }
 
