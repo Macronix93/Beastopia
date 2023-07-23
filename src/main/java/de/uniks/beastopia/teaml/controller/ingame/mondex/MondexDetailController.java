@@ -9,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 
@@ -21,13 +22,15 @@ public class MondexDetailController extends Controller {
     @FXML
     public Label label_name;
     @FXML
-    public ImageView imageView_TypeIcon;
-    @FXML
     public Label label_type;
     @FXML
     public ImageView imageView_Avatar;
     @FXML
     public TextArea textArea_description;
+    @FXML
+    public ImageView imageView_TypeIcon1;
+    @FXML
+    public ImageView imageView_TypeIcon2;
 
     private MonsterTypeDto monster;
     private boolean known;
@@ -62,8 +65,12 @@ public class MondexDetailController extends Controller {
         if (monster.id() % 2 == 0) {
             label_name.setText(monster.name());
             label_type.setText("Type: " + monster.type().get(0));
+            Image typeIcon1 = new Image("file:src/main/resources/de/uniks/beastopia/teaml/assets/monsterTypeIcons/" + monster.type().get(0) + ".png");
+            imageView_TypeIcon1.setImage(typeIcon1);
             if (monster.type().size() == 2) {
                 label_type.setText(label_type.getText() + ", " + monster.type().get(1));
+                Image typeIcon2 = new Image("file:src/main/resources/de/uniks/beastopia/teaml/assets/monsterTypeIcons/" + monster.type().get(1) + ".png");
+                imageView_TypeIcon2.setImage(typeIcon2);
             }
             textArea_description.setText(monster.description());
             disposables.add(presetsService.getMonsterImage(monster.id())

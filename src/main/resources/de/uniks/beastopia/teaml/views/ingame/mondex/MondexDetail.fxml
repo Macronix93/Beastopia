@@ -16,22 +16,25 @@
    <HBox alignment="CENTER">
          <GridPane hgap="5.0" vgap="5.0">
            <columnConstraints>
-             <ColumnConstraints hgrow="SOMETIMES" percentWidth="45.0" />
-             <ColumnConstraints hgrow="SOMETIMES" percentWidth="45.0" />
+             <ColumnConstraints hgrow="SOMETIMES" percentWidth="37.0" />
+             <ColumnConstraints hgrow="SOMETIMES" percentWidth="43.0" />
                <ColumnConstraints hgrow="SOMETIMES" percentWidth="10.0" />
+            <ColumnConstraints hgrow="SOMETIMES" percentWidth="10.0" />
            </columnConstraints>
            <rowConstraints>
-             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+             <RowConstraints />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
            </rowConstraints>
-               <Label fx:id="label_name" text="Name">
+               <Label fx:id="label_name" text="Name" GridPane.rowIndex="1">
             <font>
                <Font size="14.0" />
             </font></Label>
-               <ImageView fx:id="imageView_TypeIcon" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" />
-               <Label fx:id="label_type" text="Type" GridPane.columnIndex="1">
+               <ImageView fx:id="imageView_TypeIcon1" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+               <Label fx:id="label_type" text="Type" GridPane.columnIndex="1" GridPane.rowIndex="1">
             <font>
                <Font size="14.0" />
             </font></Label>
+         <ImageView fx:id="imageView_TypeIcon2" fitHeight="30.0" fitWidth="30.0" layoutX="281.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.rowIndex="1" />
          </GridPane>
    </HBox>
    <HBox alignment="CENTER">
