@@ -303,6 +303,12 @@ public class IngameController extends Controller {
                         error -> System.err.println("Fehler: " + error.getMessage())
                 )
         );
+
+        pauseHint.toFront();
+        beastlistHint.toFront();
+        scoreboardHint.toFront();
+        mapHint.toFront();
+        invHint.toFront();
     }
 
     private void openFightNPCScreen(Encounter encounter) {
@@ -1103,6 +1109,7 @@ public class IngameController extends Controller {
             } else {
                 inventoryController.init();
                 inventoryController.setIfShop(false);
+                inventoryController.setOnItemClicked(this::toggleInventoryItemDetails);
                 inventoryController.setOnCloseRequest(() -> {
                     setCloseRequests(scoreBoardLayout, inventoryParent);
                     lastMonster = null;
@@ -1116,10 +1123,15 @@ public class IngameController extends Controller {
 
     public void setOpacities(int value) {
         pauseHint.setOpacity(value);
+        pauseHint.setDisable(value == 0);
         beastlistHint.setOpacity(value);
+        beastlistHint.setDisable(value == 0);
         scoreboardHint.setOpacity(value);
+        scoreboardHint.setDisable(value == 0);
         mapHint.setOpacity(value);
+        mapHint.setDisable(value == 0);
         invHint.setOpacity(value);
+        invHint.setDisable(value == 0);
     }
 
     public void openShopInventory() {
