@@ -27,7 +27,6 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 
@@ -48,7 +47,7 @@ class EntityControllerTest extends ApplicationTest {
     @Override
     public void start(Stage stage) {
         AppPreparer.prepare(app);
-        when(presetsService.getCharacterSprites(any(), anyBoolean())).thenReturn(Observable.just(image));
+        when(presetsService.getCharacterSprites(any(), any())).thenReturn(Observable.just(image));
         entityController.setTrainer(trainer);
         entityController.playerState().bind(state);
         app.start(stage);

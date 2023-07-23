@@ -78,7 +78,7 @@ class StartFightNPCControllerTest extends ApplicationTest {
         when(cache.getTrainer()).thenReturn(trainer);
         when(cache.getJoinedRegion()).thenReturn(region);
         when(trainerService.getTrainer(any(), any())).thenReturn(Observable.just(trainer));
-        when(presetsService.getCharacterSprites(any(), eq(true))).thenReturn(Observable.just(expectedImage));
+        when(presetsService.getCharacterSprites(any(), eq(3))).thenReturn(Observable.just(expectedImage));
 
         app.start(stage);
         app.show(startFightNPCController);
@@ -94,7 +94,7 @@ class StartFightNPCControllerTest extends ApplicationTest {
 
     @Test
     void title() {
-       assertEquals(app.getStage().getTitle(), resources.getString("titleEncounter"));
+        assertEquals(app.getStage().getTitle(), resources.getString("titleEncounter"));
     }
 
     @Test
