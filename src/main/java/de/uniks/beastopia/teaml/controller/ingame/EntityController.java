@@ -136,7 +136,7 @@ public class EntityController extends Controller {
 
     @Override
     public Parent render() {
-        int VIEW_SIZE = 60;
+        int VIEW_SIZE = 96;
         parent = super.render();
         entityView.toFront();
         entityView.setPreserveRatio(true);
@@ -146,7 +146,7 @@ public class EntityController extends Controller {
         updateViewPort();
 
         if (!SPRITESHEET.containsKey(trainer.image()) || SPRITESHEET.get(trainer.image()) == null) {
-            disposables.add(presetsService.getCharacterSprites(trainer.image(), true).observeOn(FX_SCHEDULER).subscribe(image -> {
+            disposables.add(presetsService.getCharacterSprites(trainer.image(), 5).observeOn(FX_SCHEDULER).subscribe(image -> {
                 SPRITESHEET.put(trainer.image(), image);
                 entityView.setImage(image);
             }));
@@ -157,7 +157,7 @@ public class EntityController extends Controller {
     }
 
     private Rectangle2D getViewport() {
-        int SPRITE_SCALING = 3;
+        int SPRITE_SCALING = 5;
         return new Rectangle2D((direction.ordinal() * DIRECTION_STEP + index * SPRITE_STEP) * SPRITE_SCALING, (state.get().ordinal() * STATE_STEP + STATE_STEP) * SPRITE_SCALING, PORT_WIDTH * SPRITE_SCALING, PORT_HEIGHT * SPRITE_SCALING);
     }
 
