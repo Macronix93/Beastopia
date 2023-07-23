@@ -35,6 +35,8 @@ public class DataCache {
     private List<MonsterTypeDto> allBeasts = new ArrayList<>();
     private List<Opponent> currentOpponents = new ArrayList<>();
     Encounter currentEncounter;
+    private TileSet mapTileset;
+    private Image mapImage;
 
     @Inject
     public DataCache() {
@@ -313,5 +315,21 @@ public class DataCache {
 
     public Encounter getCurrentEncounter() {
         return this.currentEncounter;
+    }
+
+    public void setTileset(TileSet tileSet) {
+        this.mapTileset = tileSet;
+    }
+
+    public void setMapImage(Image image) {
+        this.mapImage = image;
+    }
+
+    public TileSet getMapTileset() {
+        return this.mapTileset;
+    }
+
+    public Image getMapImage() {
+        return this.mapImage;
     }
 }
