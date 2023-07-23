@@ -648,10 +648,13 @@ public class IngameController extends Controller {
             Tile tile = mapInfo.get(posXY);
             Optional<TileProperty> jumpableTileProp = tile.properties().stream().filter(tileProperty -> tileProperty.name().equals("Jumpable")).findFirst();
             if (jumpableTileProp.isPresent()) {
-                state.setValue(PlayerState.JUMP);
-                drawPlayer(posx, posy);
-                movePlayer(posx, posy);
-                updateOrigin();
+                int jumpDirection = Integer.parseInt(jumpableTileProp.get().value());
+                if (jumpDirection == direction.ordinal()) {
+                    state.setValue(PlayerState.JUMP);
+                    drawPlayer(posx, posy);
+                    movePlayer(posx, posy);
+                    updateOrigin();
+                }
             }
         }
 
