@@ -115,9 +115,7 @@ public class EntityController extends Controller {
         return new TimerTask() {
             @Override
             public void run() {
-                self.onUI(() -> {
-                    listenToMovements();
-                });
+                self.onUI(() -> listenToMovements());
             }
         };
     }
@@ -129,6 +127,9 @@ public class EntityController extends Controller {
     @Override
     public Parent render() {
         int VIEW_SIZE = 60;
+        if (state.get().equals(PlayerState.JUMP)) {
+            VIEW_SIZE *= 1.2;
+        }
         parent = super.render();
         entityView.toFront();
         entityView.setPreserveRatio(true);
@@ -150,12 +151,17 @@ public class EntityController extends Controller {
 
     private Rectangle2D getViewport() {
         int SPRITE_SCALING = 3;
-        return new Rectangle2D((direction.ordinal() * DIRECTION_STEP + index * SPRITE_STEP) * SPRITE_SCALING, (state.get().ordinal() * STATE_STEP + STATE_STEP) * SPRITE_SCALING, PORT_WIDTH * SPRITE_SCALING, PORT_HEIGHT * SPRITE_SCALING);
+        int sheetY = state.get().equals(PlayerState.JUMP) ? 1 : state.get().ordinal();
+
+        return new Rectangle2D(
+                (direction.ordinal() * DIRECTION_STEP + index * SPRITE_STEP) * SPRITE_SCALING,
+                (sheetY * STATE_STEP + STATE_STEP) * SPRITE_SCALING,
+                PORT_WIDTH * SPRITE_SCALING,
+                PORT_HEIGHT * SPRITE_SCALING);
     }
 
     @Override
     public void destroy() {
-//        eventListener.dispose();
         super.destroy();
     }
 
