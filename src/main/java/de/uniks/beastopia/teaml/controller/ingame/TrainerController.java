@@ -5,11 +5,7 @@ import de.uniks.beastopia.teaml.controller.menu.MenuController;
 import de.uniks.beastopia.teaml.rest.Achievement;
 import de.uniks.beastopia.teaml.rest.Region;
 import de.uniks.beastopia.teaml.rest.Trainer;
-import de.uniks.beastopia.teaml.service.AchievementsService;
-import de.uniks.beastopia.teaml.service.DataCache;
-import de.uniks.beastopia.teaml.service.PresetsService;
-import de.uniks.beastopia.teaml.service.TokenStorage;
-import de.uniks.beastopia.teaml.service.TrainerService;
+import de.uniks.beastopia.teaml.service.*;
 import de.uniks.beastopia.teaml.utils.Dialog;
 import de.uniks.beastopia.teaml.utils.LoadingPage;
 import javafx.beans.property.IntegerProperty;
@@ -175,7 +171,7 @@ public class TrainerController extends Controller {
                     disposables.add(delay().subscribe(t -> {
                         for (Pair<String, Image> pair : cache.getCharacters()) {
                             if (cache.getCharacterImage(pair.getKey()).getValue() == null) {
-                                disposables.add(presetsService.getCharacterSprites(pair.getKey(), true).subscribe(image -> {
+                                disposables.add(cache.getOrLoadTrainerImage(pair.getKey(), true).subscribe(image -> {
                                     cache.setCharacterImage(pair.getKey(), image);
                                     onUI(this::updateImages);
                                 }));

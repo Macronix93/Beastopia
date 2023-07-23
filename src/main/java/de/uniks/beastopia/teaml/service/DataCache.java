@@ -3,7 +3,14 @@ package de.uniks.beastopia.teaml.service;
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.rest.*;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Scheduler;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+import javafx.application.Platform;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.paint.Paint;
 import javafx.stage.FileChooser;
 import javafx.util.Pair;
 
@@ -20,13 +27,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.*;
 
+import static de.uniks.beastopia.teaml.service.PresetsService.PREVIEW_SCALING;
+
 @Singleton
 public class DataCache {
+
+    private static final ImageView IMAGE_VIEW = new ImageView();
+    private static final Scheduler FX_SCHEDULER = io.reactivex.rxjava3.schedulers.Schedulers.from(Platform::runLater);
+
     private List<User> users = new ArrayList<>();
     private List<Area> areas = new ArrayList<>();
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     private final List<Trainer> trainers = new ArrayList<>();
     private final List<Pair<String, Image>> characters = new ArrayList<>();
+    private final List<Pair<String, Image>> charactersResized = new ArrayList<>();
+    private final List<Pair<String, Observable<Image>>> charactersAiring = new ArrayList<>();
     private List<Achievement> myAchievements = new ArrayList<>();
     private final Map<String, String> achievementDescriptions = new HashMap<>();
     private final List<String> visitedAreas = new ArrayList<>();
@@ -35,6 +50,8 @@ public class DataCache {
     private List<MonsterTypeDto> allBeasts = new ArrayList<>();
     private List<Opponent> currentOpponents = new ArrayList<>();
     Encounter currentEncounter;
+    @Inject
+    PresetsService presetsService;
 
     @Inject
     public DataCache() {
@@ -159,14 +176,81 @@ public class DataCache {
 
     public void setCharacterImage(String name, Image image) {
         synchronized (characters) {
+            charactersAiring.removeIf(pair -> pair.getKey().equals(name));
             characters.removeIf(pair -> pair.getKey().equals(name));
             characters.add(new Pair<>(name, image));
+        }
+    }
+
+    public void setCharacterResizedImage(String name, Image image) {
+        synchronized (characters) {
+            charactersAiring.removeIf(pair -> pair.getKey().equals(name));
+            charactersResized.removeIf(pair -> pair.getKey().equals(name));
+            charactersResized.add(new Pair<>(name, image));
         }
     }
 
     public void setTrainers(List<Trainer> trainers) {
         this.trainers.clear();
         this.trainers.addAll(trainers);
+    }
+
+    public Observable<Image> getOrLoadTrainerImage(String trainer, boolean useConstantValues) {
+        synchronized (characters) {
+            if (characters.stream().anyMatch(pair -> pair.getKey().equals(trainer) && pair.getValue() != null)) {
+                if (useConstantValues) {
+                    return Observable.just(charactersResized.stream()
+                            .filter(pair -> pair.getKey().equals(trainer))
+                            .findFirst()
+                            .map(Pair::getValue)
+                            .orElseThrow());
+                } else {
+                    return Observable.just(characters.stream()
+                            .filter(pair -> pair.getKey().equals(trainer))
+                            .findFirst()
+                            .map(Pair::getValue)
+                            .orElseThrow());
+                }
+            } else if (charactersAiring.stream().noneMatch(pair -> pair.getKey().equals(trainer))) {
+                Observable<Image> obs = presetsService.getCharacterSprites(trainer, false);
+                charactersAiring.add(new Pair<>(trainer, obs));
+                return obs
+                        .observeOn(FX_SCHEDULER)
+                        .map(image -> {
+                            setCharacterImage(trainer, image);
+                            Image resized = scaleImage(image, 384 * PREVIEW_SCALING, 96 * PREVIEW_SCALING);
+                            setCharacterResizedImage(trainer, resized);
+                            return useConstantValues ? resized : image;
+                        });
+            } else {
+                return Observable.fromAction(() -> {
+                }).observeOn(Schedulers.io()).map((v) -> {
+                    while (charactersAiring.stream().anyMatch(pair -> pair.getKey().equals(trainer))) {
+                        try {
+                            //noinspection BusyWait
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            //noinspection CallToPrintStackTrace
+                            e.printStackTrace();
+                        }
+                    }
+
+                    if (useConstantValues) {
+                        return charactersResized.stream()
+                                .filter(pair -> pair.getKey().equals(trainer))
+                                .findFirst()
+                                .map(Pair::getValue)
+                                .orElseThrow();
+                    } else {
+                        return characters.stream()
+                                .filter(pair -> pair.getKey().equals(trainer))
+                                .findFirst()
+                                .map(Pair::getValue)
+                                .orElseThrow();
+                    }
+                });
+            }
+        }
     }
 
     public List<Trainer> getTrainers() {
@@ -313,5 +397,16 @@ public class DataCache {
 
     public Encounter getCurrentEncounter() {
         return this.currentEncounter;
+    }
+
+    private static Image scaleImage(Image input, @SuppressWarnings("SameParameterValue") int width, @SuppressWarnings("SameParameterValue") int height) {
+        IMAGE_VIEW.setImage(input);
+        IMAGE_VIEW.setPreserveRatio(true);
+        IMAGE_VIEW.setFitWidth(width);
+        IMAGE_VIEW.setFitHeight(height);
+        SnapshotParameters parameters = new SnapshotParameters();
+        parameters.setFill(Paint.valueOf("transparent"));
+        IMAGE_VIEW.setCache(false);
+        return IMAGE_VIEW.snapshot(parameters, null);
     }
 }
