@@ -24,18 +24,19 @@
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
         </rowConstraints>
         <Label fx:id="beastLabel" text="Label"/>
-        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.rowIndex="1">
+        <HBox fx:id="buttonBox" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0"
+              GridPane.rowIndex="1">
             <ProgressBar fx:id="expProgress" prefHeight="20.0" prefWidth="68.0" progress="0.0"/>
-            <Button fx:id="upButton" mnemonicParsing="false" prefHeight="20.0" prefWidth="20.0">
+            <Button fx:id="upButton" mnemonicParsing="false" prefHeight="15.0" prefWidth="15.0">
                 <graphic>
-                    <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                    <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
                         <Image url="@../../../assets/buttons/up.png"/>
                     </ImageView>
                 </graphic>
             </Button>
-            <Button fx:id="downButton" mnemonicParsing="false" prefHeight="20.0" prefWidth="20.0">
+            <Button fx:id="downButton" mnemonicParsing="false" prefHeight="15.0" prefWidth="15.0">
                 <graphic>
-                    <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                    <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
                         <Image url="@../../../assets/buttons/down.png"/>
                     </ImageView>
                 </graphic>
