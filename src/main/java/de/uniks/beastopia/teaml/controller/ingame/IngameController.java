@@ -1160,6 +1160,7 @@ public class IngameController extends Controller {
                 setCloseRequests(scoreBoardLayout, inventoryParent);
                 lastMonster = null;
                 setCloseRequests(scoreBoardLayout, itemDetailParent);
+                inventoryController.destroy();
             });
             inventoryParent = inventoryController.render();
             scoreBoardLayout.getChildren().add(inventoryParent);
@@ -1187,7 +1188,9 @@ public class IngameController extends Controller {
         shopController.setOnCloseRequest(() -> {
             setCloseRequests(shopLayout, shopParent);
             inventoryController.close();
+            inventoryController.destroy();
             setCloseRequests(shopLayout, itemDetailParent);
+            shopController.destroy();
         });
         shopParent = shopController.render();
         shopLayout.getChildren().add(shopParent);
