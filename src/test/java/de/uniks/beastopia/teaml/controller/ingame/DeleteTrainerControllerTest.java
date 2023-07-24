@@ -68,6 +68,7 @@ class DeleteTrainerControllerTest extends ApplicationTest {
     final Layer tilelayer = new Layer(List.of(chunk), List.of(), null, null, 1, 0, 0, "tilelayer", true, 2, 2, 0, 0);
     final Map map = new Map(List.of(tileSetDescription), List.of(tilelayer, objectGroup), 2, 24, 4);
     final Region region = new Region(null, null, "ID", "NAME", new Spawn(null, 0, 0), map);
+    @SuppressWarnings("unused")
     final List<Pair<String, Image>> allCharacters = List.of(new Pair<>("A.png", image));
 
     @Override
@@ -75,7 +76,7 @@ class DeleteTrainerControllerTest extends ApplicationTest {
         AppPreparer.prepare(app);
 
         when(cache.getTrainer()).thenReturn(trainer);
-        when(cache.getCharacterImage(anyString())).thenReturn(allCharacters.get(0));
+        when(cache.getOrLoadTrainerImage(anyString(), anyBoolean())).thenReturn(Observable.just(new WritableImage(1, 1)));
 
         app.start(stage);
         app.show(deleteTrainerController);

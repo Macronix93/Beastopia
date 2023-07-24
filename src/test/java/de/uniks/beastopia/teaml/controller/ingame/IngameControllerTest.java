@@ -114,7 +114,6 @@ class IngameControllerTest extends ApplicationTest {
         when(udpEventListener.listen(anyString(), any())).thenReturn(Observable.empty());
         when(cache.getAreas()).thenReturn(List.of(area));
         doNothing().when(scoreboardController).init();
-        when(scoreboardController.render()).thenReturn(new Pane());
         when(eventListener.listen(any(), any())).thenReturn(Observable.empty());
         doNothing().when(prefs).setCurrentRegion(any());
         doNothing().when(prefs).setArea(any());

@@ -103,6 +103,7 @@ class TrainerControllerTest extends ApplicationTest {
         when(cache.getTrainer()).thenReturn(allTrainer.get(0));
         when(cache.getCharacters()).thenReturn(allCharacters);
         when(cache.getCharacterImage(anyString())).thenReturn(allCharacters.get(0));
+        when(cache.getOrLoadTrainerImage(anyString(), anyBoolean())).thenReturn(Observable.just(image));
         when(presetsService.getCharacters()).thenReturn(Observable.just(characters));
         doNothing().when(mock(TrainerController.class)).showTrainerSpritePreview(any(), any());
 
