@@ -70,7 +70,7 @@ public class StartFightNPCController extends Controller {
                                     .subscribe(t -> {
                                         headline.setText(t.name() + " " + resources.getString("npcStart"));
                                         disposables.add(presetsService
-                                                .getCharacterSprites(t.image(), 3)
+                                                .getCharacterSprites(t.image(), PREVIEW_SCALING)
                                                 .observeOn(FX_SCHEDULER)
                                                 .subscribe(i -> {
                                                     image.setImage(i);

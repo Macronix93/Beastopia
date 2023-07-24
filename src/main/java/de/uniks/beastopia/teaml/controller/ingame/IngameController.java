@@ -73,6 +73,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.function.Consumer;
 
+import static de.uniks.beastopia.teaml.service.PresetsService.PREVIEW_SCALING;
+
 public class IngameController extends Controller {
     static final double TILE_SIZE = 48;
     static final int MENU_NONE = 0;
@@ -839,10 +841,10 @@ public class IngameController extends Controller {
     }
 
     private void startEncounterOnTalk(Trainer trainer) {
-        disposables.add(presetsService.getCharacterSprites(trainer.image(), 1)
+        disposables.add(presetsService.getCharacterSprites(trainer.image(), PREVIEW_SCALING)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(image -> {
-                    Rectangle2D viewPort = new Rectangle2D(3 * 96, 32, 16, 32);
+                    Rectangle2D viewPort = new Rectangle2D(48 * PREVIEW_SCALING, 0, 16 * PREVIEW_SCALING, 32 * PREVIEW_SCALING);
                     PixelReader reader = image.getPixelReader();
                     WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
                     String askFight = resources.getString("ask") + " " + trainer.name() + " " + resources.getString("vs");
@@ -852,10 +854,10 @@ public class IngameController extends Controller {
     }
 
     private void talkToJoinFight(Trainer trainer) {
-        disposables.add(presetsService.getCharacterSprites(trainer.image(), 1)
+        disposables.add(presetsService.getCharacterSprites(trainer.image(), PREVIEW_SCALING)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(image -> {
-                    Rectangle2D viewPort = new Rectangle2D(3 * 96, 32, 16, 32);
+                    Rectangle2D viewPort = new Rectangle2D(48 * PREVIEW_SCALING, 0, 16 * PREVIEW_SCALING, 32 * PREVIEW_SCALING);
                     PixelReader reader = image.getPixelReader();
                     WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
                     String askJoinFight = "Join the fight of " + trainer.name();
@@ -865,10 +867,10 @@ public class IngameController extends Controller {
     }
 
     private void talkToFightingNPC(Trainer trainer) {
-        disposables.add(presetsService.getCharacterSprites(trainer.image(), 1)
+        disposables.add(presetsService.getCharacterSprites(trainer.image(), PREVIEW_SCALING)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(image -> {
-                    Rectangle2D viewPort = new Rectangle2D(3 * 96, 32, 16, 32);
+                    Rectangle2D viewPort = new Rectangle2D(48 * PREVIEW_SCALING, 0, 16 * PREVIEW_SCALING, 32 * PREVIEW_SCALING);
                     PixelReader reader = image.getPixelReader();
                     WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
                     talk(newImage, "I am currently fighting, come back later!"
@@ -877,10 +879,10 @@ public class IngameController extends Controller {
     }
 
     private void talkToStartersNPC(Trainer trainer) {
-        disposables.add(presetsService.getCharacterSprites(trainer.image(), 1)
+        disposables.add(presetsService.getCharacterSprites(trainer.image(), PREVIEW_SCALING)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(image -> {
-                    Rectangle2D viewPort = new Rectangle2D(3 * 96, 32, 16, 32);
+                    Rectangle2D viewPort = new Rectangle2D(48 * PREVIEW_SCALING, 0, 16 * PREVIEW_SCALING, 32 * PREVIEW_SCALING);
                     PixelReader reader = image.getPixelReader();
                     WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
                     if (trainer.npc().encountered().contains(cache.getTrainer()._id())) {
@@ -913,10 +915,10 @@ public class IngameController extends Controller {
     }
 
     private void talkToNurse(Trainer trainer) {
-        disposables.add(presetsService.getCharacterSprites(trainer.image(), 1)
+        disposables.add(presetsService.getCharacterSprites(trainer.image(), PREVIEW_SCALING)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(image -> {
-                    Rectangle2D viewPort = new Rectangle2D(3 * 96, 32, 16, 32);
+                    Rectangle2D viewPort = new Rectangle2D(48 * PREVIEW_SCALING, 0, 16 * PREVIEW_SCALING, 32 * PREVIEW_SCALING);
                     PixelReader reader = image.getPixelReader();
                     WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
                     talk(newImage, " Hello! \n what can I do for you? ", List.of("Heal all Beasts"), null, (i -> {
