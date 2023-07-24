@@ -295,24 +295,19 @@ public class EncounterController extends Controller {
         if (cache.getCurrentEncounter().isWild()) {
             System.out.println("current encounter: " + cache.getCurrentEncounter() + " current opponent: " + cache.getOpponentByTrainerID(cache.getTrainer()._id())._id());
 
-            disposables.add(encounterOpponentsService.deleteOpponent(cache.getJoinedRegion()._id(), cache.getCurrentEncounter()._id(), cache.getOpponentByTrainerID(cache.getTrainer()._id())._id())
-                    .observeOn(FX_SCHEDULER)
-                    .subscribe(o -> {
+            disposables.add(
+                    encounterOpponentsService.deleteOpponent(cache.getJoinedRegion()._id(), cache.getCurrentEncounter()._id(), cache.getOpponentByTrainerID(cache.getTrainer()._id())._id())
+                            .observeOn(FX_SCHEDULER)
+                            .doFinally(() -> {
                                 cache.setCurrentEncounter(null);
                                 cache.getCurrentOpponents().clear();
 
                                 IngameController controller = ingameControllerProvider.get();
                                 controller.setRegion(cache.getJoinedRegion());
                                 app.show(controller);
-                            }, error -> {
-                                cache.setCurrentEncounter(null);
-                                cache.getCurrentOpponents().clear();
-
-                                IngameController controller = ingameControllerProvider.get();
-                                controller.setRegion(cache.getJoinedRegion());
-                                app.show(controller);
-                            }
-                    ));
+                            })
+                            .subscribe()
+            );
         }
     }
 
