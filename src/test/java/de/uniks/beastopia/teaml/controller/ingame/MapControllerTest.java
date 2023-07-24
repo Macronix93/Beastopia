@@ -5,14 +5,9 @@ import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.rest.*;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
-import de.uniks.beastopia.teaml.service.RegionService;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.image.PixelWriter;
-import javafx.scene.image.WritableImage;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,8 +18,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
 
 import javax.inject.Provider;
-import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -45,20 +38,18 @@ class MapControllerTest extends ApplicationTest {
     @Mock
     DataCache cache;
     @Mock
-    PresetsService presetsService;
-    @Mock
-    RegionService regionService;
-    @Mock
     Provider<RegionInfoController> regionInfoControllerProvider;
+    @SuppressWarnings("unused")
+
+    @Mock
+    PresetsService presetsService;
     @Mock
     RegionInfoController regionInfoController;
 
     final TileSetDescription tileSetDescription = new TileSetDescription(0, "SOURCE");
-    final TileSet tileSet = new TileSet(2, "IMAGE", 2, 2, 0, "NAME", 0, 4, 1, null);
     final Chunk chunk = new Chunk(List.of(0, 1, 2, 3), 2, 2, 0, 0);
     final Layer tilelayer = new Layer(List.of(chunk), List.of(), null, null, 1, 0, 0, "tilelayer", true, 2, 2, 0, 0);
     final Trainer trainer = new Trainer(null, null, "1", "A", "1", "A", null, null, List.of(), 0, "1", 0, 0, 0, null);
-    final Image image = createImage(2, 2, List.of(new Color(255, 0, 255), new Color(0, 255, 0), new Color(0, 0, 255), new Color(255, 255, 0)));
     final List<HashMap<String, Double>> polygon = List.of(new HashMap<>() {{
         put("x", 0.0);
         put("y", 0.0);
@@ -106,40 +97,5 @@ class MapControllerTest extends ApplicationTest {
         assertEquals(8, mapController.anchorPane.getChildren().size());
         moveTo(app.getStage().getScene().getRoot(), Point2D.ZERO);
         assertEquals(7, mapController.anchorPane.getChildren().size());
-    }
-
-    @SuppressWarnings("SameParameterValue")
-    private static Image createImage(int width, int height, List<Color> colors) {
-        // create buffered image
-        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        int i = 0;
-        for (int y = 0; y < image.getHeight(); y++) {
-            if (i >= colors.size()) {
-                break;
-            }
-            for (int x = 0; x < image.getWidth(); x++) {
-                if (i >= colors.size()) {
-                    break;
-                }
-                image.setRGB(x, y, colors.get(i++).getRGB());
-            }
-        }
-        return convertToFxImage(image);
-    }
-
-    // sauce: https://stackoverflow.com/questions/30970005/bufferedimage-to-javafx-image
-    private static Image convertToFxImage(BufferedImage image) {
-        WritableImage wr = null;
-        if (image != null) {
-            wr = new WritableImage(image.getWidth(), image.getHeight());
-            PixelWriter pw = wr.getPixelWriter();
-            for (int x = 0; x < image.getWidth(); x++) {
-                for (int y = 0; y < image.getHeight(); y++) {
-                    pw.setArgb(x, y, image.getRGB(x, y));
-                }
-            }
-        }
-
-        return new ImageView(wr).getImage();
     }
 }
