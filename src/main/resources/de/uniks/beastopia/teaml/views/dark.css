@@ -94,7 +94,9 @@
 #trainerContainer,
 #pauseMenuVBox,
 #yourBeastsPane,
-#fightingBeastPane {
+#fightingBeastPane,
+#VBoxInvList,
+#VBoxItemDetail {
     -fx-background-color: #677878;
     -fx-border-color: #162326;
     -fx-border-width: 1px;
@@ -114,7 +116,8 @@
 #VBoxBeastList,
 #scrollFriends,
 #VBoxBeastDetail,
-#changeBeastElement {
+#changeBeastElement,
+#_ItemRootElement {
     -fx-background-color: #4C5250;
     -fx-border-color: #262928;
     -fx-border-width: 1px;

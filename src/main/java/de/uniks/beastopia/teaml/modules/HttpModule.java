@@ -259,4 +259,11 @@ public class HttpModule {
     EncounterOpponentsApiService encounterOpponents(Retrofit retrofit) {
         return retrofit.create(EncounterOpponentsApiService.class);
     }
+
+    @Provides
+    @Singleton
+    @SuppressWarnings("unused")
+    TrainerItemsApiService trainerItems(Retrofit retrofit) {
+        return retrofit.create(TrainerItemsApiService.class);
+    }
 }
