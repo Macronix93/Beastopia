@@ -86,3 +86,5 @@ Flaticon</a>
 
 <a href="https://fonts.google.com/specimen/Happy+Monkey?query=Brenda+Gallo">Happy Monkey Font erstellt von Brenda
 Gallo</a>
+
+<a href="https://www.flaticon.com/free-icons/coin" title="coin icons">Coin icons created by Freepik - Flaticon</a>

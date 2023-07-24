@@ -127,7 +127,7 @@ class TrainerControllerTest extends ApplicationTest {
 
         when(trainerService.createTrainer(anyString(), anyString(), anyString()))
                 .thenReturn(Observable.just(
-                        new Trainer(null, null, "ID", "REGION", "USER", "TRAINER_NAME", "A.png", List.of(), List.of(), 0, null, 0, 0, 0, new NPCInfo(false, false, false, false, List.of(), List.of()))));
+                        new Trainer(null, null, "ID", "REGION", "USER", "TRAINER_NAME", "A.png", List.of(), List.of(), 0, null, 0, 0, 0, new NPCInfo(false, false, false, false, List.of(), List.of(), List.of()))));
 
         clickOn("#trainerNameInput");
         write("MyTrainer");
@@ -147,7 +147,7 @@ class TrainerControllerTest extends ApplicationTest {
 
         when(trainerService.updateTrainer(anyString(), anyString(), anyString(), anyString(), anyList()))
                 .thenReturn(Observable.just(
-                        new Trainer(null, null, "ID", "REGION", "USER", "TRAINER_NAME", "B.png", List.of(""), List.of(), 0, null, 0, 0, 0, new NPCInfo(false, false, false, false, List.of(), List.of()))));
+                        new Trainer(null, null, "ID", "REGION", "USER", "TRAINER_NAME", "B.png", List.of(""), List.of(), 0, null, 0, 0, 0, new NPCInfo(false, false, false, false, List.of(), List.of(), List.of()))));
 
         clickOn("#trainerNameInput");
         write("B");

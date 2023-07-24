@@ -34,6 +34,7 @@ public class DataCache {
     Region joinedRegion;
     private List<MonsterTypeDto> allBeasts = new ArrayList<>();
     private List<Opponent> currentOpponents = new ArrayList<>();
+    private final Map<Integer, Image> itemImages = new HashMap<>();
     Encounter currentEncounter;
     private TileSet mapTileset;
     private Image mapImage;
@@ -315,6 +316,13 @@ public class DataCache {
 
     public Encounter getCurrentEncounter() {
         return this.currentEncounter;
+    }
+
+    public Map<Integer, Image> getItemImages() {
+        return itemImages;
+    }
+    public void setItemImages(Map<Integer, Image> itemImage) {
+        this.itemImages.put(itemImage.keySet().iterator().next(), itemImage.values().iterator().next());
     }
 
     public void setTileset(TileSet tileSet) {

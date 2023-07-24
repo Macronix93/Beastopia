@@ -4,17 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dagger.Module;
 import dagger.Provides;
 import de.uniks.beastopia.teaml.Main;
-import de.uniks.beastopia.teaml.rest.AchievementsApiService;
-import de.uniks.beastopia.teaml.rest.AreaApiService;
-import de.uniks.beastopia.teaml.rest.AuthApiService;
-import de.uniks.beastopia.teaml.rest.EncounterOpponentsApiService;
-import de.uniks.beastopia.teaml.rest.GroupApiService;
-import de.uniks.beastopia.teaml.rest.MessageApiService;
-import de.uniks.beastopia.teaml.rest.PresetsApiService;
-import de.uniks.beastopia.teaml.rest.RegionApiService;
-import de.uniks.beastopia.teaml.rest.RegionEncountersApiService;
-import de.uniks.beastopia.teaml.rest.TrainerApiService;
-import de.uniks.beastopia.teaml.rest.UserApiService;
+import de.uniks.beastopia.teaml.rest.*;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import javafx.util.Pair;
 import okhttp3.Dispatcher;
@@ -252,5 +242,12 @@ public class HttpModule {
     @SuppressWarnings("unused")
     EncounterOpponentsApiService encounterOpponents(Retrofit retrofit) {
         return retrofit.create(EncounterOpponentsApiService.class);
+    }
+
+    @Provides
+    @Singleton
+    @SuppressWarnings("unused")
+    TrainerItemsApiService trainerItems(Retrofit retrofit) {
+        return retrofit.create(TrainerItemsApiService.class);
     }
 }
