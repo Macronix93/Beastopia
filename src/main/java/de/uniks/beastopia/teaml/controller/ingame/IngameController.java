@@ -46,6 +46,10 @@ public class IngameController extends Controller {
     static final int MENU_BEASTLIST = 2;
     static final int MENU_PAUSE = 3;
     static final int MENU_DIALOGWINDOW = 3;
+    static final long FLIPPED_HORIZONTALLY_FLAG = 1L << 31;
+    static final long FLIPPED_VERTICALLY_FLAG = 1L << 30;
+    static final long FLIPPED_DIAGONALLY_FLAG = 1L << 29;
+    static final long ROTATED_HEXAGONAL_120_FLAG = 1L << 28;
 
     @FXML
     public Pane tilePane;
@@ -482,40 +486,20 @@ public class IngameController extends Controller {
                     int chunkX = chunk.x();
                     int chunkY = chunk.y();
                     int index = 0;
-                    for (int id : chunk.data()) {
+                    for (long id : chunk.data()) {
                         int x = index % chunk.width() + chunkX;
                         int y = index / chunk.width() + chunkY;
-                        index++;
-                        Pair<Pair<TileSet, Image>, Integer> tileSet = findTileSet(id);
-                        if (tileSet == null) {
-                            continue;
-                        }
-
-                        // Some maps have "invalid" (or blank tiles) with ID 0 which we don't want to draw
-                        // This is to prevent the camera from showing the "extended" tile pane with those tiles
-                        if (id != 0) {
-                            drawTile(x, y, tileSet.getKey().getValue(), presetsService.getTileViewPort(tileSet.getValue(), tileSet.getKey().getKey()));
-                        }
+                        index = drawTile(id, index, x, y);
                     }
                 }
             } else if (layer.data() != null) {
                 int chunkX = layer.x();
                 int chunkY = layer.y();
                 int index = 0;
-                for (int id : layer.data()) {
+                for (long id : layer.data()) {
                     int x = index % layer.width() + chunkX;
                     int y = index / layer.width() + chunkY;
-                    index++;
-                    Pair<Pair<TileSet, Image>, Integer> tileSet = findTileSet(id);
-                    if (tileSet == null) {
-                        continue;
-                    }
-
-                    // Some maps have "invalid" (or blank tiles) with ID 0 which we don't want to draw
-                    // This is to prevent the camera from showing the "extended" tile pane with those tiles
-                    if (id != 0) {
-                        drawTile(x, y, tileSet.getKey().getValue(), presetsService.getTileViewPort(tileSet.getValue(), tileSet.getKey().getKey()));
-                    }
+                    index = drawTile(id, index, x, y);
                 }
             }
         }
@@ -523,7 +507,24 @@ public class IngameController extends Controller {
         updateOrigin();
     }
 
-    private Pair<Pair<TileSet, Image>, Integer> findTileSet(int id) {
+    private int drawTile(long id, int index, int x, int y) {
+        index++;
+        long localID = id & ~(FLIPPED_HORIZONTALLY_FLAG | FLIPPED_VERTICALLY_FLAG | FLIPPED_DIAGONALLY_FLAG | ROTATED_HEXAGONAL_120_FLAG);
+
+        Pair<Pair<TileSet, Image>, Long> tileSet = findTileSet(localID);
+        if (tileSet == null) {
+            return index;
+        }
+
+        // Some maps have "invalid" (or blank tiles) with ID 0 which we don't want to draw
+        // This is to prevent the camera from showing the "extended" tile pane with those tiles
+        if (id != 0) {
+            drawTile(id, x, y, tileSet.getKey().getValue(), presetsService.getTileViewPort(tileSet.getValue(), tileSet.getKey().getKey()));
+        }
+        return index;
+    }
+
+    private Pair<Pair<TileSet, Image>, Long> findTileSet(long id) {
         id++;
         for (int i = tileSets.size() - 1; i >= 0; i--) {
             Pair<TileSetDescription, Pair<TileSet, Image>> tileSet = tileSets.get(i);
@@ -534,15 +535,33 @@ public class IngameController extends Controller {
         return null;
     }
 
-    private void drawTile(int x, int y, Image image, Rectangle2D viewPort) {
+    private void drawTile(long ID, int x, int y, Image image, Rectangle2D viewPort) {
+        boolean flippedHorizontally = (ID & FLIPPED_HORIZONTALLY_FLAG) != 0;
+        boolean flippedVertically = (ID & FLIPPED_VERTICALLY_FLAG) != 0;
+        boolean flippedDiagonally = (ID & FLIPPED_DIAGONALLY_FLAG) != 0;
+
         ImageView view = new ImageView();
         view.setSmooth(true);
-        view.setImage(image);
         view.setFitWidth(TILE_SIZE + 1);
         view.setFitHeight(TILE_SIZE + 1);
         view.setViewport(viewPort);
         view.setTranslateX(x * TILE_SIZE);
         view.setTranslateY(y * TILE_SIZE);
+        view.setImage(image);
+
+        if (flippedDiagonally) {
+            view.setScaleX(-1);
+            view.setRotate(90);
+        }
+
+        if (flippedHorizontally) {
+            view.setScaleX(-1);
+        }
+
+        if (flippedVertically) {
+            view.setScaleY(-1);
+        }
+
         tilePane.getChildren().add(view);
     }
 

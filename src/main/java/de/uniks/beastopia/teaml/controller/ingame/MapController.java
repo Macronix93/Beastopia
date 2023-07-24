@@ -188,9 +188,9 @@ public class MapController extends Controller {
                 int chunkX = chunk.x();
                 int chunkY = chunk.y();
                 int index = 0;
-                for (int id : chunk.data()) {
-                    int x = index % chunk.width() + chunkX;
-                    int y = index / chunk.height() + chunkY;
+                for (long id : chunk.data()) {
+                    long x = index % chunk.width() + chunkX;
+                    long y = index / chunk.height() + chunkY;
                     index++;
                     ImageView view = new ImageView();
                     view.setPreserveRatio(true);
@@ -208,9 +208,9 @@ public class MapController extends Controller {
             int chunkX = layer.x();
             int chunkY = layer.y();
             int index = 0;
-            for (int id : layer.data()) {
-                int x = index % layer.width() + chunkX;
-                int y = index / layer.height() + chunkY;
+            for (long id : layer.data()) {
+                long x = index % layer.width() + chunkX;
+                long y = index / layer.height() + chunkY;
                 index++;
                 ImageView view = new ImageView();
                 view.setPreserveRatio(true);
