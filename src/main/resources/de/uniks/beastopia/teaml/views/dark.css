@@ -43,7 +43,13 @@
     -fx-font-size: 20px;
 }
 
-.button, .radio-button .radio, .slider .track, .scroll-bar .track, .scroll-bar .increment-button, .scroll-bar .decrement-button, .pauseMenuHBox {
+.button,
+.radio-button .radio,
+.slider .track,
+.scroll-bar .track,
+.scroll-bar .increment-button,
+.scroll-bar .decrement-button,
+.pauseMenuHBox, .innerPlane {
     -fx-background-color: #395B64;
     -fx-border-color: #162326;
     -fx-border-width: 1px;
@@ -54,8 +60,7 @@
 }
 
 #registerButton,
-#login
-{
+#login {
     -fx-border-width: 0px;
     -fx-border-radius: 0px;
     -fx-background-radius: 0px;
@@ -64,7 +69,8 @@
 }
 
 #mainMenuButton,
-#pauseButton {
+#pauseButton,
+rightListBox {
     -fx-background-color: #395B64;
     -fx-border-color: #C9D6D3;
     -fx-border-width: 1px;
@@ -97,9 +103,7 @@
 #yourBeastsPane,
 #fightingBeastPane,
 #VBoxInvList,
-#VBoxItemDetail,
-.innerPlane,
-rightListBox{
+#VBoxItemDetail {
     -fx-background-color: #677878;
     -fx-border-color: #162326;
     -fx-border-width: 1px;
@@ -120,7 +124,8 @@ rightListBox{
 #scrollFriends,
 #VBoxBeastDetail,
 #changeBeastElement,
-#_ItemRootElement {
+#_ItemRootElement,
+.beastTeamElement {
     -fx-background-color: #4C5250;
     -fx-border-color: #262928;
     -fx-border-width: 1px;
@@ -155,7 +160,13 @@ rightListBox{
 #vboxKeybindings,
 #chatScrollPane .viewport,
 #regionList .list-cell:even,
-#regionList .list-cell:odd {
+#regionList .list-cell:odd,
+#beastListView,
+#beastListView .list-cell:even,
+#beastListView .list-cell:odd,
+#teamListView,
+#teamListView .list-cell:even,
+#teamListView .list-cell:odd {
     -fx-background-color: #666666;
 }
 
@@ -204,4 +215,12 @@ Text {
 
 .text-area .content {
     -fx-background-color: text-area-background;
+}
+
+.expBar {
+    -fx-background-color: #FFD4B2;
+    -fx-border-color: #D79B00;
+    -fx-border-width: 1px;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
 }
