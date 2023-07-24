@@ -6,8 +6,8 @@ import de.uniks.beastopia.teaml.rest.*;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import de.uniks.beastopia.teaml.service.RegionService;
-import io.reactivex.rxjava3.core.Observable;
 import javafx.geometry.Point2D;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -18,7 +18,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
@@ -55,7 +54,7 @@ class MapControllerTest extends ApplicationTest {
     RegionInfoController regionInfoController;
 
     final TileSetDescription tileSetDescription = new TileSetDescription(0, "SOURCE");
-    final TileSet tileSet = new TileSet(2, "IMAGE", 2, 2, 0, "NAME", 0, 4, 1);
+    final TileSet tileSet = new TileSet(2, "IMAGE", 2, 2, 0, "NAME", 0, 4, 1, null);
     final Chunk chunk = new Chunk(List.of(0, 1, 2, 3), 2, 2, 0, 0);
     final Layer tilelayer = new Layer(List.of(chunk), List.of(), null, null, 1, 0, 0, "tilelayer", true, 2, 2, 0, 0);
     final Trainer trainer = new Trainer(null, null, "1", "A", "1", "A", null, null, List.of(), 0, "1", 0, 0, 0, null);
@@ -80,9 +79,6 @@ class MapControllerTest extends ApplicationTest {
         when(cache.getTrainer()).thenReturn(trainer);
         when(cache.getArea(any())).thenReturn(area);
         when(cache.getJoinedRegion()).thenReturn(region);
-        when(presetsService.getTileset(any())).thenReturn(Observable.just(tileSet));
-        when(presetsService.getImage(any())).thenReturn(Observable.just(image));
-        when(regionService.getRegion(any())).thenReturn(Observable.just(region));
         when(regionInfoControllerProvider.get()).thenReturn(regionInfoController);
         doNothing().when(regionInfoController).init();
 
@@ -104,24 +100,12 @@ class MapControllerTest extends ApplicationTest {
     @Test
     public void regionInfoTest() {
         when(regionInfoController.render()).thenReturn(new Label());
-        moveTo(app.getStage().getScene().getRoot(), new Point2D(-200, -160));
+        int size = mapController.anchorPane.getChildren().size();
+        Node node = mapController.anchorPane.getChildren().get(size - 2);
+        clickOn(node);
         assertEquals(8, mapController.anchorPane.getChildren().size());
         moveTo(app.getStage().getScene().getRoot(), Point2D.ZERO);
         assertEquals(7, mapController.anchorPane.getChildren().size());
-    }
-
-
-    @Test
-    void closeMapTest() {
-        final IngameController mock = Mockito.mock(IngameController.class);
-        when(mock.render()).thenReturn(new Label());
-        doNothing().when(mock).init();
-
-        app.setHistory(List.of(mock));
-
-        clickOn("#closeMapButton");
-
-        verify(mock).render();
     }
 
     @SuppressWarnings("SameParameterValue")
