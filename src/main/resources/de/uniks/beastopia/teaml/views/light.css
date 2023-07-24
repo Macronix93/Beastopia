@@ -95,7 +95,11 @@
 #fightingBeastPane,
 #VBoxShopList,
 #VBoxInvList,
-#VBoxItemDetail{
+#VBoxItemDetail,
+.innerPlane,
+.leftListBox,
+.rightListBox
+{
     -fx-background-color: linear-gradient(to bottom, #CEEDC7, #DBF0EB);
     -fx-border-color: #82B366;
     -fx-border-width: 1px;
