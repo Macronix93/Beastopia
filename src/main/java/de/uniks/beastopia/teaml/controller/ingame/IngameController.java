@@ -143,7 +143,7 @@ public class IngameController extends Controller {
     private Monster lastMonster;
     private ItemTypeDto lastItemTypeDto;
     private int currentMenu = MENU_NONE;
-
+    private final java.util.Map<Pair<Integer, Integer>, Tile> MAP_INFO = new HashMap<>();
     Direction direction;
     final ObjectProperty<PlayerState> state = new SimpleObjectProperty<>();
     Parent player;
@@ -182,6 +182,11 @@ public class IngameController extends Controller {
                 moveLoop();
             }
         }, 0, 100);
+
+        if (cache.getMapImage() == null || cache.getMapTileset() == null) {
+            cache.setTileset(presetsService.getTileset(cache.getJoinedRegion().map().tilesets().get(0)).blockingFirst());
+            cache.setMapImage(presetsService.getImage(cache.getMapTileset()).blockingFirst());
+        }
 
         scoreBoardController.setOnCloseRequested(() -> {
             scoreBoardLayout.getChildren().remove(scoreBoardParent);
@@ -514,45 +519,36 @@ public class IngameController extends Controller {
         for (Layer layer : map.layers()) {
             if (layer.chunks() != null) {
                 for (Chunk chunk : layer.chunks()) {
-                    int chunkX = chunk.x();
-                    int chunkY = chunk.y();
-                    int index = 0;
-                    for (long id : chunk.data()) {
-                        int x = index % chunk.width() + chunkX;
-                        int y = index / chunk.width() + chunkY;
-                        index = drawTile(id, index, x, y);
-                    }
+                    layTiles(chunk.x(), chunk.y(), chunk.data(), chunk.width());
                 }
             } else if (layer.data() != null) {
-                int chunkX = layer.x();
-                int chunkY = layer.y();
-                int index = 0;
-                for (long id : layer.data()) {
-                    int x = index % layer.width() + chunkX;
-                    int y = index / layer.width() + chunkY;
-                    index = drawTile(id, index, x, y);
-                }
+                layTiles(layer.x(), layer.y(), layer.data(), layer.width());
             }
         }
 
         updateOrigin();
     }
 
-    private int drawTile(long id, int index, int x, int y) {
-        index++;
-        long localID = id & ~(FLIPPED_HORIZONTALLY_FLAG | FLIPPED_VERTICALLY_FLAG | FLIPPED_DIAGONALLY_FLAG | ROTATED_HEXAGONAL_120_FLAG);
+    private void layTiles(int chunkX, int chunkY, List<Long> data, int width) {
+        int index = 0;
+        for (long id : data) {
+            int x = index % width + chunkX;
+            int y = index / width + chunkY;
+            index++;
+            long localID = id & ~(FLIPPED_HORIZONTALLY_FLAG | FLIPPED_VERTICALLY_FLAG | FLIPPED_DIAGONALLY_FLAG | ROTATED_HEXAGONAL_120_FLAG);
+            Pair<Pair<TileSet, Image>, Long> tileSet = findTileSet(localID);
+            if (tileSet == null) {
+                continue;
+            }
 
-        Pair<Pair<TileSet, Image>, Long> tileSet = findTileSet(localID);
-        if (tileSet == null) {
-            return index;
+            // Some maps have "invalid" (or blank tiles) with ID 0 which we don't want to draw
+            // This is to prevent the camera from showing the "extended" tile pane with those tiles
+            if (id != 0) {
+                List<Tile> tileInformation = tileSet.getKey().getKey().tiles();
+                tileInformation.stream().filter(t -> t.id() == tileSet.getValue()).findFirst().ifPresent(tile -> MAP_INFO.put(new Pair<>(x, y), tile));
+                drawTile(x, y, tileSet.getKey().getValue(), presetsService.getTileViewPort(tileSet.getValue(), tileSet.getKey().getKey()));
+            }
         }
-
-        // Some maps have "invalid" (or blank tiles) with ID 0 which we don't want to draw
-        // This is to prevent the camera from showing the "extended" tile pane with those tiles
-        if (id != 0) {
-            drawTile(id, x, y, tileSet.getKey().getValue(), presetsService.getTileViewPort(tileSet.getValue(), tileSet.getKey().getKey()));
-        }
-        return index;
     }
 
     private Pair<Pair<TileSet, Image>, Long> findTileSet(long id) {
@@ -703,6 +699,21 @@ public class IngameController extends Controller {
         data.add("x", new JsonPrimitive(posx));
         data.add("y", new JsonPrimitive(posy));
         data.add("direction", new JsonPrimitive(direction.ordinal()));
+
+        Pair<Integer, Integer> posXY = new Pair<>(posx, posy);
+        if (MAP_INFO.containsKey(posXY)) {
+            Tile tile = MAP_INFO.get(posXY);
+            Optional<TileProperty> jumpableTileProp = tile.properties().stream().filter(tileProperty -> tileProperty.name().equals("Jumpable")).findFirst();
+            if (jumpableTileProp.isPresent()) {
+                int jumpDirection = Integer.parseInt(jumpableTileProp.get().value());
+                if (jumpDirection == direction.ordinal()) {
+                    state.setValue(PlayerState.JUMP);
+                    drawPlayer(posx, posy);
+                    movePlayer(posx, posy);
+                    updateOrigin();
+                }
+            }
+        }
 
         JsonObject message = new JsonObject();
         message.add("event", new JsonPrimitive("areas." + trainer.area() + ".trainers." + trainer._id() + ".moved"));
@@ -1191,6 +1202,7 @@ public class IngameController extends Controller {
             scoreBoardLayout.getChildren().add(inventoryParent);
         }
     }
+
     public void setCloseRequests(HBox hBox, Parent parent) {
         closePause();
         hBox.getChildren().remove(parent);

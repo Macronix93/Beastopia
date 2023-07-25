@@ -17,6 +17,7 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -38,6 +39,8 @@ public class BeastListElementController extends ListCell<Monster> {
     public Button upButton;
     @FXML
     public Button downButton;
+    @FXML
+    public HBox buttonBox;
     @Inject
     PresetsService presetsService;
     @Inject
@@ -82,6 +85,10 @@ public class BeastListElementController extends ListCell<Monster> {
                 int index = getListView().getItems().indexOf(item);
                 swap(index, index + 1);
             });
+            if (getListView().getId().equals("beastListView")) {
+                buttonBox.getChildren().removeAll(upButton, downButton);
+                expProgress.setPrefWidth(150);
+            }
             setGraphic(gridPane);
         }
     }

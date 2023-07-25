@@ -59,12 +59,7 @@ public class EntityController extends Controller {
     }
 
     public void updateTrainer(MoveTrainerDto data) {
-        switch (data.direction()) {
-            case 0 -> direction = Direction.RIGHT;
-            case 1 -> direction = Direction.UP;
-            case 2 -> direction = Direction.LEFT;
-            case 3 -> direction = Direction.DOWN;
-        }
+        setDirection(data.direction());
         index = (index + 1) % 6;
         updateViewPort();
         if (!data.area().equals(trainer.area())) {
@@ -90,6 +85,9 @@ public class EntityController extends Controller {
     @Override
     public Parent render() {
         int VIEW_SIZE = 60;
+        if (state.get().equals(PlayerState.JUMP)) {
+            VIEW_SIZE *= 1.2;
+        }
         parent = super.render();
         entityView.toFront();
         entityView.setPreserveRatio(true);
@@ -105,7 +103,13 @@ public class EntityController extends Controller {
 
     private Rectangle2D getViewport() {
         int SPRITE_SCALING = 3;
-        return new Rectangle2D((direction.ordinal() * DIRECTION_STEP + index * SPRITE_STEP) * SPRITE_SCALING, (state.get().ordinal() * STATE_STEP + STATE_STEP) * SPRITE_SCALING, PORT_WIDTH * SPRITE_SCALING, PORT_HEIGHT * SPRITE_SCALING);
+        int sheetY = state.get().equals(PlayerState.JUMP) ? 1 : state.get().ordinal();
+
+        return new Rectangle2D(
+                (direction.ordinal() * DIRECTION_STEP + index * SPRITE_STEP) * SPRITE_SCALING,
+                (sheetY * STATE_STEP + STATE_STEP) * SPRITE_SCALING,
+                PORT_WIDTH * SPRITE_SCALING,
+                PORT_HEIGHT * SPRITE_SCALING);
     }
 
     public void setDirection(int direction) {

@@ -89,6 +89,8 @@ class IngameControllerTest extends ApplicationTest {
     ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang");
     @InjectMocks
     IngameController ingameController;
+    TileProperty property = new TileProperty("A", "B", "C");
+    List<Tile> tileList = List.of(new Tile(0, List.of(property)), new Tile(1, List.of(property)), new Tile(2, List.of(property)));
     final TileSetDescription tileSetDescription = new TileSetDescription(0, "SOURCE");
     final TileSet tileSet = new TileSet(2, "IMAGE", 2, 2, 0, "NAME", 0, 4, 1);
     final Chunk chunk = new Chunk(List.of(0L, 1L, 2L, 3L), 2, 2, 0, 0);
@@ -96,7 +98,7 @@ class IngameControllerTest extends ApplicationTest {
     final Map map = new Map(List.of(tileSetDescription), List.of(layer), 2, 24, 4);
     final Area area = new Area(null, null, "ID_AREA", "ID_REGION", "AREA_NAME", new Position(0, 0), map);
     final Spawn spawn = new Spawn("ID_AREA", 0, 0);
-    final Region region = new Region(null, null, "ID", "NAME", spawn, null);
+    final Region region = new Region(null, null, "ID", "NAME", spawn, map);
     final Image image = createImage(2, 2, List.of(new Color(255, 0, 255), new Color(0, 255, 0), new Color(0, 0, 255), new Color(255, 255, 0)));
     final Trainer trainer = new Trainer(null, null, "ID_TRAINER", "ID_REGION", "ID_USER", "TRAINER_NAME", "TRAINER_IMAGE", null, List.of(), 0, "ID_AREA", 0, 0, 0, new NPCInfo(false, false, false, false, List.of(), List.of(), List.of()));
     final User user = new User(null, null, "ID_USER", "USER_NAME", "USER_STATUS", "USER_AVATAR", List.of());
@@ -120,6 +122,8 @@ class IngameControllerTest extends ApplicationTest {
         when(presetsService.getTileset(tileSetDescription)).thenReturn(Observable.just(tileSet));
         when(presetsService.getImage(tileSet)).thenReturn(Observable.just(image));
         when(cache.getTrainer()).thenReturn(trainer);
+        when(cache.getMapImage()).thenReturn(image);
+        when(cache.getMapTileset()).thenReturn(tileSet);
         doNothing().when(cache).setTrainer(trainer);
         when(entityControllerProvider.get()).thenReturn(playerController);
         doNothing().when(playerController).setTrainer(any());

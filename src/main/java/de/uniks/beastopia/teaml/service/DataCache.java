@@ -53,6 +53,8 @@ public class DataCache {
     Encounter currentEncounter;
     @Inject
     PresetsService presetsService;
+    private TileSet mapTileset;
+    private Image mapImage;
 
     @Inject
     public DataCache() {
@@ -432,5 +434,21 @@ public class DataCache {
         parameters.setFill(Paint.valueOf("transparent"));
         imageView.setCache(false);
         return imageView.snapshot(parameters, null);
+    }
+
+    public void setTileset(TileSet tileSet) {
+        this.mapTileset = tileSet;
+    }
+
+    public void setMapImage(Image image) {
+        this.mapImage = image;
+    }
+
+    public TileSet getMapTileset() {
+        return this.mapTileset;
+    }
+
+    public Image getMapImage() {
+        return this.mapImage;
     }
 }
