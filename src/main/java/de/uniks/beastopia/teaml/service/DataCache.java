@@ -199,57 +199,11 @@ public class DataCache {
     public Observable<Image> getOrLoadTrainerImage(String trainer, boolean useConstantValues) {
         synchronized (characters) {
             if (characters.stream().anyMatch(pair -> pair.getKey().equals(trainer) && pair.getValue() != null)) {
-                if (useConstantValues) {
-                    return Observable.just(charactersResized.stream()
-                            .filter(pair -> pair.getKey().equals(trainer))
-                            .findFirst()
-                            .map(Pair::getValue)
-                            .orElseThrow());
-                } else {
-                    return Observable.just(characters.stream()
-                            .filter(pair -> pair.getKey().equals(trainer))
-                            .findFirst()
-                            .map(Pair::getValue)
-                            .orElseThrow());
-                }
+                return downloadImage(trainer, useConstantValues);
             } else if (charactersAiring.stream().noneMatch(pair -> pair.getKey().equals(trainer))) {
-                Observable<Image> obs = presetsService.getCharacterSprites(trainer, false);
-                charactersAiring.add(new Pair<>(trainer, obs));
-                return obs
-                        .observeOn(FX_SCHEDULER)
-                        .map(image -> {
-                            setCharacterImage(trainer, image);
-                            Image resized = scaleImage(image, 384 * PREVIEW_SCALING, 96 * PREVIEW_SCALING);
-                            setCharacterResizedImage(trainer, resized);
-                            return useConstantValues ? resized : image;
-                        });
+                return getDownloadedImage(trainer, useConstantValues);
             } else {
-                return Observable.fromAction(() -> {
-                }).observeOn(Schedulers.io()).map((v) -> {
-                    while (charactersAiring.stream().anyMatch(pair -> pair.getKey().equals(trainer))) {
-                        try {
-                            //noinspection BusyWait
-                            Thread.sleep(100);
-                        } catch (InterruptedException e) {
-                            //noinspection CallToPrintStackTrace
-                            e.printStackTrace();
-                        }
-                    }
-
-                    if (useConstantValues) {
-                        return charactersResized.stream()
-                                .filter(pair -> pair.getKey().equals(trainer))
-                                .findFirst()
-                                .map(Pair::getValue)
-                                .orElseThrow();
-                    } else {
-                        return characters.stream()
-                                .filter(pair -> pair.getKey().equals(trainer))
-                                .findFirst()
-                                .map(Pair::getValue)
-                                .orElseThrow();
-                    }
-                });
+                return observableToAiringDownload(trainer, useConstantValues);
             }
         }
     }
@@ -405,6 +359,68 @@ public class DataCache {
     }
     public void setItemImages(Map<Integer, Image> itemImage) {
         this.itemImages.put(itemImage.keySet().iterator().next(), itemImage.values().iterator().next());
+    }
+
+    private Observable<Image> observableToAiringDownload(String trainer, boolean useConstantValues) {
+        return Observable.fromAction(() -> {
+        }).observeOn(Schedulers.io()).map((v) -> {
+            waitForDownload(trainer);
+
+            if (useConstantValues) {
+                return charactersResized.stream()
+                        .filter(pair -> pair.getKey().equals(trainer))
+                        .findFirst()
+                        .map(Pair::getValue)
+                        .orElseThrow();
+            } else {
+                return characters.stream()
+                        .filter(pair -> pair.getKey().equals(trainer))
+                        .findFirst()
+                        .map(Pair::getValue)
+                        .orElseThrow();
+            }
+        });
+    }
+
+    private void waitForDownload(String trainer) {
+        while (charactersAiring.stream().anyMatch(pair -> pair.getKey().equals(trainer))) {
+            try {
+                //noinspection BusyWait
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                //noinspection CallToPrintStackTrace
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private Observable<Image> getDownloadedImage(String trainer, boolean useConstantValues) {
+        Observable<Image> obs = presetsService.getCharacterSprites(trainer, false);
+        charactersAiring.add(new Pair<>(trainer, obs));
+        return obs
+                .observeOn(FX_SCHEDULER)
+                .map(image -> {
+                    setCharacterImage(trainer, image);
+                    Image resized = scaleImage(image, 384 * PREVIEW_SCALING, 96 * PREVIEW_SCALING);
+                    setCharacterResizedImage(trainer, resized);
+                    return useConstantValues ? resized : image;
+                });
+    }
+
+    private Observable<Image> downloadImage(String trainer, boolean useConstantValues) {
+        if (useConstantValues) {
+            return Observable.just(charactersResized.stream()
+                    .filter(pair -> pair.getKey().equals(trainer))
+                    .findFirst()
+                    .map(Pair::getValue)
+                    .orElseThrow());
+        } else {
+            return Observable.just(characters.stream()
+                    .filter(pair -> pair.getKey().equals(trainer))
+                    .findFirst()
+                    .map(Pair::getValue)
+                    .orElseThrow());
+        }
     }
 
     private static Image scaleImage(Image input, @SuppressWarnings("SameParameterValue") int width, @SuppressWarnings("SameParameterValue") int height) {
