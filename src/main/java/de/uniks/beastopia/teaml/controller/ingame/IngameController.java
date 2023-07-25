@@ -546,7 +546,7 @@ public class IngameController extends Controller {
             if (id != 0) {
                 List<Tile> tileInformation = tileSet.getKey().getKey().tiles();
                 tileInformation.stream().filter(t -> t.id() == tileSet.getValue()).findFirst().ifPresent(tile -> MAP_INFO.put(new Pair<>(x, y), tile));
-                drawTile(x, y, tileSet.getKey().getValue(), presetsService.getTileViewPort(tileSet.getValue(), tileSet.getKey().getKey()));
+                drawTile(id, x, y, tileSet.getKey().getValue(), presetsService.getTileViewPort(tileSet.getValue(), tileSet.getKey().getKey()));
             }
         }
     }
