@@ -30,8 +30,7 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -54,6 +53,7 @@ class StartFightNPCControllerTest extends ApplicationTest {
     DataCache cache;
     @Mock
     EncounterOpponentsService encounterOpponentsService;
+    @SuppressWarnings("unused")
     @Mock
     PresetsService presetsService;
 
@@ -78,7 +78,7 @@ class StartFightNPCControllerTest extends ApplicationTest {
         when(cache.getTrainer()).thenReturn(trainer);
         when(cache.getJoinedRegion()).thenReturn(region);
         when(trainerService.getTrainer(any(), any())).thenReturn(Observable.just(trainer));
-        when(presetsService.getCharacterSprites(any(), eq(true))).thenReturn(Observable.just(expectedImage));
+        when(cache.getOrLoadTrainerImage(anyString(), anyBoolean())).thenReturn(Observable.just(expectedImage));
 
         app.start(stage);
         app.show(startFightNPCController);

@@ -5,11 +5,7 @@ import de.uniks.beastopia.teaml.controller.menu.MenuController;
 import de.uniks.beastopia.teaml.rest.Achievement;
 import de.uniks.beastopia.teaml.rest.Region;
 import de.uniks.beastopia.teaml.rest.Trainer;
-import de.uniks.beastopia.teaml.service.AchievementsService;
-import de.uniks.beastopia.teaml.service.DataCache;
-import de.uniks.beastopia.teaml.service.PresetsService;
-import de.uniks.beastopia.teaml.service.TokenStorage;
-import de.uniks.beastopia.teaml.service.TrainerService;
+import de.uniks.beastopia.teaml.service.*;
 import de.uniks.beastopia.teaml.utils.Dialog;
 import de.uniks.beastopia.teaml.utils.LoadingPage;
 import javafx.beans.property.IntegerProperty;
@@ -175,10 +171,7 @@ public class TrainerController extends Controller {
                     disposables.add(delay().subscribe(t -> {
                         for (Pair<String, Image> pair : cache.getCharacters()) {
                             if (cache.getCharacterImage(pair.getKey()).getValue() == null) {
-                                disposables.add(presetsService.getCharacterSprites(pair.getKey(), true).subscribe(image -> {
-                                    cache.setCharacterImage(pair.getKey(), image);
-                                    onUI(this::updateImages);
-                                }));
+                                disposables.add(cache.getOrLoadTrainerImage(pair.getKey(), true).subscribe(image -> onUI(this::updateImages)));
                             }
                         }
                     }));
@@ -188,9 +181,9 @@ public class TrainerController extends Controller {
 
     private void showTrainers() {
         if (trainer == null) {
-            showTrainerSpritePreview(cache.getCharacters().get(0).getKey(), cache.getCharacters().get(0).getValue());
+            showTrainerSpritePreview(cache.getCharacters().get(0).getKey(), cache.getOrLoadTrainerImage(cache.getCharacters().get(0).getKey(), true).blockingFirst());
         } else {
-            showTrainerSpritePreview(cache.getCharacterImage(trainer.image()).getKey(), cache.getCharacterImage(trainer.image()).getValue());
+            showTrainerSpritePreview(cache.getCharacterImage(trainer.image()).getKey(), cache.getOrLoadTrainerImage(trainer.image(), true).blockingFirst());
 
             // Find index of the found trainer
             currentIndex.set(IntStream.range(0, cache.getCharacters().size())
@@ -205,7 +198,7 @@ public class TrainerController extends Controller {
 
     private void updateImages() {
         Pair<String, Image> pair = cache.getCharacterImage(currentSprite);
-        showTrainerSpritePreview(pair.getKey(), pair.getValue());
+        showTrainerSpritePreview(pair.getKey(), cache.getOrLoadTrainerImage(pair.getKey(), true).blockingFirst());
     }
 
     @Override
@@ -223,7 +216,8 @@ public class TrainerController extends Controller {
 
         showTrainerSpritePreview(
                 cache.getCharacters().get(currentIndex.get()).getKey(),
-                cache.getCharacters().get(currentIndex.get()).getValue()
+                cache.getOrLoadTrainerImage(cache.getCharacters().get(currentIndex.get()).getKey(), true).blockingFirst()
+
         );
     }
 
@@ -237,7 +231,7 @@ public class TrainerController extends Controller {
 
         showTrainerSpritePreview(
                 cache.getCharacters().get(currentIndex.get()).getKey(),
-                cache.getCharacters().get(currentIndex.get()).getValue()
+                cache.getOrLoadTrainerImage(cache.getCharacters().get(currentIndex.get()).getKey(), true).blockingFirst()
         );
     }
 

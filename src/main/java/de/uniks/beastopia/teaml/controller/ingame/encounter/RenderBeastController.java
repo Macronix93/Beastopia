@@ -57,9 +57,6 @@ public class RenderBeastController extends Controller {
             monsterContainer.getChildren().add(secondMonster);
         }
 
-        //ellipse.radiusXProperty().bind(monsterRenderBox.widthProperty().divide(2));
-        //ellipse.radiusYProperty().bind(monsterRenderBox.heightProperty().divide(2));
-
         return parent;
     }
 
