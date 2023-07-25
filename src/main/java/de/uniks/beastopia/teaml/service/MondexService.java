@@ -18,15 +18,6 @@ public class MondexService {
     MondexService() {
     }
 
-    public void addKnownMonster(int id) {
-        Trainer trainer = dataCache.getTrainer();
-        if (!trainer.encounteredMonsterTypes().contains(id)) {
-            trainer.encounteredMonsterTypes().add(id);
-            dataCache.setTrainer(trainer);
-            //ToDo Refresh Server Trainer
-        }
-    }
-
     public boolean checkKnown(int id) {
         return dataCache.getTrainer().encounteredMonsterTypes().contains(id);
     }

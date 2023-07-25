@@ -61,8 +61,7 @@ public class MondexDetailController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
-        //ToDo Change if to known
-        if (monster.id() % 2 == 0) {
+        if (known) {
             label_name.setText(monster.name());
             label_type.setText("Type: " + monster.type().get(0));
             Image typeIcon1 = new Image("file:src/main/resources/de/uniks/beastopia/teaml/assets/monsterTypeIcons/" + monster.type().get(0) + ".png");
