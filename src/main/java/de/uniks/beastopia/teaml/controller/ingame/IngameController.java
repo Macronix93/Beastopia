@@ -139,7 +139,7 @@ public class IngameController extends Controller {
     private Monster lastMonster;
     private ItemTypeDto lastItemTypeDto;
     private int currentMenu = MENU_NONE;
-    private final java.util.Map<Pair<Integer, Integer>, Tile> mapInfo = new HashMap<>();
+    private final java.util.Map<Pair<Integer, Integer>, Tile> MAP_INFO = new HashMap<>();
     Direction direction;
     final ObjectProperty<PlayerState> state = new SimpleObjectProperty<>();
     Parent player;
@@ -539,7 +539,7 @@ public class IngameController extends Controller {
             // This is to prevent the camera from showing the "extended" tile pane with those tiles
             if (id != 0) {
                 List<Tile> tileInformation = tileSet.getKey().getKey().tiles();
-                tileInformation.stream().filter(t -> t.id() == tileSet.getValue()).findFirst().ifPresent(tile -> mapInfo.put(new Pair<>(x, y), tile));
+                tileInformation.stream().filter(t -> t.id() == tileSet.getValue()).findFirst().ifPresent(tile -> MAP_INFO.put(new Pair<>(x, y), tile));
                 drawTile(x, y, tileSet.getKey().getValue(), presetsService.getTileViewPort(tileSet.getValue(), tileSet.getKey().getKey()));
             }
         }
@@ -675,8 +675,8 @@ public class IngameController extends Controller {
         data.add("direction", new JsonPrimitive(direction.ordinal()));
 
         Pair<Integer, Integer> posXY = new Pair<>(posx, posy);
-        if (mapInfo.containsKey(posXY)) {
-            Tile tile = mapInfo.get(posXY);
+        if (MAP_INFO.containsKey(posXY)) {
+            Tile tile = MAP_INFO.get(posXY);
             Optional<TileProperty> jumpableTileProp = tile.properties().stream().filter(tileProperty -> tileProperty.name().equals("Jumpable")).findFirst();
             if (jumpableTileProp.isPresent()) {
                 int jumpDirection = Integer.parseInt(jumpableTileProp.get().value());
