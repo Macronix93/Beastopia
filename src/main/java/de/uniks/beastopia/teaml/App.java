@@ -133,6 +133,8 @@ public class App extends Application {
     }
 
     private void initAndRender() {
+        System.out.println("Showing " + controller.getClass().getSimpleName() + "...");
+
         if (controller == null) {
             return;
         }

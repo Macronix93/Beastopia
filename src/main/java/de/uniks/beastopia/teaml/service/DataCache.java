@@ -201,9 +201,9 @@ public class DataCache {
     public Observable<Image> getOrLoadTrainerImage(String trainer, boolean useConstantValues) {
         synchronized (characters) {
             if (characters.stream().anyMatch(pair -> pair.getKey().equals(trainer) && pair.getValue() != null)) {
-                return downloadImage(trainer, useConstantValues);
-            } else if (charactersAiring.stream().noneMatch(pair -> pair.getKey().equals(trainer))) {
                 return getDownloadedImage(trainer, useConstantValues);
+            } else if (charactersAiring.stream().noneMatch(pair -> pair.getKey().equals(trainer))) {
+                return downloadImage(trainer, useConstantValues);
             } else {
                 return observableToAiringDownload(trainer, useConstantValues);
             }
@@ -396,7 +396,7 @@ public class DataCache {
         }
     }
 
-    private Observable<Image> getDownloadedImage(String trainer, boolean useConstantValues) {
+    private Observable<Image> downloadImage(String trainer, boolean useConstantValues) {
         Observable<Image> obs = presetsService.getCharacterSprites(trainer, false);
         charactersAiring.add(new Pair<>(trainer, obs));
         return obs
@@ -409,7 +409,7 @@ public class DataCache {
                 });
     }
 
-    private Observable<Image> downloadImage(String trainer, boolean useConstantValues) {
+    private Observable<Image> getDownloadedImage(String trainer, boolean useConstantValues) {
         if (useConstantValues) {
             return Observable.just(charactersResized.stream()
                     .filter(pair -> pair.getKey().equals(trainer))
