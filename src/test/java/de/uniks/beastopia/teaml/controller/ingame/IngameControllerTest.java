@@ -5,6 +5,7 @@ import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.controller.ingame.beastlist.BeastListController;
 import de.uniks.beastopia.teaml.controller.ingame.mondex.MondexListController;
 import de.uniks.beastopia.teaml.controller.ingame.scoreboard.ScoreboardController;
+import de.uniks.beastopia.teaml.controller.ingame.items.ShopController;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
 import de.uniks.beastopia.teaml.rest.*;
 import de.uniks.beastopia.teaml.service.*;
@@ -81,6 +82,9 @@ class IngameControllerTest extends ApplicationTest {
     @Mock
     final
     ScoreboardController scoreboardController = mock();
+    @SuppressWarnings("unused")
+    @Mock
+    final ShopController shopController = mock();
     @Mock
     TokenStorage tokenStorage;
     @Spy
@@ -90,16 +94,18 @@ class IngameControllerTest extends ApplicationTest {
     ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang");
     @InjectMocks
     IngameController ingameController;
+    TileProperty property = new TileProperty("A", "B", "C");
+    List<Tile> tileList = List.of(new Tile(0, List.of(property)), new Tile(1, List.of(property)), new Tile(2, List.of(property)));
     final TileSetDescription tileSetDescription = new TileSetDescription(0, "SOURCE");
-    final TileSet tileSet = new TileSet(2, "IMAGE", 2, 2, 0, "NAME", 0, 4, 1);
-    final Chunk chunk = new Chunk(List.of(0, 1, 2, 3), 2, 2, 0, 0);
+    final TileSet tileSet = new TileSet(2, "IMAGE", 2, 2, 0, "NAME", 0, 4, 1, List.of());
+    final Chunk chunk = new Chunk(List.of(0L, 1L, 2L, 3L), 2, 2, 0, 0);
     final Layer layer = new Layer(List.of(chunk), List.of(), null, null, 1, 0, 0, null, true, 2, 2, 0, 0);
     final Map map = new Map(List.of(tileSetDescription), List.of(layer), 2, 24, 4);
     final Area area = new Area(null, null, "ID_AREA", "ID_REGION", "AREA_NAME", new Position(0, 0), map);
     final Spawn spawn = new Spawn("ID_AREA", 0, 0);
-    final Region region = new Region(null, null, "ID", "NAME", spawn, null);
+    final Region region = new Region(null, null, "ID", "NAME", spawn, map);
     final Image image = createImage(2, 2, List.of(new Color(255, 0, 255), new Color(0, 255, 0), new Color(0, 0, 255), new Color(255, 255, 0)));
-    final Trainer trainer = new Trainer(null, null, "ID_TRAINER", "ID_REGION", "ID_USER", "TRAINER_NAME", "TRAINER_IMAGE", null, List.of(), List.of(), 0, "ID_AREA", 0, 0, 0, new NPCInfo(false, false, false, false, List.of(), List.of()));
+    final Trainer trainer = new Trainer(null, null, "ID_TRAINER", "ID_REGION", "ID_USER", "TRAINER_NAME", "TRAINER_IMAGE", null, List.of(), List.of(), 0, "ID_AREA", 0, 0, 0, new NPCInfo(false, false, false, false, List.of(), List.of(), List.of()));
     final User user = new User(null, null, "ID_USER", "USER_NAME", "USER_STATUS", "USER_AVATAR", List.of());
     final Achievement achievement = new Achievement(null, null, "MoveCharacter", "ID_USER", null, 100);
     final List<Area> areas = List.of(area);
@@ -115,13 +121,14 @@ class IngameControllerTest extends ApplicationTest {
         when(udpEventListener.listen(anyString(), any())).thenReturn(Observable.empty());
         when(cache.getAreas()).thenReturn(List.of(area));
         doNothing().when(scoreboardController).init();
-        when(scoreboardController.render()).thenReturn(new Pane());
         when(eventListener.listen(any(), any())).thenReturn(Observable.empty());
         doNothing().when(prefs).setCurrentRegion(any());
         doNothing().when(prefs).setArea(any());
         when(presetsService.getTileset(tileSetDescription)).thenReturn(Observable.just(tileSet));
         when(presetsService.getImage(tileSet)).thenReturn(Observable.just(image));
         when(cache.getTrainer()).thenReturn(trainer);
+        when(cache.getMapImage()).thenReturn(image);
+        when(cache.getMapTileset()).thenReturn(tileSet);
         doNothing().when(cache).setTrainer(trainer);
         when(entityControllerProvider.get()).thenReturn(playerController);
         doNothing().when(playerController).setTrainer(any());

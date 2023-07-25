@@ -124,3 +124,6 @@ Gallo</a>
 <a href="https://www.flaticon.com/de/kostenlose-icons/angst" title="angst Icons">Angst Icons erstellt von Freepik - Flaticon</a>
 
 
+
+
+<a href="https://www.flaticon.com/free-icons/coin" title="coin icons">Coin icons created by Freepik - Flaticon</a>

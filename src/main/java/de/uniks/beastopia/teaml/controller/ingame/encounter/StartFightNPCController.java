@@ -67,8 +67,7 @@ public class StartFightNPCController extends Controller {
                                     .observeOn(FX_SCHEDULER)
                                     .subscribe(t -> {
                                         headline.setText(t.name() + " " + resources.getString("npcStart"));
-                                        disposables.add(presetsService
-                                                .getCharacterSprites(t.image(), true)
+                                        disposables.add(cache.getOrLoadTrainerImage(t.image(), true)
                                                 .observeOn(FX_SCHEDULER)
                                                 .subscribe(i -> {
                                                     image.setImage(i);
