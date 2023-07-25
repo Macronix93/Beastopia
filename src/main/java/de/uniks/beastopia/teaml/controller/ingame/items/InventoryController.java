@@ -45,7 +45,7 @@ public class InventoryController extends Controller {
     @Inject
     Provider<ItemController> itemControllerProvider;
     private Runnable onCloseRequest;
-    private boolean isShop;
+    public boolean isShop;
     private Consumer<ItemTypeDto> onItemClicked;
 
     @Inject

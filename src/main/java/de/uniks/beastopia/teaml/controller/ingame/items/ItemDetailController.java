@@ -37,6 +37,7 @@ public class ItemDetailController extends Controller {
     DataCache cache;
     private ItemTypeDto itemType;
     private boolean isShop;
+    private boolean onlyInventory;
 
     public void setItem(ItemTypeDto itemType) {
         this.itemType = itemType;
@@ -44,6 +45,11 @@ public class ItemDetailController extends Controller {
 
     public void setBooleanShop(boolean isShop) {
         this.isShop = isShop;
+    }
+
+
+    public void setOnlyInventory(boolean onlyInventory) {
+        this.onlyInventory = onlyInventory;
     }
 
     @Inject
@@ -55,15 +61,23 @@ public class ItemDetailController extends Controller {
         Parent parent = super.render();
 
         coinImg.setImage(new Image(Objects.requireNonNull(Main.class.getResourceAsStream("assets/coin.png"))));
-        if (isShop) {
+        if (isShop && !onlyInventory) {
             shopBtn.setText(resources.getString("buy"));
             cost.setText(resources.getString("val") + ": " + itemType.price());
-        } else {
+        } else if (!onlyInventory){
             shopBtn.setText(resources.getString("sell"));
             if (itemType.price() == 0) {
                 cost.setText(resources.getString("val") + ": " + itemType.price());
                 shopBtn.setOpacity(0);
                 shopBtn.setDisable(true);
+            } else {
+                cost.setText(resources.getString("val") + ": " + (int) (itemType.price() * 0.5));
+            }
+        } else {
+            shopBtn.setDisable(true);
+            shopBtn.setOpacity(0);
+            if (itemType.price() == 0) {
+                cost.setText(resources.getString("val") + ": " + itemType.price());
             } else {
                 cost.setText(resources.getString("val") + ": " + (int) (itemType.price() * 0.5));
             }

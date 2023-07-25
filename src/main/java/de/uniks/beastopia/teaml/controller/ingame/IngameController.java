@@ -1241,7 +1241,8 @@ public class IngameController extends Controller {
             lastItemTypeDto = null;
             return;
         }
-        setItemDetailController(itemTypeDto, false);
+        setItemDetailController(itemTypeDto, false, !inventoryController.isShop);
+        //false = details: inventory shop, true = details: only inventory
     }
 
     private void toggleShopItemDetails(ItemTypeDto itemTypeDto) {
@@ -1250,15 +1251,16 @@ public class IngameController extends Controller {
             lastItemTypeDto = null;
             return;
         }
-        setItemDetailController(itemTypeDto, true);
+        setItemDetailController(itemTypeDto, true, false);
     }
 
-    private void setItemDetailController(ItemTypeDto itemTypeDto, boolean booleanShop) {
+    private void setItemDetailController(ItemTypeDto itemTypeDto, boolean booleanShop, boolean onlyInventory) {
         lastItemTypeDto = itemTypeDto;
         ItemDetailController controller = itemDetailControllerProvider.get();
         subControllers.add(controller);
         controller.setItem(itemTypeDto);
         controller.setBooleanShop(booleanShop);
+        controller.setOnlyInventory(onlyInventory);
         controller.init();
         scoreBoardLayout.getChildren().remove(itemDetailParent);
         shopLayout.getChildren().remove(itemDetailParent);
