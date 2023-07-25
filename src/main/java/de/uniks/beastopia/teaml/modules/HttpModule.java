@@ -7,13 +7,7 @@ import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.rest.*;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import javafx.util.Pair;
-import okhttp3.Dispatcher;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Protocol;
-import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
+import okhttp3.*;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory;
 import retrofit2.converter.jackson.JacksonConverterFactory;
@@ -37,10 +31,27 @@ public class HttpModule {
     }
 
     private static final List<EndpointRateLimit> ENDPOINT_RATE_LIMITS = List.of(
-            new EndpointRateLimit("monsters/.*/image", 120, 61),
-            new EndpointRateLimit("characters/.*", 90, 61),
+            new EndpointRateLimit("auth/.*", 10, 11),
+            new EndpointRateLimit("achievements.*", 10, 11),
+            new EndpointRateLimit("monsters/.*/image", 210, 61),
+            new EndpointRateLimit("items/.*/image", 60, 61),
+            new EndpointRateLimit("characters/.*\\.png", 90, 61),
+            new EndpointRateLimit("tilesets/.*", 10, 11),
+            new EndpointRateLimit("characters.*", 90, 61),
+            new EndpointRateLimit("users.*", 10, 11),
+            new EndpointRateLimit("groups.*", 10, 11),
+            new EndpointRateLimit("messages.*", 10, 11),
+            new EndpointRateLimit("trainers.*", 10, 11),
+            new EndpointRateLimit("abilities.*", 10, 11),
+            new EndpointRateLimit("regions.*", 10, 11),
+            new EndpointRateLimit("areas.*", 10, 11),
+            new EndpointRateLimit("monsters.*", 10, 11),
+            new EndpointRateLimit("encounters.*", 10, 11),
+            new EndpointRateLimit("opponents.*", 10, 11),
+            new EndpointRateLimit("items.*", 10, 11),
             new EndpointRateLimit("default", 10, 11)
     );
+
     private static final HashMap<String, List<Pair<Date, String>>> LAST_REQUESTS;
     private static final HashMap<String, List<Pair<Date, String>>> ALL_REQUESTS;
     private static final HashMap<String, Semaphore> SEMAPHORES;
@@ -54,11 +65,15 @@ public class HttpModule {
         ENDPOINT_RATE_LIMITS.forEach(endpoint -> ALL_REQUESTS.put(endpoint.endpoint(), new ArrayList<>()));
     }
 
-    private static boolean wouldExceedRateLimit(EndpointRateLimit endpointLimit) {
-        List<Pair<Date, String>> list = ALL_REQUESTS.get(endpointLimit.endpoint()).stream()
+    private static int historySize(EndpointRateLimit endpointLimit) {
+        return ALL_REQUESTS.get(endpointLimit.endpoint()).stream()
                 .filter(p -> p.getKey().getTime() >= new Date().getTime() - endpointLimit.timeFrameSeconds() * 1000L)
-                .toList();
-        return list.size() >= endpointLimit.maxRequests();
+                .toList().size();
+    }
+
+
+    private static boolean wouldExceedRateLimit(EndpointRateLimit endpointLimit) {
+        return historySize(endpointLimit) >= endpointLimit.maxRequests();
     }
 
     private static void cleanupOldRequests(EndpointRateLimit endpointLimit) {
@@ -67,7 +82,7 @@ public class HttpModule {
         ALL_REQUESTS.get(endpointLimit.endpoint()).removeIf(pair -> pair.getKey().getTime() < timeBeginFrame);
     }
 
-    private static final int MAX_REQUESTS = 1500;
+    private static final int MAX_REQUESTS = 150;
 
     @Provides
     @Singleton
@@ -76,6 +91,7 @@ public class HttpModule {
         Dispatcher dispatcher = new Dispatcher(new ThreadPoolExecutor(MAX_REQUESTS, MAX_REQUESTS, 1, java.util.concurrent.TimeUnit.MINUTES, new java.util.concurrent.SynchronousQueue<>()));
         dispatcher.setMaxRequests(MAX_REQUESTS);
         dispatcher.setMaxRequestsPerHost(MAX_REQUESTS);
+
         return new OkHttpClient.Builder()
                 .dispatcher(dispatcher)
                 .addInterceptor(chain -> {
@@ -97,6 +113,7 @@ public class HttpModule {
 
                             //noinspection BusyWait
                             Thread.sleep(100);
+//                            System.out.println("waiting...");
                         }
 
                         cleanupOldRequests(endpointRateLimit);
@@ -106,8 +123,8 @@ public class HttpModule {
                         ALL_REQUESTS.get(endpoint).add(request);
 
                         final String token = tokenStorage.getAccessToken();
+                        System.out.println("Request: " + chain.request().url() + " [" + endpointRateLimit.endpoint() + " - " + historySize(endpointRateLimit) + "/" + endpointRateLimit.maxRequests() + "]");
                         if (token == null) {
-                            System.out.println("Request: " + chain.request().url());
                             return chain.proceed(chain.request());
                         }
                         final Request newRequest = chain
@@ -116,7 +133,6 @@ public class HttpModule {
                                 .addHeader("Authorization", "Bearer " + token)
                                 .build();
 
-                        System.out.println("Request: " + chain.request().url());
                         Response response = chain.proceed(newRequest);
                         while (response.code() == 429) {
                             System.out.println("RATE LIMIT EXCEEDED\nLast " + endpointRateLimit.timeFrameSeconds() + " seconds requests were:");

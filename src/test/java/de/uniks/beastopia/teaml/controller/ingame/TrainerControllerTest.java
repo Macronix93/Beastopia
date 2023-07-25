@@ -83,7 +83,7 @@ class TrainerControllerTest extends ApplicationTest {
     final MapObject rectObject = new MapObject(50, 0, "AREA_NAME", properties, null, 0, "RECT", true, 50, 100, 100);
     final MapObject polyObject = new MapObject(50, 0, "POLY", null, polygon, 0, "POLY", true, 50, 60, 60);
     final Layer objectGroup = new Layer(null, List.of(), List.of(rectObject, polyObject), null, 1, 20, 20, "objectgroup", true, 2, 2, 0, 0);
-    final Chunk chunk = new Chunk(List.of(0, 1, 2, 3), 2, 2, 0, 0);
+    final Chunk chunk = new Chunk(List.of(0L, 1L, 2L, 3L), 2, 2, 0, 0);
     final Layer tilelayer = new Layer(List.of(chunk), List.of(), null, null, 1, 0, 0, "tilelayer", true, 2, 2, 0, 0);
     final Map map = new Map(List.of(tileSetDescription), List.of(tilelayer, objectGroup), 2, 24, 4);
     final Region region = new Region(null, null, "ID", "NAME", new Spawn(null, 0, 0), map);
@@ -103,6 +103,7 @@ class TrainerControllerTest extends ApplicationTest {
         when(cache.getTrainer()).thenReturn(allTrainer.get(0));
         when(cache.getCharacters()).thenReturn(allCharacters);
         when(cache.getCharacterImage(anyString())).thenReturn(allCharacters.get(0));
+        when(cache.getOrLoadTrainerImage(anyString(), anyBoolean())).thenReturn(Observable.just(image));
         when(presetsService.getCharacters()).thenReturn(Observable.just(characters));
         doNothing().when(mock(TrainerController.class)).showTrainerSpritePreview(any(), any());
 

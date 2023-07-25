@@ -51,6 +51,10 @@ public class IngameController extends Controller {
     static final int MENU_SHOP = 4;
     static final int MENU_INVENTORY = 5;
     static final int MENU_DIALOGWINDOW = 3;
+    static final long FLIPPED_HORIZONTALLY_FLAG = 1L << 31;
+    static final long FLIPPED_VERTICALLY_FLAG = 1L << 30;
+    static final long FLIPPED_DIAGONALLY_FLAG = 1L << 29;
+    static final long ROTATED_HEXAGONAL_120_FLAG = 1L << 28;
 
     @FXML
     public Pane tilePane;
@@ -158,16 +162,10 @@ public class IngameController extends Controller {
     private final String[] locationStrings = {"Moncenter", "House", "Store"};
     private long lastValueChangeTime = 0;
     private DialogWindowController dialogWindowController;
+    private Timer timer;
 
     @Inject
     public IngameController() {
-        Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                moveLoop();
-            }
-        }, 0, 100);
     }
 
     /**
@@ -176,6 +174,14 @@ public class IngameController extends Controller {
     @Override
     public void init() {
         super.init();
+
+        timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                moveLoop();
+            }
+        }, 0, 100);
 
         if (cache.getMapImage() == null || cache.getMapTileset() == null) {
             cache.setTileset(presetsService.getTileset(cache.getJoinedRegion().map().tilesets().get(0)).blockingFirst());
@@ -405,7 +411,6 @@ public class IngameController extends Controller {
                             }
 
                             beastListParent = beastListController.render();
-                            scoreBoardParent = scoreBoardController.render();
                             pauseMenuParent = pauseController.render();
                             loadRemoteTrainer(trainers);
                             listenToTrainerEvents();
@@ -524,13 +529,14 @@ public class IngameController extends Controller {
         updateOrigin();
     }
 
-    private void layTiles(int chunkX, int chunkY, List<Integer> data, int width) {
+    private void layTiles(int chunkX, int chunkY, List<Long> data, int width) {
         int index = 0;
-        for (int id : data) {
+        for (long id : data) {
             int x = index % width + chunkX;
             int y = index / width + chunkY;
             index++;
-            Pair<Pair<TileSet, Image>, Integer> tileSet = findTileSet(id);
+            long localID = id & ~(FLIPPED_HORIZONTALLY_FLAG | FLIPPED_VERTICALLY_FLAG | FLIPPED_DIAGONALLY_FLAG | ROTATED_HEXAGONAL_120_FLAG);
+            Pair<Pair<TileSet, Image>, Long> tileSet = findTileSet(localID);
             if (tileSet == null) {
                 continue;
             }
@@ -540,12 +546,12 @@ public class IngameController extends Controller {
             if (id != 0) {
                 List<Tile> tileInformation = tileSet.getKey().getKey().tiles();
                 tileInformation.stream().filter(t -> t.id() == tileSet.getValue()).findFirst().ifPresent(tile -> MAP_INFO.put(new Pair<>(x, y), tile));
-                drawTile(x, y, tileSet.getKey().getValue(), presetsService.getTileViewPort(tileSet.getValue(), tileSet.getKey().getKey()));
+                drawTile(id, x, y, tileSet.getKey().getValue(), presetsService.getTileViewPort(tileSet.getValue(), tileSet.getKey().getKey()));
             }
         }
     }
 
-    private Pair<Pair<TileSet, Image>, Integer> findTileSet(int id) {
+    private Pair<Pair<TileSet, Image>, Long> findTileSet(long id) {
         id++;
         for (int i = tileSets.size() - 1; i >= 0; i--) {
             Pair<TileSetDescription, Pair<TileSet, Image>> tileSet = tileSets.get(i);
@@ -556,15 +562,33 @@ public class IngameController extends Controller {
         return null;
     }
 
-    private void drawTile(int x, int y, Image image, Rectangle2D viewPort) {
+    private void drawTile(long ID, int x, int y, Image image, Rectangle2D viewPort) {
+        boolean flippedHorizontally = (ID & FLIPPED_HORIZONTALLY_FLAG) != 0;
+        boolean flippedVertically = (ID & FLIPPED_VERTICALLY_FLAG) != 0;
+        boolean flippedDiagonally = (ID & FLIPPED_DIAGONALLY_FLAG) != 0;
+
         ImageView view = new ImageView();
         view.setSmooth(true);
-        view.setImage(image);
         view.setFitWidth(TILE_SIZE + 1);
         view.setFitHeight(TILE_SIZE + 1);
         view.setViewport(viewPort);
         view.setTranslateX(x * TILE_SIZE);
         view.setTranslateY(y * TILE_SIZE);
+        view.setImage(image);
+
+        if (flippedDiagonally) {
+            view.setScaleX(-1);
+            view.setRotate(90);
+        }
+
+        if (flippedHorizontally) {
+            view.setScaleX(-1);
+        }
+
+        if (flippedVertically) {
+            view.setScaleY(-1);
+        }
+
         tilePane.getChildren().add(view);
     }
 
@@ -601,7 +625,9 @@ public class IngameController extends Controller {
     }
 
     public void updateOrigin() {
-        setOrigin(posx, posy);
+        if (tilePane != null) {
+            setOrigin(posx, posy);
+        }
     }
 
     private void drawPlayer(int posx, int posy) {
@@ -778,7 +804,7 @@ public class IngameController extends Controller {
     }
 
     private void startEncounterOnTalk(Trainer trainer) {
-        disposables.add(presetsService.getCharacterSprites(trainer.image(), false)
+        disposables.add(cache.getOrLoadTrainerImage(trainer.image(), false)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(image -> {
                     Rectangle2D viewPort = new Rectangle2D(3 * 96, 32, 16, 32);
@@ -791,7 +817,7 @@ public class IngameController extends Controller {
     }
 
     private void talkToFightingNPC(Trainer trainer) {
-        disposables.add(presetsService.getCharacterSprites(trainer.image(), false)
+        disposables.add(cache.getOrLoadTrainerImage(trainer.image(), false)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(image -> {
                     Rectangle2D viewPort = new Rectangle2D(3 * 96, 32, 16, 32);
@@ -803,7 +829,7 @@ public class IngameController extends Controller {
     }
 
     private void talkToStartersNPC(Trainer trainer) {
-        disposables.add(presetsService.getCharacterSprites(trainer.image(), false)
+        disposables.add(cache.getOrLoadTrainerImage(trainer.image(), false)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(image -> {
                     Rectangle2D viewPort = new Rectangle2D(3 * 96, 32, 16, 32);
@@ -839,7 +865,7 @@ public class IngameController extends Controller {
     }
 
     private void talkToNurse(Trainer trainer) {
-        disposables.add(presetsService.getCharacterSprites(trainer.image(), true)
+        disposables.add(cache.getOrLoadTrainerImage(trainer.image(), true)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(image -> {
                     Rectangle2D viewPort = new Rectangle2D(3 * 96, 32, 16, 32);
@@ -1084,10 +1110,13 @@ public class IngameController extends Controller {
     }
 
     public void openScoreboard() {
-        if (scoreBoardLayout.getChildren().contains(scoreBoardParent)) {
+        if (scoreBoardParent != null && scoreBoardLayout.getChildren().contains(scoreBoardParent)) {
             scoreBoardLayout.getChildren().remove(scoreBoardParent);
+            scoreBoardController.destroy();
+            scoreBoardParent = null;
             currentMenu = MENU_NONE;
         } else {
+            scoreBoardParent = scoreBoardController.render();
             scoreBoardLayout.getChildren().add(scoreBoardParent);
             currentMenu = MENU_SCOREBOARD;
         }
@@ -1173,6 +1202,7 @@ public class IngameController extends Controller {
             scoreBoardLayout.getChildren().add(inventoryParent);
         }
     }
+
     public void setCloseRequests(HBox hBox, Parent parent) {
         closePause();
         hBox.getChildren().remove(parent);
@@ -1277,19 +1307,37 @@ public class IngameController extends Controller {
 
     @Override
     public void destroy() {
-        super.destroy();
+        timer.cancel();
         playerController.destroy();
         scoreBoardController.destroy();
         beastListController.destroy();
         shopController.destroy();
+
         if (dialogWindowController != null) {
             dialogWindowController.destroy();
         }
+
         for (Controller controller : subControllers) {
             controller.destroy();
         }
+        subControllers.clear();
+
         for (EntityController controller : otherPlayers.keySet()) {
             controller.destroy();
         }
+        otherPlayers.clear();
+
+        tilePane.getChildren().clear();
+        loadingPage = null;
+        player = null;
+        beastListParent = null;
+        beastDetailParent = null;
+        playerController = null;
+        soundController = null;
+        scoreBoardParent = null;
+        pauseMenuParent = null;
+        dialogWindowParent = null;
+        tilePane = null;
+        super.destroy();
     }
 }

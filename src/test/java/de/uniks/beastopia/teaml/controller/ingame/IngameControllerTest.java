@@ -92,8 +92,8 @@ class IngameControllerTest extends ApplicationTest {
     TileProperty property = new TileProperty("A", "B", "C");
     List<Tile> tileList = List.of(new Tile(0, List.of(property)), new Tile(1, List.of(property)), new Tile(2, List.of(property)));
     final TileSetDescription tileSetDescription = new TileSetDescription(0, "SOURCE");
-    final TileSet tileSet = new TileSet(2, "IMAGE", 2, 2, 0, "NAME", 0, 4, 1, tileList);
-    final Chunk chunk = new Chunk(List.of(0, 1, 2, 3), 2, 2, 0, 0);
+    final TileSet tileSet = new TileSet(2, "IMAGE", 2, 2, 0, "NAME", 0, 4, 1, List.of());
+    final Chunk chunk = new Chunk(List.of(0L, 1L, 2L, 3L), 2, 2, 0, 0);
     final Layer layer = new Layer(List.of(chunk), List.of(), null, null, 1, 0, 0, null, true, 2, 2, 0, 0);
     final Map map = new Map(List.of(tileSetDescription), List.of(layer), 2, 24, 4);
     final Area area = new Area(null, null, "ID_AREA", "ID_REGION", "AREA_NAME", new Position(0, 0), map);
@@ -116,7 +116,6 @@ class IngameControllerTest extends ApplicationTest {
         when(udpEventListener.listen(anyString(), any())).thenReturn(Observable.empty());
         when(cache.getAreas()).thenReturn(List.of(area));
         doNothing().when(scoreboardController).init();
-        when(scoreboardController.render()).thenReturn(new Pane());
         when(eventListener.listen(any(), any())).thenReturn(Observable.empty());
         doNothing().when(prefs).setCurrentRegion(any());
         doNothing().when(prefs).setArea(any());

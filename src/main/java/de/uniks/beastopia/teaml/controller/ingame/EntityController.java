@@ -3,28 +3,22 @@ package de.uniks.beastopia.teaml.controller.ingame;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.MoveTrainerDto;
 import de.uniks.beastopia.teaml.rest.Trainer;
+import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import de.uniks.beastopia.teaml.sockets.UDPEventListener;
 import de.uniks.beastopia.teaml.utils.Direction;
 import de.uniks.beastopia.teaml.utils.PlayerState;
-import io.reactivex.rxjava3.disposables.Disposable;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 import javax.inject.Inject;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.function.Consumer;
 
 public class EntityController extends Controller {
-    private static final Map<String, Image> SPRITESHEET = new HashMap<>();
     final int PORT_WIDTH = 16;
     final int PORT_HEIGHT = 32;
     final int SPRITE_STEP = 16;
@@ -43,8 +37,8 @@ public class EntityController extends Controller {
     PresetsService presetsService;
     @Inject
     UDPEventListener udpEventListener;
-    Disposable eventListener;
-    Timer timer = null;
+    @Inject
+    DataCache cache;
 
     @Inject
     public EntityController() {
@@ -62,23 +56,6 @@ public class EntityController extends Controller {
     public void init() {
         super.init();
         direction = Direction.DOWN;
-//        listenToMovements();
-    }
-
-    private void listenToMovements() {
-        if (eventListener != null) {
-            eventListener.dispose();
-        }
-        eventListener = udpEventListener.listen("areas.*.trainers." + trainer._id() + ".moved", MoveTrainerDto.class).observeOn(FX_SCHEDULER).subscribe(event -> {
-            resetUpdateTimer();
-            if (event.data() == null) {
-                return;
-            }
-            updateTrainer(event.data());
-        }, error -> {
-            throw new RuntimeException(error);
-        });
-        resetUpdateTimer();
     }
 
     public void updateTrainer(MoveTrainerDto data) {
@@ -93,31 +70,12 @@ public class EntityController extends Controller {
         onTrainerUpdate.accept(data);
     }
 
-    private void resetUpdateTimer() {
-        if (timer != null) {
-            timer.cancel();
-            timer.purge();
-        }
-        timer = new Timer();
-        timer.schedule(createUpdateTimerTask(), 3000);
-    }
-
     public void setTrainer(Trainer trainer) {
         this.trainer = trainer;
     }
 
     public Trainer getTrainer() {
         return this.trainer;
-    }
-
-    private TimerTask createUpdateTimerTask() {
-        EntityController self = this;
-        return new TimerTask() {
-            @Override
-            public void run() {
-                self.onUI(() -> listenToMovements());
-            }
-        };
     }
 
     public void updateViewPort() {
@@ -138,14 +96,8 @@ public class EntityController extends Controller {
         entityView.setFitHeight(VIEW_SIZE);
         updateViewPort();
 
-        if (!SPRITESHEET.containsKey(trainer.image()) || SPRITESHEET.get(trainer.image()) == null) {
-            disposables.add(presetsService.getCharacterSprites(trainer.image(), true).observeOn(FX_SCHEDULER).subscribe(image -> {
-                SPRITESHEET.put(trainer.image(), image);
-                entityView.setImage(image);
-            }));
-        } else {
-            entityView.setImage(SPRITESHEET.get(trainer.image()));
-        }
+        disposables.add(cache.getOrLoadTrainerImage(trainer.image(), true).observeOn(FX_SCHEDULER).subscribe(image -> entityView.setImage(image)));
+
         return parent;
     }
 
@@ -158,11 +110,6 @@ public class EntityController extends Controller {
                 (sheetY * STATE_STEP + STATE_STEP) * SPRITE_SCALING,
                 PORT_WIDTH * SPRITE_SCALING,
                 PORT_HEIGHT * SPRITE_SCALING);
-    }
-
-    @Override
-    public void destroy() {
-        super.destroy();
     }
 
     public void setDirection(int direction) {

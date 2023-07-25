@@ -187,9 +187,9 @@ public class MapController extends Controller {
         }
     }
 
-    private void setTile(int TILE_SIZE, List<Integer> data, int xPos, int yPos, int width, int height) {
+    private void setTile(int TILE_SIZE, List<Long> data, int xPos, int yPos, int width, int height) {
         int index = 0;
-        for (int id : data) {
+        for (long id : data) {
             int x = index % width + xPos;
             int y = index / height + yPos;
             index++;
