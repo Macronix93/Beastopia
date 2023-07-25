@@ -44,7 +44,7 @@ public class ShopControllerTest extends ApplicationTest {
     PresetsService presetsService;
     private final List<ItemTypeDto> itemTypeDtos = List.of(new ItemTypeDto(1, "img", "name", 32, "desc", "use"));
     final Runnable onCloseRequest = mock();
-    Trainer trainer = new Trainer(null, null, "id", "region", "user", "name", "image", List.of("team"), List.of("visitedAreas"), 0, "area", 0, 0, 0, new NPCInfo(true, false, false, false, List.of(1), List.of(), null));
+    Trainer trainer = new Trainer(null, null, "id", "region", "user", "name", "image", List.of("team"),List.of(), List.of("visitedAreas"), 0, "area", 0, 0, 0, new NPCInfo(true, false, false, false, List.of(1), List.of(), null));
 
     @Override
     public void start(Stage stage) throws Exception {

@@ -54,7 +54,7 @@ public class InventoryControllerTest extends ApplicationTest {
     private final List<Item> items = List.of(new Item(null, "name", "desc", "use", 0, 3));
     final Runnable onCloseRequest = mock();
     Consumer<ItemTypeDto> onItemClicked = mock();
-    Trainer trainer = new Trainer(null, null, "id", "region", "user", "name", "image", List.of("team"), List.of("visitedAreas"), 10, "area", 0, 0, 0, new NPCInfo(true, false, false, false, List.of(1), List.of(), null));
+    Trainer trainer = new Trainer(null, null, "id", "region", "user", "name", "image", List.of("team"), List.of(), List.of("visitedAreas"), 10, "area", 0, 0, 0, new NPCInfo(true, false, false, false, List.of(1), List.of(), null));
     Region region = new Region(null, null, "id", "name", null, null);
 
     @Override
