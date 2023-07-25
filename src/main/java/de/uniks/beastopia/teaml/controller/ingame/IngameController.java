@@ -143,7 +143,9 @@ public class IngameController extends Controller {
     private Monster lastMonster;
     private ItemTypeDto lastItemTypeDto;
     private int currentMenu = MENU_NONE;
-    private final java.util.Map<Pair<Integer, Integer>, Tile> MAP_INFO = new HashMap<>();
+    private final java.util.Map<Pair<Integer, Integer>, Pair<Tile, Node>> MAP_INFO = new HashMap<>();
+    private final List<Node> renderedTiles = new ArrayList<>();
+    private final List<Node> renderedPlayers = new ArrayList<>();
     Direction direction;
     final ObjectProperty<PlayerState> state = new SimpleObjectProperty<>();
     Parent player;
@@ -259,6 +261,20 @@ public class IngameController extends Controller {
         });
 
         soundController = soundControllerProvider.get();
+    }
+
+    private void updateDrawOrder() {
+        renderedTiles.forEach(Node::toFront);
+
+        renderedPlayers.sort(Comparator.comparingInt(node -> (int) node.getTranslateY()));
+        renderedPlayers.forEach(Node::toFront);
+
+        for (Pair<Integer, Integer> key : MAP_INFO.keySet()) {
+            Pair<Tile, Node> tile = MAP_INFO.get(key);
+            if (tile != null && tile.getKey().properties() != null && tile.getKey().properties().stream().anyMatch(p -> p.name().equals("Roof"))) {
+                tile.getValue().toFront();
+            }
+        }
     }
 
     /**
@@ -545,8 +561,8 @@ public class IngameController extends Controller {
             // This is to prevent the camera from showing the "extended" tile pane with those tiles
             if (id != 0) {
                 List<Tile> tileInformation = tileSet.getKey().getKey().tiles();
-                tileInformation.stream().filter(t -> t.id() == tileSet.getValue()).findFirst().ifPresent(tile -> MAP_INFO.put(new Pair<>(x, y), tile));
-                drawTile(id, x, y, tileSet.getKey().getValue(), presetsService.getTileViewPort(tileSet.getValue(), tileSet.getKey().getKey()));
+                Node node = drawTile(id, x, y, tileSet.getKey().getValue(), presetsService.getTileViewPort(tileSet.getValue(), tileSet.getKey().getKey()));
+                tileInformation.stream().filter(t -> t.id() == tileSet.getValue()).findFirst().ifPresent(tile -> MAP_INFO.put(new Pair<>(x, y), new Pair<>(tile, node)));
             }
         }
     }
@@ -562,7 +578,7 @@ public class IngameController extends Controller {
         return null;
     }
 
-    private void drawTile(long ID, int x, int y, Image image, Rectangle2D viewPort) {
+    private Node drawTile(long ID, int x, int y, Image image, Rectangle2D viewPort) {
         boolean flippedHorizontally = (ID & FLIPPED_HORIZONTALLY_FLAG) != 0;
         boolean flippedVertically = (ID & FLIPPED_VERTICALLY_FLAG) != 0;
         boolean flippedDiagonally = (ID & FLIPPED_DIAGONALLY_FLAG) != 0;
@@ -590,6 +606,8 @@ public class IngameController extends Controller {
         }
 
         tilePane.getChildren().add(view);
+        renderedTiles.add(view);
+        return view;
     }
 
     public void setOrigin(int tilex, int tiley) {
@@ -633,10 +651,11 @@ public class IngameController extends Controller {
     private void drawPlayer(int posx, int posy) {
         tilePane.getChildren().remove(player);
         player = playerController.render();
+        renderedPlayers.add(player);
         player.setTranslateX(posx * TILE_SIZE);
         player.setTranslateY((posy - 1) * TILE_SIZE);
         tilePane.getChildren().add(player);
-        player.toFront();
+        updateDrawOrder();
     }
 
     private Parent drawRemotePlayer(EntityController controller, int posx, int posy) {
@@ -644,23 +663,24 @@ public class IngameController extends Controller {
         parent.setTranslateX(posx * TILE_SIZE);
         parent.setTranslateY((posy - 1) * TILE_SIZE);
         tilePane.getChildren().add(parent);
+        renderedPlayers.add(parent);
         parent.toFront();
         return parent;
     }
 
     private void movePlayer(int x, int y) {
         playerController.updateViewPort();
-        player.toFront();
         player.setTranslateX(x * TILE_SIZE);
         player.setTranslateY((y - 1) * TILE_SIZE);
+        updateDrawOrder();
     }
 
     private void moveRemotePlayer(EntityController controller, int x, int y) {
         Parent remotePlayer = otherPlayers.get(controller);
         controller.updateViewPort();
-        remotePlayer.toFront();
         remotePlayer.setTranslateX(x * TILE_SIZE);
         remotePlayer.setTranslateY((y - 1) * TILE_SIZE);
+        updateDrawOrder();
     }
 
     @Override
@@ -701,8 +721,9 @@ public class IngameController extends Controller {
         data.add("direction", new JsonPrimitive(direction.ordinal()));
 
         Pair<Integer, Integer> posXY = new Pair<>(posx, posy);
+
         if (MAP_INFO.containsKey(posXY)) {
-            Tile tile = MAP_INFO.get(posXY);
+            Tile tile = MAP_INFO.get(posXY).getKey();
             Optional<TileProperty> jumpableTileProp = tile.properties().stream().filter(tileProperty -> tileProperty.name().equals("Jumpable")).findFirst();
             if (jumpableTileProp.isPresent()) {
                 int jumpDirection = Integer.parseInt(jumpableTileProp.get().value());
