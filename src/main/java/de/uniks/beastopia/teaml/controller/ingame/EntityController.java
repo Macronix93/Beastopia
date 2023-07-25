@@ -82,19 +82,13 @@ public class EntityController extends Controller {
     }
 
     public void updateTrainer(MoveTrainerDto data) {
-        switch (data.direction()) {
-            case 0 -> direction = Direction.RIGHT;
-            case 1 -> direction = Direction.UP;
-            case 2 -> direction = Direction.LEFT;
-            case 3 -> direction = Direction.DOWN;
-        }
+        setDirection(data.direction());
         index = (index + 1) % 6;
         updateViewPort();
         if (!data.area().equals(trainer.area())) {
             trainer = new Trainer(trainer.createdAt(), trainer.updatedAt(), trainer._id(), trainer.region(),
                     trainer.user(), trainer.name(), trainer.image(), trainer.team(), trainer.visitedAreas(), trainer.coins(), data.area(), trainer.x(),
                     trainer.y(), trainer.direction(), trainer.npc());
-//            listenToMovements();
         }
         onTrainerUpdate.accept(data);
     }
@@ -105,7 +99,6 @@ public class EntityController extends Controller {
             timer.purge();
         }
         timer = new Timer();
-//        System.out.println("Resetting timer for trainer: " + trainer._id() + " in area: " + trainer.area());
         timer.schedule(createUpdateTimerTask(), 3000);
     }
 
@@ -122,10 +115,7 @@ public class EntityController extends Controller {
         return new TimerTask() {
             @Override
             public void run() {
-                self.onUI(() -> {
-//                    System.out.println("Reconnecting to trainer update for: " + trainer._id() + " in area: " + trainer.area());
-                    listenToMovements();
-                });
+                self.onUI(() -> listenToMovements());
             }
         };
     }
@@ -137,6 +127,9 @@ public class EntityController extends Controller {
     @Override
     public Parent render() {
         int VIEW_SIZE = 60;
+        if (state.get().equals(PlayerState.JUMP)) {
+            VIEW_SIZE *= 1.2;
+        }
         parent = super.render();
         entityView.toFront();
         entityView.setPreserveRatio(true);
@@ -158,12 +151,17 @@ public class EntityController extends Controller {
 
     private Rectangle2D getViewport() {
         int SPRITE_SCALING = 3;
-        return new Rectangle2D((direction.ordinal() * DIRECTION_STEP + index * SPRITE_STEP) * SPRITE_SCALING, (state.get().ordinal() * STATE_STEP + STATE_STEP) * SPRITE_SCALING, PORT_WIDTH * SPRITE_SCALING, PORT_HEIGHT * SPRITE_SCALING);
+        int sheetY = state.get().equals(PlayerState.JUMP) ? 1 : state.get().ordinal();
+
+        return new Rectangle2D(
+                (direction.ordinal() * DIRECTION_STEP + index * SPRITE_STEP) * SPRITE_SCALING,
+                (sheetY * STATE_STEP + STATE_STEP) * SPRITE_SCALING,
+                PORT_WIDTH * SPRITE_SCALING,
+                PORT_HEIGHT * SPRITE_SCALING);
     }
 
     @Override
     public void destroy() {
-//        eventListener.dispose();
         super.destroy();
     }
 

@@ -76,6 +76,7 @@ public class EditBeastTeamController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
+        beastListView.setId("beastListView");
         disposables.add(trainerService.getTrainerMonsters(prefs.getRegionID(), cache.getTrainer()._id())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(monsters -> {

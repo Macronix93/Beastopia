@@ -35,7 +35,7 @@ class PresetsServiceTest {
 
     final AbilityDto abilityDto = new AbilityDto(0, "name", "desc", "ice", 1, 2, 3);
 
-    final TileSet tileSet = new TileSet(1, null, 1, 1, 1, "A.png", 1, 1, 1);
+    final TileSet tileSet = new TileSet(1, null, 1, 1, 1, "A.png", 1, 1, 1, null);
 
     @Test
     void getCharacters() {

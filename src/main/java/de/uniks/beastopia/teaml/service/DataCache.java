@@ -36,6 +36,8 @@ public class DataCache {
     private List<Opponent> currentOpponents = new ArrayList<>();
     private final Map<Integer, Image> itemImages = new HashMap<>();
     Encounter currentEncounter;
+    private TileSet mapTileset;
+    private Image mapImage;
 
     @Inject
     public DataCache() {
@@ -321,5 +323,21 @@ public class DataCache {
     }
     public void setItemImages(Map<Integer, Image> itemImage) {
         this.itemImages.put(itemImage.keySet().iterator().next(), itemImage.values().iterator().next());
+    }
+
+    public void setTileset(TileSet tileSet) {
+        this.mapTileset = tileSet;
+    }
+
+    public void setMapImage(Image image) {
+        this.mapImage = image;
+    }
+
+    public TileSet getMapTileset() {
+        return this.mapTileset;
+    }
+
+    public Image getMapImage() {
+        return this.mapImage;
     }
 }
