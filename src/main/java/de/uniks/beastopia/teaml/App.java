@@ -137,6 +137,7 @@ public class App extends Application {
             return;
         }
 
+        System.out.println("Showing " + controller.getClass().getSimpleName() + "...");
         controller.init();
         update();
     }
