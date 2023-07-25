@@ -40,6 +40,7 @@ import javafx.util.Pair;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 public class IngameController extends Controller {
@@ -264,17 +265,27 @@ public class IngameController extends Controller {
     }
 
     private void updateDrawOrder() {
-        renderedTiles.forEach(Node::toFront);
+        BiFunction<Node, Node, Boolean> areNeighbours = (p1, p2) -> {
+            int x1 = (int) (p1.getTranslateX() / (int) TILE_SIZE + 0.25);
+            int y1 = (int) (p1.getTranslateY() / (int) TILE_SIZE + 0.25);
+            int x2 = (int) (p2.getTranslateX() / (int) TILE_SIZE + 0.25);
+            int y2 = (int) (p2.getTranslateY() / (int) TILE_SIZE + 0.25);
+            return Math.abs(x1 - x2) <= 1 && Math.abs(y1 - y2) <= 1;
+        };
 
-        renderedPlayers.sort(Comparator.comparingInt(node -> (int) node.getTranslateY()));
-        renderedPlayers.forEach(Node::toFront);
+        List<Node> visiblePlayers = renderedPlayers.stream()
+                .filter(node -> tilePane.getChildren().contains(node))
+                .sorted(Comparator.comparingInt(node -> (int) node.getTranslateY()))
+                .toList();
 
-        for (Pair<Integer, Integer> key : MAP_INFO.keySet()) {
-            Pair<Tile, Node> tile = MAP_INFO.get(key);
-            if (tile != null && tile.getKey().properties() != null && tile.getKey().properties().stream().anyMatch(p -> p.name().equals("Roof"))) {
-                tile.getValue().toFront();
-            }
-        }
+        visiblePlayers.forEach(Node::toFront);
+
+        MAP_INFO.keySet().stream()
+                .filter(p -> visiblePlayers.stream().anyMatch(player -> areNeighbours.apply(player, MAP_INFO.get(p).getValue())) &&
+                        MAP_INFO.get(p).getKey().properties().stream().anyMatch(prop -> prop.name().equals("Roof")) &&
+                        MAP_INFO.get(p).getKey().properties().stream().filter(prop -> prop.name().equals("Roof")).findFirst().orElseThrow().value().equals("true"))
+                .map(p -> MAP_INFO.get(p).getValue())
+                .forEach(Node::toFront);
     }
 
     /**
@@ -655,7 +666,6 @@ public class IngameController extends Controller {
         player.setTranslateX(posx * TILE_SIZE);
         player.setTranslateY((posy - 1) * TILE_SIZE);
         tilePane.getChildren().add(player);
-        updateDrawOrder();
     }
 
     private Parent drawRemotePlayer(EntityController controller, int posx, int posy) {
@@ -1025,6 +1035,7 @@ public class IngameController extends Controller {
     public void setIdleState() {
         state.setValue(PlayerState.IDLE);
         drawPlayer(posx, posy);
+        updateDrawOrder();
 
         if (currentMenu == MENU_PAUSE || currentMenu == MENU_SHOP) {
             player.setOpacity(0.5);
