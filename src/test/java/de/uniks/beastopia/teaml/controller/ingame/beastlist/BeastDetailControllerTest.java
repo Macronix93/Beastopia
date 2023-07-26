@@ -2,7 +2,6 @@ package de.uniks.beastopia.teaml.controller.ingame.beastlist;
 
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.AppPreparer;
-import de.uniks.beastopia.teaml.controller.ingame.beastlist.BeastDetailController;
 import de.uniks.beastopia.teaml.rest.Monster;
 import de.uniks.beastopia.teaml.rest.MonsterAttributes;
 import de.uniks.beastopia.teaml.service.PresetsService;
@@ -26,16 +25,15 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class BeastDetailControllerTest extends ApplicationTest {
 
+    final MonsterAttributes attributes = new MonsterAttributes(1, 1, 1, 1);
+    final MonsterAttributes currentAttributes = new MonsterAttributes(0, 0, 0, 0);
+    final Monster monster = new Monster(null, null, "MONSTER_ID", "TRAINER_ID", 0, 0, 0, Map.of("1", 1, "2", 2), attributes, currentAttributes);
     @Spy
     App app;
     @InjectMocks
     BeastDetailController beastDetailController;
     @Mock
     PresetsService presetsService;
-
-    MonsterAttributes attributes = new MonsterAttributes(1, 1, 1, 1);
-    MonsterAttributes currentAttributes = new MonsterAttributes(0, 0, 0, 0);
-    Monster monster = new Monster(null, null, "MONSTER_ID", "TRAINER_ID", 0, 0, 0, Map.of("1", 1, "2", 2), attributes, currentAttributes);
 
     @Override
     public void start(Stage stage) throws Exception {

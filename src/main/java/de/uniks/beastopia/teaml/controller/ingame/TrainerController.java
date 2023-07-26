@@ -224,12 +224,10 @@ public class TrainerController extends Controller {
 
         disposables.add(cache.getOrLoadTrainerImage(cache.getCharacters().get(currentIndex.get()).getKey(), true)
                 .observeOn(FX_SCHEDULER)
-                .subscribe(image -> {
-                    showTrainerSpritePreview(
-                            cache.getCharacters().get(currentIndex.get()).getKey(),
-                            image
-                    );
-                }));
+                .subscribe(image -> showTrainerSpritePreview(
+                        cache.getCharacters().get(currentIndex.get()).getKey(),
+                        image
+                )));
     }
 
     @FXML
@@ -242,12 +240,10 @@ public class TrainerController extends Controller {
 
         disposables.add(cache.getOrLoadTrainerImage(cache.getCharacters().get(currentIndex.get()).getKey(), true)
                 .observeOn(FX_SCHEDULER)
-                .subscribe(image -> {
-                    showTrainerSpritePreview(
-                            cache.getCharacters().get(currentIndex.get()).getKey(),
-                            image
-                    );
-                }));
+                .subscribe(image -> showTrainerSpritePreview(
+                        cache.getCharacters().get(currentIndex.get()).getKey(),
+                        image
+                )));
     }
 
     @SuppressWarnings("UnusedReturnValue")

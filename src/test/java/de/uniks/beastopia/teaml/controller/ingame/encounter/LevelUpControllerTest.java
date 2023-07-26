@@ -28,22 +28,22 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class LevelUpControllerTest extends ApplicationTest {
 
-    @InjectMocks
-    LevelUpController levelUpController;
-    @Spy
-    App app;
     @SuppressWarnings("unused")
     @Spy
     final
     ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang",
             Locale.forLanguageTag("en"));
-    @Mock
-    PresetsService presetsService;
-    Monster monster = new Monster(null, null, "MONSTER_ID", "TRAINER_ID", 10, 0,
+    final Monster monster = new Monster(null, null, "MONSTER_ID", "TRAINER_ID", 10, 0,
             0, Map.of("1", 1, "2", 2), new MonsterAttributes(1, 1, 1, 1),
             new MonsterAttributes(1, 1, 1, 1));
-    Image expectedImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/de/uniks/beastopia/teaml/assets/group.png")));
-    MonsterTypeDto monsterTypeDto = new MonsterTypeDto(3, "name", "image", List.of("1", "2"), "a");
+    final Image expectedImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/de/uniks/beastopia/teaml/assets/group.png")));
+    final MonsterTypeDto monsterTypeDto = new MonsterTypeDto(3, "name", "image", List.of("1", "2"), "a");
+    @InjectMocks
+    LevelUpController levelUpController;
+    @Spy
+    App app;
+    @Mock
+    PresetsService presetsService;
 
     @Override
     public void start(Stage stage) {

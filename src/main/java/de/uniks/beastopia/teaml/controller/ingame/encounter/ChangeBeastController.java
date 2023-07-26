@@ -19,6 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ChangeBeastController extends Controller {
+    private final List<Monster> fightingMonsters = new ArrayList<>();
+    private final List<Monster> bankMonsters = new ArrayList<>();
+    private final List<ChangeBeastElementController> subControllers = new ArrayList<>();
     @FXML
     public GridPane yourBeastsPane;
     @FXML
@@ -27,7 +30,6 @@ public class ChangeBeastController extends Controller {
     public VBox currentBeasts;
     @FXML
     public VBox beastTeam;
-
     @Inject
     EncounterOpponentsService encounterOpponentsService;
     @Inject
@@ -36,10 +38,6 @@ public class ChangeBeastController extends Controller {
     DataCache cache;
     @Inject
     Provider<ChangeBeastElementController> changeBeastElementControllerProvider;
-
-    private final List<Monster> fightingMonsters = new ArrayList<>();
-    private final List<Monster> bankMonsters = new ArrayList<>();
-    private final List<ChangeBeastElementController> subControllers = new ArrayList<>();
     private Monster currentMonster;
     private EncounterController encounterController;
     private LoadingPage loadingPage;
@@ -54,11 +52,6 @@ public class ChangeBeastController extends Controller {
 
     public void setEncounterController(EncounterController controller) {
         this.encounterController = controller;
-    }
-
-    @Override
-    public void init() {
-        super.init();
     }
 
     @Override

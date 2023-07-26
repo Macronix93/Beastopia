@@ -36,12 +36,20 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class StartFightNPCControllerTest extends ApplicationTest {
 
-    @Spy
-    App app;
     @SuppressWarnings("unused")
     @Spy
     final
     ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang", Locale.forLanguageTag("en"));
+    final Encounter encounter = new Encounter(null, null, "ID", "r", false);
+    final Opponent opponent = new Opponent(null, null, "ido", "e",
+            "t", true, true, "m", null, null, 0);
+    final Trainer trainer = new Trainer(null, null, "tid", "tr", "tu", "tn",
+            "ti", null, List.of(), List.of(), 0, "tarea", 2, 3, 0, null);
+    final List<Opponent> ops = List.of(opponent);
+    final Region region = new Region(null, null, "id", "Alb", null, null);
+    final Image expectedImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/de/uniks/beastopia/teaml/assets/bt_icon.png")));
+    @Spy
+    App app;
     @InjectMocks
     StartFightNPCController startFightNPCController;
     @SuppressWarnings("unused")
@@ -56,17 +64,6 @@ class StartFightNPCControllerTest extends ApplicationTest {
     @SuppressWarnings("unused")
     @Mock
     PresetsService presetsService;
-
-    Encounter encounter = new Encounter(null, null, "ID", "r", false);
-    Opponent opponent = new Opponent(null, null, "ido", "e",
-            "t", true, true, "m", null, null, 0);
-
-    Trainer trainer = new Trainer(null, null, "tid", "tr", "tu", "tn",
-            "ti", null, List.of(), List.of(), 0, "tarea", 2, 3, 0, null);
-    List<Opponent> ops = List.of(opponent);
-
-    Region region = new Region(null, null, "id", "Alb", null, null);
-    Image expectedImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/de/uniks/beastopia/teaml/assets/bt_icon.png")));
 
     @Override
     public void start(Stage stage) {
@@ -94,7 +91,7 @@ class StartFightNPCControllerTest extends ApplicationTest {
 
     @Test
     void title() {
-       assertEquals(app.getStage().getTitle(), resources.getString("titleEncounter"));
+        assertEquals(app.getStage().getTitle(), resources.getString("titleEncounter"));
     }
 
     @Test

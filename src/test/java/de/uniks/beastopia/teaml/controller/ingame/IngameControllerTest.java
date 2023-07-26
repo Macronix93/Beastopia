@@ -94,8 +94,6 @@ class IngameControllerTest extends ApplicationTest {
     ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang");
     @InjectMocks
     IngameController ingameController;
-    TileProperty property = new TileProperty("A", "B", "C");
-    List<Tile> tileList = List.of(new Tile(0, List.of(property)), new Tile(1, List.of(property)), new Tile(2, List.of(property)));
     final TileSetDescription tileSetDescription = new TileSetDescription(0, "SOURCE");
     final TileSet tileSet = new TileSet(2, "IMAGE", 2, 2, 0, "NAME", 0, 4, 1, List.of());
     final Chunk chunk = new Chunk(List.of(0L, 1L, 2L, 3L), 2, 2, 0, 0);

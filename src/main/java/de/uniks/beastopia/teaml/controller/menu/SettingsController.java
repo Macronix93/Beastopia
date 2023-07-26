@@ -20,6 +20,7 @@ import java.util.ResourceBundle;
 
 public class SettingsController extends Controller {
 
+    final double debounceDelay = 250; // Delay in milliseconds
     private final ArrayList<Controller> subControllers = new ArrayList<>();
     @FXML
     public RadioButton selectEnglishLanguage;
@@ -41,7 +42,6 @@ public class SettingsController extends Controller {
     public Button backButton;
     @FXML
     public VBox vboxKeybindings;
-
     @Inject
     Prefs prefs;
     @Inject
@@ -53,7 +53,6 @@ public class SettingsController extends Controller {
     @Inject
     Provider<SoundController> soundControllerProvider;
     SoundController soundController;
-    double debounceDelay = 250; // Delay in milliseconds
     long lastValueChangeTime = 0;
 
 

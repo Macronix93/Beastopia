@@ -10,12 +10,12 @@ import de.uniks.beastopia.teaml.controller.ingame.beastlist.BeastDetailControlle
 import de.uniks.beastopia.teaml.controller.ingame.beastlist.BeastListController;
 import de.uniks.beastopia.teaml.controller.ingame.encounter.FightWildBeastController;
 import de.uniks.beastopia.teaml.controller.ingame.encounter.StartFightNPCController;
-import de.uniks.beastopia.teaml.controller.ingame.mondex.MondexDetailController;
-import de.uniks.beastopia.teaml.controller.ingame.mondex.MondexListController;
-import de.uniks.beastopia.teaml.controller.ingame.scoreboard.ScoreboardController;
 import de.uniks.beastopia.teaml.controller.ingame.items.InventoryController;
 import de.uniks.beastopia.teaml.controller.ingame.items.ItemDetailController;
 import de.uniks.beastopia.teaml.controller.ingame.items.ShopController;
+import de.uniks.beastopia.teaml.controller.ingame.mondex.MondexDetailController;
+import de.uniks.beastopia.teaml.controller.ingame.mondex.MondexListController;
+import de.uniks.beastopia.teaml.controller.ingame.scoreboard.ScoreboardController;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
 import de.uniks.beastopia.teaml.rest.Map;
 import de.uniks.beastopia.teaml.rest.*;
@@ -61,25 +61,15 @@ public class IngameController extends Controller {
     static final long FLIPPED_VERTICALLY_FLAG = 1L << 30;
     static final long FLIPPED_DIAGONALLY_FLAG = 1L << 29;
     static final long ROTATED_HEXAGONAL_120_FLAG = 1L << 28;
-
+    final ObjectProperty<PlayerState> state = new SimpleObjectProperty<>();
+    final java.util.Map<EntityController, Parent> otherPlayers = new HashMap<>();
+    private final List<Pair<TileSetDescription, Pair<TileSet, Image>>> tileSets = new ArrayList<>();
+    private final List<Controller> subControllers = new ArrayList<>();
+    private final java.util.Map<Pair<Integer, Integer>, Tile> MAP_INFO = new HashMap<>();
+    private final List<KeyCode> pressedKeys = new ArrayList<>();
+    private final String[] locationStrings = {"Moncenter", "House", "Store"};
     @FXML
     public Pane tilePane;
-    @FXML
-    private HBox scoreBoardLayout;
-    @FXML
-    private StackPane pauseMenuLayout;
-    @FXML
-    private Button pauseHint;
-    @FXML
-    private Button beastlistHint;
-    @FXML
-    private Button scoreboardHint;
-    @FXML
-    private Button mapHint;
-    @FXML
-    private Button invHint;
-    @FXML
-    private HBox shopLayout;
     @Inject
     App app;
     @Inject
@@ -140,24 +130,7 @@ public class IngameController extends Controller {
     EncounterOpponentsService encounterOpponentsService;
     @Inject
     MondexService mondexService;
-    private Region region;
-    private Map map;
-    private final List<Pair<TileSetDescription, Pair<TileSet, Image>>> tileSets = new ArrayList<>();
-    private int posx = 0;
-    private int posy = 0;
-    private int lastposx = 0;
-    private int lastposy = 0;
-    private boolean spawned = false;
-    private int width;
-    private int height;
-    private LoadingPage loadingPage;
-    private final List<Controller> subControllers = new ArrayList<>();
-    private Monster lastMonster;
-    private ItemTypeDto lastItemTypeDto;
-    private int currentMenu = MENU_NONE;
-    private final java.util.Map<Pair<Integer, Integer>, Tile> MAP_INFO = new HashMap<>();
     Direction direction;
-    final ObjectProperty<PlayerState> state = new SimpleObjectProperty<>();
     Parent player;
     Parent beastListParent;
     Parent beastDetailParent;
@@ -171,9 +144,35 @@ public class IngameController extends Controller {
     Parent dialogWindowParent;
     Parent shopParent;
     Parent inventoryParent;
-    final java.util.Map<EntityController, Parent> otherPlayers = new HashMap<>();
-    private final List<KeyCode> pressedKeys = new ArrayList<>();
-    private final String[] locationStrings = {"Moncenter", "House", "Store"};
+    @FXML
+    private HBox scoreBoardLayout;
+    @FXML
+    private StackPane pauseMenuLayout;
+    @FXML
+    private Button pauseHint;
+    @FXML
+    private Button beastlistHint;
+    @FXML
+    private Button scoreboardHint;
+    @FXML
+    private Button mapHint;
+    @FXML
+    private Button invHint;
+    @FXML
+    private HBox shopLayout;
+    private Region region;
+    private Map map;
+    private int posx = 0;
+    private int posy = 0;
+    private int lastposx = 0;
+    private int lastposy = 0;
+    private boolean spawned = false;
+    private int width;
+    private int height;
+    private LoadingPage loadingPage;
+    private Monster lastMonster;
+    private ItemTypeDto lastItemTypeDto;
+    private int currentMenu = MENU_NONE;
     private long lastValueChangeTime = 0;
     private DialogWindowController dialogWindowController;
     private MonsterTypeDto lastMondexMonster;
