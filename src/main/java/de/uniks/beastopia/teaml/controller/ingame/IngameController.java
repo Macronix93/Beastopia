@@ -1349,6 +1349,7 @@ public class IngameController extends Controller {
             currentMenu = MENU_NONE;
         } else {
             scoreBoardLayout.getChildren().add(mondexListParent);
+            mondexListController.reload();
             currentMenu = MENU_MONDEXLIST;
         }
     }

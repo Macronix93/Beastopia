@@ -80,6 +80,10 @@ public class MondexListController extends Controller {
         subControllers.forEach(Controller::destroy);
     }
 
+    public void reload() {
+        render();
+    }
+
     public void handleKeyEvent(KeyEvent event) {
         if (event.getCode().equals(KeyCode.L)) {
             close();
