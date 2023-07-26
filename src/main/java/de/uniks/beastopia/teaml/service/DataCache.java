@@ -3,7 +3,14 @@ package de.uniks.beastopia.teaml.service;
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.rest.*;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Scheduler;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+import javafx.application.Platform;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.paint.Paint;
 import javafx.stage.FileChooser;
 import javafx.util.Pair;
 
@@ -20,13 +27,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.*;
 
+import static de.uniks.beastopia.teaml.service.PresetsService.PREVIEW_SCALING;
+
 @Singleton
 public class DataCache {
+
+    private static final ImageView imageView = new ImageView();
+    private static final Scheduler FX_SCHEDULER = io.reactivex.rxjava3.schedulers.Schedulers.from(Platform::runLater);
+
     private List<User> users = new ArrayList<>();
     private List<Area> areas = new ArrayList<>();
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     private final List<Trainer> trainers = new ArrayList<>();
     private final List<Pair<String, Image>> characters = new ArrayList<>();
+    private final List<Pair<String, Image>> charactersResized = new ArrayList<>();
+    private final List<Pair<String, Observable<Image>>> charactersAiring = new ArrayList<>();
     private List<Achievement> myAchievements = new ArrayList<>();
     private final Map<String, String> achievementDescriptions = new HashMap<>();
     private final List<String> visitedAreas = new ArrayList<>();
@@ -34,7 +49,12 @@ public class DataCache {
     Region joinedRegion;
     private List<MonsterTypeDto> allBeasts = new ArrayList<>();
     private List<Opponent> currentOpponents = new ArrayList<>();
+    private final Map<Integer, Image> itemImages = new HashMap<>();
     Encounter currentEncounter;
+    @Inject
+    PresetsService presetsService;
+    private TileSet mapTileset;
+    private Image mapImage;
 
     @Inject
     public DataCache() {
@@ -159,14 +179,35 @@ public class DataCache {
 
     public void setCharacterImage(String name, Image image) {
         synchronized (characters) {
+            charactersAiring.removeIf(pair -> pair.getKey().equals(name));
             characters.removeIf(pair -> pair.getKey().equals(name));
             characters.add(new Pair<>(name, image));
+        }
+    }
+
+    public void setCharacterResizedImage(String name, Image image) {
+        synchronized (characters) {
+            charactersAiring.removeIf(pair -> pair.getKey().equals(name));
+            charactersResized.removeIf(pair -> pair.getKey().equals(name));
+            charactersResized.add(new Pair<>(name, image));
         }
     }
 
     public void setTrainers(List<Trainer> trainers) {
         this.trainers.clear();
         this.trainers.addAll(trainers);
+    }
+
+    public Observable<Image> getOrLoadTrainerImage(String trainer, boolean useConstantValues) {
+        synchronized (characters) {
+            if (characters.stream().anyMatch(pair -> pair.getKey().equals(trainer) && pair.getValue() != null)) {
+                return getDownloadedImage(trainer, useConstantValues);
+            } else if (charactersAiring.stream().noneMatch(pair -> pair.getKey().equals(trainer))) {
+                return downloadImage(trainer, useConstantValues);
+            } else {
+                return observableToAiringDownload(trainer, useConstantValues);
+            }
+        }
     }
 
     public List<Trainer> getTrainers() {
@@ -313,5 +354,101 @@ public class DataCache {
 
     public Encounter getCurrentEncounter() {
         return this.currentEncounter;
+    }
+
+    public Map<Integer, Image> getItemImages() {
+        return itemImages;
+    }
+    public void setItemImages(Map<Integer, Image> itemImage) {
+        this.itemImages.put(itemImage.keySet().iterator().next(), itemImage.values().iterator().next());
+    }
+
+    private Observable<Image> observableToAiringDownload(String trainer, boolean useConstantValues) {
+        return Observable.fromAction(() -> {
+        }).observeOn(Schedulers.io()).map((v) -> {
+            waitForDownload(trainer);
+
+            if (useConstantValues) {
+                return charactersResized.stream()
+                        .filter(pair -> pair.getKey().equals(trainer))
+                        .findFirst()
+                        .map(Pair::getValue)
+                        .orElseThrow();
+            } else {
+                return characters.stream()
+                        .filter(pair -> pair.getKey().equals(trainer))
+                        .findFirst()
+                        .map(Pair::getValue)
+                        .orElseThrow();
+            }
+        });
+    }
+
+    private void waitForDownload(String trainer) {
+        while (charactersAiring.stream().anyMatch(pair -> pair.getKey().equals(trainer))) {
+            try {
+                //noinspection BusyWait
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                //noinspection CallToPrintStackTrace
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private Observable<Image> downloadImage(String trainer, boolean useConstantValues) {
+        Observable<Image> obs = presetsService.getCharacterSprites(trainer, false);
+        charactersAiring.add(new Pair<>(trainer, obs));
+        return obs
+                .observeOn(FX_SCHEDULER)
+                .map(image -> {
+                    setCharacterImage(trainer, image);
+                    Image resized = scaleImage(image, 384 * PREVIEW_SCALING, 96 * PREVIEW_SCALING);
+                    setCharacterResizedImage(trainer, resized);
+                    return useConstantValues ? resized : image;
+                });
+    }
+
+    private Observable<Image> getDownloadedImage(String trainer, boolean useConstantValues) {
+        if (useConstantValues) {
+            return Observable.just(charactersResized.stream()
+                    .filter(pair -> pair.getKey().equals(trainer))
+                    .findFirst()
+                    .map(Pair::getValue)
+                    .orElseThrow());
+        } else {
+            return Observable.just(characters.stream()
+                    .filter(pair -> pair.getKey().equals(trainer))
+                    .findFirst()
+                    .map(Pair::getValue)
+                    .orElseThrow());
+        }
+    }
+
+    private static Image scaleImage(Image input, @SuppressWarnings("SameParameterValue") int width, @SuppressWarnings("SameParameterValue") int height) {
+        imageView.setImage(input);
+        imageView.setPreserveRatio(true);
+        imageView.setFitWidth(width);
+        imageView.setFitHeight(height);
+        SnapshotParameters parameters = new SnapshotParameters();
+        parameters.setFill(Paint.valueOf("transparent"));
+        imageView.setCache(false);
+        return imageView.snapshot(parameters, null);
+    }
+
+    public void setTileset(TileSet tileSet) {
+        this.mapTileset = tileSet;
+    }
+
+    public void setMapImage(Image image) {
+        this.mapImage = image;
+    }
+
+    public TileSet getMapTileset() {
+        return this.mapTileset;
+    }
+
+    public Image getMapImage() {
+        return this.mapImage;
     }
 }

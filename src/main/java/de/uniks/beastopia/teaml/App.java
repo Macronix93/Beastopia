@@ -102,9 +102,6 @@ public class App extends Application {
                 mainComponent.prefs().getTheme()
         );
 
-        //TODO: remove this, restore login screen
-        //show(mainComponent.enemyBeastInfoController());
-        //show(mainComponent.encounterController());
         show(mainComponent.loginController());
     }
 
@@ -140,6 +137,7 @@ public class App extends Application {
             return;
         }
 
+        System.out.println("Showing " + controller.getClass().getSimpleName() + "...");
         controller.init();
         update();
     }
