@@ -470,13 +470,9 @@ public class IngameController extends Controller {
 
     private void checkOpponents(List<Opponent> opponents, Trainer trainer) {
         if (trainer.area().equals(cache.getTrainer().area())) {
-            //System.out.println("Trainer " + trainer.name() + " is in my area " + cache.getTrainer().area() + " and has started a fight!");
-
             disposables.add(encounterOpponentsService.getEncounterOpponents(cache.getJoinedRegion()._id(), opponents.get(0).encounter())
                     .observeOn(FX_SCHEDULER)
                     .subscribe(o -> {
-                        //System.out.println("There are " + o.size() + " opponents!");
-
                         if (o.size() == 3) {
                             for (Opponent opponent : o) {
                                 if (opponent.trainer().equals(trainer._id()) && !opponent.isAttacker()) {
@@ -769,25 +765,6 @@ public class IngameController extends Controller {
                     } else {
                         startEncounterOnTalk(trainer);
                     }
-
-                    /*if (trainer.npc() != null) {
-                        if (!(trainerOpponents.equals(List.of()))) {
-                            List<Opponent> allOpponents = encounterOpponentsService.getEncounterOpponents(cache.getJoinedRegion()._id(), trainerOpponents.get(0).encounter()).blockingFirst();
-
-                            if (allOpponents.size() == 3) {
-                                System.out.println("Join fight");
-                                talkToJoinFight(trainer);
-                            } else {
-                                System.out.println("fightingNPC");
-                                talkToFightingNPC(trainer);
-                            }
-                        } else {
-                            startEncounterOnTalk(trainer);
-                        }
-                        //startEncounterOnTalk(trainer);
-                    } else {
-                        startEncounterOnTalk(trainer);
-                    }*/
                 } else if (trainer.npc().starters() != null) {
                     talkToStartersNPC(trainer);
                 } else if (trainer.npc().canHeal()) {
