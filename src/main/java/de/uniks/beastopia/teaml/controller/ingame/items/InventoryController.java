@@ -93,7 +93,6 @@ public class InventoryController extends Controller {
                 .observeOn(FX_SCHEDULER)
                 .subscribe(itemList -> {
                     trainerItems = itemList;
-                    System.out.println(trainerItems.toString());
                     itemTrainerTypes.clear();
                     for (ItemTypeDto itemType : presetItemTypes) { //filter items
                         for (Item item : trainerItems) {
