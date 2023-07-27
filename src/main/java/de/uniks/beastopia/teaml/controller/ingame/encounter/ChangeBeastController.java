@@ -73,21 +73,23 @@ public class ChangeBeastController extends Controller {
         disposables.add(trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), cache.getTrainer()._id())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(monsters -> {
-                    for (Monster monster : monsters) {
-                        ChangeBeastElementController controller = changeBeastElementControllerProvider.get()
-                                .setMonster(monster)
-                                .setParentController(this);
+                    for (Monster teamMonster : monsters) {
+                        if (cache.getTrainer().team().contains(teamMonster._id())) {
+                            ChangeBeastElementController controller = changeBeastElementControllerProvider.get()
+                                    .setMonster(teamMonster)
+                                    .setParentController(this);
 
-                        subControllers.add(controller);
+                            subControllers.add(controller);
 
-                        if (monster._id().equals(currentMonster._id())) {
-                            currentMonster = monster;
+                            if (teamMonster._id().equals(currentMonster._id())) {
+                                currentMonster = teamMonster;
 
-                            fightingMonsters.add(monster);
-                            currentBeasts.getChildren().add(controller.render());
-                        } else {
-                            bankMonsters.add(monster);
-                            beastTeam.getChildren().add(controller.render());
+                                fightingMonsters.add(teamMonster);
+                                currentBeasts.getChildren().add(controller.render());
+                            } else {
+                                bankMonsters.add(teamMonster);
+                                beastTeam.getChildren().add(controller.render());
+                            }
                         }
                     }
 
