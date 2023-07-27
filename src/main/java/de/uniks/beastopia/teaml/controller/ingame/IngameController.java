@@ -475,6 +475,7 @@ public class IngameController extends Controller {
         cache.setTrainer(myTrainer);
         posx = myTrainer.x();
         posy = myTrainer.y();
+        playerController.setDirection(myTrainer.direction());
 
         return myTrainer;
     }
