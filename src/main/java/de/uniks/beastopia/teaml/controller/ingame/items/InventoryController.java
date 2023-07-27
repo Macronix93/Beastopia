@@ -19,13 +19,13 @@ import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public class InventoryController extends Controller {
 
-    private final Map<ItemTypeDto, Integer> itemMap = new HashMap<>();
-    private final List<ItemController> subControllers = new ArrayList<>();
     @FXML
     public VBox VBoxInvList;
     @FXML
@@ -47,7 +47,10 @@ public class InventoryController extends Controller {
     private Runnable onCloseRequest;
     public boolean isShop;
     private Consumer<ItemTypeDto> onItemClicked;
-    private List<ItemTypeDto> itemTypes = new ArrayList<>();
+    private final List<ItemTypeDto> itemTrainerTypes = new ArrayList<>();
+    private List<ItemTypeDto> presetItemTypes = new ArrayList<>();
+    private List<Item> trainerItems = new ArrayList<>();
+    private final List<ItemController> subControllers = new ArrayList<>();
 
     @Inject
     public InventoryController() {
@@ -63,16 +66,12 @@ public class InventoryController extends Controller {
             CloseButton.setDisable(true);
             CloseButton.setOpacity(0);
         }
-        itemTypes = presetsService.getItems().blockingFirst();
-        disposables.add(trainerItemsService.getItems(cache.getJoinedRegion()._id(), cache.getTrainer()._id())
-                .observeOn(FX_SCHEDULER).subscribe(
-                        i -> {
-                            itemMap.clear();
-                            cache.setItems(new ArrayList<>());
-                            cache.setItems(i);
-                            reload();
-                        }
-                ));
+        disposables.add(presetsService.getItems()
+                .observeOn(FX_SCHEDULER)
+                .subscribe(items -> {
+                    presetItemTypes = items;
+                    reload();
+                }));
 
         return parent;
     }
@@ -89,20 +88,38 @@ public class InventoryController extends Controller {
     }
 
     private void reload() {
-        for (Item item : cache.getItems()) {
-            if (item.amount() > 0) {
-                itemMap.put(itemTypes.get(item.type()), item.amount());
+        disposables.add(trainerItemsService.getItems(cache.getJoinedRegion()._id(), cache.getTrainer()._id())
+                .observeOn(FX_SCHEDULER)
+                .subscribe(itemList -> {
+                    trainerItems = itemList;
+                    System.out.println(trainerItems.toString());
+                    itemTrainerTypes.clear();
+                    for (ItemTypeDto itemType : presetItemTypes) { //filter items
+                        for (Item item : trainerItems) {
+                            if (itemType.id() == item.type() && item.amount() > 0) {
+                                itemTrainerTypes.add(itemType);
+                            }
+                        }
+                    }
+                    for (ItemTypeDto itemTypeDto : itemTrainerTypes) { //create subController
+                        ItemController itemController = itemControllerProvider.get().setItem(itemTypeDto);
+                        itemController.setScore(Objects.requireNonNull(findItem(itemTypeDto)).amount());
+                        itemController.setOnItemClicked(onItemClicked);
+                        itemController.init();
+                        subControllers.add(itemController);
+                        Parent parent = itemController.render();
+                        VBoxItems.getChildren().add(parent);
+                    }
+                }));
+    }
+
+    private Item findItem(ItemTypeDto itemTypeDto) {
+        for (Item item : trainerItems) {
+            if (item.type() == itemTypeDto.id()) {
+                return item;
             }
         }
-        for (ItemTypeDto itemTypeDto : itemMap.keySet()) {
-            ItemController itemController = itemControllerProvider.get().setItem(itemTypeDto);
-            itemController.setScore(itemMap.get(itemTypeDto));
-            itemController.setOnItemClicked(onItemClicked);
-            itemController.init();
-            subControllers.add(itemController);
-            Parent parent = itemController.render();
-            VBoxItems.getChildren().add(parent);
-        }
+        return null;
     }
 
     @Override

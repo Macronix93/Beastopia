@@ -105,42 +105,24 @@ public class ItemDetailController extends Controller {
 
     @FXML
     public void shopFunction() {
-        List<Item> items = cache.getItems();
         if (!buy) { //sell
             System.out.println("sell:" + itemType.id());
             disposables.add(trainerItemsService.updateItem(cache.getJoinedRegion()._id(), cache.getTrainer()._id(),
                     new UpdateItemDto(-1, itemType.id(), null)).observeOn(FX_SCHEDULER).subscribe(
                     itemUpdated -> {
-                        for (int i = 0; i < items.size(); i++) {
-                            if (items.get(i).type() == itemType.id()) {
-                                items.set(i, itemUpdated);
-                                cache.setItems(items);
-                                break;
-                            }
-                        }
                     }, error -> System.out.println("Error:" + error)));
         } else { //buy
             System.out.println("buy: " + itemType.id());
             disposables.add(trainerItemsService.updateItem(cache.getJoinedRegion()._id(), cache.getTrainer()._id(),
                     new UpdateItemDto(1, itemType.id(), null)).observeOn(FX_SCHEDULER).subscribe(
                     itemUpdated -> {
-                        for (int i = 0; i < items.size(); i++) {
-                            if (items.get(i).type() == itemType.id()) {
-                                items.set(i, itemUpdated);
-                                cache.setItems(items);
-                                break;
-                            }
-                        }
                     }, error -> System.out.println("Error:" + error)));
         }
         disposables.add(trainerService.getTrainer(cache.getJoinedRegion()._id(), cache.getTrainer()._id())
-                .observeOn(FX_SCHEDULER).subscribe(t -> {
-                    cache.setTrainer(t);
-                    //inventar close und dann openshopinv in ingame?
-                    this.inventoryController.updateInventory();
-                    this.inventoryController.showTrainerCoins();
-                    super.destroy();
-                }));
+                .observeOn(FX_SCHEDULER).subscribe(trainer -> {
+                    cache.setTrainer(trainer);
+                    inventoryController.updateInventory();
+                }, error -> System.out.println("Error:" + error)));
     }
 
     public void setInventoryController(InventoryController inventoryController) {
