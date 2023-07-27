@@ -84,6 +84,7 @@ public class InventoryController extends Controller {
         subControllers.forEach(Controller::destroy);
         subControllers.clear();
         VBoxItems.getChildren().clear();
+        showTrainerCoins();
         reload();
     }
 

@@ -1235,7 +1235,7 @@ public class IngameController extends Controller {
         openInventory(true);
     }
 
-    private void toggleInventoryItemDetails(ItemTypeDto itemTypeDto) {
+    public void toggleInventoryItemDetails(ItemTypeDto itemTypeDto) {
         if (Objects.equals(lastItemTypeDto, itemTypeDto)) {
             scoreBoardLayout.getChildren().remove(itemDetailParent);
             lastItemTypeDto = null;
@@ -1258,6 +1258,7 @@ public class IngameController extends Controller {
         lastItemTypeDto = itemTypeDto;
         ItemDetailController controller = itemDetailControllerProvider.get();
         controller.setInventoryController(inventoryController);
+        controller.setIngameController(this);
         subControllers.add(controller);
         controller.setItem(itemTypeDto);
         controller.setBooleanShop(booleanShop);

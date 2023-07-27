@@ -2,7 +2,7 @@ package de.uniks.beastopia.teaml.controller.ingame.items;
 
 import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
-import de.uniks.beastopia.teaml.rest.Item;
+import de.uniks.beastopia.teaml.controller.ingame.IngameController;
 import de.uniks.beastopia.teaml.rest.ItemTypeDto;
 import de.uniks.beastopia.teaml.rest.UpdateItemDto;
 import de.uniks.beastopia.teaml.service.DataCache;
@@ -18,7 +18,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
-import java.util.List;
 import java.util.Objects;
 
 public class ItemDetailController extends Controller {
@@ -48,6 +47,7 @@ public class ItemDetailController extends Controller {
     private boolean onlyInventory;
     private InventoryController inventoryController;
     private boolean buy;
+    private IngameController ingameController;
 
     public void setItem(ItemTypeDto itemType) {
         this.itemType = itemType;
@@ -123,9 +123,14 @@ public class ItemDetailController extends Controller {
                     cache.setTrainer(trainer);
                     inventoryController.updateInventory();
                 }, error -> System.out.println("Error:" + error)));
+        ingameController.toggleInventoryItemDetails(itemType);
     }
 
     public void setInventoryController(InventoryController inventoryController) {
         this.inventoryController = inventoryController;
+    }
+
+    public void setIngameController(IngameController ingameController) {
+        this.ingameController = ingameController;
     }
 }
