@@ -108,7 +108,9 @@ public class InventoryController extends Controller {
                         itemController.init();
                         subControllers.add(itemController);
                         Parent parent = itemController.render();
-                        VBoxItems.getChildren().add(parent);
+                        if (!VBoxItems.getChildren().contains(parent)) {
+                            VBoxItems.getChildren().add(parent);
+                        }
                     }
                 }));
     }
