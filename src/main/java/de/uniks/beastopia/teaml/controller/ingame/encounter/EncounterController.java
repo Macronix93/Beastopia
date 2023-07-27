@@ -395,7 +395,7 @@ public class EncounterController extends Controller {
                 .observeOn(FX_SCHEDULER)
                 .subscribe(o -> {
                     // When there is no opponent registered on the server anymore = lose
-                    if (o.size() == 0) {
+                    if (o.isEmpty()) {
                         beastInfoController1.hpLabel.setText("0 / " + ownMonster.attributes().health() + " (HP)");
                         beastInfoController1.setLifeBarValue(0);
 
