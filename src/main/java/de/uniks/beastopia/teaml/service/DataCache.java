@@ -55,6 +55,7 @@ public class DataCache {
     PresetsService presetsService;
     private TileSet mapTileset;
     private Image mapImage;
+    private List<Item> items;
 
     @Inject
     public DataCache() {
@@ -450,5 +451,13 @@ public class DataCache {
 
     public Image getMapImage() {
         return this.mapImage;
+    }
+
+    public void setItems(List<Item> i) {
+        this.items = i;
+    }
+
+    public List<Item> getItems() {
+        return this.items;
     }
 }

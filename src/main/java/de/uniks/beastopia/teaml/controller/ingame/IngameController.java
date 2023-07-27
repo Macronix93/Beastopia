@@ -1257,6 +1257,7 @@ public class IngameController extends Controller {
     private void setItemDetailController(ItemTypeDto itemTypeDto, boolean booleanShop, boolean onlyInventory) {
         lastItemTypeDto = itemTypeDto;
         ItemDetailController controller = itemDetailControllerProvider.get();
+        controller.setInventoryController(inventoryController);
         subControllers.add(controller);
         controller.setItem(itemTypeDto);
         controller.setBooleanShop(booleanShop);
@@ -1267,8 +1268,10 @@ public class IngameController extends Controller {
         itemDetailParent = controller.render();
         if (booleanShop) {
             shopLayout.getChildren().add(1, itemDetailParent);
+            shopLayout.toFront();
         } else {
             scoreBoardLayout.getChildren().add(0, itemDetailParent);
+            scoreBoardLayout.toFront();
         }
     }
 

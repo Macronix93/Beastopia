@@ -47,6 +47,7 @@ public class InventoryController extends Controller {
     private Runnable onCloseRequest;
     public boolean isShop;
     private Consumer<ItemTypeDto> onItemClicked;
+    private List<ItemTypeDto> itemTypes = new ArrayList<>();
 
     @Inject
     public InventoryController() {
@@ -62,14 +63,13 @@ public class InventoryController extends Controller {
             CloseButton.setDisable(true);
             CloseButton.setOpacity(0);
         }
-        List<ItemTypeDto> itemTypes = presetsService.getItems().blockingFirst();
+        itemTypes = presetsService.getItems().blockingFirst();
         disposables.add(trainerItemsService.getItems(cache.getJoinedRegion()._id(), cache.getTrainer()._id())
                 .observeOn(FX_SCHEDULER).subscribe(
                         i -> {
                             itemMap.clear();
-                            for (Item item : i) {
-                                itemMap.put(itemTypes.get(item.type()), item.amount());
-                            }
+                            cache.setItems(new ArrayList<>());
+                            cache.setItems(i);
                             reload();
                         }
                 ));
@@ -81,7 +81,19 @@ public class InventoryController extends Controller {
         inv.setText(resources.getString("inv") + "\t" + cache.getTrainer().coins());
     }
 
+    public void updateInventory() {
+        subControllers.forEach(Controller::destroy);
+        subControllers.clear();
+        VBoxItems.getChildren().clear();
+        reload();
+    }
+
     private void reload() {
+        for (Item item : cache.getItems()) {
+            if (item.amount() > 0) {
+                itemMap.put(itemTypes.get(item.type()), item.amount());
+            }
+        }
         for (ItemTypeDto itemTypeDto : itemMap.keySet()) {
             ItemController itemController = itemControllerProvider.get().setItem(itemTypeDto);
             itemController.setScore(itemMap.get(itemTypeDto));
