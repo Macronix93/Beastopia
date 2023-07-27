@@ -5,11 +5,7 @@ import de.uniks.beastopia.teaml.controller.menu.MenuController;
 import de.uniks.beastopia.teaml.rest.Achievement;
 import de.uniks.beastopia.teaml.rest.Region;
 import de.uniks.beastopia.teaml.rest.Trainer;
-import de.uniks.beastopia.teaml.service.AchievementsService;
-import de.uniks.beastopia.teaml.service.DataCache;
-import de.uniks.beastopia.teaml.service.PresetsService;
-import de.uniks.beastopia.teaml.service.TokenStorage;
-import de.uniks.beastopia.teaml.service.TrainerService;
+import de.uniks.beastopia.teaml.service.*;
 import de.uniks.beastopia.teaml.utils.Dialog;
 import de.uniks.beastopia.teaml.utils.LoadingPage;
 import javafx.beans.property.IntegerProperty;
@@ -175,10 +171,7 @@ public class TrainerController extends Controller {
                     disposables.add(delay().subscribe(t -> {
                         for (Pair<String, Image> pair : cache.getCharacters()) {
                             if (cache.getCharacterImage(pair.getKey()).getValue() == null) {
-                                disposables.add(presetsService.getCharacterSprites(pair.getKey(), 3).subscribe(image -> {
-                                    cache.setCharacterImage(pair.getKey(), image);
-                                    onUI(this::updateImages);
-                                }));
+                                disposables.add(cache.getOrLoadTrainerImage(pair.getKey(), true).subscribe(image -> onUI(this::updateImages)));
                             }
                         }
                     }));
@@ -188,24 +181,32 @@ public class TrainerController extends Controller {
 
     private void showTrainers() {
         if (trainer == null) {
-            showTrainerSpritePreview(cache.getCharacters().get(0).getKey(), cache.getCharacters().get(0).getValue());
+            disposables.add(cache.getOrLoadTrainerImage(cache.getCharacters().get(0).getKey(), true)
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe(image -> showTrainerSpritePreview(cache.getCharacters().get(0).getKey(), image)));
         } else {
-            showTrainerSpritePreview(cache.getCharacterImage(trainer.image()).getKey(), cache.getCharacterImage(trainer.image()).getValue());
+            disposables.add(cache.getOrLoadTrainerImage(trainer.image(), true)
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe(image -> {
+                        showTrainerSpritePreview(cache.getCharacterImage(trainer.image()).getKey(), image);
+                        // Find index of the found trainer
+                        currentIndex.set(IntStream.range(0, cache.getCharacters().size())
+                                .filter(i -> cache.getCharacters().get(i).getKey().equals(trainer.image()))
+                                .findFirst()
+                                .orElse(-1));
 
-            // Find index of the found trainer
-            currentIndex.set(IntStream.range(0, cache.getCharacters().size())
-                    .filter(i -> cache.getCharacters().get(i).getKey().equals(trainer.image()))
-                    .findFirst()
-                    .orElse(-1));
+                        trainerNameInput.setText(trainer.name());
+                        trainerNameInput.positionCaret(trainer.name().length());
+                    }));
 
-            trainerNameInput.setText(trainer.name());
-            trainerNameInput.positionCaret(trainer.name().length());
         }
     }
 
     private void updateImages() {
         Pair<String, Image> pair = cache.getCharacterImage(currentSprite);
-        showTrainerSpritePreview(pair.getKey(), pair.getValue());
+        disposables.add(cache.getOrLoadTrainerImage(pair.getKey(), true)
+                .observeOn(FX_SCHEDULER)
+                .subscribe(image -> showTrainerSpritePreview(pair.getKey(), image)));
     }
 
     @Override
@@ -221,10 +222,14 @@ public class TrainerController extends Controller {
             currentIndex.set(cache.getCharacters().size() - 1);
         }
 
-        showTrainerSpritePreview(
-                cache.getCharacters().get(currentIndex.get()).getKey(),
-                cache.getCharacters().get(currentIndex.get()).getValue()
-        );
+        disposables.add(cache.getOrLoadTrainerImage(cache.getCharacters().get(currentIndex.get()).getKey(), true)
+                .observeOn(FX_SCHEDULER)
+                .subscribe(image -> {
+                    showTrainerSpritePreview(
+                            cache.getCharacters().get(currentIndex.get()).getKey(),
+                            image
+                    );
+                }));
     }
 
     @FXML
@@ -235,10 +240,14 @@ public class TrainerController extends Controller {
             currentIndex.set(0);
         }
 
-        showTrainerSpritePreview(
-                cache.getCharacters().get(currentIndex.get()).getKey(),
-                cache.getCharacters().get(currentIndex.get()).getValue()
-        );
+        disposables.add(cache.getOrLoadTrainerImage(cache.getCharacters().get(currentIndex.get()).getKey(), true)
+                .observeOn(FX_SCHEDULER)
+                .subscribe(image -> {
+                    showTrainerSpritePreview(
+                            cache.getCharacters().get(currentIndex.get()).getKey(),
+                            image
+                    );
+                }));
     }
 
     @SuppressWarnings("UnusedReturnValue")

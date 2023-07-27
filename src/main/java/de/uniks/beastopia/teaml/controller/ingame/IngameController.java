@@ -9,6 +9,9 @@ import de.uniks.beastopia.teaml.controller.ingame.beast.EditBeastTeamController;
 import de.uniks.beastopia.teaml.controller.ingame.encounter.FightWildBeastController;
 import de.uniks.beastopia.teaml.controller.ingame.encounter.JoinFightInfoController;
 import de.uniks.beastopia.teaml.controller.ingame.encounter.StartFightNPCController;
+import de.uniks.beastopia.teaml.controller.ingame.items.InventoryController;
+import de.uniks.beastopia.teaml.controller.ingame.items.ItemDetailController;
+import de.uniks.beastopia.teaml.controller.ingame.items.ShopController;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
 import de.uniks.beastopia.teaml.rest.Achievement;
 import de.uniks.beastopia.teaml.rest.Area;
@@ -16,30 +19,11 @@ import de.uniks.beastopia.teaml.rest.Chunk;
 import de.uniks.beastopia.teaml.rest.Encounter;
 import de.uniks.beastopia.teaml.rest.Layer;
 import de.uniks.beastopia.teaml.rest.Map;
-import de.uniks.beastopia.teaml.rest.Monster;
-import de.uniks.beastopia.teaml.rest.MonsterTypeDto;
-import de.uniks.beastopia.teaml.rest.MoveTrainerDto;
-import de.uniks.beastopia.teaml.rest.Opponent;
-import de.uniks.beastopia.teaml.rest.Region;
-import de.uniks.beastopia.teaml.rest.TileSet;
-import de.uniks.beastopia.teaml.rest.TileSetDescription;
-import de.uniks.beastopia.teaml.rest.Trainer;
-import de.uniks.beastopia.teaml.service.AchievementsService;
-import de.uniks.beastopia.teaml.service.AreaService;
-import de.uniks.beastopia.teaml.service.DataCache;
-import de.uniks.beastopia.teaml.service.EncounterOpponentsService;
-import de.uniks.beastopia.teaml.service.PresetsService;
-import de.uniks.beastopia.teaml.service.RegionEncountersService;
-import de.uniks.beastopia.teaml.service.TokenStorage;
-import de.uniks.beastopia.teaml.service.TrainerService;
+import de.uniks.beastopia.teaml.rest.*;
+import de.uniks.beastopia.teaml.service.*;
 import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.sockets.UDPEventListener;
-import de.uniks.beastopia.teaml.utils.Dialog;
-import de.uniks.beastopia.teaml.utils.Direction;
-import de.uniks.beastopia.teaml.utils.LoadingPage;
-import de.uniks.beastopia.teaml.utils.PlayerState;
-import de.uniks.beastopia.teaml.utils.Prefs;
-import de.uniks.beastopia.teaml.utils.SoundController;
+import de.uniks.beastopia.teaml.utils.*;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
@@ -61,16 +45,7 @@ import javafx.util.Pair;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static de.uniks.beastopia.teaml.service.PresetsService.PREVIEW_SCALING;
@@ -81,7 +56,13 @@ public class IngameController extends Controller {
     static final int MENU_SCOREBOARD = 1;
     static final int MENU_BEASTLIST = 2;
     static final int MENU_PAUSE = 3;
+    static final int MENU_SHOP = 4;
+    static final int MENU_INVENTORY = 5;
     static final int MENU_DIALOGWINDOW = 3;
+    static final long FLIPPED_HORIZONTALLY_FLAG = 1L << 31;
+    static final long FLIPPED_VERTICALLY_FLAG = 1L << 30;
+    static final long FLIPPED_DIAGONALLY_FLAG = 1L << 29;
+    static final long ROTATED_HEXAGONAL_120_FLAG = 1L << 28;
 
     @FXML
     public Pane tilePane;
@@ -91,6 +72,16 @@ public class IngameController extends Controller {
     private StackPane pauseMenuLayout;
     @FXML
     private Button pauseHint;
+    @FXML
+    private Button beastlistHint;
+    @FXML
+    private Button scoreboardHint;
+    @FXML
+    private Button mapHint;
+    @FXML
+    private Button invHint;
+    @FXML
+    private HBox shopLayout;
     @Inject
     App app;
     @Inject
@@ -108,9 +99,14 @@ public class IngameController extends Controller {
     @Inject
     BeastListController beastListController;
     @Inject
+    ShopController shopController;
+    @Inject
+    InventoryController inventoryController;
+    @Inject
     Provider<BeastDetailController> beastDetailControllerProvider;
     @Inject
     Provider<DialogWindowController> dialogWindowControllerProvider;
+    @Inject
     Provider<EditBeastTeamController> editBeastTeamControllerProvider;
     @Inject
     Provider<EntityController> entityControllerProvider;
@@ -118,6 +114,8 @@ public class IngameController extends Controller {
     Provider<MapController> mapControllerProvider;
     @Inject
     Provider<JoinFightInfoController> joinFightInfoControllerProvider;
+    @Inject
+    Provider<ItemDetailController> itemDetailControllerProvider;
     @Inject
     Prefs prefs;
     @Inject
@@ -153,33 +151,31 @@ public class IngameController extends Controller {
     private LoadingPage loadingPage;
     private final List<Controller> subControllers = new ArrayList<>();
     private Monster lastMonster;
+    private ItemTypeDto lastItemTypeDto;
     private int currentMenu = MENU_NONE;
-
+    private final java.util.Map<Pair<Integer, Integer>, Tile> MAP_INFO = new HashMap<>();
     Direction direction;
     final ObjectProperty<PlayerState> state = new SimpleObjectProperty<>();
     Parent player;
     Parent beastListParent;
     Parent beastDetailParent;
+    Parent itemDetailParent;
     EntityController playerController;
     SoundController soundController;
     Parent scoreBoardParent;
     Parent pauseMenuParent;
     Parent dialogWindowParent;
+    Parent shopParent;
+    Parent inventoryParent;
     final java.util.Map<EntityController, Parent> otherPlayers = new HashMap<>();
     private final List<KeyCode> pressedKeys = new ArrayList<>();
     private final String[] locationStrings = {"Moncenter", "House", "Store"};
     private long lastValueChangeTime = 0;
     private DialogWindowController dialogWindowController;
+    private Timer timer;
 
     @Inject
     public IngameController() {
-        Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                moveLoop();
-            }
-        }, 0, 100);
     }
 
     /**
@@ -188,6 +184,19 @@ public class IngameController extends Controller {
     @Override
     public void init() {
         super.init();
+
+        timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                moveLoop();
+            }
+        }, 0, 100);
+
+        if (cache.getMapImage() == null || cache.getMapTileset() == null) {
+            cache.setTileset(presetsService.getTileset(cache.getJoinedRegion().map().tilesets().get(0)).blockingFirst());
+            cache.setMapImage(presetsService.getImage(cache.getMapTileset()).blockingFirst());
+        }
 
         scoreBoardController.setOnCloseRequested(() -> {
             scoreBoardLayout.getChildren().remove(scoreBoardParent);
@@ -315,6 +324,12 @@ public class IngameController extends Controller {
                         error -> System.err.println("Fehler: " + error.getMessage())
                 )
         );
+
+        pauseHint.toFront();
+        beastlistHint.toFront();
+        scoreboardHint.toFront();
+        mapHint.toFront();
+        invHint.toFront();
     }
 
     private void openFightNPCScreen(Encounter encounter) {
@@ -406,7 +421,6 @@ public class IngameController extends Controller {
                             }
 
                             beastListParent = beastListController.render();
-                            scoreBoardParent = scoreBoardController.render();
                             pauseMenuParent = pauseController.render();
                             loadRemoteTrainer(trainers);
                             listenToTrainerEvents();
@@ -556,51 +570,39 @@ public class IngameController extends Controller {
         for (Layer layer : map.layers()) {
             if (layer.chunks() != null) {
                 for (Chunk chunk : layer.chunks()) {
-                    int chunkX = chunk.x();
-                    int chunkY = chunk.y();
-                    int index = 0;
-                    for (int id : chunk.data()) {
-                        int x = index % chunk.width() + chunkX;
-                        int y = index / chunk.width() + chunkY;
-                        index++;
-                        Pair<Pair<TileSet, Image>, Integer> tileSet = findTileSet(id);
-                        if (tileSet == null) {
-                            continue;
-                        }
-
-                        // Some maps have "invalid" (or blank tiles) with ID 0 which we don't want to draw
-                        // This is to prevent the camera from showing the "extended" tile pane with those tiles
-                        if (id != 0) {
-                            drawTile(x, y, tileSet.getKey().getValue(), presetsService.getTileViewPort(tileSet.getValue(), tileSet.getKey().getKey()));
-                        }
-                    }
+                    layTiles(chunk.x(), chunk.y(), chunk.data(), chunk.width());
                 }
             } else if (layer.data() != null) {
-                int chunkX = layer.x();
-                int chunkY = layer.y();
-                int index = 0;
-                for (int id : layer.data()) {
-                    int x = index % layer.width() + chunkX;
-                    int y = index / layer.width() + chunkY;
-                    index++;
-                    Pair<Pair<TileSet, Image>, Integer> tileSet = findTileSet(id);
-                    if (tileSet == null) {
-                        continue;
-                    }
-
-                    // Some maps have "invalid" (or blank tiles) with ID 0 which we don't want to draw
-                    // This is to prevent the camera from showing the "extended" tile pane with those tiles
-                    if (id != 0) {
-                        drawTile(x, y, tileSet.getKey().getValue(), presetsService.getTileViewPort(tileSet.getValue(), tileSet.getKey().getKey()));
-                    }
-                }
+                layTiles(layer.x(), layer.y(), layer.data(), layer.width());
             }
         }
 
         updateOrigin();
     }
 
-    private Pair<Pair<TileSet, Image>, Integer> findTileSet(int id) {
+    private void layTiles(int chunkX, int chunkY, List<Long> data, int width) {
+        int index = 0;
+        for (long id : data) {
+            int x = index % width + chunkX;
+            int y = index / width + chunkY;
+            index++;
+            long localID = id & ~(FLIPPED_HORIZONTALLY_FLAG | FLIPPED_VERTICALLY_FLAG | FLIPPED_DIAGONALLY_FLAG | ROTATED_HEXAGONAL_120_FLAG);
+            Pair<Pair<TileSet, Image>, Long> tileSet = findTileSet(localID);
+            if (tileSet == null) {
+                continue;
+            }
+
+            // Some maps have "invalid" (or blank tiles) with ID 0 which we don't want to draw
+            // This is to prevent the camera from showing the "extended" tile pane with those tiles
+            if (id != 0) {
+                List<Tile> tileInformation = tileSet.getKey().getKey().tiles();
+                tileInformation.stream().filter(t -> t.id() == tileSet.getValue()).findFirst().ifPresent(tile -> MAP_INFO.put(new Pair<>(x, y), tile));
+                drawTile(id, x, y, tileSet.getKey().getValue(), presetsService.getTileViewPort(tileSet.getValue(), tileSet.getKey().getKey()));
+            }
+        }
+    }
+
+    private Pair<Pair<TileSet, Image>, Long> findTileSet(long id) {
         id++;
         for (int i = tileSets.size() - 1; i >= 0; i--) {
             Pair<TileSetDescription, Pair<TileSet, Image>> tileSet = tileSets.get(i);
@@ -611,15 +613,33 @@ public class IngameController extends Controller {
         return null;
     }
 
-    private void drawTile(int x, int y, Image image, Rectangle2D viewPort) {
+    private void drawTile(long ID, int x, int y, Image image, Rectangle2D viewPort) {
+        boolean flippedHorizontally = (ID & FLIPPED_HORIZONTALLY_FLAG) != 0;
+        boolean flippedVertically = (ID & FLIPPED_VERTICALLY_FLAG) != 0;
+        boolean flippedDiagonally = (ID & FLIPPED_DIAGONALLY_FLAG) != 0;
+
         ImageView view = new ImageView();
         view.setSmooth(true);
-        view.setImage(image);
         view.setFitWidth(TILE_SIZE + 1);
         view.setFitHeight(TILE_SIZE + 1);
         view.setViewport(viewPort);
         view.setTranslateX(x * TILE_SIZE);
         view.setTranslateY(y * TILE_SIZE);
+        view.setImage(image);
+
+        if (flippedDiagonally) {
+            view.setScaleX(-1);
+            view.setRotate(90);
+        }
+
+        if (flippedHorizontally) {
+            view.setScaleX(-1);
+        }
+
+        if (flippedVertically) {
+            view.setScaleY(-1);
+        }
+
         tilePane.getChildren().add(view);
     }
 
@@ -656,7 +676,9 @@ public class IngameController extends Controller {
     }
 
     public void updateOrigin() {
-        setOrigin(posx, posy);
+        if (tilePane != null) {
+            setOrigin(posx, posy);
+        }
     }
 
     private void drawPlayer(int posx, int posy) {
@@ -729,6 +751,21 @@ public class IngameController extends Controller {
         data.add("y", new JsonPrimitive(posy));
         data.add("direction", new JsonPrimitive(direction.ordinal()));
 
+        Pair<Integer, Integer> posXY = new Pair<>(posx, posy);
+        if (MAP_INFO.containsKey(posXY)) {
+            Tile tile = MAP_INFO.get(posXY);
+            Optional<TileProperty> jumpableTileProp = tile.properties().stream().filter(tileProperty -> tileProperty.name().equals("Jumpable")).findFirst();
+            if (jumpableTileProp.isPresent()) {
+                int jumpDirection = Integer.parseInt(jumpableTileProp.get().value());
+                if (jumpDirection == direction.ordinal()) {
+                    state.setValue(PlayerState.JUMP);
+                    drawPlayer(posx, posy);
+                    movePlayer(posx, posy);
+                    updateOrigin();
+                }
+            }
+        }
+
         JsonObject message = new JsonObject();
         message.add("event", new JsonPrimitive("areas." + trainer.area() + ".trainers." + trainer._id() + ".moved"));
         message.add("data", data);
@@ -743,6 +780,7 @@ public class IngameController extends Controller {
         handlePauseMenu(keyEvent);
         handleScoreboard(keyEvent);
         handleBeastList(keyEvent);
+        handleInventory(keyEvent);
         handleBeastTeam(keyEvent);
         handleTalkToTrainer(keyEvent);
     }
@@ -769,6 +807,8 @@ public class IngameController extends Controller {
                     talkToStartersNPC(trainer);
                 } else if (trainer.npc().canHeal()) {
                     talkToNurse(trainer);
+                } else if (trainer.npc().sells() != null) {
+                    openShop(trainer);
                 }
             } else {
                 closeTalk();
@@ -818,7 +858,7 @@ public class IngameController extends Controller {
     }
 
     private void startEncounterOnTalk(Trainer trainer) {
-        disposables.add(presetsService.getCharacterSprites(trainer.image(), PREVIEW_SCALING)
+        disposables.add(cache.getOrLoadTrainerImage(trainer.image(), false)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(image -> {
                     Rectangle2D viewPort = new Rectangle2D(48 * PREVIEW_SCALING, 0, 16 * PREVIEW_SCALING, 32 * PREVIEW_SCALING);
@@ -844,7 +884,7 @@ public class IngameController extends Controller {
     }
 
     private void talkToFightingNPC(Trainer trainer) {
-        disposables.add(presetsService.getCharacterSprites(trainer.image(), PREVIEW_SCALING)
+        disposables.add(cache.getOrLoadTrainerImage(trainer.image(), false)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(image -> {
                     Rectangle2D viewPort = new Rectangle2D(48 * PREVIEW_SCALING, 0, 16 * PREVIEW_SCALING, 32 * PREVIEW_SCALING);
@@ -856,7 +896,7 @@ public class IngameController extends Controller {
     }
 
     private void talkToStartersNPC(Trainer trainer) {
-        disposables.add(presetsService.getCharacterSprites(trainer.image(), PREVIEW_SCALING)
+        disposables.add(cache.getOrLoadTrainerImage(trainer.image(), false)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(image -> {
                     Rectangle2D viewPort = new Rectangle2D(48 * PREVIEW_SCALING, 0, 16 * PREVIEW_SCALING, 32 * PREVIEW_SCALING);
@@ -892,7 +932,7 @@ public class IngameController extends Controller {
     }
 
     private void talkToNurse(Trainer trainer) {
-        disposables.add(presetsService.getCharacterSprites(trainer.image(), PREVIEW_SCALING)
+        disposables.add(cache.getOrLoadTrainerImage(trainer.image(), true)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(image -> {
                     Rectangle2D viewPort = new Rectangle2D(48 * PREVIEW_SCALING, 0, 16 * PREVIEW_SCALING, 32 * PREVIEW_SCALING);
@@ -936,6 +976,12 @@ public class IngameController extends Controller {
     public void handleBeastList(KeyEvent keyEvent) {
         if (keyEvent.getCode().equals(KeyCode.B) && (currentMenu == MENU_NONE || currentMenu == MENU_BEASTLIST)) {
             openBeastlist();
+        }
+    }
+
+    public void handleInventory(KeyEvent keyEvent) {
+        if (keyEvent.getCode().equals(KeyCode.I) && (currentMenu == MENU_NONE || currentMenu == MENU_INVENTORY)) {
+            openInventory(false);
         }
     }
 
@@ -1026,7 +1072,7 @@ public class IngameController extends Controller {
         state.setValue(PlayerState.IDLE);
         drawPlayer(posx, posy);
 
-        if (currentMenu == MENU_PAUSE) {
+        if (currentMenu == MENU_PAUSE || currentMenu == MENU_SHOP) {
             player.setOpacity(0.5);
         }
     }
@@ -1113,6 +1159,11 @@ public class IngameController extends Controller {
         openPauseMenu();
     }
 
+    @FXML
+    void clickOnInventoryButton() {
+        openInventory(false);
+    }
+
     public void openBeastlist() {
         if (scoreBoardLayout.getChildren().contains(beastListParent)) {
             scoreBoardLayout.getChildren().remove(beastListParent);
@@ -1126,25 +1177,169 @@ public class IngameController extends Controller {
     }
 
     public void openScoreboard() {
-        if (scoreBoardLayout.getChildren().contains(scoreBoardParent)) {
+        if (scoreBoardParent != null && scoreBoardLayout.getChildren().contains(scoreBoardParent)) {
             scoreBoardLayout.getChildren().remove(scoreBoardParent);
+            scoreBoardController.destroy();
+            scoreBoardParent = null;
             currentMenu = MENU_NONE;
         } else {
+            scoreBoardParent = scoreBoardController.render();
             scoreBoardLayout.getChildren().add(scoreBoardParent);
             currentMenu = MENU_SCOREBOARD;
         }
     }
 
+    public void openInventory(boolean isShop) {
+        if (!isShop) {
+            openInventory();
+        } else {
+            openShopInventory();
+        }
+    }
+
+    public void openInventory() {
+        if (scoreBoardLayout.getChildren().contains(inventoryParent)) {
+            scoreBoardLayout.getChildren().remove(inventoryParent);
+            currentMenu = MENU_NONE;
+        } else {
+            currentMenu = MENU_INVENTORY;
+            if (scoreBoardLayout.getChildren().contains(scoreBoardLayout)) {
+                scoreBoardLayout.getChildren().remove(scoreBoardParent);
+                currentMenu = MENU_NONE;
+            } else if (scoreBoardLayout.getChildren().contains(beastListParent)) {
+                scoreBoardLayout.getChildren().remove(beastListParent);
+                currentMenu = MENU_NONE;
+            } else {
+                inventoryController.init();
+                inventoryController.setIfShop(false);
+                inventoryController.setOnItemClicked(this::toggleInventoryItemDetails);
+                inventoryController.setOnCloseRequest(() -> {
+                    setCloseRequests(scoreBoardLayout, inventoryParent);
+                    lastMonster = null;
+                    setCloseRequests(scoreBoardLayout, itemDetailParent);
+                });
+                inventoryParent = inventoryController.render();
+                scoreBoardLayout.getChildren().add(inventoryParent);
+            }
+        }
+    }
+
+    public void setOpacities(int value) {
+        pauseHint.setOpacity(value);
+        pauseHint.setDisable(value == 0);
+        beastlistHint.setOpacity(value);
+        beastlistHint.setDisable(value == 0);
+        scoreboardHint.setOpacity(value);
+        scoreboardHint.setDisable(value == 0);
+        mapHint.setOpacity(value);
+        mapHint.setDisable(value == 0);
+        invHint.setOpacity(value);
+        invHint.setDisable(value == 0);
+    }
+
+    public void openShopInventory() {
+        setOpacities(0);
+        for (Node tile : tilePane.getChildren()) {
+            if (tile instanceof ImageView imageView) {
+                imageView.setFitWidth(TILE_SIZE);
+                imageView.setFitHeight(TILE_SIZE);
+            }
+            tile.setOpacity(0.5);
+        }
+        if (scoreBoardLayout.getChildren().contains(scoreBoardLayout)) {
+            scoreBoardLayout.getChildren().remove(scoreBoardParent);
+            currentMenu = MENU_NONE;
+        } else if (scoreBoardLayout.getChildren().contains(beastListParent)) {
+            scoreBoardLayout.getChildren().remove(beastListParent);
+            currentMenu = MENU_NONE;
+        } else if (scoreBoardLayout.getChildren().contains(inventoryParent)) {
+            scoreBoardLayout.getChildren().remove(inventoryParent);
+            currentMenu = MENU_NONE;
+        } else {
+            inventoryController.init();
+            inventoryController.setIfShop(true);
+            inventoryController.setOnItemClicked(this::toggleInventoryItemDetails);
+            inventoryController.setOnCloseRequest(() -> {
+                setCloseRequests(scoreBoardLayout, inventoryParent);
+                lastMonster = null;
+                setCloseRequests(scoreBoardLayout, itemDetailParent);
+                inventoryController.destroy();
+            });
+            inventoryParent = inventoryController.render();
+            scoreBoardLayout.getChildren().add(inventoryParent);
+        }
+    }
+
+    public void setCloseRequests(HBox hBox, Parent parent) {
+        closePause();
+        hBox.getChildren().remove(parent);
+        currentMenu = MENU_NONE;
+        setOpacities(1);
+    }
+
+    public void openShop(Trainer trainer) {
+        shopController.init();
+        shopController.setTrainer(trainer);
+        for (Node tile : tilePane.getChildren()) {
+            if (tile instanceof ImageView imageView) {
+                imageView.setFitWidth(TILE_SIZE);
+                imageView.setFitHeight(TILE_SIZE);
+            }
+            tile.setOpacity(0.5);
+        }
+        setOpacities(0);
+        shopController.setOnItemClicked(this::toggleShopItemDetails);
+        shopController.setOnCloseRequest(() -> {
+            setCloseRequests(shopLayout, shopParent);
+            inventoryController.close();
+            inventoryController.destroy();
+            setCloseRequests(shopLayout, itemDetailParent);
+            shopController.destroy();
+        });
+        shopParent = shopController.render();
+        shopLayout.getChildren().add(shopParent);
+        currentMenu = MENU_SHOP;
+        openInventory(true);
+    }
+
+    private void toggleInventoryItemDetails(ItemTypeDto itemTypeDto) {
+        if (Objects.equals(lastItemTypeDto, itemTypeDto)) {
+            scoreBoardLayout.getChildren().remove(itemDetailParent);
+            lastItemTypeDto = null;
+            return;
+        }
+        setItemDetailController(itemTypeDto, false);
+    }
+
+    private void toggleShopItemDetails(ItemTypeDto itemTypeDto) {
+        if (Objects.equals(lastItemTypeDto, itemTypeDto)) {
+            shopLayout.getChildren().remove(itemDetailParent);
+            lastItemTypeDto = null;
+            return;
+        }
+        setItemDetailController(itemTypeDto, true);
+    }
+
+    private void setItemDetailController(ItemTypeDto itemTypeDto, boolean booleanShop) {
+        lastItemTypeDto = itemTypeDto;
+        ItemDetailController controller = itemDetailControllerProvider.get();
+        subControllers.add(controller);
+        controller.setItem(itemTypeDto);
+        controller.setBooleanShop(booleanShop);
+        controller.init();
+        scoreBoardLayout.getChildren().remove(itemDetailParent);
+        shopLayout.getChildren().remove(itemDetailParent);
+        itemDetailParent = controller.render();
+        if (booleanShop) {
+            shopLayout.getChildren().add(1, itemDetailParent);
+        } else {
+            scoreBoardLayout.getChildren().add(0, itemDetailParent);
+        }
+    }
+
     public void openPauseMenu() {
         if (pauseMenuLayout.getChildren().contains(pauseMenuParent)) {
-            for (Node tile : tilePane.getChildren()) {
-                if (tile instanceof ImageView imageView) {
-                    imageView.setFitWidth(TILE_SIZE + 1);
-                    imageView.setFitHeight(TILE_SIZE + 1);
-                }
-                tile.setOpacity(1);
-            }
-            pauseHint.setOpacity(1);
+            closePause();
             pauseMenuLayout.getChildren().remove(pauseMenuParent);
             currentMenu = MENU_NONE;
         } else {
@@ -1161,6 +1356,17 @@ public class IngameController extends Controller {
         }
     }
 
+    public void closePause() {
+        for (Node tile : tilePane.getChildren()) {
+            if (tile instanceof ImageView imageView) {
+                imageView.setFitWidth(TILE_SIZE + 1);
+                imageView.setFitHeight(TILE_SIZE + 1);
+            }
+            tile.setOpacity(1);
+        }
+        pauseHint.setOpacity(1);
+    }
+
     @Override
     public String getTitle() {
         return resources.getString("titleIngame");
@@ -1168,18 +1374,37 @@ public class IngameController extends Controller {
 
     @Override
     public void destroy() {
-        super.destroy();
+        timer.cancel();
         playerController.destroy();
         scoreBoardController.destroy();
         beastListController.destroy();
+        shopController.destroy();
+
         if (dialogWindowController != null) {
             dialogWindowController.destroy();
         }
+
         for (Controller controller : subControllers) {
             controller.destroy();
         }
+        subControllers.clear();
+
         for (EntityController controller : otherPlayers.keySet()) {
             controller.destroy();
         }
+        otherPlayers.clear();
+
+        tilePane.getChildren().clear();
+        loadingPage = null;
+        player = null;
+        beastListParent = null;
+        beastDetailParent = null;
+        playerController = null;
+        soundController = null;
+        scoreBoardParent = null;
+        pauseMenuParent = null;
+        dialogWindowParent = null;
+        tilePane = null;
+        super.destroy();
     }
 }

@@ -44,11 +44,11 @@ public class PresetsService {
                 .map((ResponseBody body) -> new Gson().fromJson(body.string(), TileSet.class));
     }
 
-    public Rectangle2D getTileViewPort(int id, TileSet tileSet) {
+    public Rectangle2D getTileViewPort(long id, TileSet tileSet) {
         int columns = tileSet.columns();
         int tileSize = tileSet.tileheight();
-        int x = (id - 1) % columns;
-        int y = (id - 1) / columns;
+        long x = (id - 1) % columns;
+        long y = (id - 1) / columns;
         return new Rectangle2D(x * tileSize, y * tileSize, tileSize, tileSize);
     }
 
@@ -71,5 +71,18 @@ public class PresetsService {
 
     public Observable<List<AbilityDto>> getAbilities() {
         return presetsApiService.getAbilities();
+    }
+
+    public Observable<List<ItemTypeDto>> getItems() {
+        return presetsApiService.getItems();
+    }
+
+    public Observable<ItemTypeDto> getItem(int itemId) {
+        return presetsApiService.getItem(itemId);
+    }
+
+    public Observable<Image> getItemImage(int itemId) {
+        return presetsApiService.getItemImage(itemId)
+                .map((ResponseBody body) -> new Image(body.byteStream()));
     }
 }

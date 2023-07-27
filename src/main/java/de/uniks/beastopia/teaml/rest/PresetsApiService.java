@@ -33,5 +33,12 @@ public interface PresetsApiService {
     @GET("presets/abilities")
     Observable<List<AbilityDto>> getAbilities();
 
+    @GET("presets/items")
+    Observable<List<ItemTypeDto>> getItems();
 
+    @GET("presets/items/{itemId}")
+    Observable<ItemTypeDto> getItem(@Path("itemId") int itemId);
+
+    @GET("presets/items/{itemId}/image")
+    Observable<ResponseBody> getItemImage(@Path("itemId") int itemId);
 }
