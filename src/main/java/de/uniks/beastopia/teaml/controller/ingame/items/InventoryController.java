@@ -77,7 +77,9 @@ public class InventoryController extends Controller {
     }
 
     public void showTrainerCoins() {
-        inv.setText(resources.getString("inv") + "\t" + cache.getTrainer().coins());
+        float coins = cache.getTrainer().coins();
+        String coinsFormatted = String.format("%.1f", coins);
+        inv.setText(resources.getString("inv") + " " + coinsFormatted);
     }
 
     public void updateInventory() {
