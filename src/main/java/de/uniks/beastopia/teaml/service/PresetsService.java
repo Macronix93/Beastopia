@@ -2,6 +2,7 @@ package de.uniks.beastopia.teaml.service;
 
 import com.google.gson.Gson;
 import de.uniks.beastopia.teaml.rest.AbilityDto;
+import de.uniks.beastopia.teaml.rest.ItemTypeDto;
 import de.uniks.beastopia.teaml.rest.MonsterTypeDto;
 import de.uniks.beastopia.teaml.rest.PresetsApiService;
 import de.uniks.beastopia.teaml.rest.TileSet;
@@ -16,7 +17,7 @@ import java.io.File;
 import java.util.List;
 
 public class PresetsService {
-    public static final int PREVIEW_SCALING = 3;
+    public static final int PREVIEW_SCALING = 5;
     @Inject
     PresetsApiService presetsApiService;
 
@@ -28,10 +29,11 @@ public class PresetsService {
         return presetsApiService.getCharacters();
     }
 
-    public Observable<Image> getCharacterSprites(String fileName, int scalingFactor) {
+    public Observable<Image> getCharacterSprites(String fileName, boolean useConstantValues) {
         return presetsApiService.getCharacterSprites(fileName)
                 .map((ResponseBody body) ->
-                        new Image(body.byteStream(), 384 * scalingFactor, 96 * scalingFactor, true, false));
+                        (useConstantValues ? new Image(body.byteStream(), 384 * PREVIEW_SCALING, 96 * PREVIEW_SCALING, true, false)
+                                : new Image(body.byteStream())));
     }
 
     public Observable<Image> getImage(TileSet tileSet) {
