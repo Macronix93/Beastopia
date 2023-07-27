@@ -213,30 +213,7 @@ public class IngameController extends Controller {
         playerController = entityControllerProvider.get();
         playerController.playerState().bind(state);
         playerController.setOnTrainerUpdate(trainer -> {
-            Trainer myTrainer = cache.getTrainer();
-            List<String> visited = new ArrayList<>(myTrainer.visitedAreas());
-
-            if (!visited.contains(trainer.area())) {
-                visited.add(trainer.area());
-            }
-
-            Trainer updatedTrainer = new Trainer(
-                    myTrainer.createdAt(),
-                    myTrainer.updatedAt(),
-                    myTrainer._id(),
-                    myTrainer.region(),
-                    myTrainer.user(),
-                    myTrainer.name(),
-                    myTrainer.image(),
-                    myTrainer.team(),
-                    visited,
-                    myTrainer.coins(),
-                    trainer.area(),
-                    trainer.x(),
-                    trainer.y(),
-                    trainer.direction(),
-                    myTrainer.npc()
-            );
+            Trainer updatedTrainer = getUpdatedTrainer(trainer);
 
             cache.setTrainer(updatedTrainer);
 
@@ -259,6 +236,33 @@ public class IngameController extends Controller {
         });
 
         soundController = soundControllerProvider.get();
+    }
+
+    private Trainer getUpdatedTrainer(MoveTrainerDto trainer) {
+        Trainer myTrainer = cache.getTrainer();
+        List<String> visited = new ArrayList<>(myTrainer.visitedAreas());
+
+        if (!visited.contains(trainer.area())) {
+            visited.add(trainer.area());
+        }
+
+        return new Trainer(
+                myTrainer.createdAt(),
+                myTrainer.updatedAt(),
+                myTrainer._id(),
+                myTrainer.region(),
+                myTrainer.user(),
+                myTrainer.name(),
+                myTrainer.image(),
+                myTrainer.team(),
+                visited,
+                myTrainer.coins(),
+                trainer.area(),
+                trainer.x(),
+                trainer.y(),
+                trainer.direction(),
+                myTrainer.npc()
+        );
     }
 
     /**
