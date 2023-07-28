@@ -100,4 +100,8 @@ public class BeastInfoController extends Controller {
     public Monster getMonster() {
         return monster;
     }
+
+    public String getName() {
+        return name.getText();
+    }
 }

@@ -75,4 +75,8 @@ public class EnemyBeastInfoController extends Controller {
     public void setName(String name) {
         this.enemyName.setText(name);
     }
+
+    public String getName() {
+        return enemyName.getText();
+    }
 }
