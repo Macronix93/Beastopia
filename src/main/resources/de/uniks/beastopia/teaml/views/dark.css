@@ -235,3 +235,15 @@ Text {
     -fx-border-radius: 5px;
     -fx-background-radius: 5px;
 }
+
+#actionInfoText {
+    -fx-text-fill: #808C89;
+    -fx-font-size: 14px;
+}
+
+#attackBox1,
+#attackBox2,
+#attackBox3,
+#attackBox4 {
+    -fx-font-size: 14px;
+}

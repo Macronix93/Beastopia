@@ -1,96 +1,99 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0"
       prefWidth="300.0" style="-fx-border-color: black;" xmlns="http://javafx.com/javafx/19"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="de.uniks.beastopia.teaml.controller.ingame.encounter.BeastInfoController">
-   <HBox alignment="CENTER" prefHeight="33.0" prefWidth="200.0" spacing="5.0">
-      <padding>
-         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
-      </padding>
-      <Label fx:id="name" text="Name">
-         <font>
-            <Font size="16.0"/>
-         </font>
-      </Label>
-      <Label fx:id="type" text="Type">
-         <font>
-            <Font size="16.0"/>
-         </font>
-      </Label>
-      <VBox prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS"/>
-      <Label text="Lvl. ">
-         <font>
-            <Font size="16.0"/>
-         </font>
-      </Label>
-      <Label fx:id="level" text="Level">
-         <font>
-            <Font size="16.0"/>
-         </font>
-      </Label>
-   </HBox>
-   <HBox alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="200.0" spacing="10.0">
-      <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
-         <Image url="@../../../assets/icons8-heart-32.png"/>
-      </ImageView>
-      <StackPane prefHeight="39.0" prefWidth="165.0" HBox.hgrow="ALWAYS">
-         <HBox.margin>
-            <Insets right="10.0"/>
-         </HBox.margin>
-         <HBox alignment="CENTER_LEFT" fx:id="lifeBar" style="-fx-border-color: black;"/>
-         <HBox alignment="CENTER_LEFT" StackPane.alignment="CENTER_LEFT" fx:id="lifeBarValue"
-               style="-fx-background-color: red; -fx-border-color: black;"/>
-         <HBox alignment="CENTER_LEFT" spacing="5.0" style="-fx-background-color: transparent;">
-            <StackPane.margin>
-               <Insets left="5.0"/>
-            </StackPane.margin>
-            <Label fx:id="hpLabel" text="hpLabel">
-               <font>
-                  <Font size="14.0"/>
-               </font>
-            </Label>
-         </HBox>
-      </StackPane>
-      <opaqueInsets>
-         <Insets/>
-      </opaqueInsets>
-      <VBox.margin>
-         <Insets left="10.0"/>
-      </VBox.margin>
-   </HBox>
-   <HBox alignment="CENTER_LEFT" prefHeight="33.0" prefWidth="200.0" spacing="10.0">
-      <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
-         <Image url="@../../../assets/icons8-star-48.png"/>
-      </ImageView>
-      <StackPane prefHeight="39.0" prefWidth="165.0" HBox.hgrow="ALWAYS">
-         <HBox.margin>
-            <Insets right="10.0"/>
-         </HBox.margin>
-         <HBox maxHeight="25.0" prefHeight="25.0" prefWidth="200.0" style="-fx-border-color: black;" fx:id="xpBar"/>
-         <HBox maxHeight="25.0" prefHeight="25.0" prefWidth="200.0"
-               style="-fx-background-color: yellow; -fx-border-color: black;" fx:id="xpBarValue">
-            <HBox alignment="CENTER_LEFT" maxHeight="25.0" prefHeight="25.0" prefWidth="200.0" spacing="5.0"
-                  style="-fx-background-color: transparent;">
-               <HBox.margin>
-                  <Insets left="5.0"/>
-               </HBox.margin>
-               <Label text="xpLabel" fx:id="xpLabel">
-                  <font>
-                     <Font size="14.0"/>
-                  </font>
-               </Label>
+    <HBox alignment="CENTER" prefHeight="33.0" prefWidth="200.0" spacing="5.0">
+        <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+        </padding>
+        <Label fx:id="name" minWidth="50.0" text="Name">
+            <font>
+                <Font size="16.0"/>
+            </font>
+        </Label>
+        <Label fx:id="type" text="Type">
+            <font>
+                <Font size="16.0"/>
+            </font>
+        </Label>
+        <VBox prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS"/>
+        <Label text="Lvl. ">
+            <font>
+                <Font size="16.0"/>
+            </font>
+        </Label>
+        <Label fx:id="level" text="Level">
+            <font>
+                <Font size="16.0"/>
+            </font>
+        </Label>
+    </HBox>
+    <HBox alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="200.0" spacing="10.0">
+        <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+            <Image url="@../../../assets/icons8-heart-32.png"/>
+        </ImageView>
+        <StackPane prefHeight="39.0" prefWidth="165.0" HBox.hgrow="ALWAYS">
+            <HBox.margin>
+                <Insets right="10.0"/>
+            </HBox.margin>
+            <HBox fx:id="lifeBar" alignment="CENTER_LEFT" style="-fx-border-color: black;"/>
+            <HBox fx:id="lifeBarValue" alignment="CENTER_LEFT"
+                  style="-fx-background-color: red; -fx-border-color: black;"
+                  StackPane.alignment="CENTER_LEFT"/>
+            <HBox alignment="CENTER_LEFT" spacing="5.0" style="-fx-background-color: transparent;">
+                <StackPane.margin>
+                    <Insets left="5.0"/>
+                </StackPane.margin>
+                <Label fx:id="hpLabel" text="hpLabel">
+                    <font>
+                        <Font size="14.0"/>
+                    </font>
+                </Label>
             </HBox>
-         </HBox>
-      </StackPane>
-      <VBox.margin>
-         <Insets left="10.0"/>
-      </VBox.margin>
-   </HBox>
+        </StackPane>
+        <opaqueInsets>
+            <Insets/>
+        </opaqueInsets>
+        <VBox.margin>
+            <Insets left="10.0"/>
+        </VBox.margin>
+    </HBox>
+    <HBox alignment="CENTER_LEFT" prefHeight="33.0" prefWidth="200.0" spacing="10.0">
+        <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+            <Image url="@../../../assets/icons8-star-48.png"/>
+        </ImageView>
+        <StackPane prefHeight="39.0" prefWidth="165.0" HBox.hgrow="ALWAYS">
+            <HBox.margin>
+                <Insets right="10.0"/>
+            </HBox.margin>
+            <HBox alignment="CENTER_LEFT" maxHeight="25.0" prefHeight="25.0" prefWidth="200.0"
+                  style="-fx-border-color: black;" fx:id="xpBar"/>
+            <HBox alignment="CENTER_LEFT" maxHeight="25.0"
+                  style="-fx-background-color: yellow; -fx-border-color: black;"
+                  StackPane.alignment="CENTER_LEFT" fx:id="xpBarValue"/>
+            <HBox alignment="CENTER_LEFT" spacing="5.0" style="-fx-background-color: transparent;">
+                <Label text="xpLabel" fx:id="xpLabel">
+                    <font>
+                        <Font size="14.0"/>
+                    </font>
+                    <HBox.margin>
+                        <Insets left="5.0"/>
+                    </HBox.margin>
+                </Label>
+            </HBox>
+        </StackPane>
+        <VBox.margin>
+            <Insets left="10.0"/>
+        </VBox.margin>
+    </HBox>
 </VBox>
