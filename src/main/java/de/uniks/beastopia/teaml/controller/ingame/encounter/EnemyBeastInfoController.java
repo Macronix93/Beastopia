@@ -67,4 +67,12 @@ public class EnemyBeastInfoController extends Controller {
     public Monster getMonster() {
         return this.monster;
     }
+
+    public void setLevel(int level) {
+        this.enemyLevel.setText(String.valueOf(level));
+    }
+
+    public void setName(String name) {
+        this.enemyName.setText(name);
+    }
 }

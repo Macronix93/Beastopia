@@ -850,21 +850,44 @@ public class IngameController extends Controller {
 
     private Trainer canTalkToNPC() {
         for (Trainer trainer : cache.getTrainers()) {
-            if (direction == Direction.RIGHT) { // right
-                if (trainer.x() == posx + 1 && trainer.y() == posy) {
-                    return trainer;
+            if (trainer.area().equals(cache.getTrainer().area())) {
+                if (direction == Direction.RIGHT) { // right
+                    if (trainer.x() == posx + 1 && trainer.y() == posy) {
+                        return trainer;
+                    }
+                } else if (direction == Direction.UP) { //up
+                    if (trainer.x() == posx && trainer.y() == posy - 1) {
+                        return trainer;
+                    }
+                } else if (direction == Direction.LEFT) { //left
+                    if (trainer.x() == posx - 1 && trainer.y() == posy) {
+                        return trainer;
+                    }
+                } else if (direction == Direction.DOWN) { //down
+                    if (trainer.x() == posx && trainer.y() == posy + 1) {
+                        return trainer;
+                    }
                 }
-            } else if (direction == Direction.UP) { //up
-                if (trainer.x() == posx && trainer.y() == posy - 1) {
-                    return trainer;
-                }
-            } else if (direction == Direction.LEFT) { //left
-                if (trainer.x() == posx - 1 && trainer.y() == posy) {
-                    return trainer;
-                }
-            } else if (direction == Direction.DOWN) { //down
-                if (trainer.x() == posx && trainer.y() == posy + 1) {
-                    return trainer;
+            }
+        }
+        for (Trainer trainer : cache.getTrainers()) {
+            if (trainer.area().equals(cache.getTrainer().area())) {
+                if (direction == Direction.RIGHT) { // right
+                    if (trainer.x() == posx + 2 && trainer.y() == posy && (trainer.npc().canHeal() || trainer.npc().sells() != null)) {
+                        return trainer;
+                    }
+                } else if (direction == Direction.UP) { //up
+                    if (trainer.x() == posx && trainer.y() == posy - 2 && (trainer.npc().canHeal() || trainer.npc().sells() != null)) {
+                        return trainer;
+                    }
+                } else if (direction == Direction.LEFT) { //left
+                    if (trainer.x() == posx - 2 && trainer.y() == posy && (trainer.npc().canHeal() || trainer.npc().sells() != null)) {
+                        return trainer;
+                    }
+                } else if (direction == Direction.DOWN) { //down
+                    if (trainer.x() == posx + 2 && trainer.y() == posy + 2 && (trainer.npc().canHeal() || trainer.npc().sells() != null)) {
+                        return trainer;
+                    }
                 }
             }
         }

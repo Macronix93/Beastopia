@@ -5,6 +5,7 @@ import de.uniks.beastopia.teaml.rest.Monster;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -32,6 +33,7 @@ public class RenderBeastController extends Controller {
     private Monster monster2;
     private String opponentIdMonsterOne;
     private String opponentIdMonsterTwo;
+    private ImageView secondMonster;
 
     @Inject
     public RenderBeastController() {
@@ -56,7 +58,7 @@ public class RenderBeastController extends Controller {
                 }));
 
         if (monster2 != null) {
-            ImageView secondMonster = new ImageView();
+            secondMonster = new ImageView();
 
             disposables.add(presetsService.getMonsterImage(monster2.type())
                     .observeOn(FX_SCHEDULER)
@@ -95,6 +97,14 @@ public class RenderBeastController extends Controller {
 
     public String getOpponentIdMonsterTwo() {
         return opponentIdMonsterTwo;
+    }
+
+    public void setImageMonsterOne(Image image) {
+        this.firstMonster.setImage(image);
+    }
+
+    public void setImageMonsterTwo(Image image) {
+        this.secondMonster.setImage(image);
     }
 
     @Override
