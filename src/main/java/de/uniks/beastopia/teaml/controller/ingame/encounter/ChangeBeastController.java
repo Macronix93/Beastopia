@@ -36,6 +36,8 @@ public class ChangeBeastController extends Controller {
     DataCache cache;
     @Inject
     Provider<ChangeBeastElementController> changeBeastElementControllerProvider;
+    @Inject
+    Provider<EncounterController> encounterControllerProvider;
 
     private final List<Monster> fightingMonsters = new ArrayList<>();
     private final List<Monster> bankMonsters = new ArrayList<>();
@@ -101,7 +103,7 @@ public class ChangeBeastController extends Controller {
 
     @FXML
     public void back() {
-        app.show(encounterController.setOwnMonster(currentMonster));
+        app.showPrevious();
     }
 
     @FXML

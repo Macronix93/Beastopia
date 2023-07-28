@@ -299,6 +299,29 @@ public class IngameController extends Controller {
             spawned = true;
         });
 
+        // Check if the player is still in an encounter and load that encounter
+        List<Opponent> trainerOpponents = encounterOpponentsService.getTrainerOpponents(cache.getJoinedRegion()._id(), cache.getTrainer()._id()).blockingFirst();
+        if (trainerOpponents.size() >= 1) {
+            // If the player is in an encounter, load the previous state
+            disposables.add(encounterOpponentsService.getEncounterOpponents(cache.getJoinedRegion()._id(), trainerOpponents.get(0).encounter())
+                    .observeOn(FX_SCHEDULER)
+                    .concatMap(opponentEvent -> regionEncountersService.getRegionEncounter(cache.getJoinedRegion()._id(), trainerOpponents.get(0).encounter())
+                            .observeOn(FX_SCHEDULER))
+                    .subscribe(
+                            encounter -> {
+                                cache.setCurrentEncounter(encounter);
+
+                                if (encounter.isWild()) {
+                                    openFightBeastScreen(encounter);
+                                } else {
+                                    openFightNPCScreen(encounter);
+                                }
+                            },
+                            error -> System.err.println("Fehler: " + error.getMessage())
+                    )
+            );
+        }
+
         soundController = soundControllerProvider.get();
     }
 
