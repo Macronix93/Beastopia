@@ -138,6 +138,8 @@ public class EncounterController extends Controller {
     private final StringBuilder actionBoxContent = new StringBuilder();
 
     private boolean shouldUpdateUIOnChange = false;
+    private String chosenTarget = null;
+    //private String chosenMonster = null;
 
     private AbilityDto ability1;
     private AbilityDto ability2;
@@ -169,6 +171,7 @@ public class EncounterController extends Controller {
         beastInfoController1 = beastInfoControllerProvider.get().setMonster(myMonster);
         beastInfoBox.getChildren().addAll(beastInfoController1.render());
         renderBeastController1 = renderBeastControllerProvider.get().setMonster1(myMonster);
+        renderBeastController1.setEncounterController(this);
         Parent ownMonster = renderBeastController1.render();
         ownMonstersBox.getChildren().addAll(ownMonster);
         HBox.setHgrow(ownMonster, Priority.ALWAYS);
@@ -177,7 +180,10 @@ public class EncounterController extends Controller {
         cache.getCurrentOpponents().stream()
                 .filter(opponent -> opponent.monster().equals(beastInfoController1.getMonster()._id()))
                 .findFirst()
-                .ifPresent(opponent -> renderBeastController1.setMonsterOneOpponentId(opponent._id()));
+                .ifPresent(opponent -> {
+                    renderBeastController1.setMonsterOneOpponentId(opponent._id());
+                    chosenTarget = opponent._id();
+                });
 
         if (allyMonster != null) {
             beastInfoController2 = beastInfoControllerProvider.get().setMonster(allyMonster);
@@ -198,6 +204,7 @@ public class EncounterController extends Controller {
         enemyBeastInfoController1 = enemyBeastInfoControllerProvider.get().setMonster(enemyMonster);
         enemyBeastInfo.getChildren().addAll(enemyBeastInfoController1.render());
         renderBeastController2 = renderBeastControllerProvider.get().setMonster1(enemyMonster);
+        renderBeastController2.setEncounterController(this);
         Parent enemyMonster = renderBeastController2.render();
         enemyMonstersBox.getChildren().addAll(enemyMonster);
         HBox.setHgrow(enemyMonster, Priority.ALWAYS);
@@ -224,7 +231,7 @@ public class EncounterController extends Controller {
                     .ifPresent(opponent -> renderBeastController2.setMonsterTwoOpponentId(opponent._id()));
         }
 
-        setNumberOfAttacks();
+        setNumberOfAttacks(myMonster);
 
         if (shouldUpdateUIOnChange) {
             updateUIOnChange();
@@ -331,23 +338,23 @@ public class EncounterController extends Controller {
         return null;
     }
 
-    private void setNumberOfAttacks() {
-        if (myMonster.abilities().size() == 1) {
+    private void setNumberOfAttacks(Monster monster) {
+        if (monster.abilities().size() == 1) {
             attackBox2.setVisible(false);
             attackBox3.setVisible(false);
             attackBox4.setVisible(false);
-        } else if (myMonster.abilities().size() == 2) {
+        } else if (monster.abilities().size() == 2) {
             attackBox3.setVisible(false);
             attackBox4.setVisible(false);
-        } else if (myMonster.abilities().size() == 3) {
+        } else if (monster.abilities().size() == 3) {
             attackBox4.setVisible(false);
         }
-        setAttackBoxes(myMonster.abilities().size());
+        setAttackBoxes(monster.abilities().size(), monster);
     }
 
-    private void setAttackBoxes(int size) {
+    private void setAttackBoxes(int size, Monster monster) {
         Stack<Integer> stack = new Stack<>();
-        Set<String> keys = myMonster.abilities().keySet();
+        Set<String> keys = monster.abilities().keySet();
         keys.forEach(key -> stack.push(Integer.parseInt(key)));
         switch (size) {
             case 4:
@@ -511,7 +518,7 @@ public class EncounterController extends Controller {
         Monster before = myMonster;
         Monster beforeEnemy = enemyMonster;
         disposables.add(encounterOpponentsService.updateEncounterOpponent(cache.getJoinedRegion()._id(),
-                        cache.getCurrentEncounter()._id(), cache.getOpponentByTrainerID(cache.getTrainer()._id())._id(), null,
+                        cache.getCurrentEncounter()._id(), chosenTarget, null,
                         new AbilityMove("ability", abilityDto.id(), enemyTrainer))
                 .observeOn(FX_SCHEDULER)
                 .subscribe(
@@ -622,5 +629,16 @@ public class EncounterController extends Controller {
                         }
                     }
                 }));
+    }
+
+    public void setChosenTarget(String opponentId) {
+        this.chosenTarget = opponentId;
+        if (renderBeastController1.getOpponentIdMonsterOne().equals(opponentId)) {
+            setNumberOfAttacks(beastInfoController1.getMonster());
+            //this.chosenMonster = beastInfoController1.getMonster()._id();
+        } else if (renderBeastController1.getOpponentIdMonsterTwo().equals(opponentId)) {
+            setNumberOfAttacks(beastInfoController2.getMonster());
+            //this.chosenMonster = beastInfoController2.getMonster()._id();
+        }
     }
 }

@@ -12,6 +12,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Ellipse;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 @SuppressWarnings("unused")
 public class RenderBeastController extends Controller {
@@ -28,12 +29,15 @@ public class RenderBeastController extends Controller {
     HBox selectBox;
     @Inject
     PresetsService presetsService;
+    @Inject
+    Provider<EncounterController> encounterControllerProvider;
 
     private Monster monster1;
     private Monster monster2;
     private String opponentIdMonsterOne;
     private String opponentIdMonsterTwo;
-    private ImageView secondMonster;
+    ImageView secondMonster;
+    private EncounterController encounterController;
 
     @Inject
     public RenderBeastController() {
@@ -54,7 +58,10 @@ public class RenderBeastController extends Controller {
                 .observeOn(FX_SCHEDULER)
                 .subscribe(monsterImage -> {
                     firstMonster.setImage(monsterImage);
-                    firstMonster.setOnMouseClicked(event -> System.out.println("Opponent ID: " + opponentIdMonsterOne));
+                    firstMonster.setOnMouseClicked(event -> {
+                        System.out.println("Chosen Opponent ID: " + opponentIdMonsterOne);
+                        encounterController.setChosenTarget(opponentIdMonsterOne);
+                    });
                 }));
 
         if (monster2 != null) {
@@ -64,7 +71,10 @@ public class RenderBeastController extends Controller {
                     .observeOn(FX_SCHEDULER)
                     .subscribe(monsterImage -> {
                         secondMonster.setImage(monsterImage);
-                        secondMonster.setOnMouseClicked(event -> System.out.println("Opponent ID: " + opponentIdMonsterTwo));
+                        secondMonster.setOnMouseClicked(event -> {
+                            System.out.println("Chosen Opponent ID: " + opponentIdMonsterTwo);
+                            encounterController.setChosenTarget(opponentIdMonsterTwo);
+                        });
                     }));
             monsterContainer.getChildren().add(secondMonster);
         }
@@ -105,6 +115,10 @@ public class RenderBeastController extends Controller {
 
     public void setImageMonsterTwo(Image image) {
         this.secondMonster.setImage(image);
+    }
+
+    public void setEncounterController(EncounterController controller) {
+        this.encounterController = controller;
     }
 
     @Override
