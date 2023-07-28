@@ -203,14 +203,10 @@ public class EncounterController extends Controller {
         HBox.setHgrow(enemyMonster, Priority.ALWAYS);
 
         // Set enemy monster opponent ID
-        System.out.println("current enemy monster: " + enemyBeastInfoController1.getMonster()._id());
         cache.getCurrentOpponents().stream()
                 .filter(opponent -> opponent.monster().equals(enemyBeastInfoController1.getMonster()._id()))
                 .findFirst()
-                .ifPresent(opponent -> {
-                    renderBeastController2.setMonsterOneOpponentId(opponent._id());
-                    System.out.println("found opponent monster");
-                });
+                .ifPresent(opponent -> renderBeastController2.setMonsterOneOpponentId(opponent._id()));
 
         if (enemyAllyMonster != null) {
             enemyBeastInfoController2 = enemyBeastInfoControllerProvider.get().setMonster(enemyAllyMonster);
@@ -241,7 +237,7 @@ public class EncounterController extends Controller {
         disposables.add(eventListener.listen("encounters." + cache.getCurrentEncounter()._id() + ".trainers.*.opponents.*.*", Opponent.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(o -> {
-                            if (o.event().contains("created")) {
+                            if (o.suffix().equals("created")) {
                                 cache.addCurrentOpponent(o.data());
                                 allyMonster = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), o.data().trainer(), o.data().monster()).blockingFirst();
 
@@ -258,55 +254,59 @@ public class EncounterController extends Controller {
                                         .filter(opponent -> opponent.monster().equals(beastInfoController2.getMonster()._id()))
                                         .findFirst()
                                         .ifPresent(opponent -> renderBeastController1.setMonsterTwoOpponentId(opponent._id()));
-                            } else if (o.event().contains("updated")) {
+                            } else if (o.suffix().equals("updated")) {
                                 if (o.data() != null) {
                                     String opponentId = o.data()._id();
                                     List<Result> results = o.data().results();
                                     String prefix = o.data().trainer().equals(cache.getTrainer()._id()) ? "My " : "Enemy ";
 
-                                    // Go through the results and show them in the action box
-                                    for (Result result : results) {
-                                        if (o.data().monster() != null) {
-                                            switch (result.type()) {
-                                                case "ability-success" ->
-                                                        actionInfoText.appendText(prefix + getMonsterName(o.data().monster()) + " used " + result.ability() + ". It was " + result.effectiveness() + ".\n");
-                                                case "ability-failed" ->
-                                                        actionInfoText.appendText(prefix + getMonsterName(o.data().monster()) + " used " + result.ability() + ". It failed due to status!\n");
-                                                case "ability-no-uses" ->
-                                                        actionInfoText.appendText(prefix + getMonsterName(o.data().monster()) + " used " + result.ability() + ". There are no ability points left!\n");
-                                                case "target-defeated" ->
-                                                        actionInfoText.appendText(prefix + getMonsterName(result.monster()) + " was defeated!\n");
-                                                case "status-added" ->
-                                                        actionInfoText.appendText(prefix + getMonsterName(result.monster()) + " got " + result.status() + "!\n");
-                                            }
-                                            if (result.status() != null) {
-                                                actionInfoText.appendText(prefix + getMonsterName(result.monster()) + " is " + result.status() + "!\n");
+                                    if (renderBeastController1.getOpponentIdMonsterOne().equals(opponentId)) {
+                                        // Set my attack boxes enabled
+                                        attackBox1.setDisable(false);
+                                        attackBox2.setDisable(false);
+                                        attackBox3.setDisable(false);
+                                        attackBox4.setDisable(false);
+                                    } else if (renderBeastController2.getOpponentIdMonsterOne().equals(opponentId)) {
+                                        // Update enemy monster in slot one, if it's not the same anymore
+                                        if (!enemyBeastInfoController1.getMonster()._id().equals(o.data().monster())) {
+                                            // Get the updated monster and set new values
+                                            if (o.data().monster() != null) {
+                                                System.out.println(o.data().monster());
+                                                Monster newEnemyMonster = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), o.data().trainer(), o.data().monster()).blockingFirst();
+                                                enemyBeastInfoController1.setMonster(newEnemyMonster);
+                                                enemyBeastInfoController1.setLevel(newEnemyMonster.level());
+                                                enemyBeastInfoController1.setLifeBarValue(newEnemyMonster.currentAttributes().health() / (double) newEnemyMonster.attributes().health());
+                                                disposables.add(presetsService.getMonsterType(newEnemyMonster.type())
+                                                        .observeOn(FX_SCHEDULER)
+                                                        .subscribe(monsterType -> {
+                                                            enemyBeastInfoController1.setName(monsterType.name());
+                                                            renderBeastController2.setImageMonsterOne(presetsService.getMonsterImage(monsterType.id()).blockingFirst());
+
+                                                            actionInfoText.appendText(trainerService.getTrainer(cache.getJoinedRegion()._id(), o.data().trainer()).blockingFirst().name() + " sent out new beast " + monsterType.name() + ".\n");
+                                                        }));
+                                                renderBeastController2.setMonsterOneOpponentId(opponentId);
+                                                renderBeastController2.setMonster1(newEnemyMonster);
+                                                this.enemyMonster = newEnemyMonster;
                                             }
                                         }
                                     }
 
-                                    if (renderBeastController1.getOpponentIdMonsterOne().equals(opponentId)) {
-                                        System.out.println("my monster updated");
-                                    } else if (renderBeastController2.getOpponentIdMonsterOne().equals(opponentId)) {
-                                        // Update enemy monster in slot one, if it's not the same anymore
-                                        if (!enemyBeastInfoController1.getMonster()._id().equals(o.data().monster())) {
-                                            System.out.println("monster is not the same! monster before: " + enemyBeastInfoController1.getMonster()._id() + " monster after: " + o.data().monster());
-
-                                            // Get the updated monster and set new values
-                                            Monster newEnemyMonster = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), o.data().trainer(), o.data().monster()).blockingFirst();
-                                            enemyBeastInfoController1.setMonster(newEnemyMonster);
-                                            enemyBeastInfoController1.setLevel(newEnemyMonster.level());
-                                            disposables.add(presetsService.getMonsterType(newEnemyMonster.type())
-                                                    .observeOn(FX_SCHEDULER)
-                                                    .subscribe(monsterType -> {
-                                                        enemyBeastInfoController1.setName(monsterType.name());
-                                                        renderBeastController2.setImageMonsterOne(presetsService.getMonsterImage(monsterType.id()).blockingFirst());
-
-                                                        actionInfoText.appendText(trainerService.getTrainer(cache.getJoinedRegion()._id(), o.data().trainer()).blockingFirst().name() + " sent out new beast " + monsterType.name() + ".\n");
-                                                    }));
-                                            renderBeastController2.setMonsterOneOpponentId(opponentId);
-                                            renderBeastController2.setMonster1(newEnemyMonster);
-                                            this.enemyMonster = newEnemyMonster;
+                                    // Go through the results and show them in the action box
+                                    for (Result result : results) {
+                                        switch (result.type()) {
+                                            case "ability-success" ->
+                                                    actionInfoText.appendText(prefix + getMonsterName(o.data().monster()) + " used " + result.ability() + ". It was " + result.effectiveness() + ".\n");
+                                            case "ability-failed" ->
+                                                    actionInfoText.appendText(prefix + getMonsterName(o.data().monster()) + " used " + result.ability() + ". It failed due to status!\n");
+                                            case "ability-no-uses" ->
+                                                    actionInfoText.appendText(prefix + getMonsterName(o.data().monster()) + " used " + result.ability() + ". There are no ability points left!\n");
+                                            case "target-defeated" ->
+                                                    actionInfoText.appendText("Enemy " + getMonsterName(result.monster()) + " was defeated!\n");
+                                            case "status-added" ->
+                                                    actionInfoText.appendText(prefix + getMonsterName(result.monster()) + " got " + result.status() + "!\n");
+                                        }
+                                        if (result.status() != null) {
+                                            actionInfoText.appendText(prefix + getMonsterName(result.monster()) + " is " + result.status() + "!\n");
                                         }
                                     }
                                 }
@@ -364,11 +364,7 @@ public class EncounterController extends Controller {
     //onClicked leave encounter button
     @FXML
     public void leaveEncounter() {
-        System.out.println("leave encounter");
-
         if (cache.getCurrentEncounter().isWild()) {
-            System.out.println("current encounter: " + cache.getCurrentEncounter() + " current opponent: " + cache.getOpponentByTrainerID(cache.getTrainer()._id())._id());
-
             disposables.add(
                     encounterOpponentsService.deleteOpponent(cache.getJoinedRegion()._id(), cache.getCurrentEncounter()._id(), cache.getOpponentByTrainerID(cache.getTrainer()._id())._id())
                             .observeOn(FX_SCHEDULER)
@@ -550,7 +546,6 @@ public class EncounterController extends Controller {
                             if (opponent.trainer().equals(cache.getTrainer()._id())) {
                                 // If the monster has died during change, show 0 HP, otherwise the current HP of the monster
                                 if (opponent.monster() != null) {
-                                    System.out.println("mein zweig" + opponent.monster());
                                     myMonster = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), opponent.monster()).blockingFirst();
                                     beastInfoController1.hpLabel.setText(myMonster.currentAttributes().health() + " / " + myMonster.attributes().health() + " (HP)");
                                     beastInfoController1.setLifeBarValue(myMonster.currentAttributes().health() / (double) myMonster.attributes().health());
@@ -582,7 +577,6 @@ public class EncounterController extends Controller {
                                 }
                             } else {
                                 if (opponent.monster() != null) {
-                                    System.out.println("else zweig" + opponent.monster());
                                     enemyMonster = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), enemyTrainer, opponent.monster()).blockingFirst();
                                     enemyBeastInfoController1.setLifeBarValue((double) enemyMonster.currentAttributes().health() / (double) enemyMonster.attributes().health());
 
@@ -592,9 +586,8 @@ public class EncounterController extends Controller {
 
                                         boolean foundMonster = false;
                                         for (Monster monster : enemyMonsters) {
-                                            if (monster != enemyMonster && monster.currentAttributes().health() > 0) {
+                                            if (!monster._id().equals(enemyMonster._id()) && monster.currentAttributes().health() > 0) {
                                                 foundMonster = true;
-                                                System.out.println("monster " + monster._id() + " level " + monster.level() + " still has over 0 hp!");
                                                 break;
                                             }
                                         }
@@ -628,11 +621,6 @@ public class EncounterController extends Controller {
                             }
                         }
                     }
-
-                    attackBox1.setDisable(false);
-                    attackBox2.setDisable(false);
-                    attackBox3.setDisable(false);
-                    attackBox4.setDisable(false);
                 }));
     }
 }
