@@ -1025,6 +1025,7 @@ public class IngameController extends Controller {
             if (dialogWindowController != null) {
                 dialogWindowController.destroy();
             }
+            player.setOpacity(1);
         }
     }
 
