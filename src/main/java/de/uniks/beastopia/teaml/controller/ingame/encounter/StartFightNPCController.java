@@ -133,8 +133,7 @@ public class StartFightNPCController extends Controller {
                     List<Monster> myMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), cache.getTrainer()._id()).blockingFirst();
                     List<Monster> enemyMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(enemyTrainerOpponentIndex).trainer()).blockingFirst();
                     encounterController.setEnemyTrainer(o.get(enemyTrainerOpponentIndex).trainer());
-                    //noinspection OptionalGetWithoutIsPresent
-                    encounterController.setOwnMonster(myMonsters.stream().filter(m -> m._id().equals(cache.getTrainer().team().stream().findFirst().get())).findFirst().orElseThrow());
+                    encounterController.setOwnMonster(myMonsters.stream().filter(m -> m._id().equals(o.get(myTrainerOpponentIndex).monster())).findFirst().orElseThrow());
                     encounterController.setEnemyMonster(enemyMonsters.stream().filter(m -> m._id().equals(o.get(enemyTrainerOpponentIndex).monster())).findFirst().orElseThrow());
 
                     if (o.size() == 3) {

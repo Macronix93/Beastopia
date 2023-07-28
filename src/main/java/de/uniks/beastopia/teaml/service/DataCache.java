@@ -352,6 +352,16 @@ public class DataCache {
         return this.currentOpponents;
     }
 
+    public void updateCurrentOpponents(Opponent opponentUpdate) {
+        for (int i = 0; i < currentOpponents.size(); i++) {
+            Opponent o = currentOpponents.get(i);
+            if (o._id().equals(opponentUpdate._id())) {
+                currentOpponents.set(i, opponentUpdate);
+                break;
+            }
+        }
+    }
+
     public void addCurrentOpponent(Opponent o) {
         this.currentOpponents.add(o);
     }

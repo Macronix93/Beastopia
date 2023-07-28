@@ -132,6 +132,8 @@ public class ChangeBeastController extends Controller {
                                     )
                                     .observeOn(FX_SCHEDULER)
                                     .subscribe(update -> {
+                                        cache.updateCurrentOpponents(update);
+
                                         encounterController.setOwnMonster(fightingMonsters.get(0));
                                         encounterController.setToUpdateUIOnChange();
                                         app.show(encounterController);
@@ -146,6 +148,8 @@ public class ChangeBeastController extends Controller {
                                     )
                                     .observeOn(FX_SCHEDULER)
                                     .subscribe(update -> {
+                                        cache.updateCurrentOpponents(update);
+
                                         encounterController.setOwnMonster(fightingMonsters.get(0));
                                         encounterController.setToUpdateUIOnChange();
                                         app.show(encounterController);
