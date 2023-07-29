@@ -382,13 +382,19 @@ public class EncounterController extends Controller {
         System.out.println(cache.getOpponentByTrainerID(enemyTrainer).toString());
         Monster before = ownMonster;
         Monster beforeEnemy = enemyMonster;
-        disposables.add(encounterOpponentsService.updateEncounterOpponent(cache.getJoinedRegion()._id(),
+
+        Opponent o = encounterOpponentsService.updateEncounterOpponent(cache.getJoinedRegion()._id(),
+                cache.getCurrentEncounter()._id(), cache.getOpponentByTrainerID(cache.getTrainer()._id())._id(), null
+                , new AbilityMove("ability", abilityDto.id(), enemyTrainer)).blockingFirst();
+
+        /*disposables.add(encounterOpponentsService.updateEncounterOpponent(cache.getJoinedRegion()._id(),
                         cache.getCurrentEncounter()._id(), cache.getOpponentByTrainerID(cache.getTrainer()._id())._id(), null
                         , new AbilityMove("ability", abilityDto.id(), enemyTrainer))
                 .observeOn(FX_SCHEDULER)
                 .subscribe(
                         e -> updateUIOnChange()
-                ));
+                ));*/
+        updateUIOnChange();
     }
 
     public void updateUIOnChange() {
@@ -397,7 +403,7 @@ public class EncounterController extends Controller {
                 .observeOn(FX_SCHEDULER)
                 .subscribe(o -> {
                     // When there is no opponent registered on the server anymore = lose
-                    if (o.size() <= 1) {
+                    if (o.isEmpty()) {
                         EndScreenController endScreenController;
                         Monster myMon = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), ownMonster._id()).blockingFirst();
                         if (myMon.currentAttributes().health() <= 0) {
@@ -421,6 +427,8 @@ public class EncounterController extends Controller {
                                     controller.setBeast(myMon, false, false, 0, endScreenController);
                                 }
                                 app.show(controller);
+                            } else {
+                                app.show(endScreenController);
                             }
                         }
                     } else {
