@@ -18,6 +18,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
+import java.util.Locale;
 import java.util.Objects;
 
 public class ItemDetailController extends Controller {
@@ -86,7 +87,7 @@ public class ItemDetailController extends Controller {
                 shopBtn.setDisable(true);
             } else {
                 float price = (float) (itemType.price() * 0.5);
-                String formattedPrice = String.format("%,.1f", price);
+                String formattedPrice = String.format(Locale.ENGLISH,"%.1f", price);
                 cost.setText(resources.getString("val") + ": " + formattedPrice);
             }
         } else {
@@ -96,7 +97,7 @@ public class ItemDetailController extends Controller {
                 cost.setText(resources.getString("val") + ": " + itemType.price());
             } else {
                 float price = (float) (itemType.price() * 0.5);
-                String formattedPrice = String.format("%,.1f", price);
+                String formattedPrice = String.format(Locale.ENGLISH,"%.1f", price);
                 cost.setText(resources.getString("val") + ": " + formattedPrice);
             }
         }

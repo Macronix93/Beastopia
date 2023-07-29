@@ -54,7 +54,8 @@ public class ItemDetailControllerTest extends ApplicationTest {
         assertEquals("name", lookup("#name").queryAs(javafx.scene.control.Label.class).getText());
         assertEquals("desc", lookup("#desc").queryAs(javafx.scene.control.Label.class).getText());
         assertEquals("Sell", lookup("#shopBtn").queryAs(javafx.scene.control.Button.class).getText());
-        assertEquals("Value: 16,0", lookup("#cost").queryAs(javafx.scene.control.Label.class).getText());
+        String formattedPrice = String.format(Locale.ENGLISH, "Value: %.1f", 16.0);
+        assertEquals(formattedPrice, lookup("#cost").queryAs(javafx.scene.control.Label.class).getText());
         assertEquals(expectedImage, lookup("#itemImage").queryAs(ImageView.class).getImage());
     }
 }
