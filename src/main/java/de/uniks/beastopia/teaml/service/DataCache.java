@@ -2,15 +2,7 @@ package de.uniks.beastopia.teaml.service;
 
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.Main;
-import de.uniks.beastopia.teaml.rest.Achievement;
-import de.uniks.beastopia.teaml.rest.Area;
-import de.uniks.beastopia.teaml.rest.Encounter;
-import de.uniks.beastopia.teaml.rest.MonsterTypeDto;
-import de.uniks.beastopia.teaml.rest.Opponent;
-import de.uniks.beastopia.teaml.rest.Region;
-import de.uniks.beastopia.teaml.rest.TileSet;
-import de.uniks.beastopia.teaml.rest.Trainer;
-import de.uniks.beastopia.teaml.rest.User;
+import de.uniks.beastopia.teaml.rest.*;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Scheduler;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -66,6 +58,7 @@ public class DataCache {
     PresetsService presetsService;
     private TileSet mapTileset;
     private Image mapImage;
+    private List<Item> items;
 
     @Inject
     public DataCache() {
@@ -466,5 +459,13 @@ public class DataCache {
 
     public Image getMapImage() {
         return this.mapImage;
+    }
+
+    public void setItems(List<Item> i) {
+        this.items = i;
+    }
+
+    public List<Item> getItems() {
+        return this.items;
     }
 }
