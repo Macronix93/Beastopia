@@ -106,3 +106,6 @@ erstellt von Smashicons - Flaticon</a>
 
 <a href="https://www.flaticon.com/de/kostenlose-icons/vorhangeschloss" title="vorhängeschloss Icons">Vorhängeschloss
 Icons erstellt von Freepik - Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/kein-einlass" title="kein einlass Icons">Kein einlass Icons
+erstellt von Mihimihi - Flaticon</a>
