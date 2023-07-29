@@ -131,11 +131,6 @@ public class EditBeastTeamController extends Controller {
                 ));
     }
 
-    @Override
-    public void destroy() {
-        super.destroy();
-    }
-
     public void filterMonster() {
         ObservableList<Monster> filtered;
         if (isInt(filterBar.getText())) {

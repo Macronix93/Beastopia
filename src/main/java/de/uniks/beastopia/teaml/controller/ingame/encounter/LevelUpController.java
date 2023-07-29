@@ -72,6 +72,7 @@ public class LevelUpController extends Controller {
 
     @Inject
     PresetsService presetsService;
+    @Inject
     AssetProvider assets;
     private Monster beast;
     private boolean newAbility;

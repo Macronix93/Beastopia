@@ -1,7 +1,6 @@
 package de.uniks.beastopia.teaml.controller.menu.social;
 
 
-import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.DataCache;
@@ -20,7 +19,6 @@ import javafx.scene.text.Text;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import java.util.Objects;
 import java.util.function.Consumer;
 
 import static de.uniks.beastopia.teaml.rest.UserApiService.STATUS_ONLINE;
@@ -50,6 +48,8 @@ public class FriendController extends Controller {
     EventListener eventListener;
     @Inject
     DataCache cache;
+    @Inject
+    AssetProvider assets;
     private User user;
     private Boolean friendPin;
     private ImageView pinned;
@@ -59,7 +59,6 @@ public class FriendController extends Controller {
     private Consumer<User> onFriendChanged = null;
     private Consumer<User> onPinChanged = null;
     private boolean friend;
-    AssetProvider assets;
 
     @Inject
     public FriendController() {
@@ -75,10 +74,10 @@ public class FriendController extends Controller {
                     updateOnlineStatus(user);
                 }));
 
-        pinned = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/filled_pin.png")).toString());
-        notPinned = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/pin.png")).toString());
-        addImage = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/plus.png")).toString());
-        removeImage = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/minus.png")).toString());
+        pinned = assets.getButtonImageView("filled_pin");
+        notPinned = assets.getButtonImageView("pin");
+        addImage = assets.getButtonImageView("plus");
+        removeImage = assets.getButtonImageView("minus");
     }
 
     public void setOnFriendChanged(Consumer<User> onFriendChanged) {
@@ -133,14 +132,6 @@ public class FriendController extends Controller {
         } else {
             statusCircle.setFill(Paint.valueOf("red"));
         }
-    }
-
-    private ImageView createImage(String imageUrl) {
-        ImageView imageView = new ImageView(imageUrl);
-        imageView.setCache(false);
-        imageView.setFitHeight(25.0);
-        imageView.setFitWidth(25.0);
-        return imageView;
     }
 
     @FXML

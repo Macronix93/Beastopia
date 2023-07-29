@@ -106,6 +106,7 @@ public class ChatUserController extends Controller {
         return imageView;
     }
 
+    @SuppressWarnings("DuplicatedCode")
     public void deleteGroup() {
         if (group.members().size() < 2) {
             disposables.add(groupListService.deleteGroup(group).observeOn(FX_SCHEDULER).subscribe(
@@ -120,6 +121,7 @@ public class ChatUserController extends Controller {
         }
     }
 
+    @SuppressWarnings("DuplicatedCode")
     @FXML
     public void pinGroup() {
         if (!prefs.isPinned(this.group)) {

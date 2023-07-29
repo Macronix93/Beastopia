@@ -113,34 +113,31 @@ public class ChatListController extends Controller {
 
     private void createGroupController(Group group, boolean groupPinned, HashMap<Parent, Group> groupMap) {
         ChatGroupController chatGroupController = chatGroupControllerProvider.get();
-        subControllers.add(chatGroupController);
         chatGroupController.setOnGroupClicked(onGroupClicked);
         chatGroupController.setGroup(group);
         chatGroupController.init();
         chatGroupController.setOnPinChanged(e -> updateGroupList());
-        Parent parent = chatGroupController.render();
-        if (groupPinned) {
-            chatList.getChildren().add(0, parent);
-        } else {
-            chatList.getChildren().add(parent);
-        }
-        groupMap.put(parent, group);
+        groupMap.put(setUpChild(chatGroupController, groupPinned), group);
     }
 
     private void createUserController(Group group, boolean groupPinned, HashMap<Parent, Group> groupMap) {
         ChatUserController chatUserController = chatUserControllerProvider.get();
-        subControllers.add(chatUserController);
         chatUserController.setOnGroupClicked(onGroupClicked);
         chatUserController.setGroup(group);
         chatUserController.init();
         chatUserController.setOnPinChanged(e -> updateGroupList());
-        Parent parent = chatUserController.render();
+        groupMap.put(setUpChild(chatUserController, groupPinned), group);
+    }
+
+    private Parent setUpChild(Controller controller, boolean groupPinned) {
+        subControllers.add(controller);
+        Parent parent = controller.render();
         if (groupPinned) {
             chatList.getChildren().add(0, parent);
         } else {
             chatList.getChildren().add(parent);
         }
-        groupMap.put(parent, group);
+        return parent;
     }
 
     private void clearSubControllers() {

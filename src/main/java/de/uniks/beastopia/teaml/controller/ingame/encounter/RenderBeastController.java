@@ -97,10 +97,4 @@ public class RenderBeastController extends Controller {
         return opponentIdMonsterTwo;
     }
 
-    @Override
-    public void destroy() {
-        super.destroy();
-
-    }
-
 }

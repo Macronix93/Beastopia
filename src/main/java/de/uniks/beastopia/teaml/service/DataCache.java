@@ -23,12 +23,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import static de.uniks.beastopia.teaml.service.PresetsService.PREVIEW_SCALING;
 
@@ -57,7 +54,6 @@ public class DataCache {
     PresetsService presetsService;
     private TileSet mapTileset;
     private Image mapImage;
-    private List<Item> items;
 
     @Inject
     public DataCache() {
@@ -458,13 +454,5 @@ public class DataCache {
 
     public Image getMapImage() {
         return this.mapImage;
-    }
-
-    public void setItems(List<Item> i) {
-        this.items = i;
-    }
-
-    public List<Item> getItems() {
-        return this.items;
     }
 }

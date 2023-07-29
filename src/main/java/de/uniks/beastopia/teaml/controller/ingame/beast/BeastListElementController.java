@@ -23,6 +23,8 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.util.Objects;
 
+// suppressed due to wrongly marked warning
+@SuppressWarnings("unused")
 public class BeastListElementController extends ListCell<Monster> {
 
     protected static final Scheduler FX_SCHEDULER = Schedulers.from(Platform::runLater);

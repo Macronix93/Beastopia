@@ -102,6 +102,7 @@ public class ChatGroupController extends Controller {
     }
 
 
+    @SuppressWarnings("DuplicatedCode")
     @FXML
     public void deleteGroup() {
         if (group.members().size() < 2) {
@@ -117,6 +118,7 @@ public class ChatGroupController extends Controller {
         }
     }
 
+    @SuppressWarnings("DuplicatedCode")
     @FXML
     public void pinGroup() {
         if (!prefs.isPinned(this.group)) {
