@@ -874,21 +874,44 @@ public class IngameController extends Controller {
 
     private Trainer canTalkToNPC() {
         for (Trainer trainer : cache.getTrainers()) {
-            if (direction == Direction.RIGHT) { // right
-                if (trainer.x() == posx + 1 && trainer.y() == posy) {
-                    return trainer;
+            if (trainer.area().equals(cache.getTrainer().area())) {
+                if (direction == Direction.RIGHT) { // right
+                    if (trainer.x() == posx + 1 && trainer.y() == posy) {
+                        return trainer;
+                    }
+                } else if (direction == Direction.UP) { //up
+                    if (trainer.x() == posx && trainer.y() == posy - 1) {
+                        return trainer;
+                    }
+                } else if (direction == Direction.LEFT) { //left
+                    if (trainer.x() == posx - 1 && trainer.y() == posy) {
+                        return trainer;
+                    }
+                } else if (direction == Direction.DOWN) { //down
+                    if (trainer.x() == posx && trainer.y() == posy + 1) {
+                        return trainer;
+                    }
                 }
-            } else if (direction == Direction.UP) { //up
-                if (trainer.x() == posx && trainer.y() == posy - 1) {
-                    return trainer;
-                }
-            } else if (direction == Direction.LEFT) { //left
-                if (trainer.x() == posx - 1 && trainer.y() == posy) {
-                    return trainer;
-                }
-            } else if (direction == Direction.DOWN) { //down
-                if (trainer.x() == posx && trainer.y() == posy + 1) {
-                    return trainer;
+            }
+        }
+        for (Trainer trainer : cache.getTrainers()) {
+            if (trainer.area().equals(cache.getTrainer().area())) {
+                if (direction == Direction.RIGHT) { // right
+                    if (trainer.x() == posx + 2 && trainer.y() == posy && (trainer.npc().canHeal() || trainer.npc().sells() != null)) {
+                        return trainer;
+                    }
+                } else if (direction == Direction.UP) { //up
+                    if (trainer.x() == posx && trainer.y() == posy - 2 && (trainer.npc().canHeal() || trainer.npc().sells() != null)) {
+                        return trainer;
+                    }
+                } else if (direction == Direction.LEFT) { //left
+                    if (trainer.x() == posx - 2 && trainer.y() == posy && (trainer.npc().canHeal() || trainer.npc().sells() != null)) {
+                        return trainer;
+                    }
+                } else if (direction == Direction.DOWN) { //down
+                    if (trainer.x() == posx + 2 && trainer.y() == posy + 2 && (trainer.npc().canHeal() || trainer.npc().sells() != null)) {
+                        return trainer;
+                    }
                 }
             }
         }
@@ -1359,13 +1382,14 @@ public class IngameController extends Controller {
         openInventory(true);
     }
 
-    private void toggleInventoryItemDetails(ItemTypeDto itemTypeDto) {
+    public void toggleInventoryItemDetails(ItemTypeDto itemTypeDto) {
         if (Objects.equals(lastItemTypeDto, itemTypeDto)) {
             scoreBoardLayout.getChildren().remove(itemDetailParent);
             lastItemTypeDto = null;
             return;
         }
-        setItemDetailController(itemTypeDto, false);
+        setItemDetailController(itemTypeDto, false, !inventoryController.isShop);
+        //false = details: inventory shop, true = details: only inventory
     }
 
     private void toggleShopItemDetails(ItemTypeDto itemTypeDto) {
@@ -1374,23 +1398,28 @@ public class IngameController extends Controller {
             lastItemTypeDto = null;
             return;
         }
-        setItemDetailController(itemTypeDto, true);
+        setItemDetailController(itemTypeDto, true, false);
     }
 
-    private void setItemDetailController(ItemTypeDto itemTypeDto, boolean booleanShop) {
+    private void setItemDetailController(ItemTypeDto itemTypeDto, boolean booleanShop, boolean onlyInventory) {
         lastItemTypeDto = itemTypeDto;
         ItemDetailController controller = itemDetailControllerProvider.get();
+        controller.setInventoryController(inventoryController);
+        controller.setIngameController(this);
         subControllers.add(controller);
         controller.setItem(itemTypeDto);
         controller.setBooleanShop(booleanShop);
+        controller.setOnlyInventory(onlyInventory);
         controller.init();
         scoreBoardLayout.getChildren().remove(itemDetailParent);
         shopLayout.getChildren().remove(itemDetailParent);
         itemDetailParent = controller.render();
         if (booleanShop) {
             shopLayout.getChildren().add(1, itemDetailParent);
+            shopLayout.toFront();
         } else {
             scoreBoardLayout.getChildren().add(0, itemDetailParent);
+            scoreBoardLayout.toFront();
         }
     }
 

@@ -13,7 +13,7 @@
     <HBox alignment="CENTER">
         <Label fx:id="inv">
             <font>
-                <Font name="System Bold" size="22.0" />
+                <Font name="System Bold" size="18.0" />
             </font>
           <HBox.margin>
               <Insets left="35.0" />

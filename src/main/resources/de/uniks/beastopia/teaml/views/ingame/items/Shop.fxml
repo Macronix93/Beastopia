@@ -10,7 +10,7 @@
 <VBox fx:id="VBoxShopList" alignment="CENTER" onKeyPressed="#handleKeyEvent" prefWidth="200.0" style="-fx-border-radius: 10; -fx-border-color: black;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.uniks.beastopia.teaml.controller.ingame.items.ShopController">
    <Label text="%shop">
       <font>
-         <Font name="System Bold" size="22.0" />
+         <Font name="System Bold" size="18.0" />
       </font>
       <VBox.margin>
          <Insets top="15.0" />
