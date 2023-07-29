@@ -109,19 +109,13 @@ public class ItemDetailController extends Controller {
 
     @FXML
     public void shopFunction() {
+        int amount = 1; //buy
         if (!buy) { //sell
-            System.out.println("sell:" + itemType.id());
-            disposables.add(trainerItemsService.updateItem(cache.getJoinedRegion()._id(), cache.getTrainer()._id(),
-                    new UpdateItemDto(-1, itemType.id(), null)).observeOn(FX_SCHEDULER).subscribe(
-                    itemUpdated -> {
-                    }, error -> System.out.println("Error:" + error)));
-        } else { //buy
-            System.out.println("buy: " + itemType.id());
-            disposables.add(trainerItemsService.updateItem(cache.getJoinedRegion()._id(), cache.getTrainer()._id(),
-                    new UpdateItemDto(1, itemType.id(), null)).observeOn(FX_SCHEDULER).subscribe(
-                    itemUpdated -> {
-                    }, error -> System.out.println("Error:" + error)));
+            amount = -1;
         }
+        disposables.add(trainerItemsService.updateItem(cache.getJoinedRegion()._id(), cache.getTrainer()._id(),
+                new UpdateItemDto(amount, itemType.id(), null)).observeOn(FX_SCHEDULER).subscribe(
+                itemUpdated -> {}, error -> System.out.println("Error:" + error)));
         disposables.add(trainerService.getTrainer(cache.getJoinedRegion()._id(), cache.getTrainer()._id())
                 .observeOn(FX_SCHEDULER).subscribe(trainer -> {
                     cache.setTrainer(trainer);
