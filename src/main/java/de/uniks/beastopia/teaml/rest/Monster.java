@@ -1,6 +1,7 @@
 package de.uniks.beastopia.teaml.rest;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 public record Monster(
         Date createdAt,
@@ -13,6 +14,6 @@ public record Monster(
         Map<String, Integer> abilities,
         MonsterAttributes attributes,
         MonsterAttributes currentAttributes,
-        String status
+        List<String> status
 ) {
 }

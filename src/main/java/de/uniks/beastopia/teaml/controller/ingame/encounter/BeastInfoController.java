@@ -3,6 +3,7 @@ package de.uniks.beastopia.teaml.controller.ingame.encounter;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Monster;
 import de.uniks.beastopia.teaml.service.PresetsService;
+import de.uniks.beastopia.teaml.utils.AssetProvider;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -29,7 +30,6 @@ public class BeastInfoController extends Controller {
     Label hpLabel;
     @FXML
     Label xpLabel;
-
     @FXML
     HBox lifeBar;
     @FXML
@@ -42,6 +42,7 @@ public class BeastInfoController extends Controller {
     @Inject
     PresetsService presetsService;
     private Monster monster;
+    AssetProvider assets;
 
     @Inject
     public BeastInfoController() {
@@ -65,7 +66,9 @@ public class BeastInfoController extends Controller {
         level.setText(String.valueOf(monster.level()));
         hpLabel.setText(monster.currentAttributes().health() + " / " + monster.attributes().health() + " (HP)");
         xpLabel.setText(monster.experience() + " / " + calcMaxXp() + " (Exp)");
-
+        if (!monster.status().isEmpty()) {
+            status.setImage(assets.getStatusIcon(monster.status().get(0)));
+        }
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
