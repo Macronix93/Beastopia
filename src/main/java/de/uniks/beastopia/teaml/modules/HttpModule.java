@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 
 @Module
@@ -82,13 +83,15 @@ public class HttpModule {
         ALL_REQUESTS.get(endpointLimit.endpoint()).removeIf(pair -> pair.getKey().getTime() < timeBeginFrame);
     }
 
-    private static final int MAX_REQUESTS = 150;
+    private static final int MAX_REQUESTS = 32;
 
     @Provides
     @Singleton
     @SuppressWarnings("unused")
     static OkHttpClient client(TokenStorage tokenStorage) {
-        Dispatcher dispatcher = new Dispatcher(new ThreadPoolExecutor(MAX_REQUESTS, MAX_REQUESTS, 1, java.util.concurrent.TimeUnit.MINUTES, new java.util.concurrent.SynchronousQueue<>()));
+        ThreadPoolExecutor executor = new ThreadPoolExecutor(MAX_REQUESTS, MAX_REQUESTS, 1, TimeUnit.SECONDS, new java.util.concurrent.LinkedBlockingQueue<>());
+        Dispatcher dispatcher = new Dispatcher(executor);
+        executor.prestartAllCoreThreads();
         dispatcher.setMaxRequests(MAX_REQUESTS);
         dispatcher.setMaxRequestsPerHost(MAX_REQUESTS);
 
