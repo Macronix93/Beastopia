@@ -7,6 +7,7 @@ import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.FriendListService;
 import de.uniks.beastopia.teaml.sockets.EventListener;
+import de.uniks.beastopia.teaml.utils.AssetProvider;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -58,6 +59,7 @@ public class FriendController extends Controller {
     private Consumer<User> onFriendChanged = null;
     private Consumer<User> onPinChanged = null;
     private boolean friend;
+    AssetProvider assets;
 
     @Inject
     public FriendController() {

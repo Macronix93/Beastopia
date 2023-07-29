@@ -8,6 +8,7 @@ import java.util.Objects;
 public class AssetProvider {
 
     final String statusIconPath = "asset/status/";
+    final String buttonIconPath = "assets/buttons/";
 
     public Image getStatusIcon(String statusName) {
         return new Image(
@@ -15,5 +16,9 @@ public class AssetProvider {
                                 Main.class.getResource(statusIconPath + statusName + ".png"))
                         .toString()
         );
+    }
+
+    public void setButtons() {
+
     }
 }

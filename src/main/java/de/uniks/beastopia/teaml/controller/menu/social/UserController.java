@@ -4,6 +4,7 @@ import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.DataCache;
+import de.uniks.beastopia.teaml.utils.AssetProvider;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -38,6 +39,7 @@ public class UserController extends Controller {
     private Consumer<User> onUserToggled;
     private Consumer<User> onUserPinToggled;
     private boolean isAdded;
+    AssetProvider assets;
 
     @Inject
     public UserController() {
