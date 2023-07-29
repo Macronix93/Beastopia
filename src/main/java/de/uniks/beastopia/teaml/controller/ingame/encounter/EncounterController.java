@@ -397,34 +397,18 @@ public class EncounterController extends Controller {
                 .observeOn(FX_SCHEDULER)
                 .subscribe(o -> {
                     // When there is no opponent registered on the server anymore = lose
-                    if (o.size() == 0) {
+                    if (o.size() <= 1) {
+                        EndScreenController endScreenController;
                         Monster myMon = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), ownMonster._id()).blockingFirst();
                         if (myMon.currentAttributes().health() <= 0) {
                             beastInfoController1.hpLabel.setText("0 / " + ownMonster.attributes().health() + " (HP)");
                             beastInfoController1.setLifeBarValue(0);
 
-                            EndScreenController controller = endScreenControllerProvider.get();
-                            controller.setWinner(false);
-                            controller.setLoserMonster1(ownMonster);
-                            if (allyMonster != null) {
-                                controller.setLoserMonster2(allyMonster);
-                            }
-                            controller.setWinnerMonster1(enemyMonster);
-                            if (enemyAllyMonster != null) {
-                                controller.setWinnerMonster2(enemyAllyMonster);
-                            }
-                            app.show(controller);
+                            endScreenController = setEndScreen(false, ownMonster, allyMonster, enemyMonster, enemyAllyMonster);
+                            app.show(endScreenController);
                         } else {
-                            EndScreenController endScreenController = endScreenControllerProvider.get();
-                            endScreenController.setWinner(true);
-                            endScreenController.setLoserMonster1(enemyMonster);
-                            if (enemyAllyMonster != null) {
-                                endScreenController.setLoserMonster2(enemyAllyMonster);
-                            }
-                            endScreenController.setWinnerMonster1(ownMonster);
-                            if (allyMonster != null) {
-                                endScreenController.setWinnerMonster2(allyMonster);
-                            }
+                            endScreenController = setEndScreen(true, enemyMonster, enemyAllyMonster, ownMonster, allyMonster);
+
                             if (myMon.level() > ownMonster.level()) { //Level Up
                                 LevelUpController controller = levelUpControllerProvider.get();
                                 if (myMon.abilities().size() > ownMonster.abilities().size()) { //new attack
@@ -436,9 +420,7 @@ public class EncounterController extends Controller {
                                 } else {
                                     controller.setBeast(myMon, false, false, 0, endScreenController);
                                 }
-
-                            } else {
-                                app.show(endScreenController);
+                                app.show(controller);
                             }
                         }
                     } else {
@@ -477,5 +459,19 @@ public class EncounterController extends Controller {
                         }
                     }
                 }));
+    }
+
+    public EndScreenController setEndScreen(boolean wonFight, Monster loser1, Monster loser2, Monster winner1, Monster winner2) {
+        EndScreenController controller = endScreenControllerProvider.get();
+        controller.setWinner(wonFight);
+        controller.setLoserMonster1(loser1);
+        if (loser2 != null) {
+            controller.setLoserMonster2(loser2);
+        }
+        controller.setWinnerMonster1(winner1);
+        if (winner2 != null) {
+            controller.setWinnerMonster2(winner2);
+        }
+        return controller;
     }
 }
