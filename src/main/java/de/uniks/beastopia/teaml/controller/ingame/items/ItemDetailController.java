@@ -85,7 +85,9 @@ public class ItemDetailController extends Controller {
                 shopBtn.setOpacity(0);
                 shopBtn.setDisable(true);
             } else {
-                cost.setText(resources.getString("val") + ": " + (int) (itemType.price() * 0.5));
+                float price = (float) (itemType.price() * 0.5);
+                String formattedPrice = String.format("%.1f", price);
+                cost.setText(resources.getString("val") + ": " + formattedPrice);
             }
         } else {
             shopBtn.setDisable(true);
@@ -93,7 +95,9 @@ public class ItemDetailController extends Controller {
             if (itemType.price() == 0) {
                 cost.setText(resources.getString("val") + ": " + itemType.price());
             } else {
-                cost.setText(resources.getString("val") + ": " + (int) (itemType.price() * 0.5));
+                float price = (float) (itemType.price() * 0.5);
+                String formattedPrice = String.format("%.1f", price);
+                cost.setText(resources.getString("val") + ": " + formattedPrice);
             }
         }
         name.setText(itemType.name());
