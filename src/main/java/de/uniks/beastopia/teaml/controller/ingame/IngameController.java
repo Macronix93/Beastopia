@@ -145,7 +145,6 @@ public class IngameController extends Controller {
     private ItemTypeDto lastItemTypeDto;
     private int currentMenu = MENU_NONE;
     private final java.util.Map<Pair<Integer, Integer>, Pair<Tile, Node>> MAP_INFO = new HashMap<>();
-    private final List<Node> renderedTiles = new ArrayList<>();
     private final List<Node> renderedPlayers = new ArrayList<>();
     Direction direction;
     final ObjectProperty<PlayerState> state = new SimpleObjectProperty<>();
@@ -621,7 +620,6 @@ public class IngameController extends Controller {
         }
 
         tilePane.getChildren().add(view);
-        renderedTiles.add(view);
         return view;
     }
 

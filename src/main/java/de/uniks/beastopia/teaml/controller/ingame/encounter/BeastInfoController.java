@@ -66,9 +66,11 @@ public class BeastInfoController extends Controller {
         level.setText(String.valueOf(monster.level()));
         hpLabel.setText(monster.currentAttributes().health() + " / " + monster.attributes().health() + " (HP)");
         xpLabel.setText(monster.experience() + " / " + calcMaxXp() + " (Exp)");
+
         if (!monster.status().isEmpty()) {
             status.setImage(assets.getStatusIcon(monster.status().get(0)));
         }
+
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override

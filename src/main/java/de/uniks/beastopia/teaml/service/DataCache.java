@@ -37,7 +37,6 @@ public class DataCache {
 
     private List<User> users = new ArrayList<>();
     private List<Area> areas = new ArrayList<>();
-    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     private final List<Trainer> trainers = new ArrayList<>();
     private final List<Pair<String, Image>> characters = new ArrayList<>();
     private final List<Pair<String, Image>> charactersResized = new ArrayList<>();

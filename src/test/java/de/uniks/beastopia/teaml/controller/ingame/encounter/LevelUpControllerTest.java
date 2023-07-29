@@ -41,7 +41,7 @@ class LevelUpControllerTest extends ApplicationTest {
     PresetsService presetsService;
     Monster monster = new Monster(null, null, "MONSTER_ID", "TRAINER_ID", 10, 0,
             0, Map.of("1", 1, "2", 2), new MonsterAttributes(1, 1, 1, 1),
-            new MonsterAttributes(1, 1, 1, 1));
+            new MonsterAttributes(1, 1, 1, 1), null);
     Image expectedImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/de/uniks/beastopia/teaml/assets/group.png")));
     MonsterTypeDto monsterTypeDto = new MonsterTypeDto(3, "name", "image", List.of("1", "2"), "a");
 

@@ -30,7 +30,7 @@ public class RegionInfoController extends Controller {
         Parent parent = super.render();
 
         this.place.setText(name);
-        if (information.equals("")) {
+        if (information.isEmpty()) {
             this.description.visibleProperty().setValue(false);
         } else {
             this.description.setText(information);

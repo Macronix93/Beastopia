@@ -86,7 +86,7 @@ public class EntityController extends Controller {
     public Parent render() {
         int VIEW_SIZE = 60;
         if (state.get().equals(PlayerState.JUMP)) {
-            VIEW_SIZE *= 1.2;
+            VIEW_SIZE = 72;
         }
         parent = super.render();
         entityView.toFront();

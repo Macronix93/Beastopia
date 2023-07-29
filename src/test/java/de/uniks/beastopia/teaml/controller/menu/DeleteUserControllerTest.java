@@ -17,14 +17,11 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
 
-import javax.inject.Provider;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -38,8 +35,6 @@ class DeleteUserControllerTest extends ApplicationTest {
     AuthService authService;
     @Mock
     TokenStorage tokenStorage;
-    @Mock
-    Provider<EditProfileController> editProfileControllerProvider;
     @Spy
     @SuppressWarnings("unused")
     ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang", Locale.forLanguageTag("en"));
