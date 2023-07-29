@@ -84,7 +84,7 @@ public class EntityController extends Controller {
 
     @Override
     public Parent render() {
-        int VIEW_SIZE = 60;
+        int VIEW_SIZE = 96;
         if (state.get().equals(PlayerState.JUMP)) {
             VIEW_SIZE = 72;
         }
@@ -102,7 +102,7 @@ public class EntityController extends Controller {
     }
 
     private Rectangle2D getViewport() {
-        int SPRITE_SCALING = 3;
+        int SPRITE_SCALING = 5;
         int sheetY = state.get().equals(PlayerState.JUMP) ? 1 : state.get().ordinal();
 
         return new Rectangle2D(

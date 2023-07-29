@@ -105,5 +105,7 @@ public class BeastInfoController extends Controller {
         xpBarValue.setPrefWidth(xpBar.getWidth() * value);
     }
 
-
+    public Monster getMonster() {
+        return monster;
+    }
 }

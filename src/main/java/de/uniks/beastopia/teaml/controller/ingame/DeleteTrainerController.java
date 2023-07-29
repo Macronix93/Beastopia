@@ -37,8 +37,8 @@ public class DeleteTrainerController extends Controller {
         trainerSprite.setImage(cache.getOrLoadTrainerImage(cache.getTrainer().image(), true).blockingFirst());
         trainerSprite.setPreserveRatio(true);
         trainerSprite.setViewport(TrainerController.PREVIEW_VIEWPORT);
-        trainerSprite.setFitWidth(32 * TrainerController.PREVIEW_SCALING);
-        trainerSprite.setFitHeight(32 * TrainerController.PREVIEW_SCALING);
+        trainerSprite.setFitWidth(32 * 3);
+        trainerSprite.setFitHeight(32 * 3);
         trainerSprite.setSmooth(false);
         return parent;
     }

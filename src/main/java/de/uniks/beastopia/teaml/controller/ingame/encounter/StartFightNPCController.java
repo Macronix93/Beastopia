@@ -36,6 +36,9 @@ public class StartFightNPCController extends Controller {
     EncounterController encounterController;
     @Inject
     PresetsService presetsService;
+    @SuppressWarnings("unused")
+    private int myTrainerOpponentIndex = -5;
+    private int myAllyTrainerOpponentIndex = -5;
     private int enemyTrainerOpponentIndex = -5;
     private int enemyAllyTrainerOpponentIndex = -5;
 
@@ -91,17 +94,37 @@ public class StartFightNPCController extends Controller {
                     cache.setCurrentOpponents(o);
                     if (o.size() == 2) {
                         for (int i = 0; i < o.size(); i++) {
-                            if (!o.get(i).trainer().equals(cache.getTrainer()._id())) {
+                            if (o.get(i).trainer().equals(cache.getTrainer()._id())) {
+                                myTrainerOpponentIndex = i;
+                            } else {
                                 enemyTrainerOpponentIndex = i;
                             }
                         }
                     } else if (o.size() == 3) {
                         for (int i = 0; i < o.size(); i++) {
-                            if (!o.get(i).trainer().equals(cache.getTrainer()._id())) {
+                            if (o.get(i).trainer().equals(cache.getTrainer()._id())) {
+                                myTrainerOpponentIndex = i;
+                            } else {
                                 if (enemyTrainerOpponentIndex == -5) {
                                     enemyTrainerOpponentIndex = i;
                                 } else {
                                     enemyAllyTrainerOpponentIndex = i;
+                                }
+                            }
+                        }
+                    } else if (o.size() == 4) {
+                        for (int i = 0; i < o.size(); i++) {
+                            if (o.get(i).trainer().equals(cache.getTrainer()._id())) {
+                                myTrainerOpponentIndex = i;
+                            } else {
+                                if (!o.get(i).isAttacker()) {
+                                    myAllyTrainerOpponentIndex = i;
+                                } else {
+                                    if (enemyTrainerOpponentIndex == -5) {
+                                        enemyTrainerOpponentIndex = i;
+                                    } else {
+                                        enemyAllyTrainerOpponentIndex = i;
+                                    }
                                 }
                             }
                         }
@@ -115,9 +138,12 @@ public class StartFightNPCController extends Controller {
                     encounterController.setEnemyMonster(enemyMonsters.stream().filter(m -> m._id().equals(o.get(enemyTrainerOpponentIndex).monster())).findFirst().orElseThrow());
 
                     if (o.size() == 3) {
-                        List<Monster> enemyAllyMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(1).trainer()).blockingFirst();
-                        encounterController.setEnemyAllyTrainer((o.get(enemyAllyTrainerOpponentIndex).trainer()));
-                        encounterController.setEnemyAllyMonster(enemyAllyMonsters.stream().filter(m -> m._id().equals(o.get(enemyAllyTrainerOpponentIndex).monster())).findFirst().orElseThrow());
+                        setEnemyAllyMonsters(o);
+                    } else if (o.size() == 4) {
+                        setEnemyAllyMonsters(o);
+                        List<Monster> myAllyMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(myAllyTrainerOpponentIndex).trainer()).blockingFirst();
+                        encounterController.setAllyTrainer((o.get(myAllyTrainerOpponentIndex).trainer()));
+                        encounterController.setAllyMonster(myAllyMonsters.stream().filter(m -> m._id().equals(o.get(myAllyTrainerOpponentIndex).monster())).findFirst().orElseThrow());
                     }
                     return o;
                 })
@@ -126,5 +152,11 @@ public class StartFightNPCController extends Controller {
                     encounterController.init();
                     app.show(encounterController);
                 }));
+    }
+
+    private void setEnemyAllyMonsters(List<Opponent> o) {
+        List<Monster> enemyAllyMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(enemyAllyTrainerOpponentIndex).trainer()).blockingFirst();
+        encounterController.setEnemyAllyTrainer((o.get(enemyAllyTrainerOpponentIndex).trainer()));
+        encounterController.setEnemyAllyMonster(enemyAllyMonsters.stream().filter(m -> m._id().equals(o.get(enemyAllyTrainerOpponentIndex).monster())).findFirst().orElseThrow());
     }
 }

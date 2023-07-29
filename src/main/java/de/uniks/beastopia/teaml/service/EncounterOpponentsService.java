@@ -1,6 +1,10 @@
 package de.uniks.beastopia.teaml.service;
 
-import de.uniks.beastopia.teaml.rest.*;
+import de.uniks.beastopia.teaml.rest.AbilityMove;
+import de.uniks.beastopia.teaml.rest.ChangeMonsterMove;
+import de.uniks.beastopia.teaml.rest.EncounterOpponentsApiService;
+import de.uniks.beastopia.teaml.rest.Opponent;
+import de.uniks.beastopia.teaml.rest.UpdateOpponentDto;
 import de.uniks.beastopia.teaml.utils.Variant;
 import io.reactivex.rxjava3.core.Observable;
 
@@ -41,6 +45,11 @@ public class EncounterOpponentsService {
         move.setU(changeMonsterMove);
         return encounterOpponentsApiService.updateEncounterOpponent(regionId, encounterId, opponentId,
                 new UpdateOpponentDto(monster, move));
+    }
+
+    public Observable<Opponent> updateEncounterOpponent(String regionId, String encounterId, String opponentId, String monster) {
+        return encounterOpponentsApiService.updateEncounterOpponent(regionId, encounterId, opponentId,
+                new UpdateOpponentDto(monster, null));
     }
 
     public Observable<Opponent> deleteOpponent(String region_id, String encounter_id, String opponent_id) {
