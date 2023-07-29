@@ -362,6 +362,10 @@ public class DataCache {
         }
     }
 
+    public void removeOpponent(Opponent o) {
+        this.currentOpponents.remove(o);
+    }
+
     public void addCurrentOpponent(Opponent o) {
         this.currentOpponents.add(o);
     }

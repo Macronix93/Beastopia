@@ -140,12 +140,11 @@ public class StartFightNPCController extends Controller {
 
                     List<Monster> myMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), cache.getTrainer()._id()).blockingFirst();
                     List<Monster> enemyMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(enemyTrainerOpponentIndex).trainer()).blockingFirst();
-                    encounterController.setEnemyTrainer(o.get(enemyTrainerOpponentIndex).trainer());
+                    encounterController.setEnemyTrainer(trainerService.getTrainer(cache.getJoinedRegion()._id(), o.get(enemyTrainerOpponentIndex).trainer()).blockingFirst());
                     encounterController.setOwnMonster(myMonsters.stream().filter(m -> m._id().equals(o.get(myTrainerOpponentIndex).monster())).findFirst().orElseThrow());
                     encounterController.setEnemyMonster(enemyMonsters.stream().filter(m -> m._id().equals(o.get(enemyTrainerOpponentIndex).monster())).findFirst().orElseThrow());
 
                     if (o.size() == 3) {
-                        System.out.println(myAllyTrainerOpponentIndex);
                         if (myAllyTrainerOpponentIndex != -5) {
                             setAllyMonsters(o);
                         }
@@ -167,13 +166,13 @@ public class StartFightNPCController extends Controller {
 
     private void setAllyMonsters(List<Opponent> o) {
         List<Monster> myAllyMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(myAllyTrainerOpponentIndex).trainer()).blockingFirst();
-        encounterController.setAllyTrainer((o.get(myAllyTrainerOpponentIndex).trainer()));
+        encounterController.setAllyTrainer(trainerService.getTrainer(cache.getJoinedRegion()._id(), o.get(myAllyTrainerOpponentIndex).trainer()).blockingFirst());
         encounterController.setAllyMonster(myAllyMonsters.stream().filter(m -> m._id().equals(o.get(myAllyTrainerOpponentIndex).monster())).findFirst().orElseThrow());
     }
 
     private void setEnemyAllyMonsters(List<Opponent> o) {
         List<Monster> enemyAllyMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(enemyAllyTrainerOpponentIndex).trainer()).blockingFirst();
-        encounterController.setEnemyAllyTrainer((o.get(enemyAllyTrainerOpponentIndex).trainer()));
+        encounterController.setEnemyAllyTrainer(trainerService.getTrainer(cache.getJoinedRegion()._id(), o.get(enemyAllyTrainerOpponentIndex).trainer()).blockingFirst());
         encounterController.setEnemyAllyMonster(enemyAllyMonsters.stream().filter(m -> m._id().equals(o.get(enemyAllyTrainerOpponentIndex).monster())).findFirst().orElseThrow());
     }
 }
