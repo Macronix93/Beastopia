@@ -7,7 +7,7 @@ import java.util.Objects;
 
 public class AssetProvider {
 
-    String statusIconPath = "asset/status/";
+    final String statusIconPath = "asset/status/";
 
     public Image getStatusIcon(String statusName) {
         return new Image(

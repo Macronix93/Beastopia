@@ -51,20 +51,20 @@ class BeastListControllerTest extends ApplicationTest {
     @Mock
     Prefs prefs;
 
-    MonsterAttributes attributes = new MonsterAttributes(1, 1, 1, 1);
-    MonsterAttributes currentAttributes = new MonsterAttributes(0, 0, 0, 0);
-    Monster monster1 = new Monster(null, null, "MONSTER_1", "TRAINER_ID", 0, 0, 0, null, attributes, currentAttributes, null);
-    Monster monster2 = new Monster(null, null, "MONSTER_2", "TRAINER_ID", 0, 0, 0, null, attributes, currentAttributes, null);
-    Monster monster3 = new Monster(null, null, "MONSTER_3", "TRAINER_ID", 0, 0, 0, null, attributes, currentAttributes, null);
+    final MonsterAttributes attributes = new MonsterAttributes(1, 1, 1, 1);
+    final MonsterAttributes currentAttributes = new MonsterAttributes(0, 0, 0, 0);
+    final Monster monster1 = new Monster(null, null, "MONSTER_1", "TRAINER_ID", 0, 0, 0, null, attributes, currentAttributes, null);
+    final Monster monster2 = new Monster(null, null, "MONSTER_2", "TRAINER_ID", 0, 0, 0, null, attributes, currentAttributes, null);
+    final Monster monster3 = new Monster(null, null, "MONSTER_3", "TRAINER_ID", 0, 0, 0, null, attributes, currentAttributes, null);
 
-    List<Monster> monsters = List.of(monster1, monster2, monster3);
+    final List<Monster> monsters = List.of(monster1, monster2, monster3);
     final BeastController mockedBeastController1 = mock();
     final BeastController mockedBeastController2 = mock();
     final BeastController mockedBeastController3 = mock();
     final Runnable onCloseRequest = mock();
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
         AppPreparer.prepare(app);
 
         Label testLabel1 = new javafx.scene.control.Label("Label1");

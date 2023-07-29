@@ -37,6 +37,7 @@ class DeleteUserControllerTest extends ApplicationTest {
     TokenStorage tokenStorage;
     @Spy
     @SuppressWarnings("unused")
+    final
     ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang", Locale.forLanguageTag("en"));
 
     final User user = new User(null, null, "1", "1", null, null, null);

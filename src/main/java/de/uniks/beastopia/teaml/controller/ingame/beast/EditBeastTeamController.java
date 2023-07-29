@@ -47,8 +47,8 @@ public class EditBeastTeamController extends Controller {
     PresetsService presetsService;
     @Inject
     Provider<BeastListElementController> beastListElementControllerProvider;
-    ObservableList<Monster> beastList = FXCollections.observableArrayList();
-    ObservableList<Monster> teamList = FXCollections.observableArrayList();
+    final ObservableList<Monster> beastList = FXCollections.observableArrayList();
+    final ObservableList<Monster> teamList = FXCollections.observableArrayList();
     List<MonsterTypeDto> allBeasts;
 
     @Inject
@@ -155,7 +155,7 @@ public class EditBeastTeamController extends Controller {
     public void moveItemToBeasts() {
         filterBar.clear();
         beastListView.setItems(beastList);
-        if (teamList.size() > 0 && teamListView.getSelectionModel().getSelectedItem() != null) {
+        if (!teamList.isEmpty() && teamListView.getSelectionModel().getSelectedItem() != null) {
             beastList.add(teamListView.getSelectionModel().getSelectedItem());
             teamListView.getItems().remove(teamListView.getSelectionModel().getSelectedItem());
         }

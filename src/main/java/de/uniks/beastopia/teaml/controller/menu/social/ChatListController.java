@@ -84,7 +84,7 @@ public class ChatListController extends Controller {
     }
 
     public void updateGroupList() {
-        if (groups.size() == 0) {
+        if (groups.isEmpty()) {
             return;
         }
 
@@ -104,7 +104,7 @@ public class ChatListController extends Controller {
             }
         }
 
-        if (firstRender && chatList.getChildren().size() > 0) {
+        if (firstRender && !chatList.getChildren().isEmpty()) {
             firstRender = false;
             //noinspection SuspiciousMethodCalls
             onGroupClicked.accept(groupMap.get(chatList.getChildren().get(0)));

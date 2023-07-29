@@ -30,7 +30,6 @@ import java.util.ResourceBundle;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -53,16 +52,16 @@ class EditBeastTeamControllerTest extends ApplicationTest {
     @Mock
     DataCache cache;
 
-    MonsterAttributes attributes = new MonsterAttributes(1, 1, 1, 1);
-    MonsterAttributes currentAttributes = new MonsterAttributes(0, 0, 0, 0);
-    Monster monster1 = new Monster(null, null, "MONSTER_1", "TRAINER_ID", 2, 1, 1, null, attributes, currentAttributes, null);
-    Monster monster2 = new Monster(null, null, "MONSTER_2", "TRAINER_ID", 4, 2, 5, null, attributes, currentAttributes, null);
-    Monster monster3 = new Monster(null, null, "MONSTER_3", "TRAINER_ID", 0, 3, 2, null, attributes, currentAttributes, null);
+    final MonsterAttributes attributes = new MonsterAttributes(1, 1, 1, 1);
+    final MonsterAttributes currentAttributes = new MonsterAttributes(0, 0, 0, 0);
+    final Monster monster1 = new Monster(null, null, "MONSTER_1", "TRAINER_ID", 2, 1, 1, null, attributes, currentAttributes, null);
+    final Monster monster2 = new Monster(null, null, "MONSTER_2", "TRAINER_ID", 4, 2, 5, null, attributes, currentAttributes, null);
+    final Monster monster3 = new Monster(null, null, "MONSTER_3", "TRAINER_ID", 0, 3, 2, null, attributes, currentAttributes, null);
     final Trainer trainer = new Trainer(null, null, "123", "A", "123", "A", "A.png", List.of("MONSTER_1"), List.of(), 0, null, 0, 0, 0, null);
-    MonsterTypeDto monsterTypeDto = new MonsterTypeDto(0, "MONSTER_1", "MONSTER_TYPE.png", List.of(""), "");
+    final MonsterTypeDto monsterTypeDto = new MonsterTypeDto(0, "MONSTER_1", "MONSTER_TYPE.png", List.of(""), "");
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
         AppPreparer.prepare(app);
 
         when(cache.getTrainer()).thenReturn(trainer);

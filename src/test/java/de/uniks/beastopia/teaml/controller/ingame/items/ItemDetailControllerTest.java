@@ -36,10 +36,10 @@ public class ItemDetailControllerTest extends ApplicationTest {
     @Mock
     DataCache cache;
     final ItemTypeDto itemTypeDto = new ItemTypeDto(1, "img", "name", 32, "desc", "use");
-    Image expectedImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/de/uniks/beastopia/teaml/assets/group.png")));
+    final Image expectedImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/de/uniks/beastopia/teaml/assets/group.png")));
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
         AppPreparer.prepare(app);
         itemDetailController.setItem(itemTypeDto);
         itemDetailController.setBooleanShop(false);

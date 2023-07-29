@@ -57,16 +57,16 @@ class StartFightNPCControllerTest extends ApplicationTest {
     @Mock
     PresetsService presetsService;
 
-    Encounter encounter = new Encounter(null, null, "ID", "r", false);
-    Opponent opponent = new Opponent(null, null, "ido", "e",
+    final Encounter encounter = new Encounter(null, null, "ID", "r", false);
+    final Opponent opponent = new Opponent(null, null, "ido", "e",
             "t", true, true, "m", null, null, 0);
 
-    Trainer trainer = new Trainer(null, null, "tid", "tr", "tu", "tn",
+    final Trainer trainer = new Trainer(null, null, "tid", "tr", "tu", "tn",
             "ti", null, List.of(), 0, "tarea", 2, 3, 0, null);
-    List<Opponent> ops = List.of(opponent);
+    final List<Opponent> ops = List.of(opponent);
 
-    Region region = new Region(null, null, "id", "Alb", null, null);
-    Image expectedImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/de/uniks/beastopia/teaml/assets/bt_icon.png")));
+    final Region region = new Region(null, null, "id", "Alb", null, null);
+    final Image expectedImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/de/uniks/beastopia/teaml/assets/bt_icon.png")));
 
     @Override
     public void start(Stage stage) {
@@ -95,10 +95,5 @@ class StartFightNPCControllerTest extends ApplicationTest {
     @Test
     void title() {
        assertEquals(app.getStage().getTitle(), resources.getString("titleEncounter"));
-    }
-
-    @Test
-    void startFight() {
-        //TODO when encounter-screen ready
     }
 }

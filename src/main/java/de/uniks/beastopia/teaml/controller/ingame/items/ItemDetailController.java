@@ -75,7 +75,7 @@ public class ItemDetailController extends Controller {
         return parent;
     }
 
-    @SuppressWarnings("unused")
+    @SuppressWarnings({"unused", "EmptyMethod"})
     @FXML
     public void shopFunction(ActionEvent actionEvent) {
         //TODO: Implement shop function

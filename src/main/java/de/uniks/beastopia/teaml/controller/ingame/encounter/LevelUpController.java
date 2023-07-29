@@ -201,7 +201,9 @@ public class LevelUpController extends Controller {
     }
 
 
+    @SuppressWarnings("EmptyMethod")
     @FXML
     public void continuePressed() {
+        // TODO: implement continue
     }
 }

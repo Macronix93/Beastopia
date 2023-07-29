@@ -46,12 +46,6 @@ public class ChangeBeastElementController extends Controller {
     public ChangeBeastElementController() {
     }
 
-    @Override
-    public void init() {
-        super.init();
-
-    }
-
     public ChangeBeastElementController setMonster(Monster monster) {
         this.monster = monster;
         return this;

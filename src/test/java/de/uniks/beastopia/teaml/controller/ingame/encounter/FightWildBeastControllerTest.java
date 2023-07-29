@@ -48,12 +48,12 @@ class FightWildBeastControllerTest extends ApplicationTest {
     @Mock
     Prefs prefs;
 
-    Monster monster = new Monster(null, null, "MONSTER_ID", "TRAINER_ID", 1, 0,
+    final Monster monster = new Monster(null, null, "MONSTER_ID", "TRAINER_ID", 1, 0,
             0, null, null, null, null);
 
-    MonsterTypeDto monsterTypeDto = new MonsterTypeDto(3, "name", "image", null, null);
+    final MonsterTypeDto monsterTypeDto = new MonsterTypeDto(3, "name", "image", null, null);
 
-    Image expectedImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/de/uniks/beastopia/teaml/assets/bt_icon.png")));
+    final Image expectedImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/de/uniks/beastopia/teaml/assets/bt_icon.png")));
     @Override
     public void start(Stage stage) {
         AppPreparer.prepare(app);
@@ -84,6 +84,7 @@ class FightWildBeastControllerTest extends ApplicationTest {
         assertEquals("A wild " + monsterTypeDto.name() + " appears!", lookup("#headline").queryAs(Label.class).getText());
     }
 
+    @SuppressWarnings("EmptyMethod")
     @Test
     void startFight() {
         //TODO show EndScreen

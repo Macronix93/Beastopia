@@ -36,7 +36,6 @@ public class StartFightNPCController extends Controller {
     EncounterController encounterController;
     @Inject
     PresetsService presetsService;
-    private int myTrainerOpponentIndex = -5;
     private int enemyTrainerOpponentIndex = -5;
     private int enemyAllyTrainerOpponentIndex = -5;
 
@@ -92,17 +91,13 @@ public class StartFightNPCController extends Controller {
                     cache.setCurrentOpponents(o);
                     if (o.size() == 2) {
                         for (int i = 0; i < o.size(); i++) {
-                            if (o.get(i).trainer().equals(cache.getTrainer()._id())) {
-                                myTrainerOpponentIndex = i;
-                            } else {
+                            if (!o.get(i).trainer().equals(cache.getTrainer()._id())) {
                                 enemyTrainerOpponentIndex = i;
                             }
                         }
                     } else if (o.size() == 3) {
                         for (int i = 0; i < o.size(); i++) {
-                            if (o.get(i).trainer().equals(cache.getTrainer()._id())) {
-                                myTrainerOpponentIndex = i;
-                            } else {
+                            if (!o.get(i).trainer().equals(cache.getTrainer()._id())) {
                                 if (enemyTrainerOpponentIndex == -5) {
                                     enemyTrainerOpponentIndex = i;
                                 } else {

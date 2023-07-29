@@ -57,11 +57,6 @@ public class ChangeBeastController extends Controller {
     }
 
     @Override
-    public void init() {
-        super.init();
-    }
-
-    @Override
     public String getTitle() {
         return resources.getString("titleChangeBeasts");
     }

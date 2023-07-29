@@ -97,11 +97,6 @@ public class DialogWindowController extends Controller {
     }
 
     @Override
-    public void init() {
-        super.init();
-    }
-
-    @Override
     public Parent render() {
         Parent parent = super.render();
 

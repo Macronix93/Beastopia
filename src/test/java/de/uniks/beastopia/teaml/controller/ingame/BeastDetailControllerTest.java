@@ -32,12 +32,12 @@ class BeastDetailControllerTest extends ApplicationTest {
     @Mock
     PresetsService presetsService;
 
-    MonsterAttributes attributes = new MonsterAttributes(1, 1, 1, 1);
-    MonsterAttributes currentAttributes = new MonsterAttributes(0, 0, 0, 0);
-    Monster monster = new Monster(null, null, "MONSTER_ID", "TRAINER_ID", 0, 0, 0, Map.of("1", 1, "2", 2), attributes, currentAttributes, null);
+    final MonsterAttributes attributes = new MonsterAttributes(1, 1, 1, 1);
+    final MonsterAttributes currentAttributes = new MonsterAttributes(0, 0, 0, 0);
+    final Monster monster = new Monster(null, null, "MONSTER_ID", "TRAINER_ID", 0, 0, 0, Map.of("1", 1, "2", 2), attributes, currentAttributes, null);
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
         AppPreparer.prepare(app);
 
         beastDetailController.setBeast(monster);

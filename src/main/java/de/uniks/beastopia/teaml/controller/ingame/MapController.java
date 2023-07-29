@@ -95,7 +95,6 @@ public class MapController extends Controller {
     private void drawObjectGroup(Layer layer) {
         for (MapObject object : layer.objects()) {
             RegionInfoController regionInfo = regionInfoControllerProvider.get();
-            regionInfo.init();
             if (object.polygon() == null) {
                 drawRectangle(object, regionInfo);
             } else {

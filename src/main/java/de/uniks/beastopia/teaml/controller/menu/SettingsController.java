@@ -53,7 +53,7 @@ public class SettingsController extends Controller {
     @Inject
     Provider<SoundController> soundControllerProvider;
     SoundController soundController;
-    double debounceDelay = 250; // Delay in milliseconds
+    final double debounceDelay = 250; // Delay in milliseconds
     long lastValueChangeTime = 0;
 
 

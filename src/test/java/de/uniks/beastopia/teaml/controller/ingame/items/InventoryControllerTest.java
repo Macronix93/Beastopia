@@ -25,8 +25,6 @@ import java.util.ResourceBundle;
 import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -53,12 +51,12 @@ public class InventoryControllerTest extends ApplicationTest {
     private final List<ItemTypeDto> itemTypeDtos = List.of(new ItemTypeDto(0, "img", "name", 32, "desc", "use"));
     private final List<Item> items = List.of(new Item(null, "name", "desc", "use", 0, 3));
     final Runnable onCloseRequest = mock();
-    Consumer<ItemTypeDto> onItemClicked = mock();
-    Trainer trainer = new Trainer(null, null, "id", "region", "user", "name", "image", List.of("team"), List.of("visitedAreas"), 10, "area", 0, 0, 0, new NPCInfo(true, false, false, false, List.of(1), List.of(), null));
-    Region region = new Region(null, null, "id", "name", null, null);
+    final Consumer<ItemTypeDto> onItemClicked = mock();
+    final Trainer trainer = new Trainer(null, null, "id", "region", "user", "name", "image", List.of("team"), List.of("visitedAreas"), 10, "area", 0, 0, 0, new NPCInfo(true, false, false, false, List.of(1), List.of(), null));
+    final Region region = new Region(null, null, "id", "name", null, null);
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
         AppPreparer.prepare(app);
         when(presetsService.getItems()).thenReturn(Observable.just(itemTypeDtos));
         when(cache.getTrainer()).thenReturn(trainer);
