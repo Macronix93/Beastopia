@@ -40,6 +40,7 @@ import javafx.util.Pair;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 public class IngameController extends Controller {
@@ -143,7 +144,9 @@ public class IngameController extends Controller {
     private Monster lastMonster;
     private ItemTypeDto lastItemTypeDto;
     private int currentMenu = MENU_NONE;
-    private final java.util.Map<Pair<Integer, Integer>, Tile> MAP_INFO = new HashMap<>();
+    private final java.util.Map<Pair<Integer, Integer>, Pair<Tile, Node>> MAP_INFO = new HashMap<>();
+    private final List<Node> renderedTiles = new ArrayList<>();
+    private final List<Node> renderedPlayers = new ArrayList<>();
     Direction direction;
     final ObjectProperty<PlayerState> state = new SimpleObjectProperty<>();
     Parent player;
@@ -259,6 +262,30 @@ public class IngameController extends Controller {
         });
 
         soundController = soundControllerProvider.get();
+    }
+
+    private void updateDrawOrder() {
+        BiFunction<Node, Node, Boolean> areNeighbours = (p1, p2) -> {
+            int x1 = (int) (p1.getTranslateX() / (int) TILE_SIZE + 0.25);
+            int y1 = (int) (p1.getTranslateY() / (int) TILE_SIZE + 0.25);
+            int x2 = (int) (p2.getTranslateX() / (int) TILE_SIZE + 0.25);
+            int y2 = (int) (p2.getTranslateY() / (int) TILE_SIZE + 0.25);
+            return Math.abs(x1 - x2) <= 1 && Math.abs(y1 - y2) <= 1;
+        };
+
+        List<Node> visiblePlayers = renderedPlayers.stream()
+                .filter(node -> tilePane.getChildren().contains(node))
+                .sorted(Comparator.comparingInt(node -> (int) node.getTranslateY()))
+                .toList();
+
+        visiblePlayers.forEach(Node::toFront);
+
+        MAP_INFO.keySet().stream()
+                .filter(p -> visiblePlayers.stream().anyMatch(player -> areNeighbours.apply(player, MAP_INFO.get(p).getValue())) &&
+                        MAP_INFO.get(p).getKey().properties().stream().anyMatch(prop -> prop.name().equals("Roof")) &&
+                        MAP_INFO.get(p).getKey().properties().stream().filter(prop -> prop.name().equals("Roof")).findFirst().orElseThrow().value().equals("true"))
+                .map(p -> MAP_INFO.get(p).getValue())
+                .forEach(Node::toFront);
     }
 
     /**
@@ -545,8 +572,8 @@ public class IngameController extends Controller {
             // This is to prevent the camera from showing the "extended" tile pane with those tiles
             if (id != 0) {
                 List<Tile> tileInformation = tileSet.getKey().getKey().tiles();
-                tileInformation.stream().filter(t -> t.id() == tileSet.getValue()).findFirst().ifPresent(tile -> MAP_INFO.put(new Pair<>(x, y), tile));
-                drawTile(id, x, y, tileSet.getKey().getValue(), presetsService.getTileViewPort(tileSet.getValue(), tileSet.getKey().getKey()));
+                Node node = drawTile(id, x, y, tileSet.getKey().getValue(), presetsService.getTileViewPort(tileSet.getValue(), tileSet.getKey().getKey()));
+                tileInformation.stream().filter(t -> t.id() == tileSet.getValue()).findFirst().ifPresent(tile -> MAP_INFO.put(new Pair<>(x, y), new Pair<>(tile, node)));
             }
         }
     }
@@ -562,7 +589,7 @@ public class IngameController extends Controller {
         return null;
     }
 
-    private void drawTile(long ID, int x, int y, Image image, Rectangle2D viewPort) {
+    private Node drawTile(long ID, int x, int y, Image image, Rectangle2D viewPort) {
         boolean flippedHorizontally = (ID & FLIPPED_HORIZONTALLY_FLAG) != 0;
         boolean flippedVertically = (ID & FLIPPED_VERTICALLY_FLAG) != 0;
         boolean flippedDiagonally = (ID & FLIPPED_DIAGONALLY_FLAG) != 0;
@@ -590,6 +617,8 @@ public class IngameController extends Controller {
         }
 
         tilePane.getChildren().add(view);
+        renderedTiles.add(view);
+        return view;
     }
 
     public void setOrigin(int tilex, int tiley) {
@@ -633,10 +662,10 @@ public class IngameController extends Controller {
     private void drawPlayer(int posx, int posy) {
         tilePane.getChildren().remove(player);
         player = playerController.render();
+        renderedPlayers.add(player);
         player.setTranslateX(posx * TILE_SIZE);
         player.setTranslateY((posy - 1) * TILE_SIZE);
         tilePane.getChildren().add(player);
-        player.toFront();
     }
 
     private Parent drawRemotePlayer(EntityController controller, int posx, int posy) {
@@ -644,23 +673,24 @@ public class IngameController extends Controller {
         parent.setTranslateX(posx * TILE_SIZE);
         parent.setTranslateY((posy - 1) * TILE_SIZE);
         tilePane.getChildren().add(parent);
+        renderedPlayers.add(parent);
         parent.toFront();
         return parent;
     }
 
     private void movePlayer(int x, int y) {
         playerController.updateViewPort();
-        player.toFront();
         player.setTranslateX(x * TILE_SIZE);
         player.setTranslateY((y - 1) * TILE_SIZE);
+        updateDrawOrder();
     }
 
     private void moveRemotePlayer(EntityController controller, int x, int y) {
         Parent remotePlayer = otherPlayers.get(controller);
         controller.updateViewPort();
-        remotePlayer.toFront();
         remotePlayer.setTranslateX(x * TILE_SIZE);
         remotePlayer.setTranslateY((y - 1) * TILE_SIZE);
+        updateDrawOrder();
     }
 
     @Override
@@ -701,8 +731,9 @@ public class IngameController extends Controller {
         data.add("direction", new JsonPrimitive(direction.ordinal()));
 
         Pair<Integer, Integer> posXY = new Pair<>(posx, posy);
+
         if (MAP_INFO.containsKey(posXY)) {
-            Tile tile = MAP_INFO.get(posXY);
+            Tile tile = MAP_INFO.get(posXY).getKey();
             Optional<TileProperty> jumpableTileProp = tile.properties().stream().filter(tileProperty -> tileProperty.name().equals("Jumpable")).findFirst();
             if (jumpableTileProp.isPresent()) {
                 int jumpDirection = Integer.parseInt(jumpableTileProp.get().value());
@@ -1027,6 +1058,7 @@ public class IngameController extends Controller {
     public void setIdleState() {
         state.setValue(PlayerState.IDLE);
         drawPlayer(posx, posy);
+        updateDrawOrder();
 
         if (currentMenu == MENU_PAUSE || currentMenu == MENU_SHOP) {
             player.setOpacity(0.5);
