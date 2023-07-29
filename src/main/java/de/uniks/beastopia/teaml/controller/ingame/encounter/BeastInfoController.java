@@ -7,6 +7,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 
 import javax.inject.Inject;
@@ -16,6 +17,8 @@ import java.util.TimerTask;
 @SuppressWarnings("unused")
 public class BeastInfoController extends Controller {
 
+    @FXML
+    public ImageView status;
     @FXML
     Label name;
     @FXML
