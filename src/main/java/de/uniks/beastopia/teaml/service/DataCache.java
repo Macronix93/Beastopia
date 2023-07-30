@@ -23,9 +23,12 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.*;
+import java.util.Objects;
 
 import static de.uniks.beastopia.teaml.service.PresetsService.PREVIEW_SCALING;
 
@@ -55,6 +58,7 @@ public class DataCache {
     PresetsService presetsService;
     private TileSet mapTileset;
     private Image mapImage;
+    private List<Item> items;
 
     @Inject
     public DataCache() {
@@ -341,6 +345,10 @@ public class DataCache {
         return this.currentOpponents;
     }
 
+    public void addCurrentOpponent(Opponent o) {
+        this.currentOpponents.add(o);
+    }
+
     public Opponent getOpponentByTrainerID(String trainerId) {
         return currentOpponents.stream()
                 .filter(o -> o.trainer().equals(trainerId))
@@ -359,6 +367,7 @@ public class DataCache {
     public Map<Integer, Image> getItemImages() {
         return itemImages;
     }
+
     public void setItemImages(Map<Integer, Image> itemImage) {
         this.itemImages.put(itemImage.keySet().iterator().next(), itemImage.values().iterator().next());
     }
@@ -397,7 +406,7 @@ public class DataCache {
     }
 
     private Observable<Image> downloadImage(String trainer, boolean useConstantValues) {
-        Observable<Image> obs = presetsService.getCharacterSprites(trainer, false);
+        Observable<Image> obs = presetsService.getCharacterSprites(trainer, useConstantValues);
         charactersAiring.add(new Pair<>(trainer, obs));
         return obs
                 .observeOn(FX_SCHEDULER)
@@ -450,5 +459,13 @@ public class DataCache {
 
     public Image getMapImage() {
         return this.mapImage;
+    }
+
+    public void setItems(List<Item> i) {
+        this.items = i;
+    }
+
+    public List<Item> getItems() {
+        return this.items;
     }
 }

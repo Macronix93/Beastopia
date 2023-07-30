@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
@@ -15,8 +16,16 @@
             </StackPane.margin>
         </Ellipse>
         <HBox fx:id="monsterContainer" alignment="CENTER" spacing="20.0">
-            <ImageView fx:id="firstMonster" fitHeight="125.0" fitWidth="125.0" pickOnBounds="true"
-                       preserveRatio="true"/>
+            <HBox fx:id="selectBox" alignment="CENTER" maxHeight="125.0" prefHeight="125.0" prefWidth="125.0">
+                <ImageView fx:id="firstMonster" fitHeight="125.0" fitWidth="125.0" pickOnBounds="true"
+                           preserveRatio="true"/>
+                <opaqueInsets>
+                    <Insets/>
+                </opaqueInsets>
+                <HBox.margin>
+                    <Insets/>
+                </HBox.margin>
+            </HBox>
         </HBox>
     </StackPane>
 </VBox>
