@@ -1402,6 +1402,8 @@ public class IngameController extends Controller {
         pauseMenuParent = null;
         dialogWindowParent = null;
         tilePane = null;
+        mondexListParent = null;
+        mondexDetailParent = null;
         super.destroy();
     }
 }
