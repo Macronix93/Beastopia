@@ -141,7 +141,7 @@ public class EncounterController extends Controller {
 
     private boolean shouldUpdateUIOnChange = false;
 
-    private int oldCoinNum;
+    private float oldCoinNum;
 
     private AbilityDto ability1;
     private AbilityDto ability2;
