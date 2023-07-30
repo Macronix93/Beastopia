@@ -85,23 +85,12 @@ public class MondexListController extends Controller {
     }
 
     public void reload() {
-        List<Boolean> knownUpdate = new ArrayList<>();
-        disposables.add(trainerService.getTrainer(dataCache.getTrainer().region(), dataCache.getTrainer()._id())
-                .observeOn(FX_SCHEDULER)
-                .subscribe(trainer -> {
-                    dataCache.setTrainer(trainer);
-                    mondexService.setTrainer(trainer);
-                }));
-        knownUpdate.add(false);
-        for(MonsterTypeDto monster : monsters) {
-            knownUpdate.add(mondexService.checkKnown(monster.id()));
-        }
-        System.out.println("knownLast  " + knownLast);
-        System.out.println("knownUpdate" + knownUpdate);
-        for(int i = 0; i < monsters.size(); i++) {
-            if(knownLast.get(i) != knownUpdate.get(i)) {
-                System.out.println("Änderung bei " + i + " " + monsters.get(i).name());
-                knownLast.set(i,knownUpdate.get(i));
+        //ToDo reload Datacache Trainer
+        mondexService.init();
+        for (int i = 0; i < monsters.size(); i++) {
+            if (mondexService.checkKnown(monsters.get(i).id()) != knownLast.get(i)) {
+                System.out.println("Unterschied an Stelle " + i);
+                knownLast.set(i, mondexService.checkKnown(monsters.get(i).id()));
                 subControllers.get(i).destroy();
                 subControllers.get(i).init();
                 subControllers.get(i).render();
