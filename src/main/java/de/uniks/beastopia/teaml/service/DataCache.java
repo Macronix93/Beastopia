@@ -23,16 +23,19 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.*;
+import java.util.Objects;
 
 import static de.uniks.beastopia.teaml.service.PresetsService.PREVIEW_SCALING;
 
 @Singleton
 public class DataCache {
 
-    private static final ImageView imageView = new ImageView();
+    private static final ImageView IMAGE_VIEW = new ImageView();
     private static final Scheduler FX_SCHEDULER = io.reactivex.rxjava3.schedulers.Schedulers.from(Platform::runLater);
 
     private List<User> users = new ArrayList<>();
@@ -55,6 +58,7 @@ public class DataCache {
     PresetsService presetsService;
     private TileSet mapTileset;
     private Image mapImage;
+    private List<Item> items;
 
     @Inject
     public DataCache() {
@@ -201,9 +205,9 @@ public class DataCache {
     public Observable<Image> getOrLoadTrainerImage(String trainer, boolean useConstantValues) {
         synchronized (characters) {
             if (characters.stream().anyMatch(pair -> pair.getKey().equals(trainer) && pair.getValue() != null)) {
-                return downloadImage(trainer, useConstantValues);
-            } else if (charactersAiring.stream().noneMatch(pair -> pair.getKey().equals(trainer))) {
                 return getDownloadedImage(trainer, useConstantValues);
+            } else if (charactersAiring.stream().noneMatch(pair -> pair.getKey().equals(trainer))) {
+                return downloadImage(trainer, useConstantValues);
             } else {
                 return observableToAiringDownload(trainer, useConstantValues);
             }
@@ -341,6 +345,10 @@ public class DataCache {
         return this.currentOpponents;
     }
 
+    public void addCurrentOpponent(Opponent o) {
+        this.currentOpponents.add(o);
+    }
+
     public Opponent getOpponentByTrainerID(String trainerId) {
         return currentOpponents.stream()
                 .filter(o -> o.trainer().equals(trainerId))
@@ -359,6 +367,7 @@ public class DataCache {
     public Map<Integer, Image> getItemImages() {
         return itemImages;
     }
+
     public void setItemImages(Map<Integer, Image> itemImage) {
         this.itemImages.put(itemImage.keySet().iterator().next(), itemImage.values().iterator().next());
     }
@@ -396,8 +405,8 @@ public class DataCache {
         }
     }
 
-    private Observable<Image> getDownloadedImage(String trainer, boolean useConstantValues) {
-        Observable<Image> obs = presetsService.getCharacterSprites(trainer, false);
+    private Observable<Image> downloadImage(String trainer, boolean useConstantValues) {
+        Observable<Image> obs = presetsService.getCharacterSprites(trainer, useConstantValues);
         charactersAiring.add(new Pair<>(trainer, obs));
         return obs
                 .observeOn(FX_SCHEDULER)
@@ -409,7 +418,7 @@ public class DataCache {
                 });
     }
 
-    private Observable<Image> downloadImage(String trainer, boolean useConstantValues) {
+    private Observable<Image> getDownloadedImage(String trainer, boolean useConstantValues) {
         if (useConstantValues) {
             return Observable.just(charactersResized.stream()
                     .filter(pair -> pair.getKey().equals(trainer))
@@ -426,14 +435,14 @@ public class DataCache {
     }
 
     private static Image scaleImage(Image input, @SuppressWarnings("SameParameterValue") int width, @SuppressWarnings("SameParameterValue") int height) {
-        imageView.setImage(input);
-        imageView.setPreserveRatio(true);
-        imageView.setFitWidth(width);
-        imageView.setFitHeight(height);
+        IMAGE_VIEW.setImage(input);
+        IMAGE_VIEW.setPreserveRatio(true);
+        IMAGE_VIEW.setFitWidth(width);
+        IMAGE_VIEW.setFitHeight(height);
         SnapshotParameters parameters = new SnapshotParameters();
         parameters.setFill(Paint.valueOf("transparent"));
-        imageView.setCache(false);
-        return imageView.snapshot(parameters, null);
+        IMAGE_VIEW.setCache(false);
+        return IMAGE_VIEW.snapshot(parameters, null);
     }
 
     public void setTileset(TileSet tileSet) {
@@ -450,5 +459,13 @@ public class DataCache {
 
     public Image getMapImage() {
         return this.mapImage;
+    }
+
+    public void setItems(List<Item> i) {
+        this.items = i;
+    }
+
+    public List<Item> getItems() {
+        return this.items;
     }
 }

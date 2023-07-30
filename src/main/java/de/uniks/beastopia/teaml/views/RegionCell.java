@@ -36,6 +36,9 @@ public class RegionCell extends ListCell<Region> {
         } else {
             final Button join = new Button(item.name() + " " + resources.getString("join"));
             join.setOnAction(event -> {
+                if (cache.getJoinedRegion() != null && !cache.getJoinedRegion().name().equals(item.name())) {
+                    cache.setMapImage(null);
+                }
                 TrainerController controller = trainerControllerProvider.get();
                 cache.setRegion(item);
                 controller.backController("menu");

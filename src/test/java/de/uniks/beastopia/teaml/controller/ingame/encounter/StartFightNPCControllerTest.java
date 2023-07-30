@@ -94,7 +94,7 @@ class StartFightNPCControllerTest extends ApplicationTest {
 
     @Test
     void title() {
-       assertEquals(app.getStage().getTitle(), resources.getString("titleEncounter"));
+        assertEquals(app.getStage().getTitle(), resources.getString("titleEncounter"));
     }
 
     @Test

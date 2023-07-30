@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+<VBox fx:id="infoSign" alignment="CENTER" spacing="15.0" xmlns="http://javafx.com/javafx/19"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="de.uniks.beastopia.teaml.controller.ingame.encounter.JoinFightInfoController">
+    <ImageView fx:id="pointingArrow" fitHeight="56.0" fitWidth="51.0" pickOnBounds="true" preserveRatio="true">
+        <Image url="@../../../assets/arrow_red.png"/>
+    </ImageView>
+    <VBox fx:id="infoTextBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+          prefHeight="90.0" prefWidth="200.0" spacing="10.0">
+        <Text fx:id="helpCaption" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER"
+              wrappingWidth="201.119140625">
+            <font>
+                <Font size="16.0"/>
+            </font>
+        </Text>
+        <Text fx:id="helpText" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER"
+              wrappingWidth="175.0">
+            <VBox.margin>
+                <Insets left="10.0"/>
+            </VBox.margin>
+        </Text>
+    </VBox>
+</VBox>

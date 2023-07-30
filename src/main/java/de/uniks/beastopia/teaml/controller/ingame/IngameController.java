@@ -7,6 +7,7 @@ import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.ingame.beast.EditBeastTeamController;
 import de.uniks.beastopia.teaml.controller.ingame.encounter.FightWildBeastController;
+import de.uniks.beastopia.teaml.controller.ingame.encounter.JoinFightInfoController;
 import de.uniks.beastopia.teaml.controller.ingame.encounter.StartFightNPCController;
 import de.uniks.beastopia.teaml.controller.ingame.items.InventoryController;
 import de.uniks.beastopia.teaml.controller.ingame.items.ItemDetailController;
@@ -40,10 +41,13 @@ import javafx.util.Pair;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
+import static de.uniks.beastopia.teaml.service.PresetsService.PREVIEW_SCALING;
+
 public class IngameController extends Controller {
-    static final double TILE_SIZE = 32;
+    static final double TILE_SIZE = 48;
     static final int MENU_NONE = 0;
     static final int MENU_SCOREBOARD = 1;
     static final int MENU_BEASTLIST = 2;
@@ -105,6 +109,8 @@ public class IngameController extends Controller {
     @Inject
     Provider<MapController> mapControllerProvider;
     @Inject
+    Provider<JoinFightInfoController> joinFightInfoControllerProvider;
+    @Inject
     Provider<ItemDetailController> itemDetailControllerProvider;
     @Inject
     Prefs prefs;
@@ -143,7 +149,9 @@ public class IngameController extends Controller {
     private Monster lastMonster;
     private ItemTypeDto lastItemTypeDto;
     private int currentMenu = MENU_NONE;
-    private final java.util.Map<Pair<Integer, Integer>, Tile> MAP_INFO = new HashMap<>();
+    private final java.util.Map<Pair<Integer, Integer>, List<Pair<Tile, Node>>> MAP_INFO = new HashMap<>();
+    private final List<Node> renderedTiles = new ArrayList<>();
+    private final List<Node> renderedPlayers = new ArrayList<>();
     Direction direction;
     final ObjectProperty<PlayerState> state = new SimpleObjectProperty<>();
     Parent player;
@@ -259,6 +267,33 @@ public class IngameController extends Controller {
         });
 
         soundController = soundControllerProvider.get();
+    }
+
+    private void updateDrawOrder() {
+        BiFunction<Node, Node, Boolean> areNeighbours = (p1, p2) -> {
+            int x1 = (int) (p1.getTranslateX() / (int) TILE_SIZE + 0.25);
+            int y1 = (int) (p1.getTranslateY() / (int) TILE_SIZE + 0.25);
+            int x2 = (int) (p2.getTranslateX() / (int) TILE_SIZE + 0.25);
+            int y2 = (int) (p2.getTranslateY() / (int) TILE_SIZE + 0.25);
+            return Math.abs(x1 - x2) <= 1 && Math.abs(y1 - y2) <= 1;
+        };
+
+        List<Node> visiblePlayers = renderedPlayers.stream()
+                .filter(node -> tilePane.getChildren().contains(node))
+                .sorted(Comparator.comparingInt(node -> (int) node.getTranslateY()))
+                .toList();
+
+        visiblePlayers.forEach(Node::toFront);
+
+        for (var list : MAP_INFO.values()) {
+            for (var pair : list) {
+                if (visiblePlayers.stream().anyMatch(p -> areNeighbours.apply(p, pair.getValue())) &&
+                        pair.getKey().properties().stream().anyMatch(prop -> prop.name().equals("Roof")) &&
+                        pair.getKey().properties().stream().filter(prop -> prop.name().equals("Roof")).findFirst().orElseThrow().value().equals("true")) {
+                    pair.getValue().toFront();
+                }
+            }
+        }
     }
 
     /**
@@ -434,6 +469,7 @@ public class IngameController extends Controller {
         cache.setTrainer(myTrainer);
         posx = myTrainer.x();
         posy = myTrainer.y();
+        playerController.setDirection(myTrainer.direction());
 
         return myTrainer;
     }
@@ -459,6 +495,47 @@ public class IngameController extends Controller {
         otherPlayers.put(controller, parent);
         if (prefs.getArea() != null && !prefs.getArea()._id().equals(trainer.area())) {
             hideRemotePlayer(trainer);
+        }
+
+        if (trainer.area().equals(cache.getTrainer().area()) && trainer.npc() == null) {
+            disposables.add(eventListener.listen("encounters.*.trainers." + trainer._id()
+                            + ".opponents.*.created", Opponent.class)
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe(o -> checkOpponents(Collections.singletonList(o.data()), trainer),
+                            error -> System.err.println("Fehler: " + error.getMessage())
+                    )
+            );
+        }
+    }
+
+    private void checkOpponents(List<Opponent> opponents, Trainer trainer) {
+        if (trainer.area().equals(cache.getTrainer().area())) {
+            disposables.add(encounterOpponentsService.getEncounterOpponents(cache.getJoinedRegion()._id(), opponents.get(0).encounter())
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe(o -> {
+                        if (o.size() == 3) {
+                            for (Opponent opponent : o) {
+                                if (opponent.trainer().equals(trainer._id()) && !opponent.isAttacker()) {
+                                    // This is to get the current position of the trainer, because it gives the wrong
+                                    // coordinates when using "trainer.x()" and "trainer.y()" (trainer creation coordinates?)
+                                    disposables.add(trainerService.getTrainer(cache.getJoinedRegion()._id(), trainer._id())
+                                            .observeOn(FX_SCHEDULER)
+                                            .subscribe(t -> {
+                                                        JoinFightInfoController joinFightInfoController = joinFightInfoControllerProvider.get();
+                                                        joinFightInfoController.setX(t.x() * TILE_SIZE);
+                                                        joinFightInfoController.setY(t.y() * TILE_SIZE);
+                                                        joinFightInfoController.setParent(tilePane);
+                                                        joinFightInfoController.init();
+
+                                                        Parent parentView = joinFightInfoController.render();
+                                                        tilePane.getChildren().add(parentView);
+                                                    }
+                                            ));
+                                    break;
+                                }
+                            }
+                        }
+                    }));
         }
     }
 
@@ -545,8 +622,16 @@ public class IngameController extends Controller {
             // This is to prevent the camera from showing the "extended" tile pane with those tiles
             if (id != 0) {
                 List<Tile> tileInformation = tileSet.getKey().getKey().tiles();
-                tileInformation.stream().filter(t -> t.id() == tileSet.getValue()).findFirst().ifPresent(tile -> MAP_INFO.put(new Pair<>(x, y), tile));
-                drawTile(id, x, y, tileSet.getKey().getValue(), presetsService.getTileViewPort(tileSet.getValue(), tileSet.getKey().getKey()));
+                Node node = drawTile(id, x, y, tileSet.getKey().getValue(), presetsService.getTileViewPort(tileSet.getValue(), tileSet.getKey().getKey()));
+                tileInformation.stream().filter(t -> t.id() == tileSet.getValue()).findFirst().ifPresent(tile -> {
+                    if (MAP_INFO.containsKey(new Pair<>(x, y))) {
+                        MAP_INFO.get(new Pair<>(x, y)).add(new Pair<>(tile, node));
+                    } else {
+                        List<Pair<Tile, Node>> list = new ArrayList<>();
+                        list.add(new Pair<>(tile, node));
+                        MAP_INFO.put(new Pair<>(x, y), list);
+                    }
+                });
             }
         }
     }
@@ -562,7 +647,7 @@ public class IngameController extends Controller {
         return null;
     }
 
-    private void drawTile(long ID, int x, int y, Image image, Rectangle2D viewPort) {
+    private Node drawTile(long ID, int x, int y, Image image, Rectangle2D viewPort) {
         boolean flippedHorizontally = (ID & FLIPPED_HORIZONTALLY_FLAG) != 0;
         boolean flippedVertically = (ID & FLIPPED_VERTICALLY_FLAG) != 0;
         boolean flippedDiagonally = (ID & FLIPPED_DIAGONALLY_FLAG) != 0;
@@ -590,6 +675,10 @@ public class IngameController extends Controller {
         }
 
         tilePane.getChildren().add(view);
+        renderedTiles.add(view);
+        view.toFront();
+
+        return view;
     }
 
     public void setOrigin(int tilex, int tiley) {
@@ -633,10 +722,10 @@ public class IngameController extends Controller {
     private void drawPlayer(int posx, int posy) {
         tilePane.getChildren().remove(player);
         player = playerController.render();
+        renderedPlayers.add(player);
         player.setTranslateX(posx * TILE_SIZE);
         player.setTranslateY((posy - 1) * TILE_SIZE);
         tilePane.getChildren().add(player);
-        player.toFront();
     }
 
     private Parent drawRemotePlayer(EntityController controller, int posx, int posy) {
@@ -644,23 +733,24 @@ public class IngameController extends Controller {
         parent.setTranslateX(posx * TILE_SIZE);
         parent.setTranslateY((posy - 1) * TILE_SIZE);
         tilePane.getChildren().add(parent);
+        renderedPlayers.add(parent);
         parent.toFront();
         return parent;
     }
 
     private void movePlayer(int x, int y) {
         playerController.updateViewPort();
-        player.toFront();
         player.setTranslateX(x * TILE_SIZE);
         player.setTranslateY((y - 1) * TILE_SIZE);
+        updateDrawOrder();
     }
 
     private void moveRemotePlayer(EntityController controller, int x, int y) {
         Parent remotePlayer = otherPlayers.get(controller);
         controller.updateViewPort();
-        remotePlayer.toFront();
         remotePlayer.setTranslateX(x * TILE_SIZE);
         remotePlayer.setTranslateY((y - 1) * TILE_SIZE);
+        updateDrawOrder();
     }
 
     @Override
@@ -701,16 +791,19 @@ public class IngameController extends Controller {
         data.add("direction", new JsonPrimitive(direction.ordinal()));
 
         Pair<Integer, Integer> posXY = new Pair<>(posx, posy);
+
         if (MAP_INFO.containsKey(posXY)) {
-            Tile tile = MAP_INFO.get(posXY);
-            Optional<TileProperty> jumpableTileProp = tile.properties().stream().filter(tileProperty -> tileProperty.name().equals("Jumpable")).findFirst();
-            if (jumpableTileProp.isPresent()) {
-                int jumpDirection = Integer.parseInt(jumpableTileProp.get().value());
-                if (jumpDirection == direction.ordinal()) {
-                    state.setValue(PlayerState.JUMP);
-                    drawPlayer(posx, posy);
-                    movePlayer(posx, posy);
-                    updateOrigin();
+            for (var pair : MAP_INFO.get(posXY)) {
+                Tile tile = pair.getKey();
+                Optional<TileProperty> jumpableTileProp = tile.properties().stream().filter(tileProperty -> tileProperty.name().equals("Jumpable")).findFirst();
+                if (jumpableTileProp.isPresent()) {
+                    int jumpDirection = Integer.parseInt(jumpableTileProp.get().value());
+                    if (jumpDirection == direction.ordinal()) {
+                        state.setValue(PlayerState.JUMP);
+                        drawPlayer(posx, posy);
+                        movePlayer(posx, posy);
+                        updateOrigin();
+                    }
                 }
             }
         }
@@ -739,12 +832,15 @@ public class IngameController extends Controller {
             Trainer trainer = canTalkToNPC();
             if (trainer != null) {
                 if (trainer.npc() == null || trainer.npc().encounterOnTalk()) {
-                    if (trainer.npc() != null) {
-                        List<Opponent> trainerOpponents = encounterOpponentsService.getTrainerOpponents(cache.getJoinedRegion()._id(), trainer._id()).blockingFirst();
-                        if (!(trainerOpponents.equals(List.of()))) {
-                            talkToFightingNPC(trainer);
+                    List<Opponent> trainerOpponents = encounterOpponentsService.getTrainerOpponents(cache.getJoinedRegion()._id(), trainer._id()).blockingFirst();
+
+                    if (!(trainerOpponents.equals(List.of()))) {
+                        List<Opponent> allOpponents = encounterOpponentsService.getEncounterOpponents(cache.getJoinedRegion()._id(), trainerOpponents.get(0).encounter()).blockingFirst();
+
+                        if (allOpponents.size() == 3) {
+                            talkToJoinFight(trainer);
                         } else {
-                            startEncounterOnTalk(trainer);
+                            talkToFightingNPC(trainer);
                         }
                     } else {
                         startEncounterOnTalk(trainer);
@@ -764,21 +860,44 @@ public class IngameController extends Controller {
 
     private Trainer canTalkToNPC() {
         for (Trainer trainer : cache.getTrainers()) {
-            if (direction == Direction.RIGHT) { // right
-                if (trainer.x() == posx + 1 && trainer.y() == posy) {
-                    return trainer;
+            if (trainer.area().equals(cache.getTrainer().area())) {
+                if (direction == Direction.RIGHT) { // right
+                    if (trainer.x() == posx + 1 && trainer.y() == posy) {
+                        return trainer;
+                    }
+                } else if (direction == Direction.UP) { //up
+                    if (trainer.x() == posx && trainer.y() == posy - 1) {
+                        return trainer;
+                    }
+                } else if (direction == Direction.LEFT) { //left
+                    if (trainer.x() == posx - 1 && trainer.y() == posy) {
+                        return trainer;
+                    }
+                } else if (direction == Direction.DOWN) { //down
+                    if (trainer.x() == posx && trainer.y() == posy + 1) {
+                        return trainer;
+                    }
                 }
-            } else if (direction == Direction.UP) { //up
-                if (trainer.x() == posx && trainer.y() == posy - 1) {
-                    return trainer;
-                }
-            } else if (direction == Direction.LEFT) { //left
-                if (trainer.x() == posx - 1 && trainer.y() == posy) {
-                    return trainer;
-                }
-            } else if (direction == Direction.DOWN) { //down
-                if (trainer.x() == posx && trainer.y() == posy + 1) {
-                    return trainer;
+            }
+        }
+        for (Trainer trainer : cache.getTrainers()) {
+            if (trainer.area().equals(cache.getTrainer().area())) {
+                if (direction == Direction.RIGHT) { // right
+                    if (trainer.x() == posx + 2 && trainer.y() == posy && (trainer.npc().canHeal() || trainer.npc().sells() != null)) {
+                        return trainer;
+                    }
+                } else if (direction == Direction.UP) { //up
+                    if (trainer.x() == posx && trainer.y() == posy - 2 && (trainer.npc().canHeal() || trainer.npc().sells() != null)) {
+                        return trainer;
+                    }
+                } else if (direction == Direction.LEFT) { //left
+                    if (trainer.x() == posx - 2 && trainer.y() == posy && (trainer.npc().canHeal() || trainer.npc().sells() != null)) {
+                        return trainer;
+                    }
+                } else if (direction == Direction.DOWN) { //down
+                    if (trainer.x() == posx + 2 && trainer.y() == posy + 2 && (trainer.npc().canHeal() || trainer.npc().sells() != null)) {
+                        return trainer;
+                    }
                 }
             }
         }
@@ -807,7 +926,7 @@ public class IngameController extends Controller {
         disposables.add(cache.getOrLoadTrainerImage(trainer.image(), false)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(image -> {
-                    Rectangle2D viewPort = new Rectangle2D(3 * 96, 32, 16, 32);
+                    Rectangle2D viewPort = new Rectangle2D(48 * PREVIEW_SCALING, 0, 16 * PREVIEW_SCALING, 32 * PREVIEW_SCALING);
                     PixelReader reader = image.getPixelReader();
                     WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
                     String askFight = resources.getString("ask") + " " + trainer.name() + " " + resources.getString("vs");
@@ -816,14 +935,27 @@ public class IngameController extends Controller {
                 }));
     }
 
+    private void talkToJoinFight(Trainer trainer) {
+        disposables.add(cache.getOrLoadTrainerImage(trainer.image(), false)
+                .observeOn(FX_SCHEDULER)
+                .subscribe(image -> {
+                    Rectangle2D viewPort = new Rectangle2D(48 * PREVIEW_SCALING, 0, 16 * PREVIEW_SCALING, 32 * PREVIEW_SCALING);
+                    PixelReader reader = image.getPixelReader();
+                    WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
+                    String askJoinFight = "Join the fight of " + trainer.name();
+                    talk(newImage, resources.getString("hello") + " \n" + "You can try to join the fight!", List.of(askJoinFight), null,
+                            i -> udpEventListener.send(createTalkMessage(cache.getTrainer()._id(), trainer._id(), Optional.empty())));
+                }));
+    }
+
     private void talkToFightingNPC(Trainer trainer) {
         disposables.add(cache.getOrLoadTrainerImage(trainer.image(), false)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(image -> {
-                    Rectangle2D viewPort = new Rectangle2D(3 * 96, 32, 16, 32);
+                    Rectangle2D viewPort = new Rectangle2D(48 * PREVIEW_SCALING, 0, 16 * PREVIEW_SCALING, 32 * PREVIEW_SCALING);
                     PixelReader reader = image.getPixelReader();
                     WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
-                    talk(newImage, "I am currently fighting, come back later!"
+                    talk(newImage, " I am currently fighting, come back later! "
                             , null, null, null);
                 }));
     }
@@ -832,7 +964,7 @@ public class IngameController extends Controller {
         disposables.add(cache.getOrLoadTrainerImage(trainer.image(), false)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(image -> {
-                    Rectangle2D viewPort = new Rectangle2D(3 * 96, 32, 16, 32);
+                    Rectangle2D viewPort = new Rectangle2D(48 * PREVIEW_SCALING, 0, 16 * PREVIEW_SCALING, 32 * PREVIEW_SCALING);
                     PixelReader reader = image.getPixelReader();
                     WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
                     if (trainer.npc().encountered().contains(cache.getTrainer()._id())) {
@@ -865,10 +997,10 @@ public class IngameController extends Controller {
     }
 
     private void talkToNurse(Trainer trainer) {
-        disposables.add(cache.getOrLoadTrainerImage(trainer.image(), true)
+        disposables.add(cache.getOrLoadTrainerImage(trainer.image(), false)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(image -> {
-                    Rectangle2D viewPort = new Rectangle2D(3 * 96, 32, 16, 32);
+                    Rectangle2D viewPort = new Rectangle2D(48 * PREVIEW_SCALING, 0, 16 * PREVIEW_SCALING, 32 * PREVIEW_SCALING);
                     PixelReader reader = image.getPixelReader();
                     WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
                     talk(newImage, " Hello! \n what can I do for you? ", List.of("Heal all Beasts"), null, (i -> {
@@ -1004,6 +1136,7 @@ public class IngameController extends Controller {
     public void setIdleState() {
         state.setValue(PlayerState.IDLE);
         drawPlayer(posx, posy);
+        updateDrawOrder();
 
         if (currentMenu == MENU_PAUSE || currentMenu == MENU_SHOP) {
             player.setOpacity(0.5);
@@ -1235,13 +1368,14 @@ public class IngameController extends Controller {
         openInventory(true);
     }
 
-    private void toggleInventoryItemDetails(ItemTypeDto itemTypeDto) {
+    public void toggleInventoryItemDetails(ItemTypeDto itemTypeDto) {
         if (Objects.equals(lastItemTypeDto, itemTypeDto)) {
             scoreBoardLayout.getChildren().remove(itemDetailParent);
             lastItemTypeDto = null;
             return;
         }
-        setItemDetailController(itemTypeDto, false);
+        setItemDetailController(itemTypeDto, false, !inventoryController.isShop);
+        //false = details: inventory shop, true = details: only inventory
     }
 
     private void toggleShopItemDetails(ItemTypeDto itemTypeDto) {
@@ -1250,23 +1384,28 @@ public class IngameController extends Controller {
             lastItemTypeDto = null;
             return;
         }
-        setItemDetailController(itemTypeDto, true);
+        setItemDetailController(itemTypeDto, true, false);
     }
 
-    private void setItemDetailController(ItemTypeDto itemTypeDto, boolean booleanShop) {
+    private void setItemDetailController(ItemTypeDto itemTypeDto, boolean booleanShop, boolean onlyInventory) {
         lastItemTypeDto = itemTypeDto;
         ItemDetailController controller = itemDetailControllerProvider.get();
+        controller.setInventoryController(inventoryController);
+        controller.setIngameController(this);
         subControllers.add(controller);
         controller.setItem(itemTypeDto);
         controller.setBooleanShop(booleanShop);
+        controller.setOnlyInventory(onlyInventory);
         controller.init();
         scoreBoardLayout.getChildren().remove(itemDetailParent);
         shopLayout.getChildren().remove(itemDetailParent);
         itemDetailParent = controller.render();
         if (booleanShop) {
             shopLayout.getChildren().add(1, itemDetailParent);
+            shopLayout.toFront();
         } else {
             scoreBoardLayout.getChildren().add(0, itemDetailParent);
+            scoreBoardLayout.toFront();
         }
     }
 

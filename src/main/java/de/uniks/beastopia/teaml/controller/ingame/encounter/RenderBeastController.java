@@ -23,11 +23,15 @@ public class RenderBeastController extends Controller {
     HBox monsterContainer;
     @FXML
     ImageView firstMonster;
+    @FXML
+    HBox selectBox;
     @Inject
     PresetsService presetsService;
 
     public Monster monster1;
     public Monster monster2;
+    private String opponentIdMonsterOne;
+    private String opponentIdMonsterTwo;
 
     @Inject
     public RenderBeastController() {
@@ -46,14 +50,20 @@ public class RenderBeastController extends Controller {
 
         disposables.add(presetsService.getMonsterImage(monster1.type())
                 .observeOn(FX_SCHEDULER)
-                .subscribe(monsterImage -> firstMonster.setImage(monsterImage)));
+                .subscribe(monsterImage -> {
+                    firstMonster.setImage(monsterImage);
+                    firstMonster.setOnMouseClicked(event -> System.out.println("Opponent ID: " + opponentIdMonsterOne));
+                }));
 
         if (monster2 != null) {
             ImageView secondMonster = new ImageView();
 
             disposables.add(presetsService.getMonsterImage(monster2.type())
                     .observeOn(FX_SCHEDULER)
-                    .subscribe(secondMonster::setImage));
+                    .subscribe(monsterImage -> {
+                        secondMonster.setImage(monsterImage);
+                        secondMonster.setOnMouseClicked(event -> System.out.println("Opponent ID: " + opponentIdMonsterTwo));
+                    }));
             monsterContainer.getChildren().add(secondMonster);
         }
 
@@ -69,6 +79,22 @@ public class RenderBeastController extends Controller {
     public RenderBeastController setMonster2(Monster monster2) {
         this.monster2 = monster2;
         return this;
+    }
+
+    public void setMonsterOneOpponentId(String id) {
+        this.opponentIdMonsterOne = id;
+    }
+
+    public void setMonsterTwoOpponentId(String id) {
+        this.opponentIdMonsterTwo = id;
+    }
+
+    public String getOpponentIdMonsterOne() {
+        return opponentIdMonsterOne;
+    }
+
+    public String getOpponentIdMonsterTwo() {
+        return opponentIdMonsterTwo;
     }
 
     @Override
