@@ -60,16 +60,10 @@ public class MondexElementController extends Controller {
         label_id.setText("#" + (monster.id()));
         if (known) {
             label_name.setText(monster.name());
-            presetsService.getMonsterImage(monster.id())
-                    .observeOn(FX_SCHEDULER)
-                    .subscribe(image -> imageView_avatar.setImage(image));
-            //imageView_avatar.setImage(dataCache.getMonsterImage(monster.id()));
+            imageView_avatar.setImage(dataCache.getMonsterImage(monster.id()));
         } else {
             label_name.setText(resources.getString("Unknown"));
-            presetsService.getMonsterImage(monster.id())
-                    .observeOn(FX_SCHEDULER)
-                    .subscribe(image -> imageView_avatar.setImage(imageService.makeImageBlack(image)));
-            //imageView_avatar.setImage(imageService.makeImageBlack((dataCache.getMonsterImage(monster.id()))));
+            imageView_avatar.setImage(imageService.makeImageBlack((dataCache.getMonsterImage(monster.id()))));
         }
 
         return parent;

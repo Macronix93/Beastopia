@@ -14,14 +14,16 @@ import javafx.scene.layout.VBox;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public class MondexListController extends Controller {
 
     private final List<MonsterTypeDto> monsters = new ArrayList<>();
     private final List<Controller> subControllers = new ArrayList<>();
-    private final List<Boolean> knownLast = new ArrayList<>();
+    private final Map<Integer, Parent> monsterMap = new HashMap<>();
     public VBox VBoxMondexList;
     public VBox VBoxBeasts;
     @Inject
@@ -30,7 +32,8 @@ public class MondexListController extends Controller {
     PresetsService presetsService;
     @Inject
     DataCache dataCache;
-    @Inject TrainerService trainerService;
+    @Inject
+    TrainerService trainerService;
     @Inject
     MondexService mondexService;
 
@@ -44,11 +47,7 @@ public class MondexListController extends Controller {
 
     @Override
     public void init() {
-        disposables.add(presetsService.getAllBeasts()
-                .observeOn(FX_SCHEDULER)
-                .subscribe(this.monsters::addAll));
-        dataCache.downloadMonsterImages(monsters);
-        knownLast.add(false);
+        super.init();
         mondexService.init();
     }
 
@@ -61,18 +60,53 @@ public class MondexListController extends Controller {
         Parent parent = super.render();
 
         VBoxBeasts.getChildren().clear();
-        for (MonsterTypeDto monster : monsters) {
-            MondexElementController mondexElementController = mondexElementControllerProvider.get()
-                    .setMonster(monster, mondexService.checkKnown(monster.id()));
-            knownLast.add(mondexService.checkKnown(monster.id()));
-            mondexElementController.setOnBeastClicked(onBeastClicked);
-            mondexElementController.init();
-            subControllers.add(mondexElementController);
-            Parent render = mondexElementController.render();
-            VBoxBeasts.getChildren().add(render);
-        }
+
+        disposables.add(trainerService.getTrainer(dataCache.getTrainer().region(), dataCache.getTrainer()._id())
+                .observeOn(FX_SCHEDULER)
+                .subscribe(newTrainer -> {
+                    dataCache.setTrainer(newTrainer);
+                    mondexService.setTrainer(newTrainer);
+                    disposables.add(presetsService.getAllBeasts()
+                            .subscribe(monsters -> { //No UI Stuff here!!!
+                                this.monsters.addAll(monsters);
+                                for (MonsterTypeDto monster : monsters) {
+                                    Thread.sleep(288);
+                                    if (dataCache.imageIsDownloaded(monster.id())) {
+                                        disposables.add(delay().observeOn(FX_SCHEDULER).subscribe(t -> {
+                                            MondexElementController mondexElementController = mondexElementControllerProvider.get()
+                                                    .setMonster(monster, mondexService.checkKnown(monster.id()));
+                                            mondexElementController.setOnBeastClicked(onBeastClicked);
+                                            mondexElementController.init();
+                                            subControllers.add(mondexElementController);
+                                            Parent render = mondexElementController.render();
+                                            monsterMap.put(monster.id(), render);
+                                            reloadMap();
+                                        }));
+                                        continue;
+                                    }
+                                    disposables.add(presetsService.getMonsterImage(monster.id())
+                                            .observeOn(FX_SCHEDULER)
+                                            .subscribe(image -> { //UI Stuff allowed again!!!
+                                                dataCache.addMonsterImages(monster.id(), image);
+                                                MondexElementController mondexElementController = mondexElementControllerProvider.get()
+                                                        .setMonster(monster, mondexService.checkKnown(monster.id()));
+                                                mondexElementController.setOnBeastClicked(onBeastClicked);
+                                                mondexElementController.init();
+                                                subControllers.add(mondexElementController);
+                                                Parent render = mondexElementController.render();
+                                                monsterMap.put(monster.id(), render);
+                                                reloadMap();
+                                            }));
+                                }
+                            }));
+                }));
 
         return parent;
+    }
+
+    private void reloadMap() {
+        VBoxBeasts.getChildren().clear();
+        monsterMap.keySet().stream().sorted().forEachOrdered(key -> VBoxBeasts.getChildren().add(monsterMap.get(key)));
     }
 
     public void setOnCloseRequest(Runnable onCloseRequest) {
@@ -81,28 +115,8 @@ public class MondexListController extends Controller {
 
     @Override
     public void destroy() {
-        super.destroy();
         subControllers.forEach(Controller::destroy);
-    }
-
-    public void reload() {
-        render();
-
-        disposables.add(trainerService.getTrainer(dataCache.getTrainer().region(), dataCache.getTrainer()._id())
-                .observeOn(FX_SCHEDULER)
-                .subscribe(newTrainer -> dataCache.setTrainer(newTrainer)));
-
-        /*//ToDo reload Datacache Trainer
-        mondexService.init();
-        for (int i = 0; i < monsters.size(); i++) {
-            if (mondexService.checkKnown(monsters.get(i).id()) != knownLast.get(i)) {
-                System.out.println("Unterschied an Stelle " + i);
-                knownLast.set(i, mondexService.checkKnown(monsters.get(i).id()));
-                subControllers.get(i).destroy();
-                subControllers.get(i).init();
-                subControllers.get(i).render();
-            }
-        }*/
+        super.destroy();
     }
 
     public void handleKeyEvent(KeyEvent event) {

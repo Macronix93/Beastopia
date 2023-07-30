@@ -65,7 +65,15 @@ public class IngameController extends Controller {
     static final long FLIPPED_VERTICALLY_FLAG = 1L << 30;
     static final long FLIPPED_DIAGONALLY_FLAG = 1L << 29;
     static final long ROTATED_HEXAGONAL_120_FLAG = 1L << 28;
-
+    final ObjectProperty<PlayerState> state = new SimpleObjectProperty<>();
+    final java.util.Map<EntityController, Parent> otherPlayers = new HashMap<>();
+    private final List<Pair<TileSetDescription, Pair<TileSet, Image>>> tileSets = new ArrayList<>();
+    private final java.util.Map<Pair<Integer, Integer>, List<Pair<Tile, Node>>> MAP_INFO = new HashMap<>();
+    private final List<Controller> subControllers = new ArrayList<>();
+    private final List<Node> renderedTiles = new ArrayList<>();
+    private final List<Node> renderedPlayers = new ArrayList<>();
+    private final List<KeyCode> pressedKeys = new ArrayList<>();
+    private final String[] locationStrings = {"Moncenter", "House", "Store"};
     @FXML
     public Pane tilePane;
     @Inject
@@ -162,7 +170,6 @@ public class IngameController extends Controller {
     private HBox shopLayout;
     private Region region;
     private Map map;
-    private final List<Pair<TileSetDescription, Pair<TileSet, Image>>> tileSets = new ArrayList<>();
     private int posx = 0;
     private int posy = 0;
     private int lastposx = 0;
@@ -174,14 +181,6 @@ public class IngameController extends Controller {
     private Monster lastMonster;
     private ItemTypeDto lastItemTypeDto;
     private int currentMenu = MENU_NONE;
-    private final java.util.Map<Pair<Integer, Integer>, List<Pair<Tile, Node>>> MAP_INFO = new HashMap<>();
-    private final List<Controller> subControllers = new ArrayList<>();
-    private final List<Node> renderedTiles = new ArrayList<>();
-    private final List<Node> renderedPlayers = new ArrayList<>();
-    final ObjectProperty<PlayerState> state = new SimpleObjectProperty<>();
-    final java.util.Map<EntityController, Parent> otherPlayers = new HashMap<>();
-    private final List<KeyCode> pressedKeys = new ArrayList<>();
-    private final String[] locationStrings = {"Moncenter", "House", "Store"};
     private long lastValueChangeTime = 0;
     private DialogWindowController dialogWindowController;
     private MonsterTypeDto lastMondexMonster;
@@ -227,6 +226,7 @@ public class IngameController extends Controller {
         beastListController.init();
 
         mondexListController.setOnCloseRequest(() -> {
+            mondexListController.destroy();
             scoreBoardLayout.getChildren().remove(mondexListParent);
             scoreBoardLayout.getChildren().remove(mondexDetailParent);
             lastMondexMonster = null;
@@ -472,7 +472,6 @@ public class IngameController extends Controller {
 
                             beastListParent = beastListController.render();
                             pauseMenuParent = pauseController.render();
-                            mondexListParent = mondexListController.render();
                             loadRemoteTrainer(trainers);
                             listenToTrainerEvents();
                             loadingPage.setDone();
@@ -1482,13 +1481,14 @@ public class IngameController extends Controller {
 
     public void openMondexList() {
         if (scoreBoardLayout.getChildren().contains(mondexListParent)) {
+            mondexListController.destroy();
             scoreBoardLayout.getChildren().remove(mondexListParent);
             scoreBoardLayout.getChildren().remove(mondexDetailParent);
             lastMondexMonster = null;
             currentMenu = MENU_NONE;
         } else {
+            mondexListParent = mondexListController.render();
             scoreBoardLayout.getChildren().add(mondexListParent);
-            mondexListController.reload();
             currentMenu = MENU_MONDEXLIST;
         }
     }

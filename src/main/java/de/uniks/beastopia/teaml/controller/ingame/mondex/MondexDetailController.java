@@ -2,6 +2,7 @@ package de.uniks.beastopia.teaml.controller.ingame.mondex;
 
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.MonsterTypeDto;
+import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.ImageService;
 import de.uniks.beastopia.teaml.service.MondexService;
 import de.uniks.beastopia.teaml.service.PresetsService;
@@ -31,15 +32,16 @@ public class MondexDetailController extends Controller {
     public ImageView imageView_TypeIcon1;
     @FXML
     public ImageView imageView_TypeIcon2;
-
-    private MonsterTypeDto monster;
-    private boolean known;
     @Inject
     MondexService mondexService;
     @Inject
     PresetsService presetsService;
     @Inject
     ImageService imageService;
+    @Inject
+    DataCache dataCache;
+    private MonsterTypeDto monster;
+    private boolean known;
 
 
     @Inject
@@ -73,16 +75,12 @@ public class MondexDetailController extends Controller {
                 imageView_TypeIcon2.setImage(typeIcon2);
             }
             textArea_description.setText(monster.description());
-            disposables.add(presetsService.getMonsterImage(monster.id())
-                    .observeOn(FX_SCHEDULER)
-                    .subscribe(monsterImage -> imageView_Avatar.setImage(monsterImage)));
+            imageView_Avatar.setImage(dataCache.getMonsterImage(monster.id()));
         } else {
             label_name.setText("???");
             label_type.setText("Type: ???");
             textArea_description.setText("Unknown monster");
-            disposables.add(presetsService.getMonsterImage(monster.id())
-                    .observeOn(FX_SCHEDULER)
-                    .subscribe(monsterImage -> imageView_Avatar.setImage(imageService.makeImageBlack(monsterImage))));
+            imageView_Avatar.setImage(imageService.makeImageBlack(dataCache.getMonsterImage(monster.id())));
         }
 
 
