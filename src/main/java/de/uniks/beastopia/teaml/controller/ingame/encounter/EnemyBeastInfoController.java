@@ -51,9 +51,7 @@ public class EnemyBeastInfoController extends Controller {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                Platform.runLater(() -> {
-                    setLifeBarValue(monster.currentAttributes().health() / (double) monster.attributes().health());
-                });
+                Platform.runLater(() -> setLifeBarValue(monster.currentAttributes().health() / (double) monster.attributes().health()));
             }
         }, 500);
 
@@ -64,5 +62,9 @@ public class EnemyBeastInfoController extends Controller {
         lifeBarValue.setMinWidth(lifeBar.getWidth() * value);
         lifeBarValue.setMaxWidth(lifeBar.getWidth() * value);
         lifeBarValue.setPrefWidth(lifeBar.getWidth() * value);
+    }
+
+    public Monster getMonster() {
+        return this.monster;
     }
 }

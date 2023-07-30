@@ -73,7 +73,7 @@ public class BeastDetailController extends Controller {
                 }));
 
         for (Map.Entry<String, Integer> entry : monster.abilities().entrySet()) {
-            int ability = entry.getValue();
+            int ability = Integer.parseInt(entry.getKey());
             disposables.add(presetsService.getAbility(ability)
                     .observeOn(FX_SCHEDULER)
                     .subscribe(ad -> description.setText(description.getText() + ad.name() + " [" + ad.type() +

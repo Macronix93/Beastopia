@@ -14,7 +14,7 @@ public record Trainer(
         List<String> team,
         List<Integer> encounteredMonsterTypes,
         List<String> visitedAreas,
-        int coins,
+        float coins,
         String area,
         int x,
         int y,
