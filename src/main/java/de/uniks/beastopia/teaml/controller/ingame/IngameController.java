@@ -7,17 +7,45 @@ import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.ingame.beast.EditBeastTeamController;
 import de.uniks.beastopia.teaml.controller.ingame.encounter.FightWildBeastController;
+import de.uniks.beastopia.teaml.controller.ingame.encounter.JoinFightInfoController;
 import de.uniks.beastopia.teaml.controller.ingame.encounter.StartFightNPCController;
 import de.uniks.beastopia.teaml.controller.ingame.items.InventoryController;
 import de.uniks.beastopia.teaml.controller.ingame.items.ItemDetailController;
 import de.uniks.beastopia.teaml.controller.ingame.items.ShopController;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
+import de.uniks.beastopia.teaml.rest.Achievement;
+import de.uniks.beastopia.teaml.rest.Area;
+import de.uniks.beastopia.teaml.rest.Chunk;
+import de.uniks.beastopia.teaml.rest.Encounter;
+import de.uniks.beastopia.teaml.rest.ItemTypeDto;
+import de.uniks.beastopia.teaml.rest.Layer;
 import de.uniks.beastopia.teaml.rest.Map;
-import de.uniks.beastopia.teaml.rest.*;
-import de.uniks.beastopia.teaml.service.*;
+import de.uniks.beastopia.teaml.rest.Monster;
+import de.uniks.beastopia.teaml.rest.MonsterTypeDto;
+import de.uniks.beastopia.teaml.rest.MoveTrainerDto;
+import de.uniks.beastopia.teaml.rest.Opponent;
+import de.uniks.beastopia.teaml.rest.Region;
+import de.uniks.beastopia.teaml.rest.Tile;
+import de.uniks.beastopia.teaml.rest.TileProperty;
+import de.uniks.beastopia.teaml.rest.TileSet;
+import de.uniks.beastopia.teaml.rest.TileSetDescription;
+import de.uniks.beastopia.teaml.rest.Trainer;
+import de.uniks.beastopia.teaml.service.AchievementsService;
+import de.uniks.beastopia.teaml.service.AreaService;
+import de.uniks.beastopia.teaml.service.DataCache;
+import de.uniks.beastopia.teaml.service.EncounterOpponentsService;
+import de.uniks.beastopia.teaml.service.PresetsService;
+import de.uniks.beastopia.teaml.service.RegionEncountersService;
+import de.uniks.beastopia.teaml.service.TokenStorage;
+import de.uniks.beastopia.teaml.service.TrainerService;
 import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.sockets.UDPEventListener;
-import de.uniks.beastopia.teaml.utils.*;
+import de.uniks.beastopia.teaml.utils.Dialog;
+import de.uniks.beastopia.teaml.utils.Direction;
+import de.uniks.beastopia.teaml.utils.LoadingPage;
+import de.uniks.beastopia.teaml.utils.PlayerState;
+import de.uniks.beastopia.teaml.utils.Prefs;
+import de.uniks.beastopia.teaml.utils.SoundController;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
@@ -43,8 +71,10 @@ import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
+import static de.uniks.beastopia.teaml.service.PresetsService.PREVIEW_SCALING;
+
 public class IngameController extends Controller {
-    static final double TILE_SIZE = 32;
+    static final double TILE_SIZE = 48;
     static final int MENU_NONE = 0;
     static final int MENU_SCOREBOARD = 1;
     static final int MENU_BEASTLIST = 2;
@@ -105,6 +135,8 @@ public class IngameController extends Controller {
     Provider<EntityController> entityControllerProvider;
     @Inject
     Provider<MapController> mapControllerProvider;
+    @Inject
+    Provider<JoinFightInfoController> joinFightInfoControllerProvider;
     @Inject
     Provider<ItemDetailController> itemDetailControllerProvider;
     @Inject
@@ -461,6 +493,7 @@ public class IngameController extends Controller {
         cache.setTrainer(myTrainer);
         posx = myTrainer.x();
         posy = myTrainer.y();
+        playerController.setDirection(myTrainer.direction());
 
         return myTrainer;
     }
@@ -486,6 +519,47 @@ public class IngameController extends Controller {
         otherPlayers.put(controller, parent);
         if (prefs.getArea() != null && !prefs.getArea()._id().equals(trainer.area())) {
             hideRemotePlayer(trainer);
+        }
+
+        if (trainer.area().equals(cache.getTrainer().area()) && trainer.npc() == null) {
+            disposables.add(eventListener.listen("encounters.*.trainers." + trainer._id()
+                            + ".opponents.*.created", Opponent.class)
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe(o -> checkOpponents(Collections.singletonList(o.data()), trainer),
+                            error -> System.err.println("Fehler: " + error.getMessage())
+                    )
+            );
+        }
+    }
+
+    private void checkOpponents(List<Opponent> opponents, Trainer trainer) {
+        if (trainer.area().equals(cache.getTrainer().area())) {
+            disposables.add(encounterOpponentsService.getEncounterOpponents(cache.getJoinedRegion()._id(), opponents.get(0).encounter())
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe(o -> {
+                        if (o.size() == 3) {
+                            for (Opponent opponent : o) {
+                                if (opponent.trainer().equals(trainer._id()) && !opponent.isAttacker()) {
+                                    // This is to get the current position of the trainer, because it gives the wrong
+                                    // coordinates when using "trainer.x()" and "trainer.y()" (trainer creation coordinates?)
+                                    disposables.add(trainerService.getTrainer(cache.getJoinedRegion()._id(), trainer._id())
+                                            .observeOn(FX_SCHEDULER)
+                                            .subscribe(t -> {
+                                                        JoinFightInfoController joinFightInfoController = joinFightInfoControllerProvider.get();
+                                                        joinFightInfoController.setX(t.x() * TILE_SIZE);
+                                                        joinFightInfoController.setY(t.y() * TILE_SIZE);
+                                                        joinFightInfoController.setParent(tilePane);
+                                                        joinFightInfoController.init();
+
+                                                        Parent parentView = joinFightInfoController.render();
+                                                        tilePane.getChildren().add(parentView);
+                                                    }
+                                            ));
+                                    break;
+                                }
+                            }
+                        }
+                    }));
         }
     }
 
@@ -770,12 +844,15 @@ public class IngameController extends Controller {
             Trainer trainer = canTalkToNPC();
             if (trainer != null) {
                 if (trainer.npc() == null || trainer.npc().encounterOnTalk()) {
-                    if (trainer.npc() != null) {
-                        List<Opponent> trainerOpponents = encounterOpponentsService.getTrainerOpponents(cache.getJoinedRegion()._id(), trainer._id()).blockingFirst();
-                        if (!(trainerOpponents.equals(List.of()))) {
-                            talkToFightingNPC(trainer);
+                    List<Opponent> trainerOpponents = encounterOpponentsService.getTrainerOpponents(cache.getJoinedRegion()._id(), trainer._id()).blockingFirst();
+
+                    if (!(trainerOpponents.equals(List.of()))) {
+                        List<Opponent> allOpponents = encounterOpponentsService.getEncounterOpponents(cache.getJoinedRegion()._id(), trainerOpponents.get(0).encounter()).blockingFirst();
+
+                        if (allOpponents.size() == 3) {
+                            talkToJoinFight(trainer);
                         } else {
-                            startEncounterOnTalk(trainer);
+                            talkToFightingNPC(trainer);
                         }
                     } else {
                         startEncounterOnTalk(trainer);
@@ -795,21 +872,44 @@ public class IngameController extends Controller {
 
     private Trainer canTalkToNPC() {
         for (Trainer trainer : cache.getTrainers()) {
-            if (direction == Direction.RIGHT) { // right
-                if (trainer.x() == posx + 1 && trainer.y() == posy) {
-                    return trainer;
+            if (trainer.area().equals(cache.getTrainer().area())) {
+                if (direction == Direction.RIGHT) { // right
+                    if (trainer.x() == posx + 1 && trainer.y() == posy) {
+                        return trainer;
+                    }
+                } else if (direction == Direction.UP) { //up
+                    if (trainer.x() == posx && trainer.y() == posy - 1) {
+                        return trainer;
+                    }
+                } else if (direction == Direction.LEFT) { //left
+                    if (trainer.x() == posx - 1 && trainer.y() == posy) {
+                        return trainer;
+                    }
+                } else if (direction == Direction.DOWN) { //down
+                    if (trainer.x() == posx && trainer.y() == posy + 1) {
+                        return trainer;
+                    }
                 }
-            } else if (direction == Direction.UP) { //up
-                if (trainer.x() == posx && trainer.y() == posy - 1) {
-                    return trainer;
-                }
-            } else if (direction == Direction.LEFT) { //left
-                if (trainer.x() == posx - 1 && trainer.y() == posy) {
-                    return trainer;
-                }
-            } else if (direction == Direction.DOWN) { //down
-                if (trainer.x() == posx && trainer.y() == posy + 1) {
-                    return trainer;
+            }
+        }
+        for (Trainer trainer : cache.getTrainers()) {
+            if (trainer.area().equals(cache.getTrainer().area())) {
+                if (direction == Direction.RIGHT) { // right
+                    if (trainer.x() == posx + 2 && trainer.y() == posy && (trainer.npc().canHeal() || trainer.npc().sells() != null)) {
+                        return trainer;
+                    }
+                } else if (direction == Direction.UP) { //up
+                    if (trainer.x() == posx && trainer.y() == posy - 2 && (trainer.npc().canHeal() || trainer.npc().sells() != null)) {
+                        return trainer;
+                    }
+                } else if (direction == Direction.LEFT) { //left
+                    if (trainer.x() == posx - 2 && trainer.y() == posy && (trainer.npc().canHeal() || trainer.npc().sells() != null)) {
+                        return trainer;
+                    }
+                } else if (direction == Direction.DOWN) { //down
+                    if (trainer.x() == posx + 2 && trainer.y() == posy + 2 && (trainer.npc().canHeal() || trainer.npc().sells() != null)) {
+                        return trainer;
+                    }
                 }
             }
         }
@@ -838,7 +938,7 @@ public class IngameController extends Controller {
         disposables.add(cache.getOrLoadTrainerImage(trainer.image(), false)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(image -> {
-                    Rectangle2D viewPort = new Rectangle2D(3 * 96, 32, 16, 32);
+                    Rectangle2D viewPort = new Rectangle2D(48 * PREVIEW_SCALING, 0, 16 * PREVIEW_SCALING, 32 * PREVIEW_SCALING);
                     PixelReader reader = image.getPixelReader();
                     WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
                     String askFight = resources.getString("ask") + " " + trainer.name() + " " + resources.getString("vs");
@@ -847,11 +947,24 @@ public class IngameController extends Controller {
                 }));
     }
 
+    private void talkToJoinFight(Trainer trainer) {
+        disposables.add(cache.getOrLoadTrainerImage(trainer.image(), false)
+                .observeOn(FX_SCHEDULER)
+                .subscribe(image -> {
+                    Rectangle2D viewPort = new Rectangle2D(48 * PREVIEW_SCALING, 0, 16 * PREVIEW_SCALING, 32 * PREVIEW_SCALING);
+                    PixelReader reader = image.getPixelReader();
+                    WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
+                    String askJoinFight = "Join the fight of " + trainer.name();
+                    talk(newImage, resources.getString("hello") + " \n" + "You can try to join the fight!", List.of(askJoinFight), null,
+                            i -> udpEventListener.send(createTalkMessage(cache.getTrainer()._id(), trainer._id(), Optional.empty())));
+                }));
+    }
+
     private void talkToFightingNPC(Trainer trainer) {
         disposables.add(cache.getOrLoadTrainerImage(trainer.image(), false)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(image -> {
-                    Rectangle2D viewPort = new Rectangle2D(3 * 96, 32, 16, 32);
+                    Rectangle2D viewPort = new Rectangle2D(48 * PREVIEW_SCALING, 0, 16 * PREVIEW_SCALING, 32 * PREVIEW_SCALING);
                     PixelReader reader = image.getPixelReader();
                     WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
                     talk(newImage, "I am currently fighting, come back later!"
@@ -863,7 +976,7 @@ public class IngameController extends Controller {
         disposables.add(cache.getOrLoadTrainerImage(trainer.image(), false)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(image -> {
-                    Rectangle2D viewPort = new Rectangle2D(3 * 96, 32, 16, 32);
+                    Rectangle2D viewPort = new Rectangle2D(48 * PREVIEW_SCALING, 0, 16 * PREVIEW_SCALING, 32 * PREVIEW_SCALING);
                     PixelReader reader = image.getPixelReader();
                     WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
                     if (trainer.npc().encountered().contains(cache.getTrainer()._id())) {
@@ -896,10 +1009,10 @@ public class IngameController extends Controller {
     }
 
     private void talkToNurse(Trainer trainer) {
-        disposables.add(cache.getOrLoadTrainerImage(trainer.image(), true)
+        disposables.add(cache.getOrLoadTrainerImage(trainer.image(), false)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(image -> {
-                    Rectangle2D viewPort = new Rectangle2D(3 * 96, 32, 16, 32);
+                    Rectangle2D viewPort = new Rectangle2D(48 * PREVIEW_SCALING, 0, 16 * PREVIEW_SCALING, 32 * PREVIEW_SCALING);
                     PixelReader reader = image.getPixelReader();
                     WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
                     talk(newImage, " Hello! \n what can I do for you? ", List.of("Heal all Beasts"), null, (i -> {
@@ -1267,13 +1380,14 @@ public class IngameController extends Controller {
         openInventory(true);
     }
 
-    private void toggleInventoryItemDetails(ItemTypeDto itemTypeDto) {
+    public void toggleInventoryItemDetails(ItemTypeDto itemTypeDto) {
         if (Objects.equals(lastItemTypeDto, itemTypeDto)) {
             scoreBoardLayout.getChildren().remove(itemDetailParent);
             lastItemTypeDto = null;
             return;
         }
-        setItemDetailController(itemTypeDto, false);
+        setItemDetailController(itemTypeDto, false, !inventoryController.isShop);
+        //false = details: inventory shop, true = details: only inventory
     }
 
     private void toggleShopItemDetails(ItemTypeDto itemTypeDto) {
@@ -1282,23 +1396,28 @@ public class IngameController extends Controller {
             lastItemTypeDto = null;
             return;
         }
-        setItemDetailController(itemTypeDto, true);
+        setItemDetailController(itemTypeDto, true, false);
     }
 
-    private void setItemDetailController(ItemTypeDto itemTypeDto, boolean booleanShop) {
+    private void setItemDetailController(ItemTypeDto itemTypeDto, boolean booleanShop, boolean onlyInventory) {
         lastItemTypeDto = itemTypeDto;
         ItemDetailController controller = itemDetailControllerProvider.get();
+        controller.setInventoryController(inventoryController);
+        controller.setIngameController(this);
         subControllers.add(controller);
         controller.setItem(itemTypeDto);
         controller.setBooleanShop(booleanShop);
+        controller.setOnlyInventory(onlyInventory);
         controller.init();
         scoreBoardLayout.getChildren().remove(itemDetailParent);
         shopLayout.getChildren().remove(itemDetailParent);
         itemDetailParent = controller.render();
         if (booleanShop) {
             shopLayout.getChildren().add(1, itemDetailParent);
+            shopLayout.toFront();
         } else {
             scoreBoardLayout.getChildren().add(0, itemDetailParent);
+            scoreBoardLayout.toFront();
         }
     }
 
