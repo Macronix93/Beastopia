@@ -15,9 +15,7 @@
   <rowConstraints>
     <RowConstraints vgrow="SOMETIMES" />
   </rowConstraints>
-   <children>
       <ImageView fx:id="imageView_avatar" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" />
       <Label fx:id="label_name" text="Name" GridPane.columnIndex="1" />
       <Label fx:id="label_id" text="ID" GridPane.columnIndex="2" />
-   </children>
 </GridPane>
