@@ -55,6 +55,7 @@ public class MondexDetailController extends Controller {
     @Override
     public void init() {
         super.init();
+        mondexService.init();
         known = mondexService.checkKnown(monster.id());
     }
 

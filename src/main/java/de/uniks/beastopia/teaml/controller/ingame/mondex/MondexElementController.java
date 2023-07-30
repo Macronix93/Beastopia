@@ -3,6 +3,7 @@ package de.uniks.beastopia.teaml.controller.ingame.mondex;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.MonsterTypeDto;
 import de.uniks.beastopia.teaml.service.ImageService;
+import de.uniks.beastopia.teaml.service.MondexService;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -23,6 +24,8 @@ public class MondexElementController extends Controller {
     PresetsService presetsService;
     @Inject
     ImageService imageService;
+    @Inject
+    MondexService mondexService;
     private MonsterTypeDto monster;
     private boolean known;
     private Consumer<MonsterTypeDto> onBeastClicked;
@@ -30,6 +33,12 @@ public class MondexElementController extends Controller {
     @Inject
     public MondexElementController() {
 
+    }
+
+    public void init() {
+        super.init();
+        mondexService.init();
+        known = mondexService.checkKnown(monster.id());
     }
 
     public void setOnBeastClicked(Consumer<MonsterTypeDto> onBeastClicked) {
@@ -66,4 +75,8 @@ public class MondexElementController extends Controller {
         onBeastClicked.accept(monster);
     }
 
+    @Override
+    public void destroy() {
+        super.destroy();
+    }
 }
