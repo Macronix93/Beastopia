@@ -1,7 +1,6 @@
 package de.uniks.beastopia.teaml.utils;
 
 import de.uniks.beastopia.teaml.Main;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 import javax.inject.Inject;
@@ -10,31 +9,20 @@ import java.util.Objects;
 
 @Singleton
 public class AssetProvider {
-
-    final String statusIconPath = "asset/status/";
-    final String buttonIconPath = "assets/buttons/";
-
     @Inject
     public AssetProvider() {
     }
 
-    public Image getStatusIcon(String statusName) {
-        return new Image(
-                Objects.requireNonNull(
-                                Main.class.getResource(statusIconPath + statusName + ".png"))
-                        .toString()
-        );
-    }
-
-    public ImageView getButtonImageView(String statusName) {
+    public ImageView getIcon(String iconType, String filename, int width, int height) {
         ImageView imageView = new ImageView(
                 Objects.requireNonNull(
-                                Main.class.getResource(buttonIconPath + statusName + ".png"))
+                                Main.class.getResource("assets/" + iconType + "/" + filename + ".png"))
                         .toString()
         );
+
         imageView.setCache(false);
-        imageView.setFitHeight(20);
-        imageView.setFitWidth(20);
+        imageView.setFitWidth(width);
+        imageView.setFitHeight(height);
         return imageView;
     }
 }

@@ -435,13 +435,20 @@ public class EncounterController extends Controller {
         System.out.println(cache.getOpponentByTrainerID(enemyTrainer).toString());
         Monster before = myMonster;
         Monster beforeEnemy = enemyMonster;
-        disposables.add(encounterOpponentsService.updateEncounterOpponent(cache.getJoinedRegion()._id(),
+
+        Opponent o = encounterOpponentsService.updateEncounterOpponent(cache.getJoinedRegion()._id(),
+                cache.getCurrentEncounter()._id(), cache.getOpponentByTrainerID(cache.getTrainer()._id())._id(), null
+                , new AbilityMove("ability", abilityDto.id(), enemyTrainer)).blockingFirst();
+
+        updateUIOnChange();
+
+        /*disposables.add(encounterOpponentsService.updateEncounterOpponent(cache.getJoinedRegion()._id(),
                         cache.getCurrentEncounter()._id(), cache.getOpponentByTrainerID(cache.getTrainer()._id())._id(), null
                         , new AbilityMove("ability", abilityDto.id(), enemyTrainer))
                 .observeOn(FX_SCHEDULER)
                 .subscribe(
                         e -> updateUIOnChange()
-                ));
+                ));*/
     }
 
     public void updateUIOnChange() {
@@ -474,6 +481,7 @@ public class EncounterController extends Controller {
                                     myMonster = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), opponent.monster()).blockingFirst();
                                     beastInfoController1.hpLabel.setText(myMonster.currentAttributes().health() + " / " + myMonster.attributes().health() + " (HP)");
                                     beastInfoController1.setLifeBarValue(myMonster.currentAttributes().health() / (double) myMonster.attributes().health());
+                                    beastInfoController1.setStatus(myMonster.status());
                                 } else {
                                     beastInfoController1.hpLabel.setText("0 / " + myMonster.attributes().health() + " (HP)");
                                     beastInfoController1.setLifeBarValue(0);

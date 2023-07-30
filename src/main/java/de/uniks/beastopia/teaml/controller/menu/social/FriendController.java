@@ -74,10 +74,10 @@ public class FriendController extends Controller {
                     updateOnlineStatus(user);
                 }));
 
-        pinned = assets.getButtonImageView("filled_pin");
-        notPinned = assets.getButtonImageView("pin");
-        addImage = assets.getButtonImageView("plus");
-        removeImage = assets.getButtonImageView("minus");
+        pinned = assets.getIcon("buttons", "filled_pin", 25, 25);
+        notPinned = assets.getIcon("buttons", "pin", 25, 25);
+        addImage = assets.getIcon("buttons", "plus", 25, 25);
+        removeImage = assets.getIcon("buttons", "minus", 25, 25);
     }
 
     public void setOnFriendChanged(Consumer<User> onFriendChanged) {

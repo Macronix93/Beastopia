@@ -63,15 +63,15 @@ public class UserController extends Controller {
         avatar.setImage(cache.getImageAvatar(user));
 
         if (prefs.isPinned(user)) {
-            this.pinButton.setGraphic(assets.getButtonImageView("filled_pin"));
+            this.pinButton.setGraphic(assets.getIcon("buttons", "filled_pin", 15, 15));
         } else {
-            this.pinButton.setGraphic(assets.getButtonImageView("pin"));
+            this.pinButton.setGraphic(assets.getIcon("buttons", "pin", 15, 15));
         }
 
         if (isAdded) {
-            this.addRemoveButton.setGraphic(assets.getButtonImageView("minus"));
+            this.addRemoveButton.setGraphic(assets.getIcon("buttons", "minus", 15, 15));
         } else {
-            this.addRemoveButton.setGraphic(assets.getButtonImageView("plus"));
+            this.addRemoveButton.setGraphic(assets.getIcon("buttons", "plus", 15, 15));
         }
 
         return parent;

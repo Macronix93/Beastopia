@@ -4,7 +4,6 @@ import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Monster;
 import de.uniks.beastopia.teaml.service.PresetsService;
-import de.uniks.beastopia.teaml.utils.AssetProvider;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -67,13 +66,9 @@ public class LevelUpController extends Controller {
     public VBox beastInfo;
     @FXML
     public VBox abilityInfo;
-    @FXML
-    public ImageView status;
 
     @Inject
     PresetsService presetsService;
-    @Inject
-    AssetProvider assets;
     private Monster beast;
     private boolean newAbility;
     private boolean dev;
@@ -116,10 +111,6 @@ public class LevelUpController extends Controller {
         star.setImage(new Image(Objects.requireNonNull(Main.class.getResourceAsStream("assets/star.png"))));
         star.setFitWidth(25);
         star.setFitHeight(25);
-
-        if (!beast.status().isEmpty()) {
-            status.setImage(assets.getStatusIcon(beast.status().get(0)));
-        }
 
         disposables.add(presetsService.getMonsterType(beast.type())
                 .observeOn(FX_SCHEDULER)

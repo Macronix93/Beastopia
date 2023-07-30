@@ -5,6 +5,7 @@ import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Group;
 import de.uniks.beastopia.teaml.service.GroupListService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
+import de.uniks.beastopia.teaml.utils.AssetProvider;
 import de.uniks.beastopia.teaml.utils.Dialog;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
@@ -44,6 +45,8 @@ public class ChatGroupController extends Controller {
     TokenStorage tokenStorage;
     @Inject
     Prefs prefs;
+    @Inject
+    AssetProvider assets;
     private Group group;
     private ImageView pinnedImg;
     private ImageView notPinnedImg;
@@ -57,8 +60,8 @@ public class ChatGroupController extends Controller {
 
     @Override
     public void init() {
-        pinnedImg = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/filled_pin.png")).toString());
-        notPinnedImg = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/pin.png")).toString());
+        pinnedImg = assets.getIcon("buttons", "filled_pin", 25, 25);
+        notPinnedImg = assets.getIcon("buttons", "pin", 25, 25);
     }
 
     public void setOnGroupClicked(Consumer<Group> onGroupClicked) {
@@ -79,6 +82,7 @@ public class ChatGroupController extends Controller {
     public Parent render() {
         Parent parent = super.render();
         name.setText(group.name());
+
         groupAvatar.setImage(new Image(Objects.requireNonNull(Main.class.getResource("assets/group.png")).toString()));
 
         if (prefs.isPinned(this.group)) {
@@ -92,13 +96,6 @@ public class ChatGroupController extends Controller {
 
     public void mouseClicked() {
         onGroupClicked.accept(group);
-    }
-
-    private ImageView createImage(String imageUrl) {
-        ImageView imageView = new ImageView(imageUrl);
-        imageView.setFitHeight(25.0);
-        imageView.setFitWidth(25.0);
-        return imageView;
     }
 
 

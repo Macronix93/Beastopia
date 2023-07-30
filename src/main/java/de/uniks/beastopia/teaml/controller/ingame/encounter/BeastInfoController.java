@@ -12,6 +12,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 
 import javax.inject.Inject;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -19,7 +20,7 @@ import java.util.TimerTask;
 public class BeastInfoController extends Controller {
 
     @FXML
-    public ImageView status;
+    ImageView statusImg;
     @FXML
     Label name;
     @FXML
@@ -67,9 +68,7 @@ public class BeastInfoController extends Controller {
         hpLabel.setText(monster.currentAttributes().health() + " / " + monster.attributes().health() + " (HP)");
         xpLabel.setText(monster.experience() + " / " + calcMaxXp() + " (Exp)");
 
-        if (!monster.status().isEmpty()) {
-            status.setImage(assets.getStatusIcon(monster.status().get(0)));
-        }
+
 
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
@@ -107,5 +106,11 @@ public class BeastInfoController extends Controller {
 
     public Monster getMonster() {
         return monster;
+    }
+
+    public void setStatus(List<String> status) {
+        if (!monster.status().isEmpty()) {
+            statusImg = assets.getIcon("status", status.get(0), 25, 25);
+        }
     }
 }
