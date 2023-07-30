@@ -458,67 +458,68 @@ public class EncounterController extends Controller {
                 .observeOn(FX_SCHEDULER)
                 .subscribe(o -> {
                     // When there is no opponent registered on the server anymore = lose
-                    if (o.size() == 0) {
+                    if (o.isEmpty()) {
                         beastInfoController1.hpLabel.setText("0 / " + myMonster.attributes().health() + " (HP)");
                         beastInfoController1.setLifeBarValue(0);
-                    if (o.isEmpty()) {
-                        EndScreenController endScreenController;
-                        Monster myMon = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), ownMonster._id()).blockingFirst();
-                        if (myMon.currentAttributes().health() <= 0) {
-                            beastInfoController1.hpLabel.setText("0 / " + myMonster.attributes().health() + " (HP)");
-                            beastInfoController1.setLifeBarValue(0);
+                        if (o.isEmpty()) {
+                            EndScreenController endScreenController;
+                            Monster myMon = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), myMonster._id()).blockingFirst();
+                            if (myMon.currentAttributes().health() <= 0) {
+                                beastInfoController1.hpLabel.setText("0 / " + myMonster.attributes().health() + " (HP)");
+                                beastInfoController1.setLifeBarValue(0);
 
-                            endScreenController = setEndScreen(false, myMonster, allyMonster, enemyMonster, enemyAllyMonster);
-                            app.show(endScreenController);
-                        } else {
-                            endScreenController = setEndScreen(true, enemyMonster, enemyAllyMonster, myMonster, allyMonster);
+                                endScreenController = setEndScreen(false, myMonster, allyMonster, enemyMonster, enemyAllyMonster);
+                                app.show(endScreenController);
+                            } else {
+                                endScreenController = setEndScreen(true, enemyMonster, enemyAllyMonster, myMonster, allyMonster);
 
-                            if (myMon.level() > myMonster.level()) { //Level Up
-                                LevelUpController controller = levelUpControllerProvider.get();
-                                if (myMon.abilities().size() > myMonster.abilities().size()) { //new attack
-                                    if (myMon.type() != myMonster.type()) { // Evolved
-                                        controller.setBeast(myMonster, true, true, myMonster.attributes().attack() - myMonster.attributes().health(), endScreenController);
+                                if (myMon.level() > myMonster.level()) { //Level Up
+                                    LevelUpController controller = levelUpControllerProvider.get();
+                                    if (myMon.abilities().size() > myMonster.abilities().size()) { //new attack
+                                        if (myMon.type() != myMonster.type()) { // Evolved
+                                            controller.setBeast(myMonster, true, true, myMonster.attributes().attack() - myMonster.attributes().health(), endScreenController);
+                                        } else {
+                                            controller.setBeast(myMon, true, false, 0, endScreenController);
+                                        }
                                     } else {
-                                        controller.setBeast(myMon, true, false, 0, endScreenController);
+                                        controller.setBeast(myMon, false, false, 0, endScreenController);
+                                    }
+                                    app.show(controller);
+                                } else {
+                                    app.show(endScreenController);
+                                }
+                            }
+                        } else {
+                            for (Opponent opponent : o) {
+                                // Check if the opponent is our trainers id
+                                if (opponent.trainer().equals(cache.getTrainer()._id())) {
+                                    // If the monster has died during change, show 0 HP, otherwise the current HP of the monster
+                                    if (opponent.monster() != null) {
+                                        myMonster = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), opponent.monster()).blockingFirst();
+                                        beastInfoController1.hpLabel.setText(myMonster.currentAttributes().health() + " / " + myMonster.attributes().health() + " (HP)");
+                                        beastInfoController1.setLifeBarValue(myMonster.currentAttributes().health() / (double) myMonster.attributes().health());
+                                    } else {
+                                        beastInfoController1.hpLabel.setText("0 / " + myMonster.attributes().health() + " (HP)");
+                                        beastInfoController1.setLifeBarValue(0);
+                                        //TODO Change beast from Sylvan
                                     }
                                 } else {
-                                    controller.setBeast(myMon, false, false, 0, endScreenController);
-                                }
-                                app.show(controller);
-                            } else {
-                                app.show(endScreenController);
-                            }
-                        }
-                    } else {
-                        for (Opponent opponent : o) {
-                            // Check if the opponent is our trainers id
-                            if (opponent.trainer().equals(cache.getTrainer()._id())) {
-                                // If the monster has died during change, show 0 HP, otherwise the current HP of the monster
-                                if (opponent.monster() != null) {
-                                    myMonster = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), opponent.monster()).blockingFirst();
-                                    beastInfoController1.hpLabel.setText(myMonster.currentAttributes().health() + " / " + myMonster.attributes().health() + " (HP)");
-                                    beastInfoController1.setLifeBarValue(myMonster.currentAttributes().health() / (double) myMonster.attributes().health());
-                                } else {
-                                    beastInfoController1.hpLabel.setText("0 / " + myMonster.attributes().health() + " (HP)");
-                                    beastInfoController1.setLifeBarValue(0);
-                                    //TODO Change beast from Sylvan
-                                }
-                            } else {
-                                if (opponent.monster() != null) {
-                                    Monster beforeMonster = enemyMonster;
-                                    enemyMonster = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), enemyTrainer, opponent.monster()).blockingFirst();
-                                    enemyBeastInfoController1.setLifeBarValue((double) enemyMonster.currentAttributes().health() / (double) enemyMonster.attributes().health());
-                                    if (beforeMonster.type() != enemyMonster.type()) {
-                                        enemyMonstersBox.getChildren().removeAll();
-                                        renderBeastController2.destroy();
-                                        if (renderBeastController2.monster1 == beforeMonster) {
-                                            renderBeastController2 = renderBeastControllerProvider.get().setMonster1(enemyMonster);
-                                        } else {
-                                            renderBeastController2 = renderBeastControllerProvider.get().setMonster2(enemyMonster);
+                                    if (opponent.monster() != null) {
+                                        Monster beforeMonster = enemyMonster;
+                                        enemyMonster = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), enemyTrainer, opponent.monster()).blockingFirst();
+                                        enemyBeastInfoController1.setLifeBarValue((double) enemyMonster.currentAttributes().health() / (double) enemyMonster.attributes().health());
+                                        if (beforeMonster.type() != enemyMonster.type()) {
+                                            enemyMonstersBox.getChildren().removeAll();
+                                            renderBeastController2.destroy();
+                                            if (renderBeastController2.monster1 == beforeMonster) {
+                                                renderBeastController2 = renderBeastControllerProvider.get().setMonster1(enemyMonster);
+                                            } else {
+                                                renderBeastController2 = renderBeastControllerProvider.get().setMonster2(enemyMonster);
+                                            }
+                                            Parent enemyMonster = renderBeastController2.render();
+                                            enemyMonstersBox.getChildren().addAll(enemyMonster);
+                                            HBox.setHgrow(enemyMonster, Priority.ALWAYS);
                                         }
-                                        Parent enemyMonster = renderBeastController2.render();
-                                        enemyMonstersBox.getChildren().addAll(enemyMonster);
-                                        HBox.setHgrow(enemyMonster, Priority.ALWAYS);
                                     }
                                 }
                             }
