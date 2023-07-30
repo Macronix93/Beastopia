@@ -50,6 +50,7 @@ public class DataCache {
     private List<MonsterTypeDto> allBeasts = new ArrayList<>();
     private List<Opponent> currentOpponents = new ArrayList<>();
     private final Map<Integer, Image> itemImages = new HashMap<>();
+    private final List<Image> monsterImages = new ArrayList<>();
     Encounter currentEncounter;
     @Inject
     PresetsService presetsService;
@@ -450,5 +451,23 @@ public class DataCache {
 
     public Image getMapImage() {
         return this.mapImage;
+    }
+
+    public void downloadMonsterImages(List<MonsterTypeDto> monsters) {
+        for (MonsterTypeDto monster : monsters) {
+            presetsService.getMonsterImage(monster.id())
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe(image -> {
+                        monsterImages.add(image);
+                        System.out.println("Downloaded monster image " + monster.id());
+                    });
+        }
+    }
+
+    public Image getMonsterImage(int id) {
+        return monsterImages.stream()
+                .filter(image -> image.getUrl().contains(String.valueOf(id)))
+                .findFirst()
+                .orElse(null);
     }
 }

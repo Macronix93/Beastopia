@@ -47,6 +47,7 @@ public class MondexListController extends Controller {
         disposables.add(presetsService.getAllBeasts()
                 .observeOn(FX_SCHEDULER)
                 .subscribe(this.monsters::addAll));
+        dataCache.downloadMonsterImages(monsters);
         knownLast.add(false);
         mondexService.init();
     }

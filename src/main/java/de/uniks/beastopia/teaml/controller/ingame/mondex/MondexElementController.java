@@ -2,6 +2,7 @@ package de.uniks.beastopia.teaml.controller.ingame.mondex;
 
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.MonsterTypeDto;
+import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.ImageService;
 import de.uniks.beastopia.teaml.service.MondexService;
 import de.uniks.beastopia.teaml.service.PresetsService;
@@ -26,6 +27,8 @@ public class MondexElementController extends Controller {
     ImageService imageService;
     @Inject
     MondexService mondexService;
+    @Inject
+    DataCache dataCache;
     private MonsterTypeDto monster;
     private boolean known;
     private Consumer<MonsterTypeDto> onBeastClicked;
@@ -57,14 +60,10 @@ public class MondexElementController extends Controller {
         label_id.setText("#" + (monster.id()));
         if (known) {
             label_name.setText(monster.name());
-            disposables.add(presetsService.getMonsterImage(monster.id())
-                    .observeOn(FX_SCHEDULER)
-                    .subscribe(monsterImage -> imageView_avatar.setImage(monsterImage)));
+            imageView_avatar.setImage(dataCache.getMonsterImage(monster.id()));
         } else {
             label_name.setText(resources.getString("Unknown"));
-            disposables.add(presetsService.getMonsterImage(monster.id())
-                    .observeOn(FX_SCHEDULER)
-                    .subscribe(monsterImage -> imageView_avatar.setImage(imageService.makeImageBlack(monsterImage))));
+            imageView_avatar.setImage(dataCache.getMonsterImage(monster.id()));
         }
 
         return parent;
