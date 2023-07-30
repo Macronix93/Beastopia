@@ -35,7 +35,7 @@ import static de.uniks.beastopia.teaml.service.PresetsService.PREVIEW_SCALING;
 @Singleton
 public class DataCache {
 
-    private static final ImageView imageView = new ImageView();
+    private static final ImageView IMAGE_VIEW = new ImageView();
     private static final Scheduler FX_SCHEDULER = io.reactivex.rxjava3.schedulers.Schedulers.from(Platform::runLater);
 
     private List<User> users = new ArrayList<>();
@@ -449,14 +449,14 @@ public class DataCache {
     }
 
     private static Image scaleImage(Image input, @SuppressWarnings("SameParameterValue") int width, @SuppressWarnings("SameParameterValue") int height) {
-        imageView.setImage(input);
-        imageView.setPreserveRatio(true);
-        imageView.setFitWidth(width);
-        imageView.setFitHeight(height);
+        IMAGE_VIEW.setImage(input);
+        IMAGE_VIEW.setPreserveRatio(true);
+        IMAGE_VIEW.setFitWidth(width);
+        IMAGE_VIEW.setFitHeight(height);
         SnapshotParameters parameters = new SnapshotParameters();
         parameters.setFill(Paint.valueOf("transparent"));
-        imageView.setCache(false);
-        return imageView.snapshot(parameters, null);
+        IMAGE_VIEW.setCache(false);
+        return IMAGE_VIEW.snapshot(parameters, null);
     }
 
     public void setTileset(TileSet tileSet) {
