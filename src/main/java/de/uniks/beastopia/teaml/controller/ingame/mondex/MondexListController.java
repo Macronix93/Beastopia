@@ -86,7 +86,13 @@ public class MondexListController extends Controller {
     }
 
     public void reload() {
-        //ToDo reload Datacache Trainer
+        render();
+
+        disposables.add(trainerService.getTrainer(dataCache.getTrainer().region(), dataCache.getTrainer()._id())
+                .observeOn(FX_SCHEDULER)
+                .subscribe(newTrainer -> dataCache.setTrainer(newTrainer)));
+
+        /*//ToDo reload Datacache Trainer
         mondexService.init();
         for (int i = 0; i < monsters.size(); i++) {
             if (mondexService.checkKnown(monsters.get(i).id()) != knownLast.get(i)) {
@@ -96,7 +102,7 @@ public class MondexListController extends Controller {
                 subControllers.get(i).init();
                 subControllers.get(i).render();
             }
-        }
+        }*/
     }
 
     public void handleKeyEvent(KeyEvent event) {
