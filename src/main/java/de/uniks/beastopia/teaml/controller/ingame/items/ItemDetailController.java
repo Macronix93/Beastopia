@@ -11,6 +11,7 @@ import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.TrainerItemsService;
 import de.uniks.beastopia.teaml.service.TrainerService;
 import de.uniks.beastopia.teaml.sockets.EventListener;
+import de.uniks.beastopia.teaml.utils.Dialog;
 import de.uniks.beastopia.teaml.utils.FormatString;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -153,7 +154,7 @@ public class ItemDetailController extends Controller {
     private void listenToNewMonster() {
         disposables.add(eventListener.listen("trainers." + cache.getTrainer()._id() + ".monsters.*.created", Monster.class)
                 .observeOn(FX_SCHEDULER).subscribe(monster -> {
-                    System.out.println("erhalten: " + monster.data().type());
+                    Dialog.info(resources.getString("unlockMonsterHeader"), resources.getString("unlockMonster"));
                     //TODO Dialog welches monster erhalten
         }));
     }
@@ -161,8 +162,12 @@ public class ItemDetailController extends Controller {
     private void listenToNewItem() {
         disposables.add(eventListener.listen("trainers." + cache.getTrainer()._id() + ".items.*.created", Item.class)
                 .observeOn(FX_SCHEDULER).subscribe(item -> {
-                    System.out.println("erhalten: " + item.data().type());
-                    //TODO Dialog
+                    for (ItemTypeDto itemTypeDto : cache.getPresetItems()) {
+                        if (itemTypeDto.id() == item.data().type()) {
+                            Dialog.info(resources.getString("newItemHeader"), resources.getString("newItem") + "\n" + itemTypeDto.name());
+                            break;
+                        }
+                    }
                 }));
     }
 

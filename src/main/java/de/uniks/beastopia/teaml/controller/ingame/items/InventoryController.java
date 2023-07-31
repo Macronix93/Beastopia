@@ -66,12 +66,18 @@ public class InventoryController extends Controller {
             CloseButton.setDisable(true);
             CloseButton.setOpacity(0);
         }
-        disposables.add(presetsService.getItems()
-                .observeOn(FX_SCHEDULER)
-                .subscribe(items -> {
-                    presetItemTypes = items;
-                    reload();
-                }));
+        if (cache.getPresetItems().equals(List.of())) {
+            disposables.add(presetsService.getItems()
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe(items -> {
+                        cache.setPresetItems(items);
+                        presetItemTypes = items;
+                        reload();
+                    }));
+        } else {
+            presetItemTypes = cache.getPresetItems();
+            reload();
+        }
 
         return parent;
     }

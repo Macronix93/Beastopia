@@ -58,7 +58,7 @@ public class DataCache {
     PresetsService presetsService;
     private TileSet mapTileset;
     private Image mapImage;
-    private List<Item> items;
+    private List<ItemTypeDto> presetItems = new ArrayList<>();
 
     @Inject
     public DataCache() {
@@ -460,12 +460,11 @@ public class DataCache {
     public Image getMapImage() {
         return this.mapImage;
     }
-
-    public void setItems(List<Item> i) {
-        this.items = i;
+    public void setPresetItems(List<ItemTypeDto> presetItems) {
+        this.presetItems = presetItems;
     }
 
-    public List<Item> getItems() {
-        return this.items;
+    public List<ItemTypeDto> getPresetItems() {
+        return this.presetItems;
     }
 }
