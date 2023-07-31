@@ -49,7 +49,7 @@ class LevelUpControllerTest extends ApplicationTest {
     public void start(Stage stage) {
         AppPreparer.prepare(app);
 
-        levelUpController.setBeast(monster, true, true, 2); // other scenarios don't have more tests
+        levelUpController.setBeast(monster, true, true, 2, null); // other scenarios don't have more tests
         when(presetsService.getMonsterType(10)).thenReturn(Observable.just(monsterTypeDto));
         when(presetsService.getMonsterImage(anyInt())).thenReturn(Observable.just(expectedImage));
         when(presetsService.getAbility(anyInt())).thenReturn(Observable.just(new AbilityDto(1, "a", "b",
