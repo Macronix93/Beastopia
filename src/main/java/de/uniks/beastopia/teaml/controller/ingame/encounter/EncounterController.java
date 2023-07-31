@@ -142,6 +142,7 @@ public class EncounterController extends Controller {
     private boolean shouldUpdateUIOnChange = false;
 
     private float oldCoinNum;
+    private float newCoinNum;
 
     private AbilityDto ability1;
     private AbilityDto ability2;
@@ -169,6 +170,10 @@ public class EncounterController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
+
+        disposables.add(trainerService.getTrainer(cache.getJoinedRegion()._id(), cache.getTrainer()._id()).observeOn(FX_SCHEDULER)
+                .subscribe(t -> oldCoinNum = t.coins()));
+        System.out.println("oldCoinNum: " + oldCoinNum);
 
         beastInfoController1 = beastInfoControllerProvider.get().setMonster(myMonster);
         beastInfoBox.getChildren().addAll(beastInfoController1.render());
@@ -457,8 +462,6 @@ public class EncounterController extends Controller {
     }
 
     public void updateUIOnChange() {
-        disposables.add(trainerService.getTrainer(cache.getJoinedRegion()._id(), cache.getTrainer()._id()).observeOn(FX_SCHEDULER)
-                .subscribe(t -> oldCoinNum = t.coins()));
         // Get the monster from the current opponents of the encounter
         disposables.add(encounterOpponentsService.getEncounterOpponents(cache.getJoinedRegion()._id(), cache.getCurrentEncounter()._id())
                 .observeOn(FX_SCHEDULER)
@@ -629,6 +632,11 @@ public class EncounterController extends Controller {
     public EndScreenController setEndScreen(boolean wonFight, Monster loser1, Monster loser2, Monster winner1, Monster winner2) {
         EndScreenController controller = endScreenControllerProvider.get();
         controller.setWinner(wonFight);
+        if (wonFight) {
+            newCoinNum = cache.getTrainer().coins();
+            System.out.println("newCoinNum: " + newCoinNum);
+            controller.setGainedCoins("Congratulations! You gained coins!");
+        }
         controller.setLoserMonster1(loser1);
         if (loser2 != null) {
             controller.setLoserMonster2(loser2);

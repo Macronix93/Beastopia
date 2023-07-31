@@ -32,7 +32,7 @@ public class EndScreenController extends Controller {
     @FXML
     VBox rightMonsterContainer;
     @FXML
-    Text coinInfo;
+    Label coinInfo;
     @Inject
     Provider<IngameController> ingameControllerProvider;
     @Inject
