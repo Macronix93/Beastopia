@@ -102,17 +102,21 @@ public class StartFightNPCController extends Controller {
                         }
                     } else if (o.size() == 3) {
                         for (int i = 0; i < o.size(); i++) {
-                            if (o.get(i).trainer().equals(cache.getTrainer()._id()) || !o.get(i).isNPC()) {
+                            if (o.get(i).trainer().equals(cache.getTrainer()._id())) {
                                 if (myTrainerOpponentIndex == -5) {
                                     myTrainerOpponentIndex = i;
                                 } else {
                                     myAllyTrainerOpponentIndex = i;
                                 }
                             } else {
-                                if (enemyTrainerOpponentIndex == -5) {
-                                    enemyTrainerOpponentIndex = i;
+                                if (!o.get(i).isAttacker()) {
+                                    myAllyTrainerOpponentIndex = i;
                                 } else {
-                                    enemyAllyTrainerOpponentIndex = i;
+                                    if (enemyTrainerOpponentIndex == -5) {
+                                        enemyTrainerOpponentIndex = i;
+                                    } else {
+                                        enemyAllyTrainerOpponentIndex = i;
+                                    }
                                 }
                             }
                         }
