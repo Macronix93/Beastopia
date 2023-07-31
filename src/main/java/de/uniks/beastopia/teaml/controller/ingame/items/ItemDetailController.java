@@ -8,6 +8,7 @@ import de.uniks.beastopia.teaml.rest.UpdateItemDto;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.TrainerItemsService;
 import de.uniks.beastopia.teaml.service.TrainerService;
+import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.utils.FormatString;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -43,6 +44,8 @@ public class ItemDetailController extends Controller {
     TrainerService trainerService;
     @Inject
     TrainerItemsService trainerItemsService;
+    @Inject
+    EventListener eventListener;
     private ItemTypeDto itemType;
     private boolean isShop;
     private boolean onlyInventory;
@@ -91,8 +94,12 @@ public class ItemDetailController extends Controller {
                 cost.setText(resources.getString("val") + ": " + formattedPrice);
             }
         } else {
-            shopBtn.setDisable(true);
-            shopBtn.setOpacity(0);
+            if (itemType.use() == null || itemType.use().equals("ball")) {
+                shopBtn.setOpacity(0);
+                shopBtn.setDisable(true);
+            } else {
+                shopBtn.setText(resources.getString("use"));
+            }
             if (itemType.price() == 0) {
                 cost.setText(resources.getString("val") + ": " + itemType.price());
             } else {
@@ -110,12 +117,37 @@ public class ItemDetailController extends Controller {
 
     @FXML
     public void shopFunction() {
-        int amount = 1; //buy
-        if (!buy) { //sell
-            amount = -1;
+        String monsterId = null;
+        String usage = "trade";
+        int amount = -1; // sell or use
+        if (onlyInventory) { // use
+            usage = "use";
+            //TODO uses durhcgehen
+            switch (itemType.use()) {
+                case "itemBox" -> {
+                    ingameController.toggleInventoryItemDetails(itemType);
+                    listenToNewItem();
+                }
+                //eventlistener items
+                case "monsterBox" -> {
+                    ingameController.toggleInventoryItemDetails(itemType);
+                    listenToNewMonster();
+                }
+                //eventlistener monster
+                case "effect" -> {
+                    ingameController.openBeastlist("shop");
+                    monsterId = "TODO";
+                }
+                //TODO monsterId open beast list links in shoplayout und warten bis nen wert zurück kommt
+            }
+
+
         }
-        disposables.add(trainerItemsService.updateItem(cache.getJoinedRegion()._id(), cache.getTrainer()._id(),
-                new UpdateItemDto(amount, itemType.id(), null)).observeOn(FX_SCHEDULER).subscribe(
+        if (!onlyInventory && buy) { //buy
+            amount = 1;
+        }
+        disposables.add(trainerItemsService.updateItem(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), usage,
+                new UpdateItemDto(amount, itemType.id(), monsterId)).observeOn(FX_SCHEDULER).subscribe(
                 itemUpdated -> {}, error -> System.out.println("Error:" + error)));
         disposables.add(trainerService.getTrainer(cache.getJoinedRegion()._id(), cache.getTrainer()._id())
                 .observeOn(FX_SCHEDULER).subscribe(trainer -> {
@@ -123,6 +155,14 @@ public class ItemDetailController extends Controller {
                     inventoryController.updateInventory();
                 }, error -> System.out.println("Error:" + error)));
         ingameController.toggleInventoryItemDetails(itemType);
+    }
+
+    private void listenToNewMonster() {
+        //eventListener update beastlist
+    }
+
+    private void listenToNewItem() {
+        //eventListener update inv
     }
 
     public void setInventoryController(InventoryController inventoryController) {

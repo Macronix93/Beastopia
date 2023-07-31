@@ -20,6 +20,5 @@
          </padding>
       </VBox>
    </ScrollPane>
-   <!--suppress JavaFxUnresolvedFxIdReference -->
    <Button fx:id="CloseButtonTestId" mnemonicParsing="false" onAction="#close" text="%Close"/>
 </VBox>

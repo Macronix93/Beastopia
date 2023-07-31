@@ -13,12 +13,39 @@ import de.uniks.beastopia.teaml.controller.ingame.items.InventoryController;
 import de.uniks.beastopia.teaml.controller.ingame.items.ItemDetailController;
 import de.uniks.beastopia.teaml.controller.ingame.items.ShopController;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
+import de.uniks.beastopia.teaml.rest.Achievement;
+import de.uniks.beastopia.teaml.rest.Area;
+import de.uniks.beastopia.teaml.rest.Chunk;
+import de.uniks.beastopia.teaml.rest.Encounter;
+import de.uniks.beastopia.teaml.rest.ItemTypeDto;
+import de.uniks.beastopia.teaml.rest.Layer;
 import de.uniks.beastopia.teaml.rest.Map;
-import de.uniks.beastopia.teaml.rest.*;
-import de.uniks.beastopia.teaml.service.*;
+import de.uniks.beastopia.teaml.rest.Monster;
+import de.uniks.beastopia.teaml.rest.MonsterTypeDto;
+import de.uniks.beastopia.teaml.rest.MoveTrainerDto;
+import de.uniks.beastopia.teaml.rest.Opponent;
+import de.uniks.beastopia.teaml.rest.Region;
+import de.uniks.beastopia.teaml.rest.Tile;
+import de.uniks.beastopia.teaml.rest.TileProperty;
+import de.uniks.beastopia.teaml.rest.TileSet;
+import de.uniks.beastopia.teaml.rest.TileSetDescription;
+import de.uniks.beastopia.teaml.rest.Trainer;
+import de.uniks.beastopia.teaml.service.AchievementsService;
+import de.uniks.beastopia.teaml.service.AreaService;
+import de.uniks.beastopia.teaml.service.DataCache;
+import de.uniks.beastopia.teaml.service.EncounterOpponentsService;
+import de.uniks.beastopia.teaml.service.PresetsService;
+import de.uniks.beastopia.teaml.service.RegionEncountersService;
+import de.uniks.beastopia.teaml.service.TokenStorage;
+import de.uniks.beastopia.teaml.service.TrainerService;
 import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.sockets.UDPEventListener;
-import de.uniks.beastopia.teaml.utils.*;
+import de.uniks.beastopia.teaml.utils.Dialog;
+import de.uniks.beastopia.teaml.utils.Direction;
+import de.uniks.beastopia.teaml.utils.LoadingPage;
+import de.uniks.beastopia.teaml.utils.PlayerState;
+import de.uniks.beastopia.teaml.utils.Prefs;
+import de.uniks.beastopia.teaml.utils.SoundController;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
@@ -149,7 +176,7 @@ public class IngameController extends Controller {
     private Monster lastMonster;
     private ItemTypeDto lastItemTypeDto;
     private int currentMenu = MENU_NONE;
-    private final java.util.Map<Pair<Integer, Integer>, List<Pair<Tile, Node>>> MAP_INFO = new HashMap<>();
+    private final java.util.Map<Pair<Integer, Integer>, Pair<Tile, Node>> MAP_INFO = new HashMap<>();
     private final List<Node> renderedTiles = new ArrayList<>();
     private final List<Node> renderedPlayers = new ArrayList<>();
     Direction direction;
@@ -285,15 +312,12 @@ public class IngameController extends Controller {
 
         visiblePlayers.forEach(Node::toFront);
 
-        for (var list : MAP_INFO.values()) {
-            for (var pair : list) {
-                if (visiblePlayers.stream().anyMatch(p -> areNeighbours.apply(p, pair.getValue())) &&
-                        pair.getKey().properties().stream().anyMatch(prop -> prop.name().equals("Roof")) &&
-                        pair.getKey().properties().stream().filter(prop -> prop.name().equals("Roof")).findFirst().orElseThrow().value().equals("true")) {
-                    pair.getValue().toFront();
-                }
-            }
-        }
+        MAP_INFO.keySet().stream()
+                .filter(p -> visiblePlayers.stream().anyMatch(player -> areNeighbours.apply(player, MAP_INFO.get(p).getValue())) &&
+                        MAP_INFO.get(p).getKey().properties().stream().anyMatch(prop -> prop.name().equals("Roof")) &&
+                        MAP_INFO.get(p).getKey().properties().stream().filter(prop -> prop.name().equals("Roof")).findFirst().orElseThrow().value().equals("true"))
+                .map(p -> MAP_INFO.get(p).getValue())
+                .forEach(Node::toFront);
     }
 
     /**
@@ -623,15 +647,7 @@ public class IngameController extends Controller {
             if (id != 0) {
                 List<Tile> tileInformation = tileSet.getKey().getKey().tiles();
                 Node node = drawTile(id, x, y, tileSet.getKey().getValue(), presetsService.getTileViewPort(tileSet.getValue(), tileSet.getKey().getKey()));
-                tileInformation.stream().filter(t -> t.id() == tileSet.getValue()).findFirst().ifPresent(tile -> {
-                    if (MAP_INFO.containsKey(new Pair<>(x, y))) {
-                        MAP_INFO.get(new Pair<>(x, y)).add(new Pair<>(tile, node));
-                    } else {
-                        List<Pair<Tile, Node>> list = new ArrayList<>();
-                        list.add(new Pair<>(tile, node));
-                        MAP_INFO.put(new Pair<>(x, y), list);
-                    }
-                });
+                tileInformation.stream().filter(t -> t.id() == tileSet.getValue()).findFirst().ifPresent(tile -> MAP_INFO.put(new Pair<>(x, y), new Pair<>(tile, node)));
             }
         }
     }
@@ -676,8 +692,6 @@ public class IngameController extends Controller {
 
         tilePane.getChildren().add(view);
         renderedTiles.add(view);
-        view.toFront();
-
         return view;
     }
 
@@ -793,17 +807,15 @@ public class IngameController extends Controller {
         Pair<Integer, Integer> posXY = new Pair<>(posx, posy);
 
         if (MAP_INFO.containsKey(posXY)) {
-            for (var pair : MAP_INFO.get(posXY)) {
-                Tile tile = pair.getKey();
-                Optional<TileProperty> jumpableTileProp = tile.properties().stream().filter(tileProperty -> tileProperty.name().equals("Jumpable")).findFirst();
-                if (jumpableTileProp.isPresent()) {
-                    int jumpDirection = Integer.parseInt(jumpableTileProp.get().value());
-                    if (jumpDirection == direction.ordinal()) {
-                        state.setValue(PlayerState.JUMP);
-                        drawPlayer(posx, posy);
-                        movePlayer(posx, posy);
-                        updateOrigin();
-                    }
+            Tile tile = MAP_INFO.get(posXY).getKey();
+            Optional<TileProperty> jumpableTileProp = tile.properties().stream().filter(tileProperty -> tileProperty.name().equals("Jumpable")).findFirst();
+            if (jumpableTileProp.isPresent()) {
+                int jumpDirection = Integer.parseInt(jumpableTileProp.get().value());
+                if (jumpDirection == direction.ordinal()) {
+                    state.setValue(PlayerState.JUMP);
+                    drawPlayer(posx, posy);
+                    movePlayer(posx, posy);
+                    updateOrigin();
                 }
             }
         }
@@ -1040,7 +1052,7 @@ public class IngameController extends Controller {
 
     public void handleBeastList(KeyEvent keyEvent) {
         if (keyEvent.getCode().equals(KeyCode.B) && (currentMenu == MENU_NONE || currentMenu == MENU_BEASTLIST)) {
-            openBeastlist();
+            openBeastlist("scoreboardLayout");
         }
     }
 
@@ -1212,7 +1224,7 @@ public class IngameController extends Controller {
 
     @FXML
     public void clickOnBeastListButton() {
-        openBeastlist();
+        openBeastlist("scoreBoardLayout");
     }
 
     @FXML
@@ -1230,14 +1242,25 @@ public class IngameController extends Controller {
         openInventory(false);
     }
 
-    public void openBeastlist() {
-        if (scoreBoardLayout.getChildren().contains(beastListParent)) {
-            scoreBoardLayout.getChildren().remove(beastListParent);
-            scoreBoardLayout.getChildren().remove(beastDetailParent);
+    public void openBeastlist(String layout) {
+        HBox hbox = scoreBoardLayout;
+        if (layout.equals("shop")) {
+            setOpacities(0);
+            hbox = shopLayout;
+        }
+        if (hbox.getChildren().contains(beastListParent)) {
+            hbox.getChildren().remove(beastListParent);
+            hbox.getChildren().remove(beastDetailParent);
+            beastListController.destroy();
             lastMonster = null;
             currentMenu = MENU_NONE;
         } else {
-            scoreBoardLayout.getChildren().add(beastListParent);
+            beastListParent = beastListController.render();
+            if (hbox == shopLayout) {
+                beastListController.CloseButtonTestId.setDisable(true);
+                beastListController.CloseButtonTestId.setVisible(false);
+            }
+            hbox.getChildren().add(beastListParent);
             currentMenu = MENU_BEASTLIST;
         }
     }
@@ -1283,6 +1306,7 @@ public class IngameController extends Controller {
                     setCloseRequests(scoreBoardLayout, inventoryParent);
                     lastMonster = null;
                     setCloseRequests(scoreBoardLayout, itemDetailParent);
+                    setCloseRequests(shopLayout, beastListParent);
                 });
                 inventoryParent = inventoryController.render();
                 scoreBoardLayout.getChildren().add(inventoryParent);
