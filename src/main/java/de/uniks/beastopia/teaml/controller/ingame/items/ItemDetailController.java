@@ -125,7 +125,6 @@ public class ItemDetailController extends Controller {
         int amount = 1; // use and buy
         if (onlyInventory) { //use
             usage = "use";
-            //TODO uses durhcgehen
             switch (itemType.use()) {
                 case "itemBox" -> listenToNewItem();
                 case "monsterBox" -> listenToNewMonster();
@@ -139,7 +138,6 @@ public class ItemDetailController extends Controller {
         if (!buy && !onlyInventory) { //sell
             amount = -1;
         }
-        System.out.println(itemType.id() + " " + amount + " " + usage);
         disposables.add(trainerItemsService.updateItem(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), usage,
                 new UpdateItemDto(amount, itemType.id(), monsterId)).observeOn(FX_SCHEDULER).subscribe(
                 itemUpdated -> {}, error -> System.out.println("Error:" + error)));
@@ -153,10 +151,7 @@ public class ItemDetailController extends Controller {
 
     private void listenToNewMonster() {
         disposables.add(eventListener.listen("trainers." + cache.getTrainer()._id() + ".monsters.*.created", Monster.class)
-                .observeOn(FX_SCHEDULER).subscribe(monster -> {
-                    Dialog.info(resources.getString("unlockMonsterHeader"), resources.getString("unlockMonster"));
-                    //TODO Dialog welches monster erhalten
-        }));
+                .observeOn(FX_SCHEDULER).subscribe(monster -> Dialog.info(resources.getString("unlockMonsterHeader"), resources.getString("unlockMonster"))));
     }
 
     private void listenToNewItem() {
