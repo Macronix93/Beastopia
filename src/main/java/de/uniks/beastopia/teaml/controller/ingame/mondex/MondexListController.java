@@ -20,8 +20,6 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public class MondexListController extends Controller {
-
-    private final List<MonsterTypeDto> monsters = new ArrayList<>();
     private final List<Controller> subControllers = new ArrayList<>();
     private final Map<Integer, Parent> monsterMap = new HashMap<>();
     public VBox VBoxMondexList;
@@ -68,7 +66,6 @@ public class MondexListController extends Controller {
                     mondexService.setTrainer(newTrainer);
                     disposables.add(presetsService.getAllBeasts()
                             .subscribe(monsters -> { //No UI Stuff here!!!
-                                this.monsters.addAll(monsters);
                                 for (MonsterTypeDto monster : monsters) {
                                     Thread.sleep(288);
                                     if (dataCache.imageIsDownloaded(monster.id())) {
