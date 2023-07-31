@@ -39,6 +39,7 @@ public class BeastInfoController extends Controller {
     @Inject
     PresetsService presetsService;
     private Monster monster;
+    private Timer timer;
 
     @Inject
     public BeastInfoController() {
@@ -63,13 +64,13 @@ public class BeastInfoController extends Controller {
         hpLabel.setText(monster.currentAttributes().health() + " / " + monster.attributes().health() + " (HP)");
         xpLabel.setText(monster.experience() + " / " + calcMaxXp() + " (Exp)");
 
-        Timer timer = new Timer();
+        timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 Platform.runLater(() -> {
-                    setLifeBarValue(monster.currentAttributes().health() / (double) monster.attributes().health());
-                    setXpBarValue(monster.experience() / (double) calcMaxXp());
+                    setLifeBarValue(monster.currentAttributes().health() / (double) monster.attributes().health(), false);
+                    setXpBarValue(monster.experience() / (double) calcMaxXp(), false);
                 });
             }
         }, 500);
@@ -85,13 +86,19 @@ public class BeastInfoController extends Controller {
         type.setText(value);
     }
 
-    public void setLifeBarValue(double value) {
+    public void setLifeBarValue(double value, boolean killTimer) {
+        if (killTimer) {
+            timer.cancel();
+        }
         lifeBarValue.setMinWidth(lifeBar.getWidth() * value);
         lifeBarValue.setMaxWidth(lifeBar.getWidth() * value);
         lifeBarValue.setPrefWidth(lifeBar.getWidth() * value);
     }
 
-    public void setXpBarValue(double value) {
+    public void setXpBarValue(double value, boolean killTimer) {
+        if (killTimer) {
+            timer.cancel();
+        }
         xpBarValue.setMinWidth(xpBar.getWidth() * value);
         xpBarValue.setMaxWidth(xpBar.getWidth() * value);
         xpBarValue.setPrefWidth(xpBar.getWidth() * value);
