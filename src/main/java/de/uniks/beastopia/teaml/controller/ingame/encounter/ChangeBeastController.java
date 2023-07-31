@@ -41,6 +41,7 @@ public class ChangeBeastController extends Controller {
     private final List<Monster> bankMonsters = new ArrayList<>();
     private final List<ChangeBeastElementController> subControllers = new ArrayList<>();
     private Monster currentMonster;
+    private Monster allyMonster;
     private EncounterController encounterController;
     private LoadingPage loadingPage;
 
@@ -50,6 +51,10 @@ public class ChangeBeastController extends Controller {
 
     public void setCurrentMonster(Monster currentMonster) {
         this.currentMonster = currentMonster;
+    }
+
+    public void setAllyMonster(Monster allyMonster) {
+        this.allyMonster = allyMonster;
     }
 
     public void setEncounterController(EncounterController controller) {
@@ -101,7 +106,7 @@ public class ChangeBeastController extends Controller {
 
     @FXML
     public void back() {
-        app.showPrevious();
+        app.show(encounterController.setOwnMonster(currentMonster));
     }
 
     @FXML
@@ -114,6 +119,8 @@ public class ChangeBeastController extends Controller {
             Dialog.error(resources.getString("error"), resources.getString("monNoHPLeft"));
         } else if (currentMonster._id().equals(fightingMonsters.get(0)._id())) {
             Dialog.error(resources.getString("error"), resources.getString("currentMonIsSame"));
+        } else if (allyMonster != null && fightingMonsters.get(0)._id().equals(allyMonster._id())) {
+            Dialog.error(resources.getString("error"), resources.getString("currentMonAlreadyFighting"));
         } else {
             disposables.add(encounterOpponentsService.getTrainerOpponents(cache.getJoinedRegion()._id(), cache.getTrainer()._id())
                     .subscribe(opponents -> {
