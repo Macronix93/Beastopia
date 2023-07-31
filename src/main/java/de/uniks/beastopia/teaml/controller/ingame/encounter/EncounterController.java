@@ -162,6 +162,8 @@ public class EncounterController extends Controller {
     public Parent render() {
         Parent parent = super.render();
 
+        oldCoinNum = cache.getTrainer().coins();
+
         beastInfoController1 = beastInfoControllerProvider.get().setMonster(myMonster);
         beastInfoBox.getChildren().addAll(beastInfoController1.render());
         renderBeastController1 = renderBeastControllerProvider.get().setMonster1(myMonster);
@@ -583,7 +585,9 @@ public class EncounterController extends Controller {
         if (wonFight) {
             cache.setTrainer(trainerService.getTrainer(cache.getJoinedRegion()._id(), cache.getTrainer()._id()).blockingFirst());
             float newCoinNum = cache.getTrainer().coins();
-            controller.setGainedCoins("Congratulations! You gained " + (newCoinNum - oldCoinNum) + " coins!");
+            if ((newCoinNum - oldCoinNum) != 0) {
+                controller.setGainedCoins("Congratulations! You gained " + (newCoinNum - oldCoinNum) + " coins!");
+            }
         }
         controller.setLoserMonster1(loser1);
         if (loser2 != null) {
