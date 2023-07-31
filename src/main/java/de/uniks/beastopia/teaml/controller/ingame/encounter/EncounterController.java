@@ -433,6 +433,9 @@ public class EncounterController extends Controller {
     private void setAttackWithClick(VBox attackBox, AbilityDto abilityDto) {
         System.out.println(abilityDto.toString());
         System.out.println(cache.getOpponentByTrainerID(enemyTrainer).toString());
+        actionInfoText.appendText(
+                "Attack enemy with: " + abilityDto.name() + "\n"
+        );
         Monster before = myMonster;
         Monster beforeEnemy = enemyMonster;
 
@@ -490,6 +493,7 @@ public class EncounterController extends Controller {
                             } else {
                                 enemyMonster = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), enemyTrainer, opponent.monster()).blockingFirst();
                                 enemyBeastInfoController1.setLifeBarValue((double) enemyMonster.currentAttributes().health() / (double) enemyMonster.attributes().health());
+                                //AbilityDto attackeBy = presetsService.getAbility(opponent).blockingFirst();
                                 if (enemyMonster.currentAttributes().health() <= 0) {
                                     EndScreenController controller = endScreenControllerProvider.get();
                                     controller.setWinner(true);
