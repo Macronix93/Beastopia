@@ -66,7 +66,6 @@ public class LevelUpController extends Controller {
     public VBox beastInfo;
     @FXML
     public VBox abilityInfo;
-
     @Inject
     PresetsService presetsService;
     private Monster beast;
@@ -77,10 +76,8 @@ public class LevelUpController extends Controller {
     private double expWidth;
     private EndScreenController endScreenController;
 
-
     @Inject
     public LevelUpController() {
-
     }
 
     public void setBeast(Monster beast, boolean newAbility, boolean dev, int hp, EndScreenController endScreenController) {
