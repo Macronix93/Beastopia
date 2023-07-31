@@ -75,17 +75,20 @@ public class LevelUpController extends Controller {
     private int plusHP;
     private double healthWidth;
     private double expWidth;
+    private EndScreenController endScreenController;
+
 
     @Inject
     public LevelUpController() {
 
     }
 
-    public void setBeast(Monster beast, boolean newAbility, boolean dev, int hp) {
+    public void setBeast(Monster beast, boolean newAbility, boolean dev, int hp, EndScreenController endScreenController) {
         this.newAbility = newAbility;
         this.beast = beast;
         this.dev = dev;
         this.plusHP = hp;
+        this.endScreenController = endScreenController;
     }
 
     @Override
@@ -193,9 +196,8 @@ public class LevelUpController extends Controller {
     }
 
 
-    @SuppressWarnings("EmptyMethod")
     @FXML
     public void continuePressed() {
-        // TODO: implement continue
+        app.show(endScreenController);
     }
 }
