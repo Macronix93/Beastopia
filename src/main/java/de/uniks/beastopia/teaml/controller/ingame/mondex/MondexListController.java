@@ -69,9 +69,7 @@ public class MondexListController extends Controller {
                                 for (MonsterTypeDto monster : monsters) {
                                     Thread.sleep(288);
                                     if (dataCache.imageIsDownloaded(monster.id())) {
-                                        disposables.add(delay().observeOn(FX_SCHEDULER).subscribe(t -> {
-                                            createController(monster);
-                                        }));
+                                        disposables.add(delay().observeOn(FX_SCHEDULER).subscribe(t -> createController(monster)));
                                         continue;
                                     }
                                     disposables.add(presetsService.getMonsterImage(monster.id())
