@@ -1022,7 +1022,7 @@ public class IngameController extends Controller {
                     Rectangle2D viewPort = new Rectangle2D(48 * PREVIEW_SCALING, 0, 16 * PREVIEW_SCALING, 32 * PREVIEW_SCALING);
                     PixelReader reader = image.getPixelReader();
                     WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
-                    talk(newImage, "I am currently fighting, come back later!"
+                    talk(newImage, " I am currently fighting, come back later! "
                             , null, null, null);
                 }));
     }

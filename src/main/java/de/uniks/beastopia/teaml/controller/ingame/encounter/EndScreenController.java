@@ -30,6 +30,8 @@ public class EndScreenController extends Controller {
     VBox leftMonsterContainer;
     @FXML
     VBox rightMonsterContainer;
+    @FXML
+    Label coinInfo;
     @Inject
     Provider<IngameController> ingameControllerProvider;
     @Inject
@@ -46,6 +48,7 @@ public class EndScreenController extends Controller {
     private Monster loser1;
     private Monster loser2;
     private boolean isWinner = false;
+    private String gainedCoins = "";
 
     @Inject
     public EndScreenController() {
@@ -94,6 +97,8 @@ public class EndScreenController extends Controller {
             resultLabel.setText(resources.getString("fightLost"));
         }
 
+        coinInfo.setText(gainedCoins);
+
         return parent;
     }
 
@@ -126,6 +131,10 @@ public class EndScreenController extends Controller {
     @SuppressWarnings("unused")
     public void setLoserMonster2(Monster loser2) {
         this.loser2 = loser2;
+    }
+
+    public void setGainedCoins(String gainedCoins) {
+        this.gainedCoins = gainedCoins;
     }
 
 }
