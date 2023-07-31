@@ -70,14 +70,7 @@ public class MondexListController extends Controller {
                                     Thread.sleep(288);
                                     if (dataCache.imageIsDownloaded(monster.id())) {
                                         disposables.add(delay().observeOn(FX_SCHEDULER).subscribe(t -> {
-                                            MondexElementController mondexElementController = mondexElementControllerProvider.get()
-                                                    .setMonster(monster, mondexService.checkKnown(monster.id()));
-                                            mondexElementController.setOnBeastClicked(onBeastClicked);
-                                            mondexElementController.init();
-                                            subControllers.add(mondexElementController);
-                                            Parent render = mondexElementController.render();
-                                            monsterMap.put(monster.id(), render);
-                                            reloadMap();
+                                            createController(monster);
                                         }));
                                         continue;
                                     }
@@ -85,20 +78,24 @@ public class MondexListController extends Controller {
                                             .observeOn(FX_SCHEDULER)
                                             .subscribe(image -> { //UI Stuff allowed again!!!
                                                 dataCache.addMonsterImages(monster.id(), image);
-                                                MondexElementController mondexElementController = mondexElementControllerProvider.get()
-                                                        .setMonster(monster, mondexService.checkKnown(monster.id()));
-                                                mondexElementController.setOnBeastClicked(onBeastClicked);
-                                                mondexElementController.init();
-                                                subControllers.add(mondexElementController);
-                                                Parent render = mondexElementController.render();
-                                                monsterMap.put(monster.id(), render);
-                                                reloadMap();
+                                                createController(monster);
                                             }));
                                 }
                             }));
                 }));
 
         return parent;
+    }
+
+    private void createController(MonsterTypeDto monster) {
+        MondexElementController mondexElementController = mondexElementControllerProvider.get()
+                .setMonster(monster, mondexService.checkKnown(monster.id()));
+        mondexElementController.setOnBeastClicked(onBeastClicked);
+        mondexElementController.init();
+        subControllers.add(mondexElementController);
+        Parent render = mondexElementController.render();
+        monsterMap.put(monster.id(), render);
+        reloadMap();
     }
 
     private void reloadMap() {
