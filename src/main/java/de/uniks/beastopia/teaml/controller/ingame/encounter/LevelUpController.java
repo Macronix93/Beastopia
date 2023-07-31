@@ -66,28 +66,26 @@ public class LevelUpController extends Controller {
     public VBox beastInfo;
     @FXML
     public VBox abilityInfo;
-
     @Inject
     PresetsService presetsService;
-
     private Monster beast;
-
     private boolean newAbility;
     private boolean dev;
     private int plusHP;
     private double healthWidth;
     private double expWidth;
+    private EndScreenController endScreenController;
 
     @Inject
     public LevelUpController() {
-
     }
 
-    public void setBeast(Monster beast, boolean newAbility, boolean dev, int hp) {
+    public void setBeast(Monster beast, boolean newAbility, boolean dev, int hp, EndScreenController endScreenController) {
         this.newAbility = newAbility;
         this.beast = beast;
         this.dev = dev;
         this.plusHP = hp;
+        this.endScreenController = endScreenController;
     }
 
     @Override
@@ -197,5 +195,6 @@ public class LevelUpController extends Controller {
 
     @FXML
     public void continuePressed() {
+        app.show(endScreenController);
     }
 }
