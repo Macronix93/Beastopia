@@ -12,7 +12,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -49,7 +48,7 @@ public class EndScreenController extends Controller {
     private Monster loser1;
     private Monster loser2;
     private boolean isWinner = false;
-    private String gainedCoins;
+    private String gainedCoins = "";
 
     @Inject
     public EndScreenController() {
@@ -98,9 +97,7 @@ public class EndScreenController extends Controller {
             resultLabel.setText(resources.getString("fightLost"));
         }
 
-        if (gainedCoins != null) {
-            coinInfo.setText(gainedCoins);
-        }
+        coinInfo.setText(gainedCoins);
 
         return parent;
     }
@@ -137,7 +134,7 @@ public class EndScreenController extends Controller {
     }
 
     public void setGainedCoins(String gainedCoins) {
-        this.gainedCoins =gainedCoins;
+        this.gainedCoins = gainedCoins;
     }
 
 }

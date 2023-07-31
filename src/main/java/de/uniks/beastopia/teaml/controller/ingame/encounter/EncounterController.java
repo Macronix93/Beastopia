@@ -114,36 +114,27 @@ public class EncounterController extends Controller {
     Prefs prefs;
     @Inject
     EventListener eventListener;
-
     //monster on the substitute's bench
     @SuppressWarnings({"FieldCanBeLocal"})
     private List<Monster> ownMonsters = new ArrayList<>();
     private final List<Monster> allyMonsters = new ArrayList<>();
     @SuppressWarnings({"FieldCanBeLocal"})
     private List<Monster> enemyMonsters = new ArrayList<>();
-
     private final List<Monster> enemyAllyMonsters = new ArrayList<>();
-
     private int oldLevel;
     private int oldHp;
-
     //monsters in the fight
     private Monster myMonster;
     private Monster allyMonster;
     private Monster enemyMonster;
     private Monster enemyAllyMonster;
-
     @SuppressWarnings({"FieldCanBeLocal"})
     private String allyTrainer;
     private String enemyTrainer;
     @SuppressWarnings({"FieldCanBeLocal"})
     private String enemyAllyTrainer;
-
     private boolean shouldUpdateUIOnChange = false;
-
     private float oldCoinNum;
-    private float newCoinNum;
-
     private AbilityDto ability1;
     private AbilityDto ability2;
     private AbilityDto ability3;
@@ -457,151 +448,109 @@ public class EncounterController extends Controller {
                 ));
     }
 
+    public void fightIsOver() {
+        System.out.println("o size is zero");
+
+        Monster myMon = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), myMonster._id()).blockingFirst();
+        EndScreenController endScreenController;
+
+        if (myMon.currentAttributes().health() <= 0) {
+            beastInfoController1.hpLabel.setText("0 / " + myMonster.attributes().health() + " (HP)");
+            beastInfoController1.setLifeBarValue(0);
+
+            endScreenController = setEndScreen(false, myMonster, allyMonster, enemyMonster, enemyAllyMonster);
+            app.show(endScreenController);
+        } else {
+            System.out.println("mon has > 0 hp");
+
+            endScreenController = setEndScreen(true, enemyMonster, enemyAllyMonster, myMonster, allyMonster);
+
+            levelUp(myMon, endScreenController);
+        }
+    }
+
+    public void updateOurMonster(Opponent opponent) {
+        boolean foundMonsterWithHP = false;
+
+        if (opponent.monster() != null) {
+            myMonster = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), opponent.monster()).blockingFirst();
+            beastInfoController1.hpLabel.setText(myMonster.currentAttributes().health() + " / " + myMonster.attributes().health() + " (HP)");
+            beastInfoController1.setLifeBarValue(myMonster.currentAttributes().health() / (float) myMonster.attributes().health());
+        } else {
+            beastInfoController1.hpLabel.setText("0 / " + myMonster.attributes().health() + " (HP)");
+            beastInfoController1.setLifeBarValue(0);
+            ownMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), cache.getTrainer()._id()).blockingFirst();
+            // If the monster has died during change, show 0 HP, otherwise the current HP of the monster
+            for (Monster monster : ownMonsters) {
+                if (!monster._id().equals(myMonster._id()) && cache.getTrainer().team().contains(monster._id()) && monster.currentAttributes().health() > 0) {
+                    foundMonsterWithHP = true;
+                    break;
+                }
+            }
+            // We lost = show lose screen
+            if (!foundMonsterWithHP) {
+                EndScreenController endScreenController;
+                endScreenController = setEndScreen(false, myMonster, allyMonster, enemyMonster, enemyAllyMonster);
+                app.show(endScreenController);
+            } else {
+                ChangeBeastController controller = changeBeastControllerProvider.get();
+                controller.setCurrentMonster(myMonster);
+                controller.setEncounterController(this);
+                app.show(controller);
+            }
+        }
+    }
+
+    private void updateEnemyMonster(Opponent opponent) {
+        System.out.println("monster is not null, update enemy hp");
+        Monster beforeMonster = enemyMonster;
+        enemyMonster = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), enemyTrainer, opponent.monster()).blockingFirst();
+
+        if (enemyMonster.currentAttributes().health() <= 0) {
+            System.out.println("enemy monster has zero hp");
+            System.out.println("oldlevel is " + oldLevel);
+            EndScreenController endScreenController;
+            Monster myMon = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), myMonster._id()).blockingFirst();
+            endScreenController = setEndScreen(true, enemyMonster, enemyAllyMonster, myMonster, allyMonster);
+            levelUp(myMon, endScreenController);
+        } else {
+            if (beforeMonster.type() != enemyMonster.type()) {
+                enemyMonstersBox.getChildren().removeAll();
+                renderBeastController2.destroy();
+                if (renderBeastController2.monster1 == beforeMonster) {
+                    renderBeastController2 = renderBeastControllerProvider.get().setMonster1(enemyMonster);
+                } else {
+                    renderBeastController2 = renderBeastControllerProvider.get().setMonster2(enemyMonster);
+                }
+                Parent enemyMonster = renderBeastController2.render();
+                enemyMonstersBox.getChildren().addAll(enemyMonster);
+                HBox.setHgrow(enemyMonster, Priority.ALWAYS);
+            }
+            enemyBeastInfoController1.setLifeBarValue(enemyMonster.currentAttributes().health() / (double) enemyMonster.attributes().health());
+        }
+    }
+
     public void updateUIOnChange() {
-        disposables.add(trainerService.getTrainer(cache.getJoinedRegion()._id(), cache.getTrainer()._id()).observeOn(FX_SCHEDULER)
-                .subscribe(t -> oldCoinNum = t.coins()));
-        System.out.println("oldCoinNum: " + oldCoinNum);
         // Get the monster from the current opponents of the encounter
         disposables.add(encounterOpponentsService.getEncounterOpponents(cache.getJoinedRegion()._id(), cache.getCurrentEncounter()._id())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(o -> {
-                    System.out.println("check opponents");
                     if (o.isEmpty()) {
-                        System.out.println("o size is zero");
-
-                        Monster myMon = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), myMonster._id()).blockingFirst();
-                        EndScreenController endScreenController;
-
-                        if (myMon.currentAttributes().health() <= 0) {
-                            beastInfoController1.hpLabel.setText("0 / " + myMonster.attributes().health() + " (HP)");
-                            beastInfoController1.setLifeBarValue(0);
-
-                            endScreenController = setEndScreen(false, myMonster, allyMonster, enemyMonster, enemyAllyMonster);
-                            app.show(endScreenController);
-                        } else {
-                            System.out.println("mon has > 0 hp");
-
-                            endScreenController = setEndScreen(true, enemyMonster, enemyAllyMonster, myMonster, allyMonster);
-
-                            levelUp(myMon, endScreenController);
-                        }
+                        fightIsOver(); // set endScreen
                     } else {
                         for (Opponent opponent : o) {
                             // Check if the opponent is our trainers id
-                            if (opponent.trainer().equals(cache.getTrainer()._id())) {
-                                boolean foundMonsterWithHP = false;
-
-                                if (opponent.monster() != null) {
-                                    myMonster = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), opponent.monster()).blockingFirst();
-                                    beastInfoController1.hpLabel.setText(myMonster.currentAttributes().health() + " / " + myMonster.attributes().health() + " (HP)");
-                                    beastInfoController1.setLifeBarValue(myMonster.currentAttributes().health() / myMonster.attributes().health());
-
-                                    // If the monster has died during change, show 0 HP, otherwise the current HP of the monster
-                                    if (myMonster.currentAttributes().health() <= 0) {
-                                        for (Monster monster : ownMonsters) {
-                                            if (!monster._id().equals(myMonster._id()) && cache.getTrainer().team().contains(monster._id()) && monster.currentAttributes().health() > 0) {
-                                                foundMonsterWithHP = true;
-                                                break;
-                                            }
-                                        }
-                                        // We lost = show lose screen
-                                        if (!foundMonsterWithHP) {
-                                            EndScreenController endScreenController;
-                                            endScreenController = setEndScreen(false, myMonster, allyMonster, enemyMonster, enemyAllyMonster);
-                                            app.show(endScreenController);
-                                            break;
-                                        }
-                                    }
-                                } else {
-                                    System.out.println("try to find monster with hp");
-
-                                    ownMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), cache.getTrainer()._id()).blockingFirst();
-                                    beastInfoController1.hpLabel.setText("0 / " + myMonster.attributes().health() + " (HP)");
-                                    beastInfoController1.setLifeBarValue(0);
-
-                                    for (Monster monster : ownMonsters) {
-                                        if (!monster._id().equals(myMonster._id()) && cache.getTrainer().team().contains(monster._id()) && monster.currentAttributes().health() > 0) {
-                                            foundMonsterWithHP = true;
-                                            break;
-                                        }
-                                    }
-                                    // We lost = show lose screen
-                                    if (!foundMonsterWithHP) {
-                                        System.out.println("found NO monster with hp");
-
-                                        EndScreenController endScreenController;
-                                        endScreenController = setEndScreen(false, myMonster, allyMonster, enemyMonster, enemyAllyMonster);
-                                        app.show(endScreenController);
-                                        break;
-                                    }
-                                }
-                            } else {
+                            if (opponent.trainer().equals(cache.getTrainer()._id())) { // our monster
+                                updateOurMonster(opponent);
+                            } else { // enemy monster
                                 System.out.println("check if enemy opponents monster is not null");
                                 if (opponent.monster() != null) {
-                                    System.out.println("monster is not null, update enemy hp");
-
-                                    Monster beforeMonster = enemyMonster;
-                                    enemyMonster = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), enemyTrainer, opponent.monster()).blockingFirst();
-                                    enemyBeastInfoController1.setLifeBarValue(enemyMonster.currentAttributes().health() / enemyMonster.attributes().health());
-
-                                    if (enemyMonster.currentAttributes().health() <= 0) {
-                                        System.out.println("enemy monster has zero hp");
-
-                                        if (beforeMonster.type() != enemyMonster.type()) {
-                                            enemyMonstersBox.getChildren().removeAll();
-                                            renderBeastController2.destroy();
-                                            if (renderBeastController2.monster1 == beforeMonster) {
-                                                renderBeastController2 = renderBeastControllerProvider.get().setMonster1(enemyMonster);
-                                            } else {
-                                                renderBeastController2 = renderBeastControllerProvider.get().setMonster2(enemyMonster);
-                                            }
-                                            Parent enemyMonster = renderBeastController2.render();
-                                            enemyMonstersBox.getChildren().addAll(enemyMonster);
-                                            HBox.setHgrow(enemyMonster, Priority.ALWAYS);
-                                        } else {
-                                            System.out.println("oldlevel is " + oldLevel);
-
-                                            EndScreenController endScreenController;
-                                            Monster myMon = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), myMonster._id()).blockingFirst();
-
-                                            System.out.println("mymon level is " + myMon.level() + " and health is " + myMonster.attributes().health());
-
-                                            if (myMon.currentAttributes().health() <= 0) {
-                                                boolean foundMonsterWithHP = false;
-                                                ownMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), cache.getTrainer()._id()).blockingFirst();
-                                                beastInfoController1.hpLabel.setText("0 / " + myMonster.attributes().health() + " (HP)");
-                                                beastInfoController1.setLifeBarValue(0);
-
-                                                for (Monster monster : ownMonsters) {
-                                                    if (!monster._id().equals(myMonster._id()) && cache.getTrainer().team().contains(monster._id()) && monster.currentAttributes().health() > 0) {
-                                                        foundMonsterWithHP = true;
-                                                        break;
-                                                    }
-                                                }
-                                                // We lost = show lose screen
-                                                if (!foundMonsterWithHP) {
-                                                    System.out.println("found NO monster with hp");
-
-                                                    endScreenController = setEndScreen(false, myMonster, allyMonster, enemyMonster, enemyAllyMonster);
-                                                    app.show(endScreenController);
-                                                }
-                                            } else {
-                                                System.out.println("mon has > 0 hp");
-
-                                                endScreenController = setEndScreen(true, enemyMonster, enemyAllyMonster, myMonster, allyMonster);
-
-                                                levelUp(myMon, endScreenController);
-                                            }
-                                        }
-                                    }
+                                    updateEnemyMonster(opponent);
                                 } else {
                                     System.out.println("monster is null, we won?");
-
                                     EndScreenController endScreenController;
                                     Monster myMon = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), myMonster._id()).blockingFirst();
-
                                     endScreenController = setEndScreen(true, enemyMonster, enemyAllyMonster, myMonster, allyMonster);
-
                                     levelUp(myMon, endScreenController);
                                 }
                             }
@@ -633,9 +582,8 @@ public class EncounterController extends Controller {
         controller.setWinner(wonFight);
         if (wonFight) {
             cache.setTrainer(trainerService.getTrainer(cache.getJoinedRegion()._id(), cache.getTrainer()._id()).blockingFirst());
-            newCoinNum = cache.getTrainer().coins();
-            System.out.println("newCoinNum: " + newCoinNum);
-            controller.setGainedCoins("Congratulations! You gained " + (newCoinNum-oldCoinNum) + " coins!");
+            float newCoinNum = cache.getTrainer().coins();
+            controller.setGainedCoins("Congratulations! You gained " + (newCoinNum - oldCoinNum) + " coins!");
         }
         controller.setLoserMonster1(loser1);
         if (loser2 != null) {
