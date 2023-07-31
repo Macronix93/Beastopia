@@ -171,10 +171,6 @@ public class EncounterController extends Controller {
     public Parent render() {
         Parent parent = super.render();
 
-        disposables.add(trainerService.getTrainer(cache.getJoinedRegion()._id(), cache.getTrainer()._id()).observeOn(FX_SCHEDULER)
-                .subscribe(t -> oldCoinNum = t.coins()));
-        System.out.println("oldCoinNum: " + oldCoinNum);
-
         beastInfoController1 = beastInfoControllerProvider.get().setMonster(myMonster);
         beastInfoBox.getChildren().addAll(beastInfoController1.render());
         renderBeastController1 = renderBeastControllerProvider.get().setMonster1(myMonster);
@@ -462,6 +458,9 @@ public class EncounterController extends Controller {
     }
 
     public void updateUIOnChange() {
+        disposables.add(trainerService.getTrainer(cache.getJoinedRegion()._id(), cache.getTrainer()._id()).observeOn(FX_SCHEDULER)
+                .subscribe(t -> oldCoinNum = t.coins()));
+        System.out.println("oldCoinNum: " + oldCoinNum);
         // Get the monster from the current opponents of the encounter
         disposables.add(encounterOpponentsService.getEncounterOpponents(cache.getJoinedRegion()._id(), cache.getCurrentEncounter()._id())
                 .observeOn(FX_SCHEDULER)
@@ -633,9 +632,10 @@ public class EncounterController extends Controller {
         EndScreenController controller = endScreenControllerProvider.get();
         controller.setWinner(wonFight);
         if (wonFight) {
+            cache.setTrainer(trainerService.getTrainer(cache.getJoinedRegion()._id(), cache.getTrainer()._id()).blockingFirst());
             newCoinNum = cache.getTrainer().coins();
             System.out.println("newCoinNum: " + newCoinNum);
-            controller.setGainedCoins("Congratulations! You gained coins!");
+            controller.setGainedCoins("Congratulations! You gained " + (newCoinNum-oldCoinNum) + " coins!");
         }
         controller.setLoserMonster1(loser1);
         if (loser2 != null) {

@@ -49,6 +49,7 @@ public class EndScreenController extends Controller {
     private Monster loser1;
     private Monster loser2;
     private boolean isWinner = false;
+    private String gainedCoins;
 
     @Inject
     public EndScreenController() {
@@ -97,6 +98,10 @@ public class EndScreenController extends Controller {
             resultLabel.setText(resources.getString("fightLost"));
         }
 
+        if (gainedCoins != null) {
+            coinInfo.setText(gainedCoins);
+        }
+
         return parent;
     }
 
@@ -132,7 +137,7 @@ public class EndScreenController extends Controller {
     }
 
     public void setGainedCoins(String gainedCoins) {
-        coinInfo.setText(gainedCoins);
+        this.gainedCoins =gainedCoins;
     }
 
 }
