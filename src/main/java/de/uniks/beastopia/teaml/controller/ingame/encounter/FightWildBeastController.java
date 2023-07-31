@@ -121,6 +121,7 @@ public class FightWildBeastController extends Controller {
 
                     EncounterController controller = encounterControllerProvider.get()
                             .setOwnMonster(ownMonster)
+                            .setMyTrainer(cache.getTrainer())
                             .setEnemyMonster(enemyMonster)
                             .setOwnMonsters(myMonsters)
                             .setEnemyMonsters(enemyMonsters)
