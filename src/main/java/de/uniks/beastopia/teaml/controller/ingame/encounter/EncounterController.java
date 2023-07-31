@@ -27,7 +27,6 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.Stack;
 
@@ -745,7 +744,7 @@ public class EncounterController extends Controller {
 
         if (myMon.currentAttributes().health() <= 0) {
             beastInfoController1.hpLabel.setText("0 / " + myMonster.attributes().health() + " (HP)");
-            beastInfoController1.setLifeBarValue(0);
+            beastInfoController1.setLifeBarValue(0, true);
 
             endScreenController = setEndScreen(false, myMonster, allyMonster, enemyMonster, enemyAllyMonster);
             app.show(endScreenController);
@@ -764,10 +763,10 @@ public class EncounterController extends Controller {
         if (opponent.monster() != null) {
             myMonster = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), opponent.monster()).blockingFirst();
             beastInfoController1.hpLabel.setText(myMonster.currentAttributes().health() + " / " + myMonster.attributes().health() + " (HP)");
-            beastInfoController1.setLifeBarValue(myMonster.currentAttributes().health() / (float) myMonster.attributes().health());
+            beastInfoController1.setLifeBarValue(myMonster.currentAttributes().health() / (float) myMonster.attributes().health(), false);
         } else {
             beastInfoController1.hpLabel.setText("0 / " + myMonster.attributes().health() + " (HP)");
-            beastInfoController1.setLifeBarValue(0);
+            beastInfoController1.setLifeBarValue(0, true);
             ownMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), cache.getTrainer()._id()).blockingFirst();
             // If the monster has died during change, show 0 HP, otherwise the current HP of the monster
             for (Monster monster : ownMonsters) {
@@ -793,7 +792,7 @@ public class EncounterController extends Controller {
     private void updateEnemyMonster(Opponent opponent) {
         System.out.println("monster is not null, update enemy hp");
         Monster beforeMonster = enemyMonster;
-        enemyMonster = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), enemyTrainer, opponent.monster()).blockingFirst();
+        enemyMonster = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), enemyTrainer._id(), opponent.monster()).blockingFirst();
 
         if (enemyMonster.currentAttributes().health() <= 0) {
             System.out.println("enemy monster has zero hp");
@@ -815,7 +814,7 @@ public class EncounterController extends Controller {
                 enemyMonstersBox.getChildren().addAll(enemyMonster);
                 HBox.setHgrow(enemyMonster, Priority.ALWAYS);
             }
-            enemyBeastInfoController1.setLifeBarValue(enemyMonster.currentAttributes().health() / (double) enemyMonster.attributes().health());
+            //enemyBeastInfoController1.setLifeBarValue(enemyMonster.currentAttributes().health() / (double) enemyMonster.attributes().health(), false);
         }
     }
 
@@ -922,7 +921,6 @@ public class EncounterController extends Controller {
         }
         return controller;
     }
-}
 
     private void setAttackBoxesDisabled(boolean disabled) {
         attackBox1.setDisable(disabled);
