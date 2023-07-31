@@ -530,6 +530,7 @@ public class IngameController extends Controller {
         posx = myTrainer.x();
         posy = myTrainer.y();
         playerController.setDirection(myTrainer.direction());
+        direction = playerController.getDirection();
 
         return myTrainer;
     }
