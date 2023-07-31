@@ -102,7 +102,7 @@ public class StartFightNPCController extends Controller {
                         }
                     } else if (o.size() == 3) {
                         for (int i = 0; i < o.size(); i++) {
-                            if (o.get(i).trainer().equals(cache.getTrainer()._id())) {
+                            if (o.get(i).trainer().equals(cache.getTrainer()._id()) || !o.get(i).isNPC()) {
                                 if (myTrainerOpponentIndex == -5) {
                                     myTrainerOpponentIndex = i;
                                 } else {
@@ -142,7 +142,12 @@ public class StartFightNPCController extends Controller {
                     List<Monster> enemyMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(enemyTrainerOpponentIndex).trainer()).blockingFirst();
                     encounterController.setMyTrainer(cache.getTrainer());
                     encounterController.setEnemyTrainer(trainerService.getTrainer(cache.getJoinedRegion()._id(), o.get(enemyTrainerOpponentIndex).trainer()).blockingFirst());
-                    encounterController.setOwnMonster(myMonsters.stream().filter(m -> m._id().equals(o.get(myTrainerOpponentIndex).monster())).findFirst().orElseThrow());
+                    // When reconnecting: If no monster is set, then find the first monster with 0 HP to indicate swapping out
+                    if (o.get(myTrainerOpponentIndex).monster() == null) {
+                        encounterController.setOwnMonster(myMonsters.stream().filter(m -> m.currentAttributes().health() <= 0).findFirst().orElseThrow());
+                    } else {
+                        encounterController.setOwnMonster(myMonsters.stream().filter(m -> m._id().equals(o.get(myTrainerOpponentIndex).monster())).findFirst().orElseThrow());
+                    }
                     encounterController.setEnemyMonster(enemyMonsters.stream().filter(m -> m._id().equals(o.get(enemyTrainerOpponentIndex).monster())).findFirst().orElseThrow());
 
                     if (o.size() == 3) {

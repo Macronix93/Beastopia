@@ -99,10 +99,16 @@ public class FightWildBeastController extends Controller {
                     Trainer enemyAllyTrainer = null;
                     Trainer allyTrainer = null;
                     Trainer enemyTrainer = null;
+                    Monster ownMonster;
 
                     List<Monster> myMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(0).trainer()).blockingFirst();
                     List<Monster> enemyMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(1).trainer()).blockingFirst();
-                    Monster ownMonster = myMonsters.stream().filter(m -> m._id().equals(o.get(0).monster())).findFirst().orElseThrow();
+                    // When reconnecting: If no monster is set, then find the first monster with 0 HP to indicate swapping out
+                    if (o.get(0).monster() == null) {
+                        ownMonster = myMonsters.stream().filter(m -> m.currentAttributes().health() <= 0).findFirst().orElseThrow();
+                    } else {
+                        ownMonster = myMonsters.stream().filter(m -> m._id().equals(o.get(0).monster())).findFirst().orElseThrow();
+                    }
                     Monster enemyMonster = enemyMonsters.stream().filter(m -> m._id().equals(o.get(1).monster())).findFirst().orElseThrow();
 
                     if (o.size() == 3) {
