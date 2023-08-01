@@ -130,6 +130,8 @@
 #scoreBoard,
 #achievements,
 #VBoxBeastList,
+#VBoxMondexList,
+#VBoxMondexDetail,
 #VBoxBeastDetail,
 #scrollFriends,
 #changeBeastElement,
@@ -140,6 +142,10 @@
     -fx-border-width: 1px;
     -fx-border-radius: 5px;
     -fx-background-radius: 5px;
+}
+
+#textArea_description {
+    -fx-background-color: #FFD4B2;
 }
 
 #scoreBoard,
