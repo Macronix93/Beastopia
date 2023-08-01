@@ -14,6 +14,8 @@ import de.uniks.beastopia.teaml.service.TrainerService;
 import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.utils.Dialog;
 import de.uniks.beastopia.teaml.utils.FormatString;
+import io.reactivex.rxjava3.disposables.Disposable;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -25,6 +27,8 @@ import javafx.scene.layout.VBox;
 import javax.inject.Inject;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class ItemDetailController extends Controller {
 
@@ -58,6 +62,8 @@ public class ItemDetailController extends Controller {
     private InventoryController inventoryController;
     private boolean buy;
     private IngameController ingameController;
+    private Disposable itemEventListenerDisposable = null;
+    private Disposable monsterEventListenerDisposable = null;
 
     public void setItem(ItemTypeDto itemType) {
         this.itemType = itemType;
@@ -150,30 +156,59 @@ public class ItemDetailController extends Controller {
                     inventoryController.updateInventory();
                 }, error -> System.out.println("Error:" + error)));
         ingameController.toggleInventoryItemDetails(itemType);
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Platform.runLater(() -> {
+                    if (itemEventListenerDisposable != null) {
+                        itemEventListenerDisposable.dispose(); // remove item eventListener
+                    }
+                    if (monsterEventListenerDisposable != null) {
+                        monsterEventListenerDisposable.dispose(); // remove monster eventListener
+                    }
+                });
+            }
+        }, 1000);
     }
 
     private void listenToNewMonster() {
-        disposables.add(eventListener.listen("trainers." + cache.getTrainer()._id() + ".monsters.*.created", Monster.class)
-                .observeOn(FX_SCHEDULER).subscribe(monster -> {
-                    String beastName;
-                    if (cache.getBeastDto(monster.data().type()) != null) {
-                        beastName = cache.getBeastDto(monster.data().type()).name();
-                    } else {
-                        beastName = presetsService.getMonsterType(monster.data().type()).blockingFirst().name();
-                    }
-                    Dialog.info(resources.getString("unlockMonsterHeader"), resources.getString("unlockMonster") + " " + beastName);
-                }));
+        if (monsterEventListenerDisposable == null) {
+            monsterEventListenerDisposable = eventListener.listen("trainers." + cache.getTrainer()._id() + ".monsters.*.created", Monster.class)
+                    .observeOn(FX_SCHEDULER).subscribe(monster -> {
+                        String beastName;
+                        if (cache.getBeastDto(monster.data().type()) != null) {
+                            beastName = cache.getBeastDto(monster.data().type()).name();
+                        } else {
+                            beastName = presetsService.getMonsterType(monster.data().type()).blockingFirst().name();
+                        }
+                        Dialog.info(resources.getString("unlockMonsterHeader"), resources.getString("unlockMonster") + " " + beastName);
+                    });
+        }
     }
 
     private void listenToNewItem() {
-        disposables.add(eventListener.listen("trainers." + cache.getTrainer()._id() + ".items.*.created", Item.class)
-                .observeOn(FX_SCHEDULER).subscribe(item -> {
-                    for (ItemTypeDto itemTypeDto : cache.getPresetItems()) {
-                        if (itemTypeDto.id() == item.data().type()) {
-                            Dialog.info(resources.getString("newItemHeader"), resources.getString("newItem") + " " + itemTypeDto.name());
+        if (itemEventListenerDisposable == null) {
+            itemEventListenerDisposable = eventListener.listen("trainers." + cache.getTrainer()._id() + ".items.*.*", Item.class)
+                    .observeOn(FX_SCHEDULER).subscribe(item -> {
+                        if (onlyInventory) {
+                            boolean isUsedItem = false;
+                            for (Item item1 : cache.getTrainerItems()) {
+                                if (item1._id().equals(item.data()._id()) && itemType.id() == item.data().type()) {
+                                    isUsedItem = true;
+                                    break;
+                                }
+                            }
+                            if (!isUsedItem) {
+                                for (ItemTypeDto itemTypeDto : cache.getPresetItems()) {
+                                    if (itemTypeDto.id() == item.data().type()) {
+                                        Dialog.info(resources.getString("newItemHeader"), resources.getString("newItem") + " " + itemTypeDto.name());
+                                    }
+                                }
+                            }
                         }
-                    }
-                }));
+                    });
+        }
     }
 
     public void setInventoryController(InventoryController inventoryController) {
