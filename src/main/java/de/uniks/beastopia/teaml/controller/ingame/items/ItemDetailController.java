@@ -8,6 +8,7 @@ import de.uniks.beastopia.teaml.rest.ItemTypeDto;
 import de.uniks.beastopia.teaml.rest.Monster;
 import de.uniks.beastopia.teaml.rest.UpdateItemDto;
 import de.uniks.beastopia.teaml.service.DataCache;
+import de.uniks.beastopia.teaml.service.PresetsService;
 import de.uniks.beastopia.teaml.service.TrainerItemsService;
 import de.uniks.beastopia.teaml.service.TrainerService;
 import de.uniks.beastopia.teaml.sockets.EventListener;
@@ -49,6 +50,8 @@ public class ItemDetailController extends Controller {
     TrainerItemsService trainerItemsService;
     @Inject
     EventListener eventListener;
+    @Inject
+    PresetsService presetsService;
     private ItemTypeDto itemType;
     private boolean isShop;
     private boolean onlyInventory;
@@ -151,7 +154,15 @@ public class ItemDetailController extends Controller {
 
     private void listenToNewMonster() {
         disposables.add(eventListener.listen("trainers." + cache.getTrainer()._id() + ".monsters.*.created", Monster.class)
-                .observeOn(FX_SCHEDULER).subscribe(monster -> Dialog.info(resources.getString("unlockMonsterHeader"), resources.getString("unlockMonster"))));
+                .observeOn(FX_SCHEDULER).subscribe(monster -> {
+                    String beastName;
+                    if (cache.getBeastDto(monster.data().type()) != null) {
+                        beastName = cache.getBeastDto(monster.data().type()).name();
+                    } else {
+                        beastName = presetsService.getMonsterType(monster.data().type()).blockingFirst().name();
+                    }
+                    Dialog.info(resources.getString("unlockMonsterHeader"), resources.getString("unlockMonster") + " " + beastName);
+                }));
     }
 
     private void listenToNewItem() {
@@ -159,8 +170,7 @@ public class ItemDetailController extends Controller {
                 .observeOn(FX_SCHEDULER).subscribe(item -> {
                     for (ItemTypeDto itemTypeDto : cache.getPresetItems()) {
                         if (itemTypeDto.id() == item.data().type()) {
-                            Dialog.info(resources.getString("newItemHeader"), resources.getString("newItem") + "\n" + itemTypeDto.name());
-                            break;
+                            Dialog.info(resources.getString("newItemHeader"), resources.getString("newItem") + " " + itemTypeDto.name());
                         }
                     }
                 }));
