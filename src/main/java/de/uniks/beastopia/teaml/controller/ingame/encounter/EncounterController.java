@@ -115,7 +115,6 @@ public class EncounterController extends Controller {
     @Inject
     EventListener eventListener;
     //monster on the substitute's bench
-    @SuppressWarnings({"FieldCanBeLocal"})
     private List<Monster> ownMonsters = new ArrayList<>();
     private final List<Monster> allyMonsters = new ArrayList<>();
     @SuppressWarnings({"FieldCanBeLocal"})
@@ -481,6 +480,9 @@ public class EncounterController extends Controller {
             myMonster = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), opponent.monster()).blockingFirst();
             beastInfoController1.hpLabel.setText(myMonster.currentAttributes().health() + " / " + myMonster.attributes().health() + " (HP)");
             beastInfoController1.setLifeBarValue(myMonster.currentAttributes().health() / (float) myMonster.attributes().health());
+            if (!myMonster.status().isEmpty()) {
+                beastInfoController1.setStatus(myMonster.status());
+            }
         } else {
             beastInfoController1.hpLabel.setText("0 / " + myMonster.attributes().health() + " (HP)");
             beastInfoController1.setLifeBarValue(0);
