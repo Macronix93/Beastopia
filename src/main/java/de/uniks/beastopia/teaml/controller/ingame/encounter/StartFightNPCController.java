@@ -177,7 +177,11 @@ public class StartFightNPCController extends Controller {
     private void setAllyMonsters(List<Opponent> o) {
         List<Monster> myAllyMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(myAllyTrainerOpponentIndex).trainer()).blockingFirst();
         encounterController.setAllyTrainer(trainerService.getTrainer(cache.getJoinedRegion()._id(), o.get(myAllyTrainerOpponentIndex).trainer()).blockingFirst());
-        encounterController.setAllyMonster(myAllyMonsters.stream().filter(m -> m._id().equals(o.get(myAllyTrainerOpponentIndex).monster())).findFirst().orElseThrow());
+        if (o.get(myAllyTrainerOpponentIndex).monster() == null) {
+            encounterController.setAllyMonster(myAllyMonsters.stream().filter(m -> m.currentAttributes().health() <= 0).findFirst().orElseThrow());
+        } else {
+            encounterController.setAllyMonster(myAllyMonsters.stream().filter(m -> m._id().equals(o.get(myAllyTrainerOpponentIndex).monster())).findFirst().orElseThrow());
+        }
     }
 
     private void setEnemyAllyMonsters(List<Opponent> o) {

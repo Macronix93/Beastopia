@@ -223,10 +223,23 @@ public class EncounterController extends Controller {
             HBox.setHgrow(allyMonsterParent, Priority.ALWAYS);
 
             // Set ally monster opponent ID
-            cache.getCurrentOpponents().stream()
-                    .filter(opponent -> opponent.monster() == null ? opponent.trainer().equals(allyTrainer._id()) : opponent.monster().equals(beastInfoController2.getMonster()._id()))
-                    .findFirst()
-                    .ifPresent(opponent -> renderBeastController1.setMonsterTwoOpponentId(opponent._id()));
+            if (allyTrainer._id().equals(myTrainer._id())) {
+                // 2v2 situation
+                if (renderBeastController1.getOpponentIdMonsterOne() != null) {
+                    for (Opponent o : cache.getCurrentOpponents()) {
+                        if (o.trainer().equals(allyTrainer._id()) && !o._id().equals(renderBeastController1.getOpponentIdMonsterOne())) {
+                            renderBeastController1.setMonsterTwoOpponentId(o._id());
+                            break;
+                        }
+                    }
+                }
+            } else {
+                cache.getCurrentOpponents().stream()
+                        .filter(opponent -> opponent.monster() == null ? opponent.trainer().equals(allyTrainer._id()) : opponent.monster().equals(beastInfoController2.getMonster()._id()))
+                        .findFirst()
+                        .ifPresent(opponent -> renderBeastController1.setMonsterTwoOpponentId(opponent._id())
+                        );
+            }
 
             // Add monster listener for ally
             addAllyListener();
@@ -266,13 +279,6 @@ public class EncounterController extends Controller {
         }
 
         if (enemyAllyTrainer != null) {
-            // TODO: Debug monsters being the same and shown twice
-            System.out.println(enemyTrainer);
-            System.out.println(enemyMonster);
-            System.out.println(renderBeastController2.getOpponentIdMonsterOne());
-            System.out.println(enemyAllyTrainer);
-            System.out.println(enemyAllyMonster);
-
             enemyBeastInfoController2 = enemyBeastInfoControllerProvider.get().setMonster(enemyAllyMonster);
             enemyAllyMonsterInfo = enemyBeastInfoController2.render();
             enemyBeastInfo.getChildren().addAll(enemyAllyMonsterInfo);
@@ -575,10 +581,19 @@ public class EncounterController extends Controller {
     //onClicked change monster button
     @FXML
     public void changeMonster() {
+        hasToChooseEnemy = false;
         // TODO: Change monster of currently selected opponent (only my opponents -> 2v2 situation)
         ChangeBeastController controller = changeBeastControllerProvider.get();
-        controller.setCurrentMonster(myMonster);
-        controller.setAllyMonster(allyMonster);
+        if (renderBeastController1.getOpponentIdMonsterOne() != null && chosenTarget.equals(renderBeastController1.getOpponentIdMonsterOne())) {
+            controller.setMonsterToSwap(myMonster);
+            controller.setAllyMonster(allyMonster);
+            controller.monsterInSlotOne(true);
+        } else if (renderBeastController1.getOpponentIdMonsterTwo() != null && chosenTarget.equals(renderBeastController1.getOpponentIdMonsterTwo())) {
+            controller.setMonsterToSwap(allyMonster);
+            controller.setAllyMonster(myMonster);
+            controller.monsterInSlotOne(false);
+        }
+        controller.setOpponentId(chosenTarget);
         controller.setEncounterController(this);
         app.show(controller);
     }
@@ -699,16 +714,16 @@ public class EncounterController extends Controller {
     }
 
     private void setAttackWithClick(VBox attackBox, AbilityDto abilityDto) {
+        if ((renderBeastController1.getOpponentIdMonsterOne() != null && renderBeastController1.getOpponentIdMonsterOne().equals(chosenTarget) && beastInfoController1.getMonster().currentAttributes().health() <= 0) ||
+                (renderBeastController1.getOpponentIdMonsterTwo() != null && renderBeastController1.getOpponentIdMonsterTwo().equals(chosenTarget) && beastInfoController2.getMonster().currentAttributes().health() <= 0)) {
+            System.out.println("mon has no hp! change please");
+            return;
+        }
+
         chosenAbility = abilityDto;
 
         int numberOfAttackers = (int) cache.getCurrentOpponents().stream().filter(Opponent::isAttacker).count();
         if (numberOfAttackers < 2) {
-            if ((renderBeastController1.getOpponentIdMonsterOne() != null && renderBeastController1.getOpponentIdMonsterOne().equals(chosenTarget) && beastInfoController1.getMonster().currentAttributes().health() <= 0) ||
-                    (renderBeastController1.getOpponentIdMonsterTwo() != null && renderBeastController1.getOpponentIdMonsterTwo().equals(chosenTarget) && beastInfoController1.getMonster().currentAttributes().health() <= 0)) {
-                System.out.println("mon has no hp! change please");
-                return;
-            }
-
             setAttackBoxesDisabled(true);
 
             System.out.println(abilityDto.toString());
@@ -783,7 +798,16 @@ public class EncounterController extends Controller {
                 app.show(endScreenController);
             } else {
                 ChangeBeastController controller = changeBeastControllerProvider.get();
-                controller.setCurrentMonster(myMonster);
+                if (renderBeastController1.getOpponentIdMonsterOne() != null && chosenTarget.equals(renderBeastController1.getOpponentIdMonsterOne())) {
+                    controller.setMonsterToSwap(myMonster);
+                    controller.setAllyMonster(allyMonster);
+                    controller.monsterInSlotOne(true);
+                } else if (renderBeastController1.getOpponentIdMonsterTwo() != null && chosenTarget.equals(renderBeastController1.getOpponentIdMonsterTwo())) {
+                    controller.setMonsterToSwap(allyMonster);
+                    controller.setAllyMonster(myMonster);
+                    controller.monsterInSlotOne(false);
+                }
+                controller.setOpponentId(chosenTarget);
                 controller.setEncounterController(this);
                 app.show(controller);
             }
