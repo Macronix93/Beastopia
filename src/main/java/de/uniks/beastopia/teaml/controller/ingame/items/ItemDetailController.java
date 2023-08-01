@@ -129,7 +129,6 @@ public class ItemDetailController extends Controller {
 
     @FXML
     public void shopFunction() {
-        String monsterId = null;
         String usage = "trade";
         int amount = 1; // use and buy
         if (onlyInventory) { //use
@@ -138,24 +137,17 @@ public class ItemDetailController extends Controller {
                 case "itemBox" -> listenToNewItem();
                 case "monsterBox" -> listenToNewMonster();
                 case "effect" -> {
-                    ingameController.openBeastlist("shop");
-                    monsterId = "TODO";
-                    //TODO wait for ausgewählt
+                    ingameController.openBeastlist("shop", this);
+                    return;
                 }
             }
         }
-        if (!buy && !onlyInventory) { //sell
-            amount = -1;
+        if (!itemType.use().contains("effect") || !onlyInventory) {
+            if (!buy && !onlyInventory) { //sell
+                amount = -1;
+            }
+            useDetailButton(amount, usage, null);
         }
-        disposables.add(trainerItemsService.updateItem(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), usage,
-                new UpdateItemDto(amount, itemType.id(), monsterId)).observeOn(FX_SCHEDULER).subscribe(
-                itemUpdated -> {}, error -> System.out.println("Error:" + error)));
-        disposables.add(trainerService.getTrainer(cache.getJoinedRegion()._id(), cache.getTrainer()._id())
-                .observeOn(FX_SCHEDULER).subscribe(trainer -> {
-                    cache.setTrainer(trainer);
-                    inventoryController.updateInventory();
-                }, error -> System.out.println("Error:" + error)));
-        ingameController.toggleInventoryItemDetails(itemType);
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
@@ -170,6 +162,31 @@ public class ItemDetailController extends Controller {
                 });
             }
         }, 1000);
+    }
+
+    public void useDetailButton(int amount, String usage, String monsterId) {
+        disposables.add(trainerItemsService.updateItem(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), usage,
+                new UpdateItemDto(amount, itemType.id(), monsterId)).observeOn(FX_SCHEDULER).subscribe(
+                itemUpdated -> {
+                    if (monsterId != null) {
+                        Dialog.info(resources.getString("success"), resources.getString("successUseItem"));
+                    }
+                }, error -> {
+                    if (monsterId != null) {
+                        Dialog.error(resources.getString("error"), resources.getString("errorUseItem"));
+                    } else {
+                        System.out.println("Error:" + error);
+                    }
+                }));
+        disposables.add(trainerService.getTrainer(cache.getJoinedRegion()._id(), cache.getTrainer()._id())
+                .observeOn(FX_SCHEDULER).subscribe(trainer -> {
+                    cache.setTrainer(trainer);
+                    inventoryController.updateInventory();
+
+                    System.out.println();
+                }, error -> System.out.println("Error:" + error)
+                ));
+        ingameController.toggleInventoryItemDetails(itemType);
     }
 
     private void listenToNewMonster() {

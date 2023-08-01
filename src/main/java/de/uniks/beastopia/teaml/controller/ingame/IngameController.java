@@ -795,6 +795,12 @@ public class IngameController extends Controller {
         scoreBoardLayout.getChildren().add(0, beastDetailParent);
     }
 
+    public void chooseBeast(Monster monster, ItemDetailController itemDetailController) {
+        itemDetailController.useDetailButton(1, "use", monster._id());
+        shopLayout.getChildren().remove(beastListParent);
+        beastListController.destroy();
+    }
+
     private void updateTrainerPos(Direction direction) {
         Trainer trainer = cache.getTrainer();
         JsonObject data = new JsonObject();
@@ -1052,7 +1058,7 @@ public class IngameController extends Controller {
 
     public void handleBeastList(KeyEvent keyEvent) {
         if (keyEvent.getCode().equals(KeyCode.B) && (currentMenu == MENU_NONE || currentMenu == MENU_BEASTLIST)) {
-            openBeastlist("scoreboardLayout");
+            openBeastlist("scoreboardLayout", null);
         }
     }
 
@@ -1224,7 +1230,7 @@ public class IngameController extends Controller {
 
     @FXML
     public void clickOnBeastListButton() {
-        openBeastlist("scoreBoardLayout");
+        openBeastlist("scoreBoardLayout", null);
     }
 
     @FXML
@@ -1242,7 +1248,7 @@ public class IngameController extends Controller {
         openInventory(false);
     }
 
-    public void openBeastlist(String layout) {
+    public void openBeastlist(String layout, ItemDetailController itemDetailController) {
         HBox hbox = scoreBoardLayout;
         if (layout.equals("shop")) {
             setOpacities(0);
@@ -1255,6 +1261,10 @@ public class IngameController extends Controller {
             lastMonster = null;
             currentMenu = MENU_NONE;
         } else {
+            if (layout.equals("shop")) {
+                beastListController.init();
+                beastListController.setOnBeastClicked(monster -> chooseBeast(monster, itemDetailController));
+            }
             beastListParent = beastListController.render();
             if (hbox == shopLayout) {
                 beastListController.CloseButtonTestId.setDisable(true);
