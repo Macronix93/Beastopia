@@ -72,7 +72,6 @@ public class MondexListController extends Controller {
                                         disposables.add(delay().observeOn(FX_SCHEDULER).subscribe(t ->
                                         {
                                             createController(monster);
-                                            System.out.println("already loaded");
                                         }));
                                         continue;
                                     }
@@ -81,7 +80,6 @@ public class MondexListController extends Controller {
                                             .subscribe(image -> { //UI Stuff allowed again!!!
                                                 dataCache.addMonsterImages(monster.id(), image);
                                                 createController(monster);
-                                                System.out.println("downloaded");
                                             }));
                                 }
                             }));
