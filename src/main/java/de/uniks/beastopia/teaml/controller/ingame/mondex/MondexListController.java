@@ -37,6 +37,7 @@ public class MondexListController extends Controller {
 
     private Runnable onCloseRequest;
     private Consumer<MonsterTypeDto> onBeastClicked;
+    private boolean destroyed = false;
 
     @Inject
     public MondexListController() {
@@ -56,6 +57,7 @@ public class MondexListController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
+        destroyed = false;
 
         VBoxBeasts.getChildren().clear();
 
@@ -68,11 +70,12 @@ public class MondexListController extends Controller {
                             .subscribe(monsters -> { //No UI Stuff here!!!
                                 for (MonsterTypeDto monster : monsters) {
                                     Thread.sleep(288);
+                                    if (destroyed) {
+                                        return;
+                                    }
                                     if (dataCache.imageIsDownloaded(monster.id())) {
                                         disposables.add(delay().observeOn(FX_SCHEDULER).subscribe(t ->
-                                        {
-                                            createController(monster);
-                                        }));
+                                                createController(monster)));
                                         continue;
                                     }
                                     disposables.add(presetsService.getMonsterImage(monster.id())
@@ -111,6 +114,7 @@ public class MondexListController extends Controller {
     @Override
     public void destroy() {
         subControllers.forEach(Controller::destroy);
+        destroyed = true;
         super.destroy();
     }
 
