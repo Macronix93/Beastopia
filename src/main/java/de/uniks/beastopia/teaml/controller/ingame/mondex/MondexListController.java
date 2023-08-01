@@ -69,7 +69,11 @@ public class MondexListController extends Controller {
                                 for (MonsterTypeDto monster : monsters) {
                                     Thread.sleep(288);
                                     if (dataCache.imageIsDownloaded(monster.id())) {
-                                        disposables.add(delay().observeOn(FX_SCHEDULER).subscribe(t -> createController(monster)));
+                                        disposables.add(delay().observeOn(FX_SCHEDULER).subscribe(t ->
+                                        {
+                                            createController(monster);
+                                            System.out.println("already loaded");
+                                        }));
                                         continue;
                                     }
                                     disposables.add(presetsService.getMonsterImage(monster.id())
@@ -77,6 +81,7 @@ public class MondexListController extends Controller {
                                             .subscribe(image -> { //UI Stuff allowed again!!!
                                                 dataCache.addMonsterImages(monster.id(), image);
                                                 createController(monster);
+                                                System.out.println("downloaded");
                                             }));
                                 }
                             }));
