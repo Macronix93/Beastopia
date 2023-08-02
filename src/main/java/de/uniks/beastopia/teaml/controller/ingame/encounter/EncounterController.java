@@ -336,6 +336,7 @@ public class EncounterController extends Controller {
                                             }
                                         }
                                     }
+
                                     // Update opponent in cache and show battle results
                                     cache.updateCurrentOpponents(o.data());
                                     String monsterName = getMonsterName(o.data().monster(), null);
@@ -588,6 +589,12 @@ public class EncounterController extends Controller {
 
     private void showChangeBeast() {
         ChangeBeastController controller = changeBeastControllerProvider.get();
+        if (isOneVersusTwo) {
+            if (!chosenTarget.equals(renderBeastController1.getOpponentIdMonsterOne()) && !chosenTarget.equals(renderBeastController1.getOpponentIdMonsterTwo())) {
+                actionInfoText.appendText("Choose one of your beasts to swap!\n");
+                return;
+            }
+        }
         if (renderBeastController1.getOpponentIdMonsterOne() != null && chosenTarget.equals(renderBeastController1.getOpponentIdMonsterOne())) {
             controller.setMonsterToSwap(myMonster);
             controller.setAllyMonster(allyMonster);
