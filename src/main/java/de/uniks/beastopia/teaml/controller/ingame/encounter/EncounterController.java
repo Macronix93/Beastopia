@@ -813,20 +813,6 @@ public class EncounterController extends Controller {
                     showChangeBeast();
                 }
             }
-            /*for (Monster monster : ownMonsters) {
-                if (!monster._id().equals(myMonster._id()) && cache.getTrainer().team().contains(monster._id()) && monster.currentAttributes().health() > 0) {
-                    foundMonsterWithHP = true;
-                    break;
-                }
-            }
-            // We lost = show lose screen
-            if (!foundMonsterWithHP) {
-                EndScreenController endScreenController;
-                endScreenController = setEndScreen(false, myMonster, allyMonster, enemyMonster, enemyAllyMonster);
-                app.show(endScreenController);
-            } else {
-                showChangeBeast();
-            }*/
         }
     }
 
