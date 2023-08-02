@@ -3,6 +3,7 @@ package de.uniks.beastopia.teaml.controller.ingame.items;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.ItemTypeDto;
 import de.uniks.beastopia.teaml.rest.Trainer;
+import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -29,6 +30,8 @@ public class ShopController extends Controller {
     PresetsService presetsService;
     @Inject
     Provider<ItemController> itemControllerProvider;
+    @Inject
+    DataCache cache;
     private Runnable onCloseRequest;
     private Trainer seller;
     private final List<ItemTypeDto> sellerItems = new ArrayList<>();
@@ -46,18 +49,29 @@ public class ShopController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
-
-        disposables.add(presetsService.getItems()
-                .observeOn(FX_SCHEDULER)
-                .subscribe(items -> {
-                    sellerItems.clear();
-                    for (ItemTypeDto itemType : items) {
-                        if (seller.npc().sells().contains(itemType.id())) {
-                            sellerItems.add(itemType);
+        if (cache.getPresetItems().isEmpty()) {
+            disposables.add(presetsService.getItems()
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe(items -> {
+                        cache.setPresetItems(items);
+                        sellerItems.clear();
+                        for (ItemTypeDto itemType : items) {
+                            if (seller.npc().sells().contains(itemType.id())) {
+                                sellerItems.add(itemType);
+                            }
                         }
-                    }
-                    reload();
-                }));
+                        reload();
+                    }));
+        } else {
+            sellerItems.clear();
+            for (ItemTypeDto itemType : cache.getPresetItems()) {
+                if (seller.npc().sells().contains(itemType.id())) {
+                    sellerItems.add(itemType);
+                }
+            }
+            reload();
+        }
+
         return parent;
     }
 

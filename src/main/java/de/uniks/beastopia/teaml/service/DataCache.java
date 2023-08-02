@@ -55,7 +55,9 @@ public class DataCache {
     private List<Opponent> currentOpponents = new ArrayList<>();
     private TileSet mapTileset;
     private Image mapImage;
-    private List<Item> items;
+    private List<ItemTypeDto> presetItems = new ArrayList<>();
+    private List<Item> trainerItems = new ArrayList<>();
+    private List<Item> items = new ArrayList<>();
 
     @Inject
     public DataCache() {
@@ -453,6 +455,9 @@ public class DataCache {
     public Image getMapImage() {
         return this.mapImage;
     }
+    public void setPresetItems(List<ItemTypeDto> presetItems) {
+        this.presetItems = presetItems;
+    }
 
     public void setMapImage(Image image) {
         this.mapImage = image;
@@ -465,6 +470,9 @@ public class DataCache {
     public void setItems(List<Item> i) {
         this.items = i;
     }
+    public List<ItemTypeDto> getPresetItems() {
+        return this.presetItems;
+    }
 
     public void addMonsterImages(int monsterId, Image image) {
         monsterImages.put(monsterId, image);
@@ -476,5 +484,13 @@ public class DataCache {
 
     public boolean imageIsDownloaded(int id) {
         return monsterImages.containsKey(id);
+    }
+
+    public void setTrainerItems(List<Item> itemList) {
+        this.trainerItems = itemList;
+    }
+
+    public List<Item> getTrainerItems() {
+        return this.trainerItems;
     }
 }
