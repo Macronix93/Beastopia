@@ -49,7 +49,7 @@ public class ShopController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
-        if (cache.getPresetItems().equals(List.of())) {
+        if (cache.getPresetItems().isEmpty()) {
             disposables.add(presetsService.getItems()
                     .observeOn(FX_SCHEDULER)
                     .subscribe(items -> {

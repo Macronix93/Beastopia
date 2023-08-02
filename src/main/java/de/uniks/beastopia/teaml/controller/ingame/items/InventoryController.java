@@ -65,7 +65,7 @@ public class InventoryController extends Controller {
             CloseButton.setDisable(true);
             CloseButton.setOpacity(0);
         }
-        if (cache.getPresetItems().equals(List.of())) {
+        if (cache.getPresetItems().isEmpty()) {
             disposables.add(presetsService.getItems()
                     .observeOn(FX_SCHEDULER)
                     .subscribe(items -> {
