@@ -34,7 +34,6 @@ public class DataCache {
 
     private static final ImageView IMAGE_VIEW = new ImageView();
     private static final Scheduler FX_SCHEDULER = io.reactivex.rxjava3.schedulers.Schedulers.from(Platform::runLater);
-    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     private final List<Trainer> trainers = new ArrayList<>();
     private final List<Pair<String, Image>> characters = new ArrayList<>();
     private final List<Pair<String, Image>> charactersResized = new ArrayList<>();
@@ -55,7 +54,6 @@ public class DataCache {
     private List<Opponent> currentOpponents = new ArrayList<>();
     private TileSet mapTileset;
     private Image mapImage;
-    private List<Item> items;
 
     @Inject
     public DataCache() {
@@ -456,14 +454,6 @@ public class DataCache {
 
     public void setMapImage(Image image) {
         this.mapImage = image;
-    }
-
-    public List<Item> getItems() {
-        return this.items;
-    }
-
-    public void setItems(List<Item> i) {
-        this.items = i;
     }
 
     public void addMonsterImages(int monsterId, Image image) {

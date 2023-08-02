@@ -1,4 +1,4 @@
-package de.uniks.beastopia.teaml.controller.ingame;
+package de.uniks.beastopia.teaml.controller.ingame.beastlist;
 
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.AppPreparer;
@@ -31,7 +31,7 @@ class BeastControllerTest extends ApplicationTest {
     @Mock
     PresetsService presetsService;
     final MonsterAttributes currentAttributes = new MonsterAttributes(0, 0, 0, 0);
-    final Monster monster = new Monster(null, null, "MONSTER_ID", "TRAINER_ID", 0, 0, 0, null, attributes, currentAttributes);
+    final Monster monster = new Monster(null, null, "MONSTER_ID", "TRAINER_ID", 0, 0, 0, null, attributes, currentAttributes, null);
 
 
     @Override

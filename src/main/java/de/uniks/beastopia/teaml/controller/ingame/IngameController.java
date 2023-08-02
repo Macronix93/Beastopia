@@ -70,7 +70,6 @@ public class IngameController extends Controller {
     private final List<Pair<TileSetDescription, Pair<TileSet, Image>>> tileSets = new ArrayList<>();
     private final java.util.Map<Pair<Integer, Integer>, List<Pair<Tile, Node>>> MAP_INFO = new HashMap<>();
     private final List<Controller> subControllers = new ArrayList<>();
-    private final List<Node> renderedTiles = new ArrayList<>();
     private final List<Node> renderedPlayers = new ArrayList<>();
     private final List<KeyCode> pressedKeys = new ArrayList<>();
     private final String[] locationStrings = {"Moncenter", "House", "Store"};

@@ -36,7 +36,7 @@ class FightWildBeastControllerTest extends ApplicationTest {
     final
     ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang", Locale.forLanguageTag("en"));
     final Monster monster = new Monster(null, null, "MONSTER_ID", "TRAINER_ID", 1, 0,
-            0, null, null, null);
+            0, null, null, null, null);
     final MonsterTypeDto monsterTypeDto = new MonsterTypeDto(3, "name", "image", null, null);
     final Image expectedImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/de/uniks/beastopia/teaml/assets/bt_icon.png")));
     @Spy
