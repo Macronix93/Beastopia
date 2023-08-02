@@ -747,8 +747,8 @@ public class IngameController extends Controller {
         Image image = cache.getItemImages().get(itemType.id());
         ImageView imageView = new ImageView(image);
 
-        imageView.setTranslateX(posx * TILE_SIZE);
-        imageView.setTranslateY(posy + 1 * TILE_SIZE);
+        imageView.setTranslateX((posx + 0.33) * TILE_SIZE);
+        imageView.setTranslateY((posy - 1) * TILE_SIZE);
 
         tilePane.getChildren().add(imageView);
         imageView.toFront();
