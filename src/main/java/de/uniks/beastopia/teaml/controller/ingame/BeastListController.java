@@ -55,6 +55,7 @@ public class BeastListController extends Controller {
         disposables.add(trainerService.getTrainerMonsters(prefs.getRegionID(), cache.getTrainer()._id())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(monsters -> {
+                    this.monsters.clear();
                     this.monsters.addAll(monsters);
                     reload();
                 }));
