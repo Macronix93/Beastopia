@@ -788,10 +788,6 @@ public class IngameController extends Controller {
         FadeTransition fadeTransition = new FadeTransition(Duration.seconds(3), imageView);
         fadeTransition.setFromValue(1.0);
         fadeTransition.setToValue(0.0);
-        fadeTransition.setFromValue(0.0);
-        fadeTransition.setToValue(1.0);
-        fadeTransition.setFromValue(1.0);
-        fadeTransition.setToValue(0.0);
 
         fadeTransition.setOnFinished(event -> tilePane.getChildren().remove(imageView));
 
