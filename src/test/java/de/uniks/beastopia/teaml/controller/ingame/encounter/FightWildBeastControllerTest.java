@@ -31,29 +31,25 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class FightWildBeastControllerTest extends ApplicationTest {
 
-    @Spy
-    App app;
     @SuppressWarnings("unused")
     @Spy
     final
     ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang", Locale.forLanguageTag("en"));
+    final Monster monster = new Monster(null, null, "MONSTER_ID", "TRAINER_ID", 1, 0,
+            0, null, null, null);
+    final MonsterTypeDto monsterTypeDto = new MonsterTypeDto(3, "name", "image", null, null);
+    final Image expectedImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/de/uniks/beastopia/teaml/assets/bt_icon.png")));
+    @Spy
+    App app;
     @InjectMocks
     FightWildBeastController fightWildBeastController;
     @Mock
     PresetsService presetsService;
-
     @Mock
     TrainerService trainerService;
-
     @Mock
     Prefs prefs;
 
-    Monster monster = new Monster(null, null, "MONSTER_ID", "TRAINER_ID", 1, 0,
-            0, null, null, null);
-
-    MonsterTypeDto monsterTypeDto = new MonsterTypeDto(3, "name", "image", null, null);
-
-    Image expectedImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/de/uniks/beastopia/teaml/assets/bt_icon.png")));
     @Override
     public void start(Stage stage) {
         AppPreparer.prepare(app);

@@ -6,12 +6,17 @@ import com.google.gson.JsonPrimitive;
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.ingame.beast.EditBeastTeamController;
+import de.uniks.beastopia.teaml.controller.ingame.beastlist.BeastDetailController;
+import de.uniks.beastopia.teaml.controller.ingame.beastlist.BeastListController;
 import de.uniks.beastopia.teaml.controller.ingame.encounter.FightWildBeastController;
 import de.uniks.beastopia.teaml.controller.ingame.encounter.JoinFightInfoController;
 import de.uniks.beastopia.teaml.controller.ingame.encounter.StartFightNPCController;
 import de.uniks.beastopia.teaml.controller.ingame.items.InventoryController;
 import de.uniks.beastopia.teaml.controller.ingame.items.ItemDetailController;
 import de.uniks.beastopia.teaml.controller.ingame.items.ShopController;
+import de.uniks.beastopia.teaml.controller.ingame.mondex.MondexDetailController;
+import de.uniks.beastopia.teaml.controller.ingame.mondex.MondexListController;
+import de.uniks.beastopia.teaml.controller.ingame.scoreboard.ScoreboardController;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
 import de.uniks.beastopia.teaml.rest.Achievement;
 import de.uniks.beastopia.teaml.rest.Area;
@@ -84,29 +89,22 @@ public class IngameController extends Controller {
     static final int MENU_SHOP = 4;
     static final int MENU_INVENTORY = 5;
     static final int MENU_DIALOGWINDOW = 3;
+    static final int MENU_MONDEXLIST = 6;
     static final long FLIPPED_HORIZONTALLY_FLAG = 1L << 31;
     static final long FLIPPED_VERTICALLY_FLAG = 1L << 30;
     static final long FLIPPED_DIAGONALLY_FLAG = 1L << 29;
     static final long ROTATED_HEXAGONAL_120_FLAG = 1L << 28;
-
+    final ObjectProperty<PlayerState> state = new SimpleObjectProperty<>();
+    final java.util.Map<EntityController, Parent> otherPlayers = new HashMap<>();
+    private final List<Pair<TileSetDescription, Pair<TileSet, Image>>> tileSets = new ArrayList<>();
+    private final java.util.Map<Pair<Integer, Integer>, List<Pair<Tile, Node>>> MAP_INFO = new HashMap<>();
+    private final List<Controller> subControllers = new ArrayList<>();
+    private final List<Node> renderedTiles = new ArrayList<>();
+    private final List<Node> renderedPlayers = new ArrayList<>();
+    private final List<KeyCode> pressedKeys = new ArrayList<>();
+    private final String[] locationStrings = {"Moncenter", "House", "Store"};
     @FXML
     public Pane tilePane;
-    @FXML
-    private HBox scoreBoardLayout;
-    @FXML
-    private StackPane pauseMenuLayout;
-    @FXML
-    private Button pauseHint;
-    @FXML
-    private Button beastlistHint;
-    @FXML
-    private Button scoreboardHint;
-    @FXML
-    private Button mapHint;
-    @FXML
-    private Button invHint;
-    @FXML
-    private HBox shopLayout;
     @Inject
     App app;
     @Inject
@@ -123,6 +121,10 @@ public class IngameController extends Controller {
     Provider<StartFightNPCController> startFightNPCControllerProvider;
     @Inject
     BeastListController beastListController;
+    @Inject
+    MondexListController mondexListController;
+    @Inject
+    Provider<MondexDetailController> mondexDetailControllerProvider;
     @Inject
     ShopController shopController;
     @Inject
@@ -163,9 +165,40 @@ public class IngameController extends Controller {
     RegionEncountersService regionEncountersService;
     @Inject
     EncounterOpponentsService encounterOpponentsService;
+    @Inject
+    MondexService mondexService;
+    Direction direction;
+    Parent player;
+    Parent beastListParent;
+    Parent beastDetailParent;
+    Parent itemDetailParent;
+    Parent mondexDetailParent;
+    Parent mondexListParent;
+    EntityController playerController;
+    SoundController soundController;
+    Parent scoreBoardParent;
+    Parent pauseMenuParent;
+    Parent dialogWindowParent;
+    Parent shopParent;
+    Parent inventoryParent;
+    @FXML
+    private HBox scoreBoardLayout;
+    @FXML
+    private StackPane pauseMenuLayout;
+    @FXML
+    private Button pauseHint;
+    @FXML
+    private Button beastlistHint;
+    @FXML
+    private Button scoreboardHint;
+    @FXML
+    private Button mapHint;
+    @FXML
+    private Button invHint;
+    @FXML
+    private HBox shopLayout;
     private Region region;
     private Map map;
-    private final List<Pair<TileSetDescription, Pair<TileSet, Image>>> tileSets = new ArrayList<>();
     private int posx = 0;
     private int posy = 0;
     private int lastposx = 0;
@@ -174,31 +207,12 @@ public class IngameController extends Controller {
     private int width;
     private int height;
     private LoadingPage loadingPage;
-    private final List<Controller> subControllers = new ArrayList<>();
     private Monster lastMonster;
     private ItemTypeDto lastItemTypeDto;
     private int currentMenu = MENU_NONE;
-    private final java.util.Map<Pair<Integer, Integer>, Pair<Tile, Node>> MAP_INFO = new HashMap<>();
-    private final List<Node> renderedTiles = new ArrayList<>();
-    private final List<Node> renderedPlayers = new ArrayList<>();
-    Direction direction;
-    final ObjectProperty<PlayerState> state = new SimpleObjectProperty<>();
-    Parent player;
-    Parent beastListParent;
-    Parent beastDetailParent;
-    Parent itemDetailParent;
-    EntityController playerController;
-    SoundController soundController;
-    Parent scoreBoardParent;
-    Parent pauseMenuParent;
-    Parent dialogWindowParent;
-    Parent shopParent;
-    Parent inventoryParent;
-    final java.util.Map<EntityController, Parent> otherPlayers = new HashMap<>();
-    private final List<KeyCode> pressedKeys = new ArrayList<>();
-    private final String[] locationStrings = {"Moncenter", "House", "Store"};
     private long lastValueChangeTime = 0;
     private DialogWindowController dialogWindowController;
+    private MonsterTypeDto lastMondexMonster;
     private Timer timer;
 
     @Inject
@@ -240,6 +254,16 @@ public class IngameController extends Controller {
         beastListController.setOnBeastClicked(this::toggleBeastDetails);
         beastListController.init();
 
+        mondexListController.setOnCloseRequest(() -> {
+            mondexListController.destroy();
+            scoreBoardLayout.getChildren().remove(mondexListParent);
+            scoreBoardLayout.getChildren().remove(mondexDetailParent);
+            lastMondexMonster = null;
+            currentMenu = MENU_NONE;
+        });
+        mondexListController.setOnBeastClicked(this::toggleMondexDetails);
+        mondexListController.init();
+
         pauseController.setOnCloseRequest(() -> {
             pauseMenuLayout.getChildren().remove(pauseMenuParent);
             currentMenu = MENU_NONE;
@@ -266,6 +290,7 @@ public class IngameController extends Controller {
                     myTrainer.name(),
                     myTrainer.image(),
                     myTrainer.team(),
+                    myTrainer.encounteredMonsterTypes(),
                     visited,
                     myTrainer.coins(),
                     trainer.area(),
@@ -314,13 +339,17 @@ public class IngameController extends Controller {
 
         visiblePlayers.forEach(Node::toFront);
 
-        MAP_INFO.keySet().stream()
-                .filter(p -> visiblePlayers.stream().anyMatch(player -> areNeighbours.apply(player, MAP_INFO.get(p).getValue())) &&
-                        MAP_INFO.get(p).getKey().properties().stream().anyMatch(prop -> prop.name().equals("Roof")) &&
-                        MAP_INFO.get(p).getKey().properties().stream().filter(prop -> prop.name().equals("Roof")).findFirst().orElseThrow().value().equals("true"))
-                .map(p -> MAP_INFO.get(p).getValue())
-                .forEach(Node::toFront);
+        for (var list : MAP_INFO.values()) {
+            for (var pair : list) {
+                if (visiblePlayers.stream().anyMatch(p -> areNeighbours.apply(p, pair.getValue())) &&
+                        pair.getKey().properties().stream().anyMatch(prop -> prop.name().equals("Roof")) &&
+                        pair.getKey().properties().stream().filter(prop -> prop.name().equals("Roof")).findFirst().orElseThrow().value().equals("true")) {
+                    pair.getValue().toFront();
+                }
+            }
+        }
     }
+
     /**
      * Sets the region this controller should load into
      *
@@ -648,7 +677,15 @@ public class IngameController extends Controller {
             if (id != 0) {
                 List<Tile> tileInformation = tileSet.getKey().getKey().tiles();
                 Node node = drawTile(id, x, y, tileSet.getKey().getValue(), presetsService.getTileViewPort(tileSet.getValue(), tileSet.getKey().getKey()));
-                tileInformation.stream().filter(t -> t.id() == tileSet.getValue()).findFirst().ifPresent(tile -> MAP_INFO.put(new Pair<>(x, y), new Pair<>(tile, node)));
+                tileInformation.stream().filter(t -> t.id() == tileSet.getValue()).findFirst().ifPresent(tile -> {
+                    if (MAP_INFO.containsKey(new Pair<>(x, y))) {
+                        MAP_INFO.get(new Pair<>(x, y)).add(new Pair<>(tile, node));
+                    } else {
+                        List<Pair<Tile, Node>> list = new ArrayList<>();
+                        list.add(new Pair<>(tile, node));
+                        MAP_INFO.put(new Pair<>(x, y), list);
+                    }
+                });
             }
         }
     }
@@ -693,6 +730,8 @@ public class IngameController extends Controller {
 
         tilePane.getChildren().add(view);
         renderedTiles.add(view);
+        view.toFront();
+
         return view;
     }
 
@@ -825,6 +864,25 @@ public class IngameController extends Controller {
         beastListController.destroy();
     }
 
+    private void toggleMondexDetails(MonsterTypeDto monster) {
+        if (Objects.equals(lastMondexMonster, monster)) {
+            scoreBoardLayout.getChildren().remove(mondexDetailParent);
+            lastMondexMonster = null;
+            return;
+        }
+
+        lastMondexMonster = monster;
+
+        MondexDetailController controller = mondexDetailControllerProvider.get();
+        subControllers.add(controller);
+        controller.setMonster(monster);
+        controller.init();
+
+        scoreBoardLayout.getChildren().remove(mondexDetailParent);
+        mondexDetailParent = controller.render();
+        scoreBoardLayout.getChildren().add(0, mondexDetailParent);
+    }
+
     private void updateTrainerPos(Direction direction) {
         Trainer trainer = cache.getTrainer();
         JsonObject data = new JsonObject();
@@ -837,15 +895,17 @@ public class IngameController extends Controller {
         Pair<Integer, Integer> posXY = new Pair<>(posx, posy);
 
         if (MAP_INFO.containsKey(posXY)) {
-            Tile tile = MAP_INFO.get(posXY).getKey();
-            Optional<TileProperty> jumpableTileProp = tile.properties().stream().filter(tileProperty -> tileProperty.name().equals("Jumpable")).findFirst();
-            if (jumpableTileProp.isPresent()) {
-                int jumpDirection = Integer.parseInt(jumpableTileProp.get().value());
-                if (jumpDirection == direction.ordinal()) {
-                    state.setValue(PlayerState.JUMP);
-                    drawPlayer(posx, posy);
-                    movePlayer(posx, posy);
-                    updateOrigin();
+            for (var pair : MAP_INFO.get(posXY)) {
+                Tile tile = pair.getKey();
+                Optional<TileProperty> jumpableTileProp = tile.properties().stream().filter(tileProperty -> tileProperty.name().equals("Jumpable")).findFirst();
+                if (jumpableTileProp.isPresent()) {
+                    int jumpDirection = Integer.parseInt(jumpableTileProp.get().value());
+                    if (jumpDirection == direction.ordinal()) {
+                        state.setValue(PlayerState.JUMP);
+                        drawPlayer(posx, posy);
+                        movePlayer(posx, posy);
+                        updateOrigin();
+                    }
                 }
             }
         }
@@ -867,6 +927,7 @@ public class IngameController extends Controller {
         handleInventory(keyEvent);
         handleBeastTeam(keyEvent);
         handleTalkToTrainer(keyEvent);
+        handleMondexList(keyEvent);
     }
 
     public void handleTalkToTrainer(KeyEvent keyEvent) {
@@ -1114,6 +1175,12 @@ public class IngameController extends Controller {
     private void handleBeastTeam(KeyEvent keyEvent) {
         if (keyEvent.getCode().equals(KeyCode.X)) {
             app.show(editBeastTeamControllerProvider.get());
+        }
+    }
+
+    private void handleMondexList(KeyEvent keyEvent) {
+        if (keyEvent.getCode().equals(KeyCode.L) && (currentMenu == MENU_NONE || currentMenu == MENU_MONDEXLIST)) {
+            openMondexList();
         }
     }
 
@@ -1486,6 +1553,20 @@ public class IngameController extends Controller {
         }
     }
 
+    public void openMondexList() {
+        if (scoreBoardLayout.getChildren().contains(mondexListParent)) {
+            mondexListController.destroy();
+            scoreBoardLayout.getChildren().remove(mondexListParent);
+            scoreBoardLayout.getChildren().remove(mondexDetailParent);
+            lastMondexMonster = null;
+            currentMenu = MENU_NONE;
+        } else {
+            mondexListParent = mondexListController.render();
+            scoreBoardLayout.getChildren().add(mondexListParent);
+            currentMenu = MENU_MONDEXLIST;
+        }
+    }
+
     public void closePause() {
         for (Node tile : tilePane.getChildren()) {
             if (tile instanceof ImageView imageView) {
@@ -1535,6 +1616,8 @@ public class IngameController extends Controller {
         pauseMenuParent = null;
         dialogWindowParent = null;
         tilePane = null;
+        mondexListParent = null;
+        mondexDetailParent = null;
         super.destroy();
     }
 }

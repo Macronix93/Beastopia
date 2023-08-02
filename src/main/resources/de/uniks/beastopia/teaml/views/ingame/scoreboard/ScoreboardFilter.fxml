@@ -12,7 +12,7 @@
 <?import javafx.scene.text.Text?>
 <VBox minWidth="-Infinity" prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: black;"
       xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="de.uniks.beastopia.teaml.controller.ingame.ScoreboardFilterController">
+      fx:controller="de.uniks.beastopia.teaml.controller.ingame.scoreboard.ScoreboardFilterController">
     <HBox alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="75.0" prefWidth="204.0"
           spacing="5.0">
         <Separator opacity="0.0" prefHeight="0.0" prefWidth="187.0"/>
@@ -27,7 +27,7 @@
         <Button mnemonicParsing="false" onAction="#removeFilter">
             <graphic>
                 <ImageView fitHeight="25.0" fitWidth="23.0" pickOnBounds="true" preserveRatio="true">
-                    <Image url="@../../assets/buttons/filter_reset.png"/>
+                    <Image url="@../../../assets/buttons/filter_reset.png"/>
                 </ImageView>
             </graphic>
         </Button>

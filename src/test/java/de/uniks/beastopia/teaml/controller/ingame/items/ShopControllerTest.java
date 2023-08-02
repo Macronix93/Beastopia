@@ -28,12 +28,15 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class ShopControllerTest extends ApplicationTest {
 
-    @Spy
-    App app;
     @SuppressWarnings("unused")
     @Spy
     final
     ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang", Locale.forLanguageTag("en"));
+    final Runnable onCloseRequest = mock();
+    final Trainer trainer = new Trainer(null, null, "id", "region", "user", "name", "image", List.of("team"), List.of(), List.of("visitedAreas"), 0, "area", 0, 0, 0, new NPCInfo(true, false, false, false, List.of(1), List.of(), null));
+    private final List<ItemTypeDto> itemTypeDtos = List.of(new ItemTypeDto(1, "img", "name", 32, "desc", "use"));
+    @Spy
+    App app;
     @InjectMocks
     ShopController shopController;
     @Mock
@@ -42,9 +45,6 @@ public class ShopControllerTest extends ApplicationTest {
     ItemController mockedItemController;
     @Mock
     PresetsService presetsService;
-    private final List<ItemTypeDto> itemTypeDtos = List.of(new ItemTypeDto(1, "img", "name", 32, "desc", "use"));
-    final Runnable onCloseRequest = mock();
-    Trainer trainer = new Trainer(null, null, "id", "region", "user", "name", "image", List.of("team"), List.of("visitedAreas"), 0, "area", 0, 0, 0, new NPCInfo(true, false, false, false, List.of(1), List.of(), null));
 
     @Override
     public void start(Stage stage) throws Exception {

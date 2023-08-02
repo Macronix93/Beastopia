@@ -49,7 +49,7 @@ class MapControllerTest extends ApplicationTest {
     final TileSetDescription tileSetDescription = new TileSetDescription(0, "SOURCE");
     final Chunk chunk = new Chunk(List.of(0L, 1L, 2L, 3L), 2, 2, 0, 0);
     final Layer tilelayer = new Layer(List.of(chunk), List.of(), null, null, 1, 0, 0, "tilelayer", true, 2, 2, 0, 0);
-    final Trainer trainer = new Trainer(null, null, "1", "A", "1", "A", null, null, List.of(), 0, "1", 0, 0, 0, null);
+    final Trainer trainer = new Trainer(null, null, "1", "A", "1", "A", null, null, List.of(), List.of(), 0, "1", 0, 0, 0, null);
     final List<HashMap<String, Double>> polygon = List.of(new HashMap<>() {{
         put("x", 0.0);
         put("y", 0.0);
