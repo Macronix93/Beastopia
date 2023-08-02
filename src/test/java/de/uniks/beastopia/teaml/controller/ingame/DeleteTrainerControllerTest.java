@@ -45,7 +45,7 @@ class DeleteTrainerControllerTest extends ApplicationTest {
     @Mock
     TrainerService trainerService;
 
-    final Trainer trainer = new Trainer(null, null, "123", "A", "123", "A", "A.png", null, List.of(), 0, null, 0, 0, 0, null);
+final Trainer trainer = new Trainer(null, null, "123", "A", "123", "A", "A.png", null, List.of(), List.of(), 0, null, 0, 0, 0, null);
     final TileSetDescription tileSetDescription = new TileSetDescription(0, "SOURCE");
     final List<HashMap<String, Double>> polygon = List.of(new HashMap<>() {{
         put("x", 0.0);

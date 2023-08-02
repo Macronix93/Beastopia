@@ -51,20 +51,18 @@ public class DialogWindowController extends Controller {
     public DialogWindowController() {
     }
 
-    public DialogWindowController setOnCloseRequested(Runnable onCloseRequested) {
+    public void setOnCloseRequested(Runnable onCloseRequested) {
         if (onCloseRequested == null) {
-            return this;
+            return;
         }
         this.onCloseRequested = onCloseRequested;
-        return this;
     }
 
-    public DialogWindowController setOnButtonClicked(Consumer<Integer> onButtonClicked) {
+    public void setOnButtonClicked(Consumer<Integer> onButtonClicked) {
         if (onButtonClicked == null) {
-            return this;
+            return;
         }
         this.onButtonClicked = onButtonClicked;
-        return this;
     }
 
     public DialogWindowController setChoices(List<String> choices) {

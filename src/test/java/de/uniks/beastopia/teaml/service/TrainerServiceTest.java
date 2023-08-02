@@ -23,8 +23,8 @@ public class TrainerServiceTest {
     @InjectMocks
     TrainerService trainerService;
 
-    final List<Trainer> allTrainer = List.of(new Trainer(null, null, "123", "A", "123", "A", "A", null, List.of(), 0, null, 0, 0, 0, null),
-            new Trainer(null, null, "456", "B", "456", "B", "B", null, List.of(), 1, null, 0, 0, 0, null));
+    final List<Trainer> allTrainer = List.of(new Trainer(null, null, "123", "A", "123", "A", "A", null, List.of(), List.of(), 0, null, 0, 0, 0, null),
+            new Trainer(null, null, "456", "B", "456", "B", "B", null, List.of(), List.of(), 1, null, 0, 0, 0, null));
 
     final List<Monster> monsters = List.of(new Monster(null, null, "ID", "trainer",
             1, 1, 1, null, null, null, null));

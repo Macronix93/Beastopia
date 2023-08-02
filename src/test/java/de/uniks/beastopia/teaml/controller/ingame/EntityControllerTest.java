@@ -41,7 +41,7 @@ class EntityControllerTest extends ApplicationTest {
     App app;
 
     final ObjectProperty<PlayerState> state = new SimpleObjectProperty<>(PlayerState.IDLE);
-    final Trainer trainer = new Trainer(null, null, "ID_TRAINER", "ID_REGION", "ID_USER", "TRAINER_NAME", "TRAINER_IMAGE", null, List.of(), 0, "ID_AREA", 0, 0, 0, new NPCInfo(false, false, false, false, List.of(), List.of(), List.of()));
+    final Trainer trainer = new Trainer(null, null, "ID_TRAINER", "ID_REGION", "ID_USER", "TRAINER_NAME", "TRAINER_IMAGE", null, List.of(), List.of(), 0, "ID_AREA", 0, 0, 0, new NPCInfo(false, false, false, false, List.of(), List.of(), List.of()));
 
     @Override
     public void start(Stage stage) {

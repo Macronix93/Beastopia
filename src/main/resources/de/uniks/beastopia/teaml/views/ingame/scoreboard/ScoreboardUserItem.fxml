@@ -9,7 +9,7 @@
 <HBox alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" onMouseClicked="#toggleAchievements"
       prefHeight="75.0" prefWidth="204.0" spacing="5.0" style="-fx-border-color: black;"
       xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="de.uniks.beastopia.teaml.controller.ingame.ScoreboardUserItemController">
+      fx:controller="de.uniks.beastopia.teaml.controller.ingame.scoreboard.ScoreboardUserItemController">
     <Separator layoutX="186.0" layoutY="49.0" prefWidth="200.0" visible="false"/>
     <!--suppress JavaFxUnresolvedFxIdReference -->
     <ImageView fx:id="avatarImageView" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true"/>

@@ -28,20 +28,20 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class ItemControllerTest extends ApplicationTest {
 
-    @Spy
-    App app;
     @SuppressWarnings("unused")
     @Spy
     final
     ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang", Locale.forLanguageTag("en"));
+    final ItemTypeDto itemTypeDto = new ItemTypeDto(1, "img", "name", 32, "desc", "use");
+    final Image expectedImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/de/uniks/beastopia/teaml/assets/group.png")));
+    @Spy
+    App app;
     @InjectMocks
     ItemController itemController;
     @Mock
     PresetsService presetsService;
     @Mock
     DataCache cache;
-    final ItemTypeDto itemTypeDto = new ItemTypeDto(1, "img", "name", 32, "desc", "use");
-    final Image expectedImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/de/uniks/beastopia/teaml/assets/group.png")));
 
     @Override
     public void start(Stage stage) {
