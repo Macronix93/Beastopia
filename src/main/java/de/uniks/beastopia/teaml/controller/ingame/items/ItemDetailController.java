@@ -142,8 +142,8 @@ public class ItemDetailController extends Controller {
                 }
             }
         }
-        if (!itemType.use().contains("effect") || !onlyInventory) {
-            if (!buy && !onlyInventory) { //sell
+        if (!onlyInventory) {
+            if (!buy) { //sell
                 amount = -1;
             }
             useDetailButton(amount, usage, null);
