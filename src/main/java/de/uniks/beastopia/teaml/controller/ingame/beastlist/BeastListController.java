@@ -7,6 +7,7 @@ import de.uniks.beastopia.teaml.service.TrainerService;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
@@ -25,6 +26,8 @@ public class BeastListController extends Controller {
     public VBox VBoxBeasts;
     @FXML
     public VBox VBoxBeastList;
+    @FXML
+    public Button CloseButtonTestId;
     @Inject
     Provider<BeastController> beastControllerProvider;
     @Inject
@@ -52,6 +55,7 @@ public class BeastListController extends Controller {
         disposables.add(trainerService.getTrainerMonsters(prefs.getRegionID(), cache.getTrainer()._id())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(monsters -> {
+                    this.monsters.clear();
                     this.monsters.addAll(monsters);
                     reload();
                 }));

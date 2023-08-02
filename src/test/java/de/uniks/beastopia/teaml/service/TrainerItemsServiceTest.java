@@ -28,15 +28,15 @@ class TrainerItemsServiceTest {
 
     @Test
     void updateItem() {
-        when(trainerItemsApiService.updateItem(anyString(), anyString(), any()))
+        when(trainerItemsApiService.updateItem(anyString(), anyString(), anyString(), any()))
                 .thenReturn(Observable.just(new Item(null, null, "ID", "trainer", 1, 2)));
         UpdateItemDto updateItemDto = new UpdateItemDto(1, 2, null);
-        Item result = trainerItemsService.updateItem("rId", "tId", updateItemDto).blockingFirst();
+        Item result = trainerItemsService.updateItem("rId", "tId", "trade", updateItemDto).blockingFirst();
         assertEquals("ID", result._id());
         assertEquals("trainer", result.trainer());
         assertEquals(1, result.type());
         assertEquals(2, result.amount());
-        verify(trainerItemsApiService).updateItem("rId", "tId", updateItemDto);
+        verify(trainerItemsApiService).updateItem("rId", "tId", "trade", updateItemDto);
     }
 
     @Test

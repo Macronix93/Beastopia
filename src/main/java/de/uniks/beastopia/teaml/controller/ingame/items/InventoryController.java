@@ -49,7 +49,6 @@ public class InventoryController extends Controller {
     private Consumer<ItemTypeDto> onItemClicked;
     private final List<ItemTypeDto> itemTrainerTypes = new ArrayList<>();
     private List<ItemTypeDto> presetItemTypes = new ArrayList<>();
-    private List<Item> trainerItems = new ArrayList<>();
     private final List<ItemController> subControllers = new ArrayList<>();
 
     @Inject
@@ -66,12 +65,18 @@ public class InventoryController extends Controller {
             CloseButton.setDisable(true);
             CloseButton.setOpacity(0);
         }
-        disposables.add(presetsService.getItems()
-                .observeOn(FX_SCHEDULER)
-                .subscribe(items -> {
-                    presetItemTypes = items;
-                    reload();
-                }));
+        if (cache.getPresetItems().isEmpty()) {
+            disposables.add(presetsService.getItems()
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe(items -> {
+                        cache.setPresetItems(items);
+                        presetItemTypes = items;
+                        reload();
+                    }));
+        } else {
+            presetItemTypes = cache.getPresetItems();
+            reload();
+        }
 
         return parent;
     }
@@ -94,10 +99,10 @@ public class InventoryController extends Controller {
         disposables.add(trainerItemsService.getItems(cache.getJoinedRegion()._id(), cache.getTrainer()._id())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(itemList -> {
-                    trainerItems = itemList;
                     itemTrainerTypes.clear();
+                    cache.setTrainerItems(itemList);
                     for (ItemTypeDto itemType : presetItemTypes) { //filter items
-                        for (Item item : trainerItems) {
+                        for (Item item : cache.getTrainerItems()) {
                             if (itemType.id() == item.type() && item.amount() > 0) {
                                 itemTrainerTypes.add(itemType);
                             }
@@ -118,7 +123,7 @@ public class InventoryController extends Controller {
     }
 
     private Item findItem(ItemTypeDto itemTypeDto) {
-        for (Item item : trainerItems) {
+        for (Item item : cache.getTrainerItems()) {
             if (item.type() == itemTypeDto.id()) {
                 return item;
             }
