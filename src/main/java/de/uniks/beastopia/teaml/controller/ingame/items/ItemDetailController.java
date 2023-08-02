@@ -169,7 +169,7 @@ public class ItemDetailController extends Controller {
                 new UpdateItemDto(amount, itemType.id(), monsterId)).observeOn(FX_SCHEDULER).subscribe(
                 itemUpdated -> {
                     if (monsterId != null) {
-                        Dialog.info(resources.getString("success"), resources.getString("successUseItem"));
+                        ingameController.showItemImage(itemType);
                     }
                 }, error -> {
                     if (monsterId != null) {
@@ -182,8 +182,6 @@ public class ItemDetailController extends Controller {
                 .observeOn(FX_SCHEDULER).subscribe(trainer -> {
                     cache.setTrainer(trainer);
                     inventoryController.updateInventory();
-
-                    System.out.println();
                 }, error -> System.out.println("Error:" + error)
                 ));
         ingameController.toggleInventoryItemDetails(itemType);

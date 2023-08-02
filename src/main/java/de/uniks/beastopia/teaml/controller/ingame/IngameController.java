@@ -46,6 +46,7 @@ import de.uniks.beastopia.teaml.utils.LoadingPage;
 import de.uniks.beastopia.teaml.utils.PlayerState;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import de.uniks.beastopia.teaml.utils.SoundController;
+import javafx.animation.FadeTransition;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
@@ -63,6 +64,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.util.Duration;
 import javafx.util.Pair;
 
 import javax.inject.Inject;
@@ -319,7 +321,6 @@ public class IngameController extends Controller {
                 .map(p -> MAP_INFO.get(p).getValue())
                 .forEach(Node::toFront);
     }
-
     /**
      * Sets the region this controller should load into
      *
@@ -740,6 +741,29 @@ public class IngameController extends Controller {
         player.setTranslateX(posx * TILE_SIZE);
         player.setTranslateY((posy - 1) * TILE_SIZE);
         tilePane.getChildren().add(player);
+    }
+
+    public void showItemImage(ItemTypeDto itemType) {
+        Image image = cache.getItemImages().get(itemType.id());
+        ImageView imageView = new ImageView(image);
+
+        imageView.setTranslateX(posx * TILE_SIZE);
+        imageView.setTranslateY(posy + 1 * TILE_SIZE);
+
+        tilePane.getChildren().add(imageView);
+        imageView.toFront();
+
+        FadeTransition fadeTransition = new FadeTransition(Duration.seconds(3), imageView);
+        fadeTransition.setFromValue(1.0);
+        fadeTransition.setToValue(0.0);
+        fadeTransition.setFromValue(0.0);
+        fadeTransition.setToValue(1.0);
+        fadeTransition.setFromValue(1.0);
+        fadeTransition.setToValue(0.0);
+
+        fadeTransition.setOnFinished(event -> tilePane.getChildren().remove(imageView));
+
+        fadeTransition.play();
     }
 
     private Parent drawRemotePlayer(EntityController controller, int posx, int posy) {
