@@ -57,6 +57,7 @@ public class DataCache {
     private Image mapImage;
     private List<ItemTypeDto> presetItems = new ArrayList<>();
     private List<Item> trainerItems = new ArrayList<>();
+    private List<Item> items = new ArrayList<>();
 
     @Inject
     public DataCache() {
@@ -468,6 +469,7 @@ public class DataCache {
 
     public void setItems(List<Item> i) {
         this.items = i;
+    }
     public List<ItemTypeDto> getPresetItems() {
         return this.presetItems;
     }
@@ -482,9 +484,12 @@ public class DataCache {
 
     public boolean imageIsDownloaded(int id) {
         return monsterImages.containsKey(id);
+    }
+
     public void setTrainerItems(List<Item> itemList) {
         this.trainerItems = itemList;
     }
+
     public List<Item> getTrainerItems() {
         return this.trainerItems;
     }
