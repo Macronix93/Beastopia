@@ -17,8 +17,8 @@ public class TrainerItemsService {
     public TrainerItemsService() {
     }
 
-    public Observable<Item> updateItem(String regionId, String trainerId, UpdateItemDto updateItemDto) {
-        return trainerItemsApiService.updateItem(regionId, trainerId, updateItemDto);
+    public Observable<Item> updateItem(String regionId, String trainerId, String action, UpdateItemDto updateItemDto) {
+        return trainerItemsApiService.updateItem(regionId, trainerId, action, updateItemDto);
     }
 
     public Observable<List<Item>> getItems(String regionId, String trainerId) {

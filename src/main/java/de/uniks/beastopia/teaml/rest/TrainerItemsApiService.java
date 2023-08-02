@@ -1,17 +1,14 @@
 package de.uniks.beastopia.teaml.rest;
 
 import io.reactivex.rxjava3.core.Observable;
-import retrofit2.http.Body;
-import retrofit2.http.GET;
-import retrofit2.http.POST;
-import retrofit2.http.Path;
+import retrofit2.http.*;
 
 import java.util.List;
 
 public interface TrainerItemsApiService {
 
     @POST("regions/{regionId}/trainers/{trainerId}/items")
-    Observable<Item> updateItem(@Path("regionId") String regionId, @Path("trainerId") String trainerId, @Body UpdateItemDto updateItemDto);
+    Observable<Item> updateItem(@Path("regionId") String regionId, @Path("trainerId") String trainerId, @Query("action") String action, @Body UpdateItemDto updateItemDto);
 
     @GET("regions/{regionId}/trainers/{trainerId}/items")
     Observable<List<Item>> getItems(@Path("regionId") String regionId, @Path("trainerId") String trainerId);

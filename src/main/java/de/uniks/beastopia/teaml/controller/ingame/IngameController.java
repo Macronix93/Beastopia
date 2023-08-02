@@ -18,12 +18,33 @@ import de.uniks.beastopia.teaml.controller.ingame.mondex.MondexDetailController;
 import de.uniks.beastopia.teaml.controller.ingame.mondex.MondexListController;
 import de.uniks.beastopia.teaml.controller.ingame.scoreboard.ScoreboardController;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
+import de.uniks.beastopia.teaml.rest.Achievement;
+import de.uniks.beastopia.teaml.rest.Area;
+import de.uniks.beastopia.teaml.rest.Chunk;
+import de.uniks.beastopia.teaml.rest.Encounter;
+import de.uniks.beastopia.teaml.rest.ItemTypeDto;
+import de.uniks.beastopia.teaml.rest.Layer;
 import de.uniks.beastopia.teaml.rest.Map;
-import de.uniks.beastopia.teaml.rest.*;
+import de.uniks.beastopia.teaml.rest.Monster;
+import de.uniks.beastopia.teaml.rest.MonsterTypeDto;
+import de.uniks.beastopia.teaml.rest.MoveTrainerDto;
+import de.uniks.beastopia.teaml.rest.Opponent;
+import de.uniks.beastopia.teaml.rest.Region;
+import de.uniks.beastopia.teaml.rest.Tile;
+import de.uniks.beastopia.teaml.rest.TileProperty;
+import de.uniks.beastopia.teaml.rest.TileSet;
+import de.uniks.beastopia.teaml.rest.TileSetDescription;
+import de.uniks.beastopia.teaml.rest.Trainer;
 import de.uniks.beastopia.teaml.service.*;
 import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.sockets.UDPEventListener;
-import de.uniks.beastopia.teaml.utils.*;
+import de.uniks.beastopia.teaml.utils.Dialog;
+import de.uniks.beastopia.teaml.utils.Direction;
+import de.uniks.beastopia.teaml.utils.LoadingPage;
+import de.uniks.beastopia.teaml.utils.PlayerState;
+import de.uniks.beastopia.teaml.utils.Prefs;
+import de.uniks.beastopia.teaml.utils.SoundController;
+import javafx.animation.FadeTransition;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
@@ -41,6 +62,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.util.Duration;
 import javafx.util.Pair;
 
 import javax.inject.Inject;
@@ -753,6 +775,25 @@ public class IngameController extends Controller {
         tilePane.getChildren().add(player);
     }
 
+    public void showItemImage(ItemTypeDto itemType) {
+        Image image = cache.getItemImages().get(itemType.id());
+        ImageView imageView = new ImageView(image);
+
+        imageView.setTranslateX((posx + 0.33) * TILE_SIZE);
+        imageView.setTranslateY((posy - 1) * TILE_SIZE);
+
+        tilePane.getChildren().add(imageView);
+        imageView.toFront();
+
+        FadeTransition fadeTransition = new FadeTransition(Duration.seconds(3), imageView);
+        fadeTransition.setFromValue(1.0);
+        fadeTransition.setToValue(0.0);
+
+        fadeTransition.setOnFinished(event -> tilePane.getChildren().remove(imageView));
+
+        fadeTransition.play();
+    }
+
     private Parent drawRemotePlayer(EntityController controller, int posx, int posy) {
         Parent parent = controller.render();
         parent.setTranslateX(posx * TILE_SIZE);
@@ -804,6 +845,12 @@ public class IngameController extends Controller {
         scoreBoardLayout.getChildren().remove(beastDetailParent);
         beastDetailParent = controller.render();
         scoreBoardLayout.getChildren().add(0, beastDetailParent);
+    }
+
+    public void chooseBeast(Monster monster, ItemDetailController itemDetailController) {
+        itemDetailController.useDetailButton(1, "use", monster._id());
+        shopLayout.getChildren().remove(beastListParent);
+        beastListController.destroy();
     }
 
     private void toggleMondexDetails(MonsterTypeDto monster) {
@@ -1085,7 +1132,7 @@ public class IngameController extends Controller {
 
     public void handleBeastList(KeyEvent keyEvent) {
         if (keyEvent.getCode().equals(KeyCode.B) && (currentMenu == MENU_NONE || currentMenu == MENU_BEASTLIST)) {
-            openBeastlist();
+            openBeastlist("scoreboardLayout", null);
         }
     }
 
@@ -1263,7 +1310,7 @@ public class IngameController extends Controller {
 
     @FXML
     public void clickOnBeastListButton() {
-        openBeastlist();
+        openBeastlist("scoreBoardLayout", null);
     }
 
     @FXML
@@ -1281,14 +1328,29 @@ public class IngameController extends Controller {
         openInventory(false);
     }
 
-    public void openBeastlist() {
-        if (scoreBoardLayout.getChildren().contains(beastListParent)) {
-            scoreBoardLayout.getChildren().remove(beastListParent);
-            scoreBoardLayout.getChildren().remove(beastDetailParent);
+    public void openBeastlist(String layout, ItemDetailController itemDetailController) {
+        HBox hbox = scoreBoardLayout;
+        if (layout.equals("shop")) {
+            setOpacities(0);
+            hbox = shopLayout;
+        }
+        if (hbox.getChildren().contains(beastListParent)) {
+            hbox.getChildren().remove(beastListParent);
+            hbox.getChildren().remove(beastDetailParent);
+            beastListController.destroy();
             lastMonster = null;
             currentMenu = MENU_NONE;
         } else {
-            scoreBoardLayout.getChildren().add(beastListParent);
+            if (layout.equals("shop")) {
+                beastListController.init();
+                beastListController.setOnBeastClicked(monster -> chooseBeast(monster, itemDetailController));
+            }
+            beastListParent = beastListController.render();
+            if (hbox == shopLayout) {
+                beastListController.CloseButtonTestId.setDisable(true);
+                beastListController.CloseButtonTestId.setVisible(false);
+            }
+            hbox.getChildren().add(beastListParent);
             currentMenu = MENU_BEASTLIST;
         }
     }
@@ -1334,6 +1396,7 @@ public class IngameController extends Controller {
                     setCloseRequests(scoreBoardLayout, inventoryParent);
                     lastMonster = null;
                     setCloseRequests(scoreBoardLayout, itemDetailParent);
+                    setCloseRequests(shopLayout, beastListParent);
                 });
                 inventoryParent = inventoryController.render();
                 scoreBoardLayout.getChildren().add(inventoryParent);

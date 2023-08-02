@@ -8,7 +8,6 @@ import de.uniks.beastopia.teaml.service.PresetsService;
 import de.uniks.beastopia.teaml.service.TrainerItemsService;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.application.Platform;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,7 +17,6 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
 
-import javax.inject.Provider;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -45,10 +43,6 @@ public class InventoryControllerTest extends ApplicationTest {
     @InjectMocks
     InventoryController inventoryController;
     @Mock
-    Provider<ItemController> itemControllerProvider;
-    @Mock
-    ItemController itemController;
-    @Mock
     DataCache cache;
     @Mock
     PresetsService presetsService;
@@ -62,12 +56,6 @@ public class InventoryControllerTest extends ApplicationTest {
         when(cache.getTrainer()).thenReturn(trainer);
         when(cache.getJoinedRegion()).thenReturn(region);
         when(trainerItemsService.getItems(anyString(), anyString())).thenReturn(Observable.just(items));
-        when(itemController.setItem(any())).thenReturn(itemController);
-        when(itemControllerProvider.get()).thenReturn(itemController);
-        when(itemController.setItem(any())).thenReturn(itemController);
-        doNothing().when(itemController).setOnItemClicked(any());
-        doNothing().when(itemController).init();
-        when(itemController.render()).thenReturn(new VBox());
         inventoryController.setIfShop(false);
         inventoryController.setOnCloseRequest(onCloseRequest);
         app.start(stage);

@@ -5,8 +5,7 @@ import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.rest.ItemTypeDto;
 import de.uniks.beastopia.teaml.rest.NPCInfo;
 import de.uniks.beastopia.teaml.rest.Trainer;
-import de.uniks.beastopia.teaml.service.PresetsService;
-import io.reactivex.rxjava3.core.Observable;
+import de.uniks.beastopia.teaml.service.DataCache;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
@@ -44,15 +43,15 @@ public class ShopControllerTest extends ApplicationTest {
     @Mock
     ItemController mockedItemController;
     @Mock
-    PresetsService presetsService;
+    DataCache cache;
 
     @Override
     public void start(Stage stage) {
         AppPreparer.prepare(app);
         shopController.setTrainer(trainer);
-        when(presetsService.getItems()).thenReturn(Observable.just(itemTypeDtos));
         when(itemControllerProvider.get()).thenReturn(mockedItemController);
         when(mockedItemController.setItem(any())).thenReturn(mockedItemController);
+        when(cache.getPresetItems()).thenReturn(itemTypeDtos);
         doNothing().when(mockedItemController).setOnItemClicked(any());
         doNothing().when(mockedItemController).init();
         when(mockedItemController.render()).thenReturn(new VBox());
