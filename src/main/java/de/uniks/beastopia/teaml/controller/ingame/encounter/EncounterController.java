@@ -916,10 +916,11 @@ public class EncounterController extends Controller {
         } else {
             if (renderBeastController1.getOpponentIdMonsterOne() != null && renderBeastController1.getOpponentIdMonsterOne().equals(opponentId) && beastInfoController1.getMonster().trainer().equals(cache.getTrainer()._id())) {
                 setNumberOfAttacks(beastInfoController1.getMonster());
+                chosenTarget = opponentId;
             } else if (renderBeastController1.getOpponentIdMonsterTwo() != null && renderBeastController1.getOpponentIdMonsterTwo().equals(opponentId) && beastInfoController2.getMonster().trainer().equals(cache.getTrainer()._id())) {
                 setNumberOfAttacks(beastInfoController2.getMonster());
+                chosenTarget = opponentId;
             }
-            chosenTarget = opponentId;
         }
     }
 
