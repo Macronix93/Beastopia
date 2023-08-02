@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ProgressBar?>
@@ -27,6 +28,9 @@
         <Label fx:id="beastLabel" text="Label" />
         <HBox fx:id="buttonBox" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0"
               GridPane.rowIndex="1">
+            <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                <Image url="@../../../assets/icons8-star-48.png"/>
+            </ImageView>
             <ProgressBar fx:id="expProgress" prefHeight="20.0" prefWidth="68.0" progress="0.0" styleClass="expBar"/>
             <Button fx:id="upButton" maxHeight="20.0" maxWidth="20.0" minHeight="20.0" minWidth="20.0"
                     mnemonicParsing="false" prefHeight="20.0" prefWidth="20.0">
@@ -44,6 +48,9 @@
                     </ImageView>
                 </graphic>
             </Button>
+            <GridPane.margin>
+                <Insets right="5.0"/>
+            </GridPane.margin>
         </HBox>
     </GridPane>
 </GridPane>
