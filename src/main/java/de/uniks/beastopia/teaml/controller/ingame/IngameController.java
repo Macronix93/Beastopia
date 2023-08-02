@@ -39,6 +39,7 @@ import de.uniks.beastopia.teaml.service.AchievementsService;
 import de.uniks.beastopia.teaml.service.AreaService;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.EncounterOpponentsService;
+import de.uniks.beastopia.teaml.service.MondexService;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import de.uniks.beastopia.teaml.service.RegionEncountersService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
