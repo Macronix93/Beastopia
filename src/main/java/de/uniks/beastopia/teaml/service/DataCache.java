@@ -2,6 +2,7 @@ package de.uniks.beastopia.teaml.service;
 
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.Main;
+import de.uniks.beastopia.teaml.rest.AbilityDto;
 import de.uniks.beastopia.teaml.rest.Achievement;
 import de.uniks.beastopia.teaml.rest.Area;
 import de.uniks.beastopia.teaml.rest.Encounter;
@@ -62,6 +63,7 @@ public class DataCache {
     private List<MonsterTypeDto> allBeasts = new ArrayList<>();
     private List<Opponent> currentOpponents = new ArrayList<>();
     private final Map<Integer, Image> itemImages = new HashMap<>();
+    private final Map<Integer, AbilityDto> abilities = new HashMap<>();
     Encounter currentEncounter;
     @Inject
     PresetsService presetsService;
@@ -495,5 +497,9 @@ public class DataCache {
 
     public List<Item> getItems() {
         return this.items;
+    }
+
+    public Map<Integer, AbilityDto> getAbilities() {
+        return abilities;
     }
 }

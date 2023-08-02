@@ -582,13 +582,13 @@ public class EncounterController extends Controller {
         keys.forEach(key -> stack.push(Integer.parseInt(key)));
         switch (size) {
             case 4:
-                setAttack4(presetsService.getAbility(stack.pop()).blockingFirst());
+                setAttack4(cache.getAbilities().computeIfAbsent(stack.pop(), id -> presetsService.getAbility(id).blockingFirst()));
             case 3:
-                setAttack3(presetsService.getAbility(stack.pop()).blockingFirst());
+                setAttack3(cache.getAbilities().computeIfAbsent(stack.pop(), id -> presetsService.getAbility(id).blockingFirst()));
             case 2:
-                setAttack2(presetsService.getAbility(stack.pop()).blockingFirst());
+                setAttack2(cache.getAbilities().computeIfAbsent(stack.pop(), id -> presetsService.getAbility(id).blockingFirst()));
             case 1:
-                setAttack1(presetsService.getAbility(stack.pop()).blockingFirst());
+                setAttack1(cache.getAbilities().computeIfAbsent(stack.pop(), id -> presetsService.getAbility(id).blockingFirst()));
         }
     }
 
