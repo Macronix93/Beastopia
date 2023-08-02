@@ -133,12 +133,8 @@ public class ChangeBeastController extends Controller {
         } else {
             disposables.add(encounterOpponentsService.getTrainerOpponents(cache.getJoinedRegion()._id(), cache.getTrainer()._id())
                     .subscribe(opponents -> {
-                        //String opponentId = cache.getOpponentByTrainerID(cache.getTrainer()._id())._id();
-
                         // Switch monster without expending a move. Otherwise, make a move
                         for (Opponent opponent : opponents) {
-                            //String monsterId = (opponent.monster() == null) ? fightingMonsters.get(0)._id() : null;
-
                             if (opponent._id().equals(opponentId)) {
                                 if (opponent.monster() == null) {
                                     disposables.add(encounterOpponentsService.updateEncounterOpponent(
@@ -151,7 +147,7 @@ public class ChangeBeastController extends Controller {
                                             .subscribe(update -> {
                                                 cache.updateCurrentOpponents(update);
                                                 setChangedMonster();
-                                                encounterController.setToUpdateUIOnChange();
+                                                //encounterController.setToUpdateUIOnChange();
                                                 app.show(encounterController);
                                             }));
                                 } else {

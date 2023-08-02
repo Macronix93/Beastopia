@@ -89,6 +89,7 @@ public class BeastInfoController extends Controller {
     public void setLifeBarValue(double value, boolean killTimer) {
         if (killTimer) {
             timer.cancel();
+            setXpBarValue(monster.experience() / (double) calcMaxXp(), false);
         }
         lifeBarValue.setMinWidth(lifeBar.getWidth() * value);
         lifeBarValue.setMaxWidth(lifeBar.getWidth() * value);
