@@ -786,6 +786,39 @@ public class EncounterController extends Controller {
                     break;
                 }
             }
+
+            if (isOneVersusTwo) {
+                // Also check if my ally still has monsters
+                if (foundMonsterWithHP) {
+                    foundMonsterWithHP = false;
+                    for (Monster monster : allyMonsters) {
+                        if (!monster._id().equals(allyMonster._id()) && allyTrainer.team().contains(monster._id()) && monster.currentAttributes().health() > 0) {
+                            foundMonsterWithHP = true;
+                            break;
+                        }
+                    }
+                    if (!foundMonsterWithHP) {
+                        EndScreenController endScreenController;
+                        endScreenController = setEndScreen(false, myMonster, allyMonster, enemyMonster, enemyAllyMonster);
+                        app.show(endScreenController);
+                    }
+                }
+            } else {
+                // We lost = show lose screen
+                if (!foundMonsterWithHP) {
+                    EndScreenController endScreenController;
+                    endScreenController = setEndScreen(false, myMonster, allyMonster, enemyMonster, enemyAllyMonster);
+                    app.show(endScreenController);
+                } else {
+                    showChangeBeast();
+                }
+            }
+            /*for (Monster monster : ownMonsters) {
+                if (!monster._id().equals(myMonster._id()) && cache.getTrainer().team().contains(monster._id()) && monster.currentAttributes().health() > 0) {
+                    foundMonsterWithHP = true;
+                    break;
+                }
+            }
             // We lost = show lose screen
             if (!foundMonsterWithHP) {
                 EndScreenController endScreenController;
@@ -793,7 +826,7 @@ public class EncounterController extends Controller {
                 app.show(endScreenController);
             } else {
                 showChangeBeast();
-            }
+            }*/
         }
     }
 
