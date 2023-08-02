@@ -49,7 +49,7 @@ class DataCacheTest {
                 new Area(null, null, "AREA1", "REGION", "AREA1", new Position(0, 0), null),
                 new Area(null, null, "AREA2", "REGION", "AREA2", null, null)
         );
-        Trainer trainer = new Trainer(null, null, "ID", "REGION", "USER", "NAME", "IMAGE", List.of(), areas, 0, "AREA", 0, 0, 0, null);
+        Trainer trainer = new Trainer(null, null, "ID", "REGION", "USER", "NAME", "IMAGE", List.of(), List.of(), areas, 0, "AREA", 0, 0, 0, null);
 
         dataCache.setTrainer(trainer);
         dataCache.setAreas(areaList);
@@ -81,8 +81,8 @@ class DataCacheTest {
     @Test
     public void charactersImages() {
         List<Trainer> trainers = List.of(
-                new Trainer(null, null, "ID1", "REGION", "USER", "NAME1", "IMAGE1", List.of(), List.of(), 0, "AREA", 0, 0, 0, null),
-                new Trainer(null, null, "ID2", "REGION", "USER", "NAME2", "IMAGE2", List.of(), List.of(), 0, "AREA", 0, 0, 0, null)
+                new Trainer(null, null, "ID1", "REGION", "USER", "NAME1", "IMAGE1", List.of(), List.of(), List.of(), 0, "AREA", 0, 0, 0, null),
+                new Trainer(null, null, "ID2", "REGION", "USER", "NAME2", "IMAGE2", List.of(), List.of(), List.of(), 0, "AREA", 0, 0, 0, null)
         );
 
         List<Image> images = List.of(

@@ -2,17 +2,7 @@ package de.uniks.beastopia.teaml.service;
 
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.Main;
-import de.uniks.beastopia.teaml.rest.AbilityDto;
-import de.uniks.beastopia.teaml.rest.Achievement;
-import de.uniks.beastopia.teaml.rest.Area;
-import de.uniks.beastopia.teaml.rest.Encounter;
-import de.uniks.beastopia.teaml.rest.Item;
-import de.uniks.beastopia.teaml.rest.MonsterTypeDto;
-import de.uniks.beastopia.teaml.rest.Opponent;
-import de.uniks.beastopia.teaml.rest.Region;
-import de.uniks.beastopia.teaml.rest.TileSet;
-import de.uniks.beastopia.teaml.rest.Trainer;
-import de.uniks.beastopia.teaml.rest.User;
+import de.uniks.beastopia.teaml.rest.*;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Scheduler;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -33,12 +23,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import static de.uniks.beastopia.teaml.service.PresetsService.PREVIEW_SCALING;
 
@@ -47,17 +34,15 @@ public class DataCache {
 
     private static final ImageView IMAGE_VIEW = new ImageView();
     private static final Scheduler FX_SCHEDULER = io.reactivex.rxjava3.schedulers.Schedulers.from(Platform::runLater);
-
-    private List<User> users = new ArrayList<>();
-    private List<Area> areas = new ArrayList<>();
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     private final List<Trainer> trainers = new ArrayList<>();
     private final List<Pair<String, Image>> characters = new ArrayList<>();
     private final List<Pair<String, Image>> charactersResized = new ArrayList<>();
     private final List<Pair<String, Observable<Image>>> charactersAiring = new ArrayList<>();
-    private List<Achievement> myAchievements = new ArrayList<>();
     private final Map<String, String> achievementDescriptions = new HashMap<>();
     private final List<String> visitedAreas = new ArrayList<>();
+    private final Map<Integer, Image> itemImages = new HashMap<>();
+    private final Map<Integer, Image> monsterImages = new HashMap<>();
     Trainer trainer;
     Region joinedRegion;
     private List<MonsterTypeDto> allBeasts = new ArrayList<>();
@@ -67,6 +52,11 @@ public class DataCache {
     Encounter currentEncounter;
     @Inject
     PresetsService presetsService;
+    private List<User> users = new ArrayList<>();
+    private List<Area> areas = new ArrayList<>();
+    private List<Achievement> myAchievements = new ArrayList<>();
+    private List<MonsterTypeDto> allBeasts = new ArrayList<>();
+    private List<Opponent> currentOpponents = new ArrayList<>();
     private TileSet mapTileset;
     private Image mapImage;
     private List<Item> items;
@@ -75,18 +65,25 @@ public class DataCache {
     public DataCache() {
     }
 
+    @SuppressWarnings("SameParameterValue")
+    private static Image loadImage(String imageUrl, double width, double height, boolean preserveRatio, boolean smooth) {
+        return new Image(imageUrl, width, height, preserveRatio, smooth);
+    }
+
+    private static Image scaleImage(Image input, @SuppressWarnings("SameParameterValue") int width, @SuppressWarnings("SameParameterValue") int height) {
+        IMAGE_VIEW.setImage(input);
+        IMAGE_VIEW.setPreserveRatio(true);
+        IMAGE_VIEW.setFitWidth(width);
+        IMAGE_VIEW.setFitHeight(height);
+        SnapshotParameters parameters = new SnapshotParameters();
+        parameters.setFill(Paint.valueOf("transparent"));
+        IMAGE_VIEW.setCache(false);
+        return IMAGE_VIEW.snapshot(parameters, null);
+    }
+
     @SuppressWarnings("unused")
     public void addUser(User user) {
         users.add(user);
-    }
-
-    /**
-     * Sets the list of all users the server is aware of
-     *
-     * @param users The list of all users
-     */
-    public void setAllUsers(List<User> users) {
-        this.users = new ArrayList<>(users);
     }
 
     /**
@@ -142,6 +139,15 @@ public class DataCache {
         return users;
     }
 
+    /**
+     * Sets the list of all users the server is aware of
+     *
+     * @param users The list of all users
+     */
+    public void setAllUsers(List<User> users) {
+        this.users = new ArrayList<>(users);
+    }
+
     public User getUser(String id) {
         return users.stream()
                 .filter(user -> user._id().equals(id))
@@ -157,12 +163,12 @@ public class DataCache {
         return joinedRegion;
     }
 
-    public void setAreas(List<Area> areas) {
-        this.areas = new ArrayList<>(areas);
-    }
-
     public List<Area> getAreas() {
         return this.areas;
+    }
+
+    public void setAreas(List<Area> areas) {
+        this.areas = new ArrayList<>(areas);
     }
 
     public Area getArea(String id) {
@@ -172,24 +178,12 @@ public class DataCache {
                 .orElse(null);
     }
 
-    public void setTrainer(Trainer trainer) {
-        this.trainer = trainer;
-    }
-
     public Trainer getTrainer() {
         return trainer;
     }
 
-    public void setCharacters(List<String> characters) {
-        synchronized (this.characters) {
-            for (String character : characters) {
-                if (this.characters.stream().anyMatch(pair -> pair.getKey().equals(character)))
-                    continue;
-                this.characters.add(new Pair<>(character, null));
-            }
-
-            this.characters.removeIf(pair -> characters.stream().noneMatch(character -> character.equals(pair.getKey())));
-        }
+    public void setTrainer(Trainer trainer) {
+        this.trainer = trainer;
     }
 
     public void setCharacterImage(String name, Image image) {
@@ -208,11 +202,6 @@ public class DataCache {
         }
     }
 
-    public void setTrainers(List<Trainer> trainers) {
-        this.trainers.clear();
-        this.trainers.addAll(trainers);
-    }
-
     public Observable<Image> getOrLoadTrainerImage(String trainer, boolean useConstantValues) {
         synchronized (characters) {
             if (characters.stream().anyMatch(pair -> pair.getKey().equals(trainer) && pair.getValue() != null)) {
@@ -229,6 +218,11 @@ public class DataCache {
         return trainers;
     }
 
+    public void setTrainers(List<Trainer> trainers) {
+        this.trainers.clear();
+        this.trainers.addAll(trainers);
+    }
+
     public Trainer getTrainer(String id) {
         return trainers.stream()
                 .filter(trainer -> trainer._id().equals(id))
@@ -239,6 +233,18 @@ public class DataCache {
     public List<Pair<String, Image>> getCharacters() {
         synchronized (characters) {
             return new ArrayList<>(characters);
+        }
+    }
+
+    public void setCharacters(List<String> characters) {
+        synchronized (this.characters) {
+            for (String character : characters) {
+                if (this.characters.stream().anyMatch(pair -> pair.getKey().equals(character)))
+                    continue;
+                this.characters.add(new Pair<>(character, null));
+            }
+
+            this.characters.removeIf(pair -> characters.stream().noneMatch(character -> character.equals(pair.getKey())));
         }
     }
 
@@ -264,11 +270,6 @@ public class DataCache {
                     40.0, 40.0, false, false);
         }
         return imageAvatar;
-    }
-
-    @SuppressWarnings("SameParameterValue")
-    private static Image loadImage(String imageUrl, double width, double height, boolean preserveRatio, boolean smooth) {
-        return new Image(imageUrl, width, height, preserveRatio, smooth);
     }
 
     public String getAvatarDataUrl(BufferedImage bufferedImage) {
@@ -324,12 +325,12 @@ public class DataCache {
         this.myAchievements.add(achievement);
     }
 
-    public void setMyAchievements(List<Achievement> achievements) {
-        this.myAchievements = new ArrayList<>(achievements);
-    }
-
     public List<Achievement> getMyAchievements() {
         return this.myAchievements;
+    }
+
+    public void setMyAchievements(List<Achievement> achievements) {
+        this.myAchievements = new ArrayList<>(achievements);
     }
 
     public void addAchievementDescription(String achievementId, String achievementDescription) {
@@ -348,12 +349,12 @@ public class DataCache {
         return this.visitedAreas;
     }
 
-    public void setCurrentOpponents(List<Opponent> opponents) {
-        this.currentOpponents = new ArrayList<>(opponents);
-    }
-
     public List<Opponent> getCurrentOpponents() {
         return this.currentOpponents;
+    }
+
+    public void setCurrentOpponents(List<Opponent> opponents) {
+        this.currentOpponents = new ArrayList<>(opponents);
     }
 
     public void updateCurrentOpponents(Opponent opponentUpdate) {
@@ -386,12 +387,12 @@ public class DataCache {
                 .orElse(null);
     }
 
-    public void setCurrentEncounter(Encounter encounter) {
-        this.currentEncounter = encounter;
-    }
-
     public Encounter getCurrentEncounter() {
         return this.currentEncounter;
+    }
+
+    public void setCurrentEncounter(Encounter encounter) {
+        this.currentEncounter = encounter;
     }
 
     public Map<Integer, Image> getItemImages() {
@@ -464,23 +465,8 @@ public class DataCache {
         }
     }
 
-    private static Image scaleImage(Image input, @SuppressWarnings("SameParameterValue") int width, @SuppressWarnings("SameParameterValue") int height) {
-        IMAGE_VIEW.setImage(input);
-        IMAGE_VIEW.setPreserveRatio(true);
-        IMAGE_VIEW.setFitWidth(width);
-        IMAGE_VIEW.setFitHeight(height);
-        SnapshotParameters parameters = new SnapshotParameters();
-        parameters.setFill(Paint.valueOf("transparent"));
-        IMAGE_VIEW.setCache(false);
-        return IMAGE_VIEW.snapshot(parameters, null);
-    }
-
     public void setTileset(TileSet tileSet) {
         this.mapTileset = tileSet;
-    }
-
-    public void setMapImage(Image image) {
-        this.mapImage = image;
     }
 
     public TileSet getMapTileset() {
@@ -491,12 +477,28 @@ public class DataCache {
         return this.mapImage;
     }
 
-    public void setItems(List<Item> i) {
-        this.items = i;
+    public void setMapImage(Image image) {
+        this.mapImage = image;
     }
 
     public List<Item> getItems() {
         return this.items;
+    }
+
+    public void setItems(List<Item> i) {
+        this.items = i;
+    }
+
+    public void addMonsterImages(int monsterId, Image image) {
+        monsterImages.put(monsterId, image);
+    }
+
+    public Image getMonsterImage(int id) {
+        return monsterImages.get(id);
+    }
+
+    public boolean imageIsDownloaded(int id) {
+        return monsterImages.containsKey(id);
     }
 
     public Map<Integer, AbilityDto> getAbilities() {

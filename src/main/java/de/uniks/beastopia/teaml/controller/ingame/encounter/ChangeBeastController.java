@@ -20,6 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ChangeBeastController extends Controller {
+    private final List<Monster> fightingMonsters = new ArrayList<>();
+    private final List<Monster> bankMonsters = new ArrayList<>();
+    private final List<ChangeBeastElementController> subControllers = new ArrayList<>();
     @FXML
     public GridPane yourBeastsPane;
     @FXML
@@ -28,7 +31,6 @@ public class ChangeBeastController extends Controller {
     public VBox currentBeasts;
     @FXML
     public VBox beastTeam;
-
     @Inject
     EncounterOpponentsService encounterOpponentsService;
     @Inject
@@ -37,10 +39,6 @@ public class ChangeBeastController extends Controller {
     DataCache cache;
     @Inject
     Provider<ChangeBeastElementController> changeBeastElementControllerProvider;
-
-    private final List<Monster> fightingMonsters = new ArrayList<>();
-    private final List<Monster> bankMonsters = new ArrayList<>();
-    private final List<ChangeBeastElementController> subControllers = new ArrayList<>();
     private Monster monsterToSwap;
     private Monster allyMonster;
     private String opponentId;
@@ -69,11 +67,6 @@ public class ChangeBeastController extends Controller {
     }
 
     @Override
-    public void init() {
-        super.init();
-    }
-
-    @Override
     public String getTitle() {
         return resources.getString("titleChangeBeasts");
     }
@@ -81,8 +74,6 @@ public class ChangeBeastController extends Controller {
     @Override
     public Parent render() {
         loadingPage = LoadingPage.makeLoadingPage(super.render());
-
-        System.out.println(opponentId);
 
         disposables.add(trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), cache.getTrainer()._id())
                 .observeOn(FX_SCHEDULER)
