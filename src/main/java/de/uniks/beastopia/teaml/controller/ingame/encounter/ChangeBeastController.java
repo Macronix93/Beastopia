@@ -87,8 +87,6 @@ public class ChangeBeastController extends Controller {
                             subControllers.add(controller);
 
                             if (teamMonster._id().equals(monsterToSwap._id())) {
-                                //monsterToSwap = teamMonster;
-
                                 fightingMonsters.add(teamMonster);
                                 currentBeasts.getChildren().add(controller.render());
                             } else {
@@ -138,7 +136,6 @@ public class ChangeBeastController extends Controller {
                                             .subscribe(update -> {
                                                 cache.updateCurrentOpponents(update);
                                                 setChangedMonster();
-                                                //encounterController.setToUpdateUIOnChange();
                                                 app.show(encounterController);
                                             }));
                                 } else {
