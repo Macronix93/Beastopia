@@ -18,32 +18,12 @@ import de.uniks.beastopia.teaml.controller.ingame.mondex.MondexDetailController;
 import de.uniks.beastopia.teaml.controller.ingame.mondex.MondexListController;
 import de.uniks.beastopia.teaml.controller.ingame.scoreboard.ScoreboardController;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
-import de.uniks.beastopia.teaml.rest.Achievement;
-import de.uniks.beastopia.teaml.rest.Area;
-import de.uniks.beastopia.teaml.rest.Chunk;
-import de.uniks.beastopia.teaml.rest.Encounter;
-import de.uniks.beastopia.teaml.rest.ItemTypeDto;
-import de.uniks.beastopia.teaml.rest.Layer;
 import de.uniks.beastopia.teaml.rest.Map;
-import de.uniks.beastopia.teaml.rest.Monster;
-import de.uniks.beastopia.teaml.rest.MonsterTypeDto;
-import de.uniks.beastopia.teaml.rest.MoveTrainerDto;
-import de.uniks.beastopia.teaml.rest.Opponent;
-import de.uniks.beastopia.teaml.rest.Region;
-import de.uniks.beastopia.teaml.rest.Tile;
-import de.uniks.beastopia.teaml.rest.TileProperty;
-import de.uniks.beastopia.teaml.rest.TileSet;
-import de.uniks.beastopia.teaml.rest.TileSetDescription;
-import de.uniks.beastopia.teaml.rest.Trainer;
+import de.uniks.beastopia.teaml.rest.*;
 import de.uniks.beastopia.teaml.service.*;
 import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.sockets.UDPEventListener;
-import de.uniks.beastopia.teaml.utils.Dialog;
-import de.uniks.beastopia.teaml.utils.Direction;
-import de.uniks.beastopia.teaml.utils.LoadingPage;
-import de.uniks.beastopia.teaml.utils.PlayerState;
-import de.uniks.beastopia.teaml.utils.Prefs;
-import de.uniks.beastopia.teaml.utils.SoundController;
+import de.uniks.beastopia.teaml.utils.*;
 import javafx.animation.FadeTransition;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -96,28 +76,11 @@ public class IngameController extends Controller {
     private final List<Pair<TileSetDescription, Pair<TileSet, Image>>> tileSets = new ArrayList<>();
     private final java.util.Map<Pair<Integer, Integer>, List<Pair<Tile, Node>>> MAP_INFO = new HashMap<>();
     private final List<Controller> subControllers = new ArrayList<>();
-    private final List<Node> renderedTiles = new ArrayList<>();
     private final List<Node> renderedPlayers = new ArrayList<>();
     private final List<KeyCode> pressedKeys = new ArrayList<>();
     private final String[] locationStrings = {"Moncenter", "House", "Store"};
     @FXML
     public Pane tilePane;
-    @FXML
-    private HBox scoreBoardLayout;
-    @FXML
-    private StackPane pauseMenuLayout;
-    @FXML
-    private Button pauseHint;
-    @FXML
-    private Button beastlistHint;
-    @FXML
-    private Button scoreboardHint;
-    @FXML
-    private Button mapHint;
-    @FXML
-    private Button invHint;
-    @FXML
-    private HBox shopLayout;
     @FXML
     private AnchorPane overlay;
     @Inject
@@ -182,8 +145,6 @@ public class IngameController extends Controller {
     RegionEncountersService regionEncountersService;
     @Inject
     EncounterOpponentsService encounterOpponentsService;
-    @Inject
-    MondexService mondexService;
     Direction direction;
     Parent player;
     Parent beastListParent;
@@ -221,7 +182,6 @@ public class IngameController extends Controller {
     private boolean autoMove = false;
     private Position autoMoveNextPosition;
     private Position autoMoveTargetPosition;
-    private final List<Pair<TileSetDescription, Pair<TileSet, Image>>> tileSets = new ArrayList<>();
     private int posx = 0;
     private int posy = 0;
     private int lastposx = 0;
@@ -233,25 +193,7 @@ public class IngameController extends Controller {
     private Monster lastMonster;
     private ItemTypeDto lastItemTypeDto;
     private int currentMenu = MENU_NONE;
-    private final java.util.Map<Pair<Integer, Integer>, List<Pair<Tile, Node>>> MAP_INFO = new HashMap<>();
-    private final List<Node> renderedPlayers = new ArrayList<>();
     private Pane indicator;
-    Direction direction;
-    final ObjectProperty<PlayerState> state = new SimpleObjectProperty<>();
-    Parent player;
-    Parent beastListParent;
-    Parent beastDetailParent;
-    Parent itemDetailParent;
-    EntityController playerController;
-    SoundController soundController;
-    Parent scoreBoardParent;
-    Parent pauseMenuParent;
-    Parent dialogWindowParent;
-    Parent shopParent;
-    Parent inventoryParent;
-    final java.util.Map<EntityController, Parent> otherPlayers = new HashMap<>();
-    private final List<KeyCode> pressedKeys = new ArrayList<>();
-    private final String[] locationStrings = {"Moncenter", "House", "Store"};
     private long lastValueChangeTime = 0;
     private DialogWindowController dialogWindowController;
     private MonsterTypeDto lastMondexMonster;
@@ -318,31 +260,7 @@ public class IngameController extends Controller {
         playerController = entityControllerProvider.get();
         playerController.playerState().bind(state);
         playerController.setOnTrainerUpdate(trainer -> {
-            Trainer myTrainer = cache.getTrainer();
-            List<String> visited = new ArrayList<>(myTrainer.visitedAreas());
-
-            if (!visited.contains(trainer.area())) {
-                visited.add(trainer.area());
-            }
-
-            Trainer updatedTrainer = new Trainer(
-                    myTrainer.createdAt(),
-                    myTrainer.updatedAt(),
-                    myTrainer._id(),
-                    myTrainer.region(),
-                    myTrainer.user(),
-                    myTrainer.name(),
-                    myTrainer.image(),
-                    myTrainer.team(),
-                    myTrainer.encounteredMonsterTypes(),
-                    visited,
-                    myTrainer.coins(),
-                    trainer.area(),
-                    trainer.x(),
-                    trainer.y(),
-                    trainer.direction(),
-                    myTrainer.npc()
-            );
+            Trainer updatedTrainer = updateMyTrainer(trainer);
 
             cache.setTrainer(updatedTrainer);
 
@@ -366,6 +284,34 @@ public class IngameController extends Controller {
         });
 
         soundController = soundControllerProvider.get();
+    }
+
+    private Trainer updateMyTrainer(MoveTrainerDto trainer) {
+        Trainer myTrainer = cache.getTrainer();
+        List<String> visited = new ArrayList<>(myTrainer.visitedAreas());
+
+        if (!visited.contains(trainer.area())) {
+            visited.add(trainer.area());
+        }
+
+        return new Trainer(
+                myTrainer.createdAt(),
+                myTrainer.updatedAt(),
+                myTrainer._id(),
+                myTrainer.region(),
+                myTrainer.user(),
+                myTrainer.name(),
+                myTrainer.image(),
+                myTrainer.team(),
+                myTrainer.encounteredMonsterTypes(),
+                visited,
+                myTrainer.coins(),
+                trainer.area(),
+                trainer.x(),
+                trainer.y(),
+                trainer.direction(),
+                myTrainer.npc()
+        );
     }
 
     private void updateDrawOrder() {
@@ -755,24 +701,22 @@ public class IngameController extends Controller {
                 Optional<Tile> optTile = tileInformation.stream().filter(t -> t.id() == tileSet.getValue() - 1).findFirst();
                 if (optTile.isPresent() && optTile.get().properties() != null) {
                     Tile tile = optTile.get();
-                    if (MAP_INFO.containsKey(new Pair<>(x, y))) {
-                        MAP_INFO.get(new Pair<>(x, y)).add(new Pair<>(tile, node));
-                    } else {
-                        List<Pair<Tile, Node>> list = new ArrayList<>();
-                        list.add(new Pair<>(tile, node));
-                        MAP_INFO.put(new Pair<>(x, y), list);
-                    }
+                    insertIntoMapInfo(x, y, node, tile);
                 } else {
                     Tile tile = new Tile((int) (long) tileSet.getValue(), List.of());
-                    if (MAP_INFO.containsKey(new Pair<>(x, y))) {
-                        MAP_INFO.get(new Pair<>(x, y)).add(new Pair<>(tile, node));
-                    } else {
-                        List<Pair<Tile, Node>> pairList = new ArrayList<>();
-                        pairList.add(new Pair<>(tile, node));
-                        MAP_INFO.put(new Pair<>(x, y), pairList);
-                    }
+                    insertIntoMapInfo(x, y, node, tile);
                 }
             }
+        }
+    }
+
+    private void insertIntoMapInfo(int x, int y, Node node, Tile tile) {
+        if (MAP_INFO.containsKey(new Pair<>(x, y))) {
+            MAP_INFO.get(new Pair<>(x, y)).add(new Pair<>(tile, node));
+        } else {
+            List<Pair<Tile, Node>> list = new ArrayList<>();
+            list.add(new Pair<>(tile, node));
+            MAP_INFO.put(new Pair<>(x, y), list);
         }
     }
 
