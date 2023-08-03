@@ -6,19 +6,45 @@ import com.google.gson.JsonPrimitive;
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.ingame.beast.EditBeastTeamController;
+import de.uniks.beastopia.teaml.controller.ingame.beastlist.BeastDetailController;
+import de.uniks.beastopia.teaml.controller.ingame.beastlist.BeastListController;
 import de.uniks.beastopia.teaml.controller.ingame.encounter.FightWildBeastController;
 import de.uniks.beastopia.teaml.controller.ingame.encounter.JoinFightInfoController;
 import de.uniks.beastopia.teaml.controller.ingame.encounter.StartFightNPCController;
 import de.uniks.beastopia.teaml.controller.ingame.items.InventoryController;
 import de.uniks.beastopia.teaml.controller.ingame.items.ItemDetailController;
 import de.uniks.beastopia.teaml.controller.ingame.items.ShopController;
+import de.uniks.beastopia.teaml.controller.ingame.mondex.MondexDetailController;
+import de.uniks.beastopia.teaml.controller.ingame.mondex.MondexListController;
+import de.uniks.beastopia.teaml.controller.ingame.scoreboard.ScoreboardController;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
+import de.uniks.beastopia.teaml.rest.Achievement;
+import de.uniks.beastopia.teaml.rest.Area;
+import de.uniks.beastopia.teaml.rest.Chunk;
+import de.uniks.beastopia.teaml.rest.Encounter;
+import de.uniks.beastopia.teaml.rest.ItemTypeDto;
+import de.uniks.beastopia.teaml.rest.Layer;
 import de.uniks.beastopia.teaml.rest.Map;
-import de.uniks.beastopia.teaml.rest.*;
+import de.uniks.beastopia.teaml.rest.Monster;
+import de.uniks.beastopia.teaml.rest.MonsterTypeDto;
+import de.uniks.beastopia.teaml.rest.MoveTrainerDto;
+import de.uniks.beastopia.teaml.rest.Opponent;
+import de.uniks.beastopia.teaml.rest.Region;
+import de.uniks.beastopia.teaml.rest.Tile;
+import de.uniks.beastopia.teaml.rest.TileProperty;
+import de.uniks.beastopia.teaml.rest.TileSet;
+import de.uniks.beastopia.teaml.rest.TileSetDescription;
+import de.uniks.beastopia.teaml.rest.Trainer;
 import de.uniks.beastopia.teaml.service.*;
 import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.sockets.UDPEventListener;
-import de.uniks.beastopia.teaml.utils.*;
+import de.uniks.beastopia.teaml.utils.Dialog;
+import de.uniks.beastopia.teaml.utils.Direction;
+import de.uniks.beastopia.teaml.utils.LoadingPage;
+import de.uniks.beastopia.teaml.utils.PlayerState;
+import de.uniks.beastopia.teaml.utils.Prefs;
+import de.uniks.beastopia.teaml.utils.SoundController;
+import javafx.animation.FadeTransition;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
@@ -39,6 +65,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.util.Duration;
 import javafx.util.Pair;
 
 import javax.inject.Inject;
@@ -58,11 +85,21 @@ public class IngameController extends Controller {
     static final int MENU_SHOP = 4;
     static final int MENU_INVENTORY = 5;
     static final int MENU_DIALOGWINDOW = 3;
+    static final int MENU_MONDEXLIST = 6;
+    static final int MENU_MAP = 7;
     static final long FLIPPED_HORIZONTALLY_FLAG = 1L << 31;
     static final long FLIPPED_VERTICALLY_FLAG = 1L << 30;
     static final long FLIPPED_DIAGONALLY_FLAG = 1L << 29;
     static final long ROTATED_HEXAGONAL_120_FLAG = 1L << 28;
-
+    final ObjectProperty<PlayerState> state = new SimpleObjectProperty<>();
+    final java.util.Map<EntityController, Parent> otherPlayers = new HashMap<>();
+    private final List<Pair<TileSetDescription, Pair<TileSet, Image>>> tileSets = new ArrayList<>();
+    private final java.util.Map<Pair<Integer, Integer>, List<Pair<Tile, Node>>> MAP_INFO = new HashMap<>();
+    private final List<Controller> subControllers = new ArrayList<>();
+    private final List<Node> renderedTiles = new ArrayList<>();
+    private final List<Node> renderedPlayers = new ArrayList<>();
+    private final List<KeyCode> pressedKeys = new ArrayList<>();
+    private final String[] locationStrings = {"Moncenter", "House", "Store"};
     @FXML
     public Pane tilePane;
     @FXML
@@ -99,6 +136,10 @@ public class IngameController extends Controller {
     Provider<StartFightNPCController> startFightNPCControllerProvider;
     @Inject
     BeastListController beastListController;
+    @Inject
+    MondexListController mondexListController;
+    @Inject
+    Provider<MondexDetailController> mondexDetailControllerProvider;
     @Inject
     ShopController shopController;
     @Inject
@@ -141,6 +182,38 @@ public class IngameController extends Controller {
     RegionEncountersService regionEncountersService;
     @Inject
     EncounterOpponentsService encounterOpponentsService;
+    @Inject
+    MondexService mondexService;
+    Direction direction;
+    Parent player;
+    Parent beastListParent;
+    Parent beastDetailParent;
+    Parent itemDetailParent;
+    Parent mondexDetailParent;
+    Parent mondexListParent;
+    EntityController playerController;
+    SoundController soundController;
+    Parent scoreBoardParent;
+    Parent pauseMenuParent;
+    Parent dialogWindowParent;
+    Parent shopParent;
+    Parent inventoryParent;
+    @FXML
+    private HBox scoreBoardLayout;
+    @FXML
+    private StackPane pauseMenuLayout;
+    @FXML
+    private Button pauseHint;
+    @FXML
+    private Button beastlistHint;
+    @FXML
+    private Button scoreboardHint;
+    @FXML
+    private Button mapHint;
+    @FXML
+    private Button invHint;
+    @FXML
+    private HBox shopLayout;
     private Region region;
     private Map map;
     private boolean updatingIndicator = false;
@@ -157,7 +230,6 @@ public class IngameController extends Controller {
     private int width;
     private int height;
     private LoadingPage loadingPage;
-    private final List<Controller> subControllers = new ArrayList<>();
     private Monster lastMonster;
     private ItemTypeDto lastItemTypeDto;
     private int currentMenu = MENU_NONE;
@@ -182,7 +254,9 @@ public class IngameController extends Controller {
     private final String[] locationStrings = {"Moncenter", "House", "Store"};
     private long lastValueChangeTime = 0;
     private DialogWindowController dialogWindowController;
+    private MonsterTypeDto lastMondexMonster;
     private Timer timer;
+    private boolean visibleHints = true;
     private boolean timerPause = false;
 
     @Inject
@@ -224,6 +298,16 @@ public class IngameController extends Controller {
         beastListController.setOnBeastClicked(this::toggleBeastDetails);
         beastListController.init();
 
+        mondexListController.setOnCloseRequest(() -> {
+            mondexListController.destroy();
+            scoreBoardLayout.getChildren().remove(mondexListParent);
+            scoreBoardLayout.getChildren().remove(mondexDetailParent);
+            lastMondexMonster = null;
+            currentMenu = MENU_NONE;
+        });
+        mondexListController.setOnBeastClicked(this::toggleMondexDetails);
+        mondexListController.init();
+
         pauseController.setOnCloseRequest(() -> {
             pauseMenuLayout.getChildren().remove(pauseMenuParent);
             currentMenu = MENU_NONE;
@@ -250,6 +334,7 @@ public class IngameController extends Controller {
                     myTrainer.name(),
                     myTrainer.image(),
                     myTrainer.team(),
+                    myTrainer.encounteredMonsterTypes(),
                     visited,
                     myTrainer.coins(),
                     trainer.area(),
@@ -477,18 +562,18 @@ public class IngameController extends Controller {
                                 soundController.play("bgm:city");
                             }
 
-                    scoreBoardLayout.setPickOnBounds(false);
-                    shopLayout.setPickOnBounds(false);
+                            scoreBoardLayout.setPickOnBounds(false);
+                            shopLayout.setPickOnBounds(false);
 
                             beastListParent = beastListController.render();
-                    beastListParent.setPickOnBounds(false);
+                            beastListParent.setPickOnBounds(false);
                             pauseMenuParent = pauseController.render();
-                    pauseMenuParent.setPickOnBounds(false);
+                            pauseMenuParent.setPickOnBounds(false);
                             loadRemoteTrainer(trainers);
                             listenToTrainerEvents();
 
 
-                    loadingPage.setDone();
+                            loadingPage.setDone();
                         }
                 ));
     }
@@ -662,7 +747,7 @@ public class IngameController extends Controller {
                 continue;
             }
 
-            // Some maps have "invalid" (or blank tiles) width ID 0 which we don't want to draw
+            // Some maps have "invalid" (or blank tiles) with ID 0 which we don't want to draw
             // This is to prevent the camera from showing the "extended" tile pane with those tiles
             if (id != 0) {
                 List<Tile> tileInformation = tileSet.getKey().getKey().tiles();
@@ -894,6 +979,25 @@ public class IngameController extends Controller {
         tilePane.getChildren().add(player);
     }
 
+    public void showItemImage(ItemTypeDto itemType) {
+        Image image = cache.getItemImages().get(itemType.id());
+        ImageView imageView = new ImageView(image);
+
+        imageView.setTranslateX((posx + 0.33) * TILE_SIZE);
+        imageView.setTranslateY((posy - 1) * TILE_SIZE);
+
+        tilePane.getChildren().add(imageView);
+        imageView.toFront();
+
+        FadeTransition fadeTransition = new FadeTransition(Duration.seconds(3), imageView);
+        fadeTransition.setFromValue(1.0);
+        fadeTransition.setToValue(0.0);
+
+        fadeTransition.setOnFinished(event -> tilePane.getChildren().remove(imageView));
+
+        fadeTransition.play();
+    }
+
     private Parent drawRemotePlayer(EntityController controller, int posx, int posy) {
         Parent parent = controller.render();
         parent.setPickOnBounds(false);
@@ -953,6 +1057,31 @@ public class IngameController extends Controller {
         scoreBoardLayout.getChildren().add(0, beastDetailParent);
     }
 
+    public void chooseBeast(Monster monster, ItemDetailController itemDetailController) {
+        itemDetailController.useDetailButton(1, "use", monster._id());
+        shopLayout.getChildren().remove(beastListParent);
+        beastListController.destroy();
+    }
+
+    private void toggleMondexDetails(MonsterTypeDto monster) {
+        if (Objects.equals(lastMondexMonster, monster)) {
+            scoreBoardLayout.getChildren().remove(mondexDetailParent);
+            lastMondexMonster = null;
+            return;
+        }
+
+        lastMondexMonster = monster;
+
+        MondexDetailController controller = mondexDetailControllerProvider.get();
+        subControllers.add(controller);
+        controller.setMonster(monster);
+        controller.init();
+
+        scoreBoardLayout.getChildren().remove(mondexDetailParent);
+        mondexDetailParent = controller.render();
+        scoreBoardLayout.getChildren().add(0, mondexDetailParent);
+    }
+
     private void updateTrainerPos(Direction direction) {
         Trainer trainer = cache.getTrainer();
         JsonObject data = new JsonObject();
@@ -990,6 +1119,7 @@ public class IngameController extends Controller {
     @FXML
     public void keyDown(KeyEvent keyEvent) {
         handlePlayerMovement(keyEvent);
+        handleButtonHints(keyEvent);
         handleMap(keyEvent);
         handlePauseMenu(keyEvent);
         handleScoreboard(keyEvent);
@@ -997,6 +1127,7 @@ public class IngameController extends Controller {
         handleInventory(keyEvent);
         handleBeastTeam(keyEvent);
         handleTalkToTrainer(keyEvent);
+        handleMondexList(keyEvent);
     }
 
     public void handleTalkToTrainer(KeyEvent keyEvent) {
@@ -1127,7 +1258,7 @@ public class IngameController extends Controller {
                     Rectangle2D viewPort = new Rectangle2D(48 * PREVIEW_SCALING, 0, 16 * PREVIEW_SCALING, 32 * PREVIEW_SCALING);
                     PixelReader reader = image.getPixelReader();
                     WritableImage newImage = new WritableImage(reader, (int) viewPort.getMinX(), (int) viewPort.getMinY(), (int) viewPort.getWidth(), (int) viewPort.getHeight());
-                    talk(newImage, "I am currently fighting, come back later!"
+                    talk(newImage, " I am currently fighting, come back later! "
                             , null, null, null);
                 }));
     }
@@ -1211,8 +1342,8 @@ public class IngameController extends Controller {
     }
 
     public void handleBeastList(KeyEvent keyEvent) {
-        if (keyEvent.getCode().equals(KeyCode.B) && (currentMenu == MENU_NONE || currentMenu == MENU_BEASTLIST)) {
-            openBeastlist();
+        if (keyEvent.getCode().equals(KeyCode.B) && !keyEvent.isShiftDown() && (currentMenu == MENU_NONE || currentMenu == MENU_BEASTLIST)) {
+            openBeastlist("scoreboardLayout", null);
         }
     }
 
@@ -1235,7 +1366,7 @@ public class IngameController extends Controller {
     }
 
     private void handleMap(KeyEvent keyEvent) {
-        if (keyEvent.getCode().equals(KeyCode.M)) {
+        if (keyEvent.getCode().equals(KeyCode.M) && (currentMenu == MENU_NONE || currentMenu == MENU_MAP)) {
             MapController map = mapControllerProvider.get();
             app.show(map);
         }
@@ -1245,6 +1376,44 @@ public class IngameController extends Controller {
         if (keyEvent.getCode().equals(KeyCode.X)) {
             app.show(editBeastTeamControllerProvider.get());
         }
+    }
+
+    private void handleMondexList(KeyEvent keyEvent) {
+        if (keyEvent.getCode().equals(KeyCode.L) && (currentMenu == MENU_NONE || currentMenu == MENU_MONDEXLIST)) {
+            openMondexList();
+        }
+    }
+
+    public void handleButtonHints(KeyEvent keyEvent) {
+        if (keyEvent.isShiftDown() && keyEvent.getCode() == KeyCode.B) {
+            handleButtonHints();
+        }
+    }
+
+    public void handleButtonHints() {
+        int opacity;
+        if (visibleHints) {
+            opacity = 0;
+            pauseHint.toBack();
+            beastlistHint.toBack();
+            scoreboardHint.toBack();
+            mapHint.toBack();
+            invHint.toBack();
+            visibleHints = false;
+        } else {
+            opacity = 1;
+            pauseHint.toFront();
+            beastlistHint.toFront();
+            scoreboardHint.toFront();
+            mapHint.toFront();
+            invHint.toFront();
+            visibleHints = true;
+        }
+        pauseHint.setOpacity(opacity);
+        beastlistHint.setOpacity(opacity);
+        scoreboardHint.setOpacity(opacity);
+        mapHint.setOpacity(opacity);
+        invHint.setOpacity(opacity);
     }
 
 
@@ -1439,7 +1608,7 @@ public class IngameController extends Controller {
 
     @FXML
     public void clickOnBeastListButton() {
-        openBeastlist();
+        openBeastlist("scoreBoardLayout", null);
     }
 
     @FXML
@@ -1457,14 +1626,29 @@ public class IngameController extends Controller {
         openInventory(false);
     }
 
-    public void openBeastlist() {
-        if (scoreBoardLayout.getChildren().contains(beastListParent)) {
-            scoreBoardLayout.getChildren().remove(beastListParent);
-            scoreBoardLayout.getChildren().remove(beastDetailParent);
+    public void openBeastlist(String layout, ItemDetailController itemDetailController) {
+        HBox hbox = scoreBoardLayout;
+        if (layout.equals("shop")) {
+            setOpacities(0);
+            hbox = shopLayout;
+        }
+        if (hbox.getChildren().contains(beastListParent)) {
+            hbox.getChildren().remove(beastListParent);
+            hbox.getChildren().remove(beastDetailParent);
+            beastListController.destroy();
             lastMonster = null;
             currentMenu = MENU_NONE;
         } else {
-            scoreBoardLayout.getChildren().add(beastListParent);
+            if (layout.equals("shop")) {
+                beastListController.init();
+                beastListController.setOnBeastClicked(monster -> chooseBeast(monster, itemDetailController));
+            }
+            beastListParent = beastListController.render();
+            if (hbox == shopLayout) {
+                beastListController.CloseButtonTestId.setDisable(true);
+                beastListController.CloseButtonTestId.setVisible(false);
+            }
+            hbox.getChildren().add(beastListParent);
             currentMenu = MENU_BEASTLIST;
         }
     }
@@ -1511,6 +1695,7 @@ public class IngameController extends Controller {
                     setCloseRequests(scoreBoardLayout, inventoryParent);
                     lastMonster = null;
                     setCloseRequests(scoreBoardLayout, itemDetailParent);
+                    setCloseRequests(shopLayout, beastListParent);
                 });
                 inventoryParent = inventoryController.render();
                 inventoryParent.setPickOnBounds(false);
@@ -1660,6 +1845,20 @@ public class IngameController extends Controller {
         }
     }
 
+    public void openMondexList() {
+        if (scoreBoardLayout.getChildren().contains(mondexListParent)) {
+            mondexListController.destroy();
+            scoreBoardLayout.getChildren().remove(mondexListParent);
+            scoreBoardLayout.getChildren().remove(mondexDetailParent);
+            lastMondexMonster = null;
+            currentMenu = MENU_NONE;
+        } else {
+            mondexListParent = mondexListController.render();
+            scoreBoardLayout.getChildren().add(mondexListParent);
+            currentMenu = MENU_MONDEXLIST;
+        }
+    }
+
     public void closePause() {
         for (Node tile : tilePane.getChildren()) {
             if (tile instanceof ImageView imageView) {
@@ -1709,6 +1908,8 @@ public class IngameController extends Controller {
         pauseMenuParent = null;
         dialogWindowParent = null;
         tilePane = null;
+        mondexListParent = null;
+        mondexDetailParent = null;
         super.destroy();
     }
 }

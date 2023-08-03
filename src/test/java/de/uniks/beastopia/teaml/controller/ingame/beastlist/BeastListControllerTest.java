@@ -1,4 +1,4 @@
-package de.uniks.beastopia.teaml.controller.ingame;
+package de.uniks.beastopia.teaml.controller.ingame.beastlist;
 
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.AppPreparer;
@@ -35,12 +35,22 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class BeastListControllerTest extends ApplicationTest {
 
-    @Spy
-    App app;
     @SuppressWarnings("unused")
     @Spy
     final
     ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang", Locale.forLanguageTag("en"));
+    final MonsterAttributes attributes = new MonsterAttributes(1, 1, 1, 1);
+    final MonsterAttributes currentAttributes = new MonsterAttributes(0, 0, 0, 0);
+    final Monster monster1 = new Monster(null, null, "MONSTER_1", "TRAINER_ID", 0, 0, 0, null, attributes, currentAttributes);
+    final Monster monster2 = new Monster(null, null, "MONSTER_2", "TRAINER_ID", 0, 0, 0, null, attributes, currentAttributes);
+    final Monster monster3 = new Monster(null, null, "MONSTER_3", "TRAINER_ID", 0, 0, 0, null, attributes, currentAttributes);
+    final List<Monster> monsters = List.of(monster1, monster2, monster3);
+    final BeastController mockedBeastController1 = mock();
+    final BeastController mockedBeastController2 = mock();
+    final BeastController mockedBeastController3 = mock();
+    final Runnable onCloseRequest = mock();
+    @Spy
+    App app;
     @InjectMocks
     BeastListController beastListController;
     @Mock
@@ -51,18 +61,6 @@ class BeastListControllerTest extends ApplicationTest {
     TrainerService trainerService;
     @Mock
     Prefs prefs;
-
-    MonsterAttributes attributes = new MonsterAttributes(1, 1, 1, 1);
-    MonsterAttributes currentAttributes = new MonsterAttributes(0, 0, 0, 0);
-    Monster monster1 = new Monster(null, null, "MONSTER_1", "TRAINER_ID", 0, 0, 0, null, attributes, currentAttributes);
-    Monster monster2 = new Monster(null, null, "MONSTER_2", "TRAINER_ID", 0, 0, 0, null, attributes, currentAttributes);
-    Monster monster3 = new Monster(null, null, "MONSTER_3", "TRAINER_ID", 0, 0, 0, null, attributes, currentAttributes);
-
-    List<Monster> monsters = List.of(monster1, monster2, monster3);
-    final BeastController mockedBeastController1 = mock();
-    final BeastController mockedBeastController2 = mock();
-    final BeastController mockedBeastController3 = mock();
-    final Runnable onCloseRequest = mock();
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -100,7 +98,7 @@ class BeastListControllerTest extends ApplicationTest {
         doNothing().when(onCloseRequest).run();
         when(trainerService.getTrainerMonsters(any(), any())).thenReturn(Observable.just(monsters));
         when(prefs.getRegionID()).thenReturn("");
-        when(cache.getTrainer()).thenReturn(new Trainer(null, null, "TRAINER_ID", null, null, null, null, null, List.of(), 0, "", 0, 0, 0, new NPCInfo(false, false, false, false, List.of(), List.of(), List.of())));
+        when(cache.getTrainer()).thenReturn(new Trainer(null, null, "TRAINER_ID", null, null, null, null, null, List.of(), List.of(), 0, "", 0, 0, 0, new NPCInfo(false, false, false, false, List.of(), List.of(), List.of())));
         app.start(stage);
         app.show(beastListController);
         stage.requestFocus();

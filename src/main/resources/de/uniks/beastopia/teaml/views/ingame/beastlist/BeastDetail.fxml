@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
-<VBox fx:id="VBoxBeastDetail" maxHeight="300.0" maxWidth="300.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.uniks.beastopia.teaml.controller.ingame.BeastDetailController">
+<VBox fx:id="VBoxBeastDetail" maxHeight="300.0" maxWidth="300.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.uniks.beastopia.teaml.controller.ingame.beastlist.BeastDetailController">
     <HBox alignment="CENTER">
         <ImageView fx:id="ImageViewAvatar" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" />
         <GridPane hgap="5.0" vgap="5.0">

@@ -40,6 +40,8 @@ public abstract class Controller {
 
     public void destroy() {
         disposables.dispose();
+        disposables = new CompositeDisposable();
+        //FX_SCHEDULER.shutdown();
     }
 
     public String getTitle() {

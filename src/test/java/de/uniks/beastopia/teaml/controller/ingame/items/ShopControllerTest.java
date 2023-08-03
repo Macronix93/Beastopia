@@ -5,8 +5,7 @@ import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.rest.ItemTypeDto;
 import de.uniks.beastopia.teaml.rest.NPCInfo;
 import de.uniks.beastopia.teaml.rest.Trainer;
-import de.uniks.beastopia.teaml.service.PresetsService;
-import io.reactivex.rxjava3.core.Observable;
+import de.uniks.beastopia.teaml.service.DataCache;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
@@ -28,12 +27,15 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class ShopControllerTest extends ApplicationTest {
 
-    @Spy
-    App app;
     @SuppressWarnings("unused")
     @Spy
     final
     ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang", Locale.forLanguageTag("en"));
+    final Runnable onCloseRequest = mock();
+    final Trainer trainer = new Trainer(null, null, "id", "region", "user", "name", "image", List.of("team"), List.of(), List.of("visitedAreas"), 0, "area", 0, 0, 0, new NPCInfo(true, false, false, false, List.of(1), List.of(), null));
+    private final List<ItemTypeDto> itemTypeDtos = List.of(new ItemTypeDto(1, "img", "name", 32, "desc", "use"));
+    @Spy
+    App app;
     @InjectMocks
     ShopController shopController;
     @Mock
@@ -41,18 +43,15 @@ public class ShopControllerTest extends ApplicationTest {
     @Mock
     ItemController mockedItemController;
     @Mock
-    PresetsService presetsService;
-    private final List<ItemTypeDto> itemTypeDtos = List.of(new ItemTypeDto(1, "img", "name", 32, "desc", "use"));
-    final Runnable onCloseRequest = mock();
-    Trainer trainer = new Trainer(null, null, "id", "region", "user", "name", "image", List.of("team"), List.of("visitedAreas"), 0, "area", 0, 0, 0, new NPCInfo(true, false, false, false, List.of(1), List.of(), null));
+    DataCache cache;
 
     @Override
     public void start(Stage stage) throws Exception {
         AppPreparer.prepare(app);
         shopController.setTrainer(trainer);
-        when(presetsService.getItems()).thenReturn(Observable.just(itemTypeDtos));
         when(itemControllerProvider.get()).thenReturn(mockedItemController);
         when(mockedItemController.setItem(any())).thenReturn(mockedItemController);
+        when(cache.getPresetItems()).thenReturn(itemTypeDtos);
         doNothing().when(mockedItemController).setOnItemClicked(any());
         doNothing().when(mockedItemController).init();
         when(mockedItemController.render()).thenReturn(new VBox());

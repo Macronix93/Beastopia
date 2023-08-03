@@ -87,4 +87,43 @@ Flaticon</a>
 <a href="https://fonts.google.com/specimen/Happy+Monkey?query=Brenda+Gallo">Happy Monkey Font erstellt von Brenda
 Gallo</a>
 
+<a href="https://www.flaticon.com/de/kostenlose-icons/feuer" title="feuer Icons">Feuer Icons erstellt von msidiqf - Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/wasser" title="wasser Icons">Wasser Icons erstellt von Vitaly Gorbachev - Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/gras" title="gras Icons">Gras Icons erstellt von IYIKON - Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/blitz" title="blitz Icons">Blitz Icons erstellt von Smashicons - Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/fee" title="fee Icons">Fee Icons erstellt von Freepik - Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/wolkig" title="wolkig Icons">Wolkig Icons erstellt von circle-studio - Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/konstruktion-und-werkzeuge" title="konstruktion und werkzeuge Icons">Konstruktion und werkzeuge Icons erstellt von Vector Squad - Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/drachen" title="drachen Icons">Drachen Icons erstellt von Freepik - Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/schadel" title="schädel Icons">Schädel Icons erstellt von Freepik - Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/gehirn" title="gehirn Icons">Gehirn Icons erstellt von Smashicons - Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/frost" title="frost Icons">Frost Icons erstellt von Ardiansyah - Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/dunkel" title="dunkel Icons">Dunkel Icons erstellt von adriansyah - Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/ui" title="ui Icons">Ui Icons erstellt von Icon mania - Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/kampfen" title="kämpfen Icons">Kämpfen Icons erstellt von yut1655 - Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/felsen" title="felsen Icons">Felsen Icons erstellt von Good Ware - Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/stahl" title="stahl Icons">Stahl Icons erstellt von PLANBSTUDIO - Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/malware" title="malware Icons">Malware Icons erstellt von Anggara - Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/angst" title="angst Icons">Angst Icons erstellt von Freepik - Flaticon</a>
+
+
+
+
 <a href="https://www.flaticon.com/free-icons/coin" title="coin icons">Coin icons created by Freepik - Flaticon</a>

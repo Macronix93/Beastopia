@@ -6,7 +6,7 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
-<VBox fx:id="VBoxBeastList" alignment="CENTER" onKeyPressed="#handleKeyEvent" style="-fx-border-radius: 10; -fx-border-color: black;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.uniks.beastopia.teaml.controller.ingame.BeastListController">
+<VBox fx:id="VBoxBeastList" alignment="CENTER" onKeyPressed="#handleKeyEvent" style="-fx-border-radius: 10; -fx-border-color: black;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.uniks.beastopia.teaml.controller.ingame.beastlist.BeastListController">
    <Label text="%yourBeasts">
       <font>
          <Font size="18.0"/>
@@ -20,6 +20,5 @@
          </padding>
       </VBox>
    </ScrollPane>
-   <!--suppress JavaFxUnresolvedFxIdReference -->
    <Button fx:id="CloseButtonTestId" mnemonicParsing="false" onAction="#close" text="%Close"/>
 </VBox>
