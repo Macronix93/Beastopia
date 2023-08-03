@@ -143,7 +143,7 @@ public class InventoryController extends Controller {
     @FXML
     public void handleKeyEvent(KeyEvent keyEvent) {
         if (!isShop) {
-            if (keyEvent.getCode().equals(KeyCode.B)) {
+            if (keyEvent.getCode().equals(KeyCode.I)) {
                 onCloseRequest.run();
             }
         }

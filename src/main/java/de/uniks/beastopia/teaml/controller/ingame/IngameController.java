@@ -101,6 +101,7 @@ public class IngameController extends Controller {
     static final int MENU_INVENTORY = 5;
     static final int MENU_DIALOGWINDOW = 3;
     static final int MENU_MONDEXLIST = 6;
+    static final int MENU_MAP = 7;
     static final long FLIPPED_HORIZONTALLY_FLAG = 1L << 31;
     static final long FLIPPED_VERTICALLY_FLAG = 1L << 30;
     static final long FLIPPED_DIAGONALLY_FLAG = 1L << 29;
@@ -225,6 +226,7 @@ public class IngameController extends Controller {
     private DialogWindowController dialogWindowController;
     private MonsterTypeDto lastMondexMonster;
     private Timer timer;
+    private boolean visibleHints = true;
 
     @Inject
     public IngameController() {
@@ -951,6 +953,7 @@ public class IngameController extends Controller {
     @FXML
     public void keyDown(KeyEvent keyEvent) {
         handlePlayerMovement(keyEvent);
+        handleButtonHints(keyEvent);
         handleMap(keyEvent);
         handlePauseMenu(keyEvent);
         handleScoreboard(keyEvent);
@@ -1179,7 +1182,7 @@ public class IngameController extends Controller {
     }
 
     public void handleBeastList(KeyEvent keyEvent) {
-        if (keyEvent.getCode().equals(KeyCode.B) && (currentMenu == MENU_NONE || currentMenu == MENU_BEASTLIST)) {
+        if (keyEvent.getCode().equals(KeyCode.B) && !keyEvent.isShiftDown() && (currentMenu == MENU_NONE || currentMenu == MENU_BEASTLIST)) {
             openBeastlist("scoreboardLayout", null);
         }
     }
@@ -1203,7 +1206,7 @@ public class IngameController extends Controller {
     }
 
     private void handleMap(KeyEvent keyEvent) {
-        if (keyEvent.getCode().equals(KeyCode.M)) {
+        if (keyEvent.getCode().equals(KeyCode.M) && (currentMenu == MENU_NONE || currentMenu == MENU_MAP)) {
             MapController map = mapControllerProvider.get();
             app.show(map);
         }
@@ -1219,6 +1222,38 @@ public class IngameController extends Controller {
         if (keyEvent.getCode().equals(KeyCode.L) && (currentMenu == MENU_NONE || currentMenu == MENU_MONDEXLIST)) {
             openMondexList();
         }
+    }
+
+    public void handleButtonHints(KeyEvent keyEvent) {
+        if (keyEvent.isShiftDown() && keyEvent.getCode() == KeyCode.B) {
+            handleButtonHints();
+        }
+    }
+
+    public void handleButtonHints() {
+        int opacity;
+        if (visibleHints) {
+            opacity = 0;
+            pauseHint.toBack();
+            beastlistHint.toBack();
+            scoreboardHint.toBack();
+            mapHint.toBack();
+            invHint.toBack();
+            visibleHints = false;
+        } else {
+            opacity = 1;
+            pauseHint.toFront();
+            beastlistHint.toFront();
+            scoreboardHint.toFront();
+            mapHint.toFront();
+            invHint.toFront();
+            visibleHints = true;
+        }
+        pauseHint.setOpacity(opacity);
+        beastlistHint.setOpacity(opacity);
+        scoreboardHint.setOpacity(opacity);
+        mapHint.setOpacity(opacity);
+        invHint.setOpacity(opacity);
     }
 
 
