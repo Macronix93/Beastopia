@@ -200,6 +200,7 @@ public class IngameController extends Controller {
     private Timer timer;
     private boolean visibleHints = true;
     private boolean timerPause = false;
+    private boolean destroying = false;
 
     @Inject
     public IngameController() {
@@ -211,6 +212,9 @@ public class IngameController extends Controller {
     @Override
     public void init() {
         super.init();
+
+        destroying = false;
+        timerPause = false;
 
         timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
@@ -765,6 +769,9 @@ public class IngameController extends Controller {
     }
 
     private void drawMouseIndicator(int x, int y, boolean force) {
+        if (destroying) {
+            return;
+        }
         if (updatingIndicator && !force) {
             return;
         }
@@ -804,6 +811,9 @@ public class IngameController extends Controller {
     }
 
     private void drawPathTile(int x, int y, Color color) {
+        if (destroying) {
+            return;
+        }
         Circle pathTile = new Circle();
         pathTile.setRadius(TILE_SIZE / 4);
         pathTile.setCenterX(x * TILE_SIZE + TILE_SIZE / 2);
@@ -819,6 +829,9 @@ public class IngameController extends Controller {
     }
 
     private void removeMouseIndicator(boolean force) {
+        if (destroying) {
+            return;
+        }
         if (updatingIndicator && !force) {
             return;
         }
@@ -832,6 +845,9 @@ public class IngameController extends Controller {
     }
 
     private void updateMouseIndicator() {
+        if (destroying) {
+            return;
+        }
         if (indicator == null) {
             return;
         }
@@ -846,6 +862,9 @@ public class IngameController extends Controller {
     }
 
     private void startAutoMove(Position target) {
+        if (destroying) {
+            return;
+        }
         if (target.x() == posx && target.y() == posy) {
             stopAutoMove();
             return;
@@ -869,6 +888,9 @@ public class IngameController extends Controller {
     }
 
     private void stopAutoMove() {
+        if (destroying) {
+            return;
+        }
         autoMove = false;
         autoMoveNextPosition = null;
         autoMoveTargetPosition = null;
@@ -1821,6 +1843,7 @@ public class IngameController extends Controller {
 
     @Override
     public void destroy() {
+        destroying = true;
         timer.cancel();
         playerController.destroy();
         scoreBoardController.destroy();
