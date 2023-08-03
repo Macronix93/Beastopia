@@ -1,7 +1,9 @@
 package de.uniks.beastopia.teaml.controller.ingame.beastlist;
 
 import de.uniks.beastopia.teaml.controller.Controller;
+import de.uniks.beastopia.teaml.rest.AbilityDto;
 import de.uniks.beastopia.teaml.rest.Monster;
+import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -39,6 +41,8 @@ public class BeastDetailController extends Controller {
     public VBox VBoxBeastDetail;
     @Inject
     PresetsService presetsService;
+    @Inject
+    DataCache cache;
     private Monster monster;
 
     @Inject
@@ -70,15 +74,29 @@ public class BeastDetailController extends Controller {
                     name.setText(monsterType.name());
                     type.setText("Type: " + monsterType.type().get(0));
                     description.setText(monsterType.description() + "\n\n");
-                }));
 
-        for (Map.Entry<String, Integer> entry : monster.abilities().entrySet()) {
-            int ability = Integer.parseInt(entry.getKey());
-            disposables.add(presetsService.getAbility(ability)
-                    .observeOn(FX_SCHEDULER)
-                    .subscribe(ad -> description.setText(description.getText() + ad.name() + " [" + ad.type() +
-                            "] ACC: " + ad.accuracy() + " POW: " + ad.power() + "\n" + ad.description() + "\n\n")));
-        }
+                    for (Map.Entry<String, Integer> entry : monster.abilities().entrySet()) {
+                        int ability = Integer.parseInt(entry.getKey());
+
+                        if (cache.getAbilities().containsKey(ability)) {
+                            for (Map.Entry<Integer, AbilityDto> cacheEntry : cache.getAbilities().entrySet()) {
+                                if (cacheEntry.getKey() == ability) {
+                                    description.setText(description.getText() + cacheEntry.getValue().name() + " [" + cacheEntry.getValue().type() +
+                                            "] ACC: " + cacheEntry.getValue().accuracy() + " POW: " + cacheEntry.getValue().power() + "\n" + cacheEntry.getValue().description() + "\n\n");
+                                    break;
+                                }
+                            }
+                        } else {
+                            disposables.add(presetsService.getAbility(ability)
+                                    .observeOn(FX_SCHEDULER)
+                                    .subscribe(ad -> {
+                                        cache.getAbilities().put(ability, ad);
+                                        description.setText(description.getText() + ad.name() + " [" + ad.type() +
+                                                "] ACC: " + ad.accuracy() + " POW: " + ad.power() + "\n" + ad.description() + "\n\n");
+                                    }));
+                        }
+                    }
+                }));
 
         disposables.add(presetsService.getMonsterImage(monster.type())
                 .observeOn(FX_SCHEDULER)

@@ -241,3 +241,33 @@ Text {
     -fx-border-radius: 5px;
     -fx-background-radius: 5px;
 }
+
+#actionInfoText {
+    -fx-font-size: 16px;
+    -fx-background-color: #677878;
+    -fx-border-color: #162326;
+}
+
+#attackBox1,
+#attackBox2,
+#attackBox3,
+#attackBox4 {
+    -fx-font-size: 14px;
+    -fx-background-color: #677878;
+    -fx-border-color: #162326;
+}
+
+#hpLabel,
+#xpLabel {
+    -fx-text-fill: black;
+}
+
+#beastInfoContainer,
+#enemyBeastInfoContainer {
+    -fx-background-color: #677878;
+    -fx-border-color: #162326;
+}
+
+#ellipse {
+    -fx-fill: #395B64;
+}

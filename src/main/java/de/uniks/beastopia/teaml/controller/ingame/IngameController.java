@@ -35,7 +35,15 @@ import de.uniks.beastopia.teaml.rest.TileProperty;
 import de.uniks.beastopia.teaml.rest.TileSet;
 import de.uniks.beastopia.teaml.rest.TileSetDescription;
 import de.uniks.beastopia.teaml.rest.Trainer;
-import de.uniks.beastopia.teaml.service.*;
+import de.uniks.beastopia.teaml.service.AchievementsService;
+import de.uniks.beastopia.teaml.service.AreaService;
+import de.uniks.beastopia.teaml.service.DataCache;
+import de.uniks.beastopia.teaml.service.EncounterOpponentsService;
+import de.uniks.beastopia.teaml.service.MondexService;
+import de.uniks.beastopia.teaml.service.PresetsService;
+import de.uniks.beastopia.teaml.service.RegionEncountersService;
+import de.uniks.beastopia.teaml.service.TokenStorage;
+import de.uniks.beastopia.teaml.service.TrainerService;
 import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.sockets.UDPEventListener;
 import de.uniks.beastopia.teaml.utils.Dialog;
@@ -67,7 +75,17 @@ import javafx.util.Pair;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
@@ -315,6 +333,29 @@ public class IngameController extends Controller {
             spawned = true;
         });
 
+        // Check if the player is still in an encounter and load that encounter
+        List<Opponent> trainerOpponents = encounterOpponentsService.getTrainerOpponents(cache.getJoinedRegion()._id(), cache.getTrainer()._id()).blockingFirst();
+        if (trainerOpponents.size() >= 1) {
+            // If the player is in an encounter, load the previous state
+            disposables.add(encounterOpponentsService.getEncounterOpponents(cache.getJoinedRegion()._id(), trainerOpponents.get(0).encounter())
+                    .observeOn(FX_SCHEDULER)
+                    .concatMap(opponentEvent -> regionEncountersService.getRegionEncounter(cache.getJoinedRegion()._id(), trainerOpponents.get(0).encounter())
+                            .observeOn(FX_SCHEDULER))
+                    .subscribe(
+                            encounter -> {
+                                cache.setCurrentEncounter(encounter);
+
+                                if (encounter.isWild()) {
+                                    openFightBeastScreen(encounter);
+                                } else {
+                                    openFightNPCScreen(encounter);
+                                }
+                            },
+                            error -> System.err.println("Fehler: " + error.getMessage())
+                    )
+            );
+        }
+
         soundController = soundControllerProvider.get();
     }
 
@@ -519,6 +560,7 @@ public class IngameController extends Controller {
         posx = myTrainer.x();
         posy = myTrainer.y();
         playerController.setDirection(myTrainer.direction());
+        direction = playerController.getDirection();
 
         return myTrainer;
     }
@@ -955,6 +997,9 @@ public class IngameController extends Controller {
 
     private Trainer canTalkToNPC() {
         for (Trainer trainer : cache.getTrainers()) {
+            if (trainer._id().equals(cache.getTrainer()._id())) {
+                continue;
+            }
             if (trainer.area().equals(cache.getTrainer().area())) {
                 if (direction == Direction.RIGHT) { // right
                     if (trainer.x() == posx + 1 && trainer.y() == posy) {
@@ -976,21 +1021,24 @@ public class IngameController extends Controller {
             }
         }
         for (Trainer trainer : cache.getTrainers()) {
+            if (trainer._id().equals(cache.getTrainer()._id())) {
+                continue;
+            }
             if (trainer.area().equals(cache.getTrainer().area())) {
                 if (direction == Direction.RIGHT) { // right
-                    if (trainer.x() == posx + 2 && trainer.y() == posy && (trainer.npc().canHeal() || trainer.npc().sells() != null)) {
+                    if (trainer.x() == posx + 2 && trainer.y() == posy && trainer.npc() != null && (trainer.npc().canHeal() || trainer.npc().sells() != null)) {
                         return trainer;
                     }
                 } else if (direction == Direction.UP) { //up
-                    if (trainer.x() == posx && trainer.y() == posy - 2 && (trainer.npc().canHeal() || trainer.npc().sells() != null)) {
+                    if (trainer.x() == posx && trainer.y() == posy - 2 && trainer.npc() != null && (trainer.npc().canHeal() || trainer.npc().sells() != null)) {
                         return trainer;
                     }
                 } else if (direction == Direction.LEFT) { //left
-                    if (trainer.x() == posx - 2 && trainer.y() == posy && (trainer.npc().canHeal() || trainer.npc().sells() != null)) {
+                    if (trainer.x() == posx - 2 && trainer.y() == posy && trainer.npc() != null && (trainer.npc().canHeal() || trainer.npc().sells() != null)) {
                         return trainer;
                     }
                 } else if (direction == Direction.DOWN) { //down
-                    if (trainer.x() == posx + 2 && trainer.y() == posy + 2 && (trainer.npc().canHeal() || trainer.npc().sells() != null)) {
+                    if (trainer.x() == posx + 2 && trainer.y() == posy + 2 && trainer.npc() != null && (trainer.npc().canHeal() || trainer.npc().sells() != null)) {
                         return trainer;
                     }
                 }

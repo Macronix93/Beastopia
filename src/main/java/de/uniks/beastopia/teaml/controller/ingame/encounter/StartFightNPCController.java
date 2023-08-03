@@ -103,21 +103,33 @@ public class StartFightNPCController extends Controller {
                     } else if (o.size() == 3) {
                         for (int i = 0; i < o.size(); i++) {
                             if (o.get(i).trainer().equals(cache.getTrainer()._id())) {
-                                myTrainerOpponentIndex = i;
-                            } else {
-                                if (enemyTrainerOpponentIndex == -5) {
-                                    enemyTrainerOpponentIndex = i;
+                                if (myTrainerOpponentIndex == -5) {
+                                    myTrainerOpponentIndex = i;
                                 } else {
-                                    enemyAllyTrainerOpponentIndex = i;
+                                    myAllyTrainerOpponentIndex = i;
+                                }
+                            } else {
+                                if (!o.get(i).isAttacker()) {
+                                    myAllyTrainerOpponentIndex = i;
+                                } else {
+                                    if (enemyTrainerOpponentIndex == -5) {
+                                        enemyTrainerOpponentIndex = i;
+                                    } else {
+                                        enemyAllyTrainerOpponentIndex = i;
+                                    }
                                 }
                             }
                         }
                     } else if (o.size() == 4) {
                         for (int i = 0; i < o.size(); i++) {
                             if (o.get(i).trainer().equals(cache.getTrainer()._id())) {
-                                myTrainerOpponentIndex = i;
+                                if (myTrainerOpponentIndex != -5) {
+                                    myAllyTrainerOpponentIndex = i;
+                                } else {
+                                    myTrainerOpponentIndex = i;
+                                }
                             } else {
-                                if (!o.get(i).isAttacker()) {
+                                if (!o.get(i).isAttacker() || o.get(i).trainer().equals(cache.getTrainer()._id())) {
                                     myAllyTrainerOpponentIndex = i;
                                 } else {
                                     if (enemyTrainerOpponentIndex == -5) {
@@ -132,18 +144,26 @@ public class StartFightNPCController extends Controller {
 
                     List<Monster> myMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), cache.getTrainer()._id()).blockingFirst();
                     List<Monster> enemyMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(enemyTrainerOpponentIndex).trainer()).blockingFirst();
-                    encounterController.setEnemyTrainer(o.get(enemyTrainerOpponentIndex).trainer());
-                    //noinspection OptionalGetWithoutIsPresent
-                    encounterController.setOwnMonster(myMonsters.stream().filter(m -> m._id().equals(cache.getTrainer().team().stream().findFirst().get())).findFirst().orElseThrow());
+                    encounterController.setMyTrainer(cache.getTrainer());
+                    encounterController.setEnemyTrainer(trainerService.getTrainer(cache.getJoinedRegion()._id(), o.get(enemyTrainerOpponentIndex).trainer()).blockingFirst());
+                    // When reconnecting: If no monster is set, then find the first monster with 0 HP to indicate swapping out
+                    if (o.get(myTrainerOpponentIndex).monster() == null) {
+                        encounterController.setOwnMonster(myMonsters.stream().filter(m -> m.currentAttributes().health() <= 0).findFirst().orElseThrow());
+                    } else {
+                        encounterController.setOwnMonster(myMonsters.stream().filter(m -> m._id().equals(o.get(myTrainerOpponentIndex).monster())).findFirst().orElseThrow());
+                    }
                     encounterController.setEnemyMonster(enemyMonsters.stream().filter(m -> m._id().equals(o.get(enemyTrainerOpponentIndex).monster())).findFirst().orElseThrow());
 
                     if (o.size() == 3) {
-                        setEnemyAllyMonsters(o);
+                        if (myAllyTrainerOpponentIndex != -5) {
+                            setAllyMonsters(o);
+                        }
+                        if (enemyAllyTrainerOpponentIndex != -5) {
+                            setEnemyAllyMonsters(o);
+                        }
                     } else if (o.size() == 4) {
                         setEnemyAllyMonsters(o);
-                        List<Monster> myAllyMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(myAllyTrainerOpponentIndex).trainer()).blockingFirst();
-                        encounterController.setAllyTrainer((o.get(myAllyTrainerOpponentIndex).trainer()));
-                        encounterController.setAllyMonster(myAllyMonsters.stream().filter(m -> m._id().equals(o.get(myAllyTrainerOpponentIndex).monster())).findFirst().orElseThrow());
+                        setAllyMonsters(o);
                     }
                     return o;
                 })
@@ -154,9 +174,19 @@ public class StartFightNPCController extends Controller {
                 }));
     }
 
+    private void setAllyMonsters(List<Opponent> o) {
+        List<Monster> myAllyMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(myAllyTrainerOpponentIndex).trainer()).blockingFirst();
+        encounterController.setAllyTrainer(trainerService.getTrainer(cache.getJoinedRegion()._id(), o.get(myAllyTrainerOpponentIndex).trainer()).blockingFirst());
+        if (o.get(myAllyTrainerOpponentIndex).monster() == null) {
+            encounterController.setAllyMonster(myAllyMonsters.stream().filter(m -> m.currentAttributes().health() <= 0).findFirst().orElseThrow());
+        } else {
+            encounterController.setAllyMonster(myAllyMonsters.stream().filter(m -> m._id().equals(o.get(myAllyTrainerOpponentIndex).monster())).findFirst().orElseThrow());
+        }
+    }
+
     private void setEnemyAllyMonsters(List<Opponent> o) {
         List<Monster> enemyAllyMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(enemyAllyTrainerOpponentIndex).trainer()).blockingFirst();
-        encounterController.setEnemyAllyTrainer((o.get(enemyAllyTrainerOpponentIndex).trainer()));
+        encounterController.setEnemyAllyTrainer(trainerService.getTrainer(cache.getJoinedRegion()._id(), o.get(enemyAllyTrainerOpponentIndex).trainer()).blockingFirst());
         encounterController.setEnemyAllyMonster(enemyAllyMonsters.stream().filter(m -> m._id().equals(o.get(enemyAllyTrainerOpponentIndex).monster())).findFirst().orElseThrow());
     }
 }

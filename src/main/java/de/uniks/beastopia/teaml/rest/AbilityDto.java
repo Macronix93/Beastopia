@@ -6,7 +6,7 @@ public record AbilityDto(
         String description,
         String type,
         int maxUses,
-        int accuracy,
+        double accuracy,
         int power
 ) {
 }
