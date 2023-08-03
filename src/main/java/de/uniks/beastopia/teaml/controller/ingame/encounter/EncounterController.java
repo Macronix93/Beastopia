@@ -450,16 +450,17 @@ public class EncounterController extends Controller {
                     .observeOn(FX_SCHEDULER)
                     .subscribe(monsterEvent -> allyMonster = updateMonsterInfo(monsterEvent, beastInfoController2, allyMonsters)));
         } else if (enemyTrainer) {
-            cache.getCurrentOpponents().stream()
-                    .filter(opponent -> {
-                        if (cache.getCurrentEncounter().isWild() && opponent.isNPC()) {
-                            return opponent.trainer().equals(wildTrainerId);
-                        } else {
-                            return opponent.monster() == null ? opponent.trainer().equals(this.enemyTrainer._id()) : opponent.monster().equals(enemyBeastInfoController1.getMonster()._id());
-                        }
-                    })
-                    .findFirst()
-                    .ifPresent(opponent -> renderBeastController2.setMonsterOneOpponentId(opponent._id()));
+            if (cache.getCurrentEncounter().isWild()) {
+                cache.getCurrentOpponents().stream()
+                        .filter(opponent -> opponent.trainer().equals(wildTrainerId))
+                        .findFirst()
+                        .ifPresent(opponent -> renderBeastController2.setMonsterOneOpponentId(opponent._id()));
+            } else {
+                cache.getCurrentOpponents().stream()
+                        .filter(opponent -> opponent.monster() == null ? opponent.trainer().equals(this.enemyTrainer._id()) : opponent.monster().equals(enemyBeastInfoController1.getMonster()._id()))
+                        .findFirst()
+                        .ifPresent(opponent -> renderBeastController2.setMonsterOneOpponentId(opponent._id()));
+            }
             disposables.add(eventListener.listen("trainers." +
                             (cache.getCurrentEncounter().isWild() ? wildTrainerId : (this.enemyTrainer == null ? this.enemyAllyTrainer._id() : this.enemyTrainer._id())) + ".monsters." + this.enemyMonster._id() + ".updated", Monster.class)
                     .observeOn(FX_SCHEDULER)
