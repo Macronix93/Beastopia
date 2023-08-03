@@ -208,6 +208,7 @@ public class IngameController extends Controller {
     private DialogWindowController dialogWindowController;
     private MonsterTypeDto lastMondexMonster;
     private Timer timer;
+    private boolean visibleHints = true;
 
     @Inject
     public IngameController() {
@@ -910,6 +911,7 @@ public class IngameController extends Controller {
     @FXML
     public void keyDown(KeyEvent keyEvent) {
         handlePlayerMovement(keyEvent);
+        handleButtonHints(keyEvent);
         handleMap(keyEvent);
         handlePauseMenu(keyEvent);
         handleScoreboard(keyEvent);
@@ -1132,7 +1134,7 @@ public class IngameController extends Controller {
     }
 
     public void handleBeastList(KeyEvent keyEvent) {
-        if (keyEvent.getCode().equals(KeyCode.B) && (currentMenu == MENU_NONE || currentMenu == MENU_BEASTLIST)) {
+        if (keyEvent.getCode().equals(KeyCode.B) && !keyEvent.isShiftDown() && (currentMenu == MENU_NONE || currentMenu == MENU_BEASTLIST)) {
             openBeastlist("scoreboardLayout", null);
         }
     }
@@ -1172,6 +1174,38 @@ public class IngameController extends Controller {
         if (keyEvent.getCode().equals(KeyCode.L) && (currentMenu == MENU_NONE || currentMenu == MENU_MONDEXLIST)) {
             openMondexList();
         }
+    }
+
+    public void handleButtonHints(KeyEvent keyEvent) {
+        if (keyEvent.isShiftDown() && keyEvent.getCode() == KeyCode.B) {
+            handleButtonHints();
+        }
+    }
+
+    public void handleButtonHints() {
+        int opacity;
+        if (visibleHints) {
+            opacity = 0;
+            pauseHint.toBack();
+            beastlistHint.toBack();
+            scoreboardHint.toBack();
+            mapHint.toBack();
+            invHint.toBack();
+            visibleHints = false;
+        } else {
+            opacity = 1;
+            pauseHint.toFront();
+            beastlistHint.toFront();
+            scoreboardHint.toFront();
+            mapHint.toFront();
+            invHint.toFront();
+            visibleHints = true;
+        }
+        pauseHint.setOpacity(opacity);
+        beastlistHint.setOpacity(opacity);
+        scoreboardHint.setOpacity(opacity);
+        mapHint.setOpacity(opacity);
+        invHint.setOpacity(opacity);
     }
 
 
