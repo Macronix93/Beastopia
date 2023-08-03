@@ -201,6 +201,7 @@ public class IngameController extends Controller {
     private boolean visibleHints = true;
     private boolean timerPause = false;
     private boolean destroying = false;
+    private boolean drawMousePath = false;
 
     @Inject
     public IngameController() {
@@ -769,10 +770,7 @@ public class IngameController extends Controller {
     }
 
     private void drawMouseIndicator(int x, int y, boolean force) {
-        if (destroying) {
-            return;
-        }
-        if (updatingIndicator && !force) {
+        if (destroying || (updatingIndicator && !force)) {
             return;
         }
         if (indicator != null) {
@@ -802,16 +800,18 @@ public class IngameController extends Controller {
         if (!autoMove) {
             tilePane.getChildren().removeAll(pathTiles);
             pathTiles.clear();
-            for (var pos : aStarService.findPath(new Position(posx, posy), new Position(x, y))) {
-                if (pos.x() != x || pos.y() != y) {
-                    drawPathTile(pos.x(), pos.y(), Color.BLUE);
+            if (drawMousePath) {
+                for (var pos : aStarService.findPath(new Position(posx, posy), new Position(x, y))) {
+                    if (pos.x() != x || pos.y() != y) {
+                        drawPathTile(pos.x(), pos.y(), Color.BLUE);
+                    }
                 }
             }
         }
     }
 
     private void drawPathTile(int x, int y, Color color) {
-        if (destroying) {
+        if (destroying || !drawMousePath) {
             return;
         }
         Circle pathTile = new Circle();
@@ -1094,6 +1094,7 @@ public class IngameController extends Controller {
         handleBeastTeam(keyEvent);
         handleTalkToTrainer(keyEvent);
         handleMondexList(keyEvent);
+        handleDrawMousePath(keyEvent);
     }
 
     public void handleTalkToTrainer(KeyEvent keyEvent) {
@@ -1347,6 +1348,13 @@ public class IngameController extends Controller {
     private void handleMondexList(KeyEvent keyEvent) {
         if (keyEvent.getCode().equals(KeyCode.L) && (currentMenu == MENU_NONE || currentMenu == MENU_MONDEXLIST)) {
             openMondexList();
+        }
+    }
+
+    private void handleDrawMousePath(KeyEvent keyEvent) {
+        if (keyEvent.isShiftDown() && keyEvent.getCode() == KeyCode.P) {
+            drawMousePath = !drawMousePath;
+            updateMouseIndicator();
         }
     }
 
