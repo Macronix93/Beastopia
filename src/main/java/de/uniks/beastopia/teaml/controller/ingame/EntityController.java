@@ -2,10 +2,9 @@ package de.uniks.beastopia.teaml.controller.ingame;
 
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.MoveTrainerDto;
+import de.uniks.beastopia.teaml.rest.Position;
 import de.uniks.beastopia.teaml.rest.Trainer;
 import de.uniks.beastopia.teaml.service.DataCache;
-import de.uniks.beastopia.teaml.service.PresetsService;
-import de.uniks.beastopia.teaml.sockets.UDPEventListener;
 import de.uniks.beastopia.teaml.utils.Direction;
 import de.uniks.beastopia.teaml.utils.PlayerState;
 import javafx.beans.property.ObjectProperty;
@@ -34,11 +33,8 @@ public class EntityController extends Controller {
     @FXML
     public ImageView entityView;
     @Inject
-    PresetsService presetsService;
-    @Inject
-    UDPEventListener udpEventListener;
-    @Inject
     DataCache cache;
+    private Position position;
 
     @Inject
     public EntityController() {
@@ -52,6 +48,10 @@ public class EntityController extends Controller {
         return state;
     }
 
+    public Position getPosition() {
+        return position;
+    }
+
     @Override
     public void init() {
         super.init();
@@ -59,6 +59,7 @@ public class EntityController extends Controller {
     }
 
     public void updateTrainer(MoveTrainerDto data) {
+        position = new Position(data.x(), data.y());
         setDirection(data.direction());
         index = (index + 1) % 6;
         updateViewPort();
@@ -86,7 +87,7 @@ public class EntityController extends Controller {
     public Parent render() {
         int VIEW_SIZE = 96;
         if (state.get().equals(PlayerState.JUMP)) {
-            VIEW_SIZE *= 1.2;
+            VIEW_SIZE = (int) (VIEW_SIZE * 1.2);
         }
         parent = super.render();
         entityView.toFront();
@@ -97,6 +98,9 @@ public class EntityController extends Controller {
         updateViewPort();
 
         disposables.add(cache.getOrLoadTrainerImage(trainer.image(), true).observeOn(FX_SCHEDULER).subscribe(image -> entityView.setImage(image)));
+
+        entityView.setPickOnBounds(false);
+        parent.setPickOnBounds(false);
 
         return parent;
     }

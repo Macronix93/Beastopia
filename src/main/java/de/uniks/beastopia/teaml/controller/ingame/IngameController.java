@@ -33,9 +33,12 @@ import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.util.Pair;
 
 import javax.inject.Inject;
@@ -78,6 +81,8 @@ public class IngameController extends Controller {
     private Button invHint;
     @FXML
     private HBox shopLayout;
+    @FXML
+    private AnchorPane overlay;
     @Inject
     App app;
     @Inject
@@ -113,6 +118,8 @@ public class IngameController extends Controller {
     @Inject
     Provider<ItemDetailController> itemDetailControllerProvider;
     @Inject
+    AStarService aStarService;
+    @Inject
     Prefs prefs;
     @Inject
     DataCache cache;
@@ -136,6 +143,11 @@ public class IngameController extends Controller {
     EncounterOpponentsService encounterOpponentsService;
     private Region region;
     private Map map;
+    private boolean updatingIndicator = false;
+    private final List<Node> pathTiles = new ArrayList<>();
+    private boolean autoMove = false;
+    private Position autoMoveNextPosition;
+    private Position autoMoveTargetPosition;
     private final List<Pair<TileSetDescription, Pair<TileSet, Image>>> tileSets = new ArrayList<>();
     private int posx = 0;
     private int posy = 0;
@@ -150,8 +162,8 @@ public class IngameController extends Controller {
     private ItemTypeDto lastItemTypeDto;
     private int currentMenu = MENU_NONE;
     private final java.util.Map<Pair<Integer, Integer>, List<Pair<Tile, Node>>> MAP_INFO = new HashMap<>();
-    private final List<Node> renderedTiles = new ArrayList<>();
     private final List<Node> renderedPlayers = new ArrayList<>();
+    private Pane indicator;
     Direction direction;
     final ObjectProperty<PlayerState> state = new SimpleObjectProperty<>();
     Parent player;
@@ -171,6 +183,7 @@ public class IngameController extends Controller {
     private long lastValueChangeTime = 0;
     private DialogWindowController dialogWindowController;
     private Timer timer;
+    private boolean timerPause = false;
 
     @Inject
     public IngameController() {
@@ -263,6 +276,7 @@ public class IngameController extends Controller {
             posy = trainer.y();
             updateOrigin();
 
+            timerPause = false;
             spawned = true;
         });
 
@@ -287,12 +301,20 @@ public class IngameController extends Controller {
 
         for (var list : MAP_INFO.values()) {
             for (var pair : list) {
-                if (visiblePlayers.stream().anyMatch(p -> areNeighbours.apply(p, pair.getValue())) &&
+                if (pair.getValue() != null && visiblePlayers.stream().anyMatch(p -> areNeighbours.apply(p, pair.getValue())) &&
                         pair.getKey().properties().stream().anyMatch(prop -> prop.name().equals("Roof")) &&
                         pair.getKey().properties().stream().filter(prop -> prop.name().equals("Roof")).findFirst().orElseThrow().value().equals("true")) {
                     pair.getValue().toFront();
                 }
             }
+        }
+
+        if (indicator != null) {
+            indicator.toFront();
+        }
+
+        for (var pathTile : pathTiles) {
+            pathTile.toFront();
         }
     }
 
@@ -309,6 +331,8 @@ public class IngameController extends Controller {
     @Override
     public Parent render() {
         loadingPage = LoadingPage.makeLoadingPage(super.render());
+
+        overlay.setPickOnBounds(false);
 
         currentMenu = MENU_NONE;
 
@@ -409,12 +433,20 @@ public class IngameController extends Controller {
             }
 
             if (cache.getTrainer()._id().equals(dto._id())) {
+                aStarService.updateMap(new Position(posx, posy), true);
+                aStarService.updateMap(new Position(dto.x(), dto.y()), false);
+                updateMouseIndicator();
                 playerController.updateTrainer(dto);
                 return;
             }
 
             for (EntityController entityController : otherPlayers.keySet()) {
                 if (entityController.getTrainer()._id().equals(dto._id())) {
+                    if (entityController.getPosition() != null) {
+                        aStarService.updateMap(entityController.getPosition(), true);
+                    }
+                    aStarService.updateMap(new Position(dto.x(), dto.y()), false);
+                    updateMouseIndicator();
                     entityController.updateTrainer(dto);
                     return;
                 }
@@ -445,11 +477,18 @@ public class IngameController extends Controller {
                                 soundController.play("bgm:city");
                             }
 
+                    scoreBoardLayout.setPickOnBounds(false);
+                    shopLayout.setPickOnBounds(false);
+
                             beastListParent = beastListController.render();
+                    beastListParent.setPickOnBounds(false);
                             pauseMenuParent = pauseController.render();
+                    pauseMenuParent.setPickOnBounds(false);
                             loadRemoteTrainer(trainers);
                             listenToTrainerEvents();
-                            loadingPage.setDone();
+
+
+                    loadingPage.setDone();
                         }
                 ));
     }
@@ -495,6 +534,9 @@ public class IngameController extends Controller {
         otherPlayers.put(controller, parent);
         if (prefs.getArea() != null && !prefs.getArea()._id().equals(trainer.area())) {
             hideRemotePlayer(trainer);
+        } else {
+            aStarService.updateMap(new Position(trainer.x(), trainer.y()), false);
+            updateMouseIndicator();
         }
 
         if (trainer.area().equals(cache.getTrainer().area()) && trainer.npc() == null) {
@@ -596,13 +638,14 @@ public class IngameController extends Controller {
         for (Layer layer : map.layers()) {
             if (layer.chunks() != null) {
                 for (Chunk chunk : layer.chunks()) {
-                    layTiles(chunk.x(), chunk.y(), chunk.data(), chunk.width());
+                    layTiles(layer.x() + chunk.x(), layer.y() + chunk.y(), chunk.data(), chunk.width());
                 }
             } else if (layer.data() != null) {
                 layTiles(layer.x(), layer.y(), layer.data(), layer.width());
             }
         }
 
+        aStarService.buildMap(MAP_INFO);
         updateOrigin();
     }
 
@@ -611,6 +654,7 @@ public class IngameController extends Controller {
         for (long id : data) {
             int x = index % width + chunkX;
             int y = index / width + chunkY;
+
             index++;
             long localID = id & ~(FLIPPED_HORIZONTALLY_FLAG | FLIPPED_VERTICALLY_FLAG | FLIPPED_DIAGONALLY_FLAG | ROTATED_HEXAGONAL_120_FLAG);
             Pair<Pair<TileSet, Image>, Long> tileSet = findTileSet(localID);
@@ -618,12 +662,14 @@ public class IngameController extends Controller {
                 continue;
             }
 
-            // Some maps have "invalid" (or blank tiles) with ID 0 which we don't want to draw
+            // Some maps have "invalid" (or blank tiles) width ID 0 which we don't want to draw
             // This is to prevent the camera from showing the "extended" tile pane with those tiles
             if (id != 0) {
                 List<Tile> tileInformation = tileSet.getKey().getKey().tiles();
                 Node node = drawTile(id, x, y, tileSet.getKey().getValue(), presetsService.getTileViewPort(tileSet.getValue(), tileSet.getKey().getKey()));
-                tileInformation.stream().filter(t -> t.id() == tileSet.getValue()).findFirst().ifPresent(tile -> {
+                Optional<Tile> optTile = tileInformation.stream().filter(t -> t.id() == tileSet.getValue() - 1).findFirst();
+                if (optTile.isPresent() && optTile.get().properties() != null) {
+                    Tile tile = optTile.get();
                     if (MAP_INFO.containsKey(new Pair<>(x, y))) {
                         MAP_INFO.get(new Pair<>(x, y)).add(new Pair<>(tile, node));
                     } else {
@@ -631,7 +677,16 @@ public class IngameController extends Controller {
                         list.add(new Pair<>(tile, node));
                         MAP_INFO.put(new Pair<>(x, y), list);
                     }
-                });
+                } else {
+                    Tile tile = new Tile((int) (long) tileSet.getValue(), List.of());
+                    if (MAP_INFO.containsKey(new Pair<>(x, y))) {
+                        MAP_INFO.get(new Pair<>(x, y)).add(new Pair<>(tile, node));
+                    } else {
+                        List<Pair<Tile, Node>> pairList = new ArrayList<>();
+                        pairList.add(new Pair<>(tile, node));
+                        MAP_INFO.put(new Pair<>(x, y), pairList);
+                    }
+                }
             }
         }
     }
@@ -660,7 +715,7 @@ public class IngameController extends Controller {
         view.setTranslateX(x * TILE_SIZE);
         view.setTranslateY(y * TILE_SIZE);
         view.setImage(image);
-
+        view.setOnMouseEntered(event -> drawMouseIndicator(x, y, false));
         if (flippedDiagonally) {
             view.setScaleX(-1);
             view.setRotate(90);
@@ -675,10 +730,120 @@ public class IngameController extends Controller {
         }
 
         tilePane.getChildren().add(view);
-        renderedTiles.add(view);
         view.toFront();
 
         return view;
+    }
+
+    private void drawMouseIndicator(int x, int y, boolean force) {
+        if (updatingIndicator && !force) {
+            return;
+        }
+        if (indicator != null) {
+            tilePane.getChildren().remove(indicator);
+        }
+
+        indicator = new Pane();
+        indicator.setPrefSize(TILE_SIZE, TILE_SIZE);
+        indicator.setMinSize(TILE_SIZE, TILE_SIZE);
+        indicator.setMaxSize(TILE_SIZE, TILE_SIZE);
+        indicator.setTranslateX(x * TILE_SIZE);
+        indicator.setTranslateY(y * TILE_SIZE);
+
+        boolean walkable = aStarService.isWalkable(new Position(x, y));
+        indicator.setStyle("-fx-border-color: " + (walkable ? "white" : "red") + "; -fx-border-width: 2px;");
+
+        indicator.setOnMouseExited(event -> removeMouseIndicator(false));
+        indicator.setOnMouseClicked(event -> startAutoMove(new Position(x, y)));
+
+        tilePane.getChildren().add(indicator);
+        indicator.toFront();
+
+        if (!walkable) {
+            return;
+        }
+
+        if (!autoMove) {
+            tilePane.getChildren().removeAll(pathTiles);
+            pathTiles.clear();
+            for (var pos : aStarService.findPath(new Position(posx, posy), new Position(x, y))) {
+                if (pos.x() != x || pos.y() != y) {
+                    drawPathTile(pos.x(), pos.y(), Color.BLUE);
+                }
+            }
+        }
+    }
+
+    private void drawPathTile(int x, int y, Color color) {
+        Circle pathTile = new Circle();
+        pathTile.setRadius(TILE_SIZE / 4);
+        pathTile.setCenterX(x * TILE_SIZE + TILE_SIZE / 2);
+        pathTile.setCenterY(y * TILE_SIZE + TILE_SIZE / 2);
+        pathTile.setFill(color);
+        pathTile.setStroke(color);
+        pathTile.setStrokeWidth(2);
+
+        tilePane.getChildren().add(pathTile);
+
+        pathTiles.add(pathTile);
+        pathTile.toFront();
+    }
+
+    private void removeMouseIndicator(boolean force) {
+        if (updatingIndicator && !force) {
+            return;
+        }
+        if (indicator != null) {
+            tilePane.getChildren().remove(indicator);
+            if (!autoMove) {
+                tilePane.getChildren().removeAll(pathTiles);
+                pathTiles.clear();
+            }
+        }
+    }
+
+    private void updateMouseIndicator() {
+        if (indicator == null) {
+            return;
+        }
+
+        int x = (int) Math.round(indicator.getTranslateX() / TILE_SIZE);
+        int y = (int) Math.round(indicator.getTranslateY() / TILE_SIZE);
+
+        updatingIndicator = true;
+        removeMouseIndicator(true);
+        drawMouseIndicator(x, y, true);
+        updatingIndicator = false;
+    }
+
+    private void startAutoMove(Position target) {
+        if (target.x() == posx && target.y() == posy) {
+            stopAutoMove();
+            return;
+        }
+
+        var path = aStarService.findPath(new Position(posx, posy), target);
+        if (path.isEmpty()) {
+            stopAutoMove();
+            return;
+        }
+
+        tilePane.getChildren().removeAll(pathTiles);
+        pathTiles.clear();
+        for (var pos : path) {
+            drawPathTile(pos.x(), pos.y(), Color.GREEN);
+        }
+
+        autoMoveTargetPosition = target;
+        autoMoveNextPosition = path.get(0);
+        autoMove = true;
+    }
+
+    private void stopAutoMove() {
+        autoMove = false;
+        autoMoveNextPosition = null;
+        autoMoveTargetPosition = null;
+        updateMouseIndicator();
     }
 
     public void setOrigin(int tilex, int tiley) {
@@ -722,6 +887,7 @@ public class IngameController extends Controller {
     private void drawPlayer(int posx, int posy) {
         tilePane.getChildren().remove(player);
         player = playerController.render();
+        player.setPickOnBounds(false);
         renderedPlayers.add(player);
         player.setTranslateX(posx * TILE_SIZE);
         player.setTranslateY((posy - 1) * TILE_SIZE);
@@ -730,6 +896,7 @@ public class IngameController extends Controller {
 
     private Parent drawRemotePlayer(EntityController controller, int posx, int posy) {
         Parent parent = controller.render();
+        parent.setPickOnBounds(false);
         parent.setTranslateX(posx * TILE_SIZE);
         parent.setTranslateY((posy - 1) * TILE_SIZE);
         tilePane.getChildren().add(parent);
@@ -742,6 +909,10 @@ public class IngameController extends Controller {
         playerController.updateViewPort();
         player.setTranslateX(x * TILE_SIZE);
         player.setTranslateY((y - 1) * TILE_SIZE);
+
+        aStarService.updateMap(new Position(x, y), false);
+        updateMouseIndicator();
+
         updateDrawOrder();
     }
 
@@ -778,6 +949,7 @@ public class IngameController extends Controller {
 
         scoreBoardLayout.getChildren().remove(beastDetailParent);
         beastDetailParent = controller.render();
+        beastDetailParent.setPickOnBounds(false);
         scoreBoardLayout.getChildren().add(0, beastDetailParent);
     }
 
@@ -1097,24 +1269,76 @@ public class IngameController extends Controller {
 
     public void moveLoop() {
         if (currentMenu == MENU_NONE) {
-            boolean moved = false;
-
             lastposx = posx;
             lastposy = posy;
 
+            if (autoMove) {
+                if (!pressedKeys.isEmpty()) {
+                    onUI(this::stopAutoMove);
+                    timerPause = false;
+                    return;
+                }
+
+                if (timerPause || posx == autoMoveNextPosition.x() && posy == autoMoveNextPosition.y()) {
+                    return;
+                }
+
+                timerPause = true;
+
+                if (posx < autoMoveNextPosition.x()) direction = Direction.RIGHT;
+                else if (posx > autoMoveNextPosition.x()) direction = Direction.LEFT;
+                else if (posy < autoMoveNextPosition.y()) direction = Direction.DOWN;
+                else if (posy > autoMoveNextPosition.y()) direction = Direction.UP;
+
+                posx = autoMoveNextPosition.x();
+                posy = autoMoveNextPosition.y();
+
+                onUI(() -> {
+                    aStarService.updateMap(new Position(lastposx, lastposy), true);
+                    aStarService.updateMap(new Position(posx, posy), false);
+
+                    updateMouseIndicator();
+
+                    state.setValue(PlayerState.WALKING);
+                    updateTrainerPos(direction);
+                    updateOrigin();
+
+                    startAutoMove(autoMoveTargetPosition);
+                });
+                return;
+            }
+
+            boolean moved = false;
+
             if (pressedKeys.contains(KeyCode.UP) || pressedKeys.contains(KeyCode.W)) {
+                if (!aStarService.isWalkable(new Position(posx, posy - 1))) {
+                    return;
+                }
+
                 posy--;
                 direction = Direction.UP;
                 moved = true;
             } else if (pressedKeys.contains(KeyCode.DOWN) || pressedKeys.contains(KeyCode.S)) {
+                if (!aStarService.isWalkable(new Position(posx, posy + 1))) {
+                    return;
+                }
+
                 posy++;
                 direction = Direction.DOWN;
                 moved = true;
             } else if (pressedKeys.contains(KeyCode.LEFT) || pressedKeys.contains(KeyCode.A)) {
+                if (!aStarService.isWalkable(new Position(posx - 1, posy))) {
+                    return;
+                }
+
                 posx--;
                 direction = Direction.LEFT;
                 moved = true;
             } else if (pressedKeys.contains(KeyCode.RIGHT) || pressedKeys.contains(KeyCode.D)) {
+                if (!aStarService.isWalkable(new Position(posx + 1, posy))) {
+                    return;
+                }
+
                 posx++;
                 direction = Direction.RIGHT;
                 moved = true;
@@ -1124,6 +1348,9 @@ public class IngameController extends Controller {
                 checkMovementAchievement();
 
                 onUI(() -> {
+                    aStarService.updateMap(new Position(lastposx, lastposy), true);
+                    aStarService.updateMap(new Position(posx, posy), false);
+                    updateMouseIndicator();
                     state.setValue(PlayerState.WALKING);
                     updateTrainerPos(direction);
                     updateOrigin();
@@ -1250,6 +1477,7 @@ public class IngameController extends Controller {
             currentMenu = MENU_NONE;
         } else {
             scoreBoardParent = scoreBoardController.render();
+            scoreBoardParent.setPickOnBounds(false);
             scoreBoardLayout.getChildren().add(scoreBoardParent);
             currentMenu = MENU_SCOREBOARD;
         }
@@ -1285,6 +1513,7 @@ public class IngameController extends Controller {
                     setCloseRequests(scoreBoardLayout, itemDetailParent);
                 });
                 inventoryParent = inventoryController.render();
+                inventoryParent.setPickOnBounds(false);
                 scoreBoardLayout.getChildren().add(inventoryParent);
             }
         }
@@ -1332,6 +1561,7 @@ public class IngameController extends Controller {
                 inventoryController.destroy();
             });
             inventoryParent = inventoryController.render();
+            inventoryParent.setPickOnBounds(false);
             scoreBoardLayout.getChildren().add(inventoryParent);
         }
     }
@@ -1363,6 +1593,7 @@ public class IngameController extends Controller {
             shopController.destroy();
         });
         shopParent = shopController.render();
+        shopParent.setPickOnBounds(false);
         shopLayout.getChildren().add(shopParent);
         currentMenu = MENU_SHOP;
         openInventory(true);
@@ -1400,6 +1631,7 @@ public class IngameController extends Controller {
         scoreBoardLayout.getChildren().remove(itemDetailParent);
         shopLayout.getChildren().remove(itemDetailParent);
         itemDetailParent = controller.render();
+        itemDetailParent.setPickOnBounds(false);
         if (booleanShop) {
             shopLayout.getChildren().add(1, itemDetailParent);
             shopLayout.toFront();
