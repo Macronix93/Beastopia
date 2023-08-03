@@ -83,6 +83,7 @@ public class IngameController extends Controller {
     static final int MENU_INVENTORY = 5;
     static final int MENU_DIALOGWINDOW = 3;
     static final int MENU_MONDEXLIST = 6;
+    static final int MENU_MAP = 7;
     static final long FLIPPED_HORIZONTALLY_FLAG = 1L << 31;
     static final long FLIPPED_VERTICALLY_FLAG = 1L << 30;
     static final long FLIPPED_DIAGONALLY_FLAG = 1L << 29;
@@ -1155,7 +1156,7 @@ public class IngameController extends Controller {
     }
 
     private void handleMap(KeyEvent keyEvent) {
-        if (keyEvent.getCode().equals(KeyCode.M)) {
+        if (keyEvent.getCode().equals(KeyCode.M) && (currentMenu == MENU_NONE || currentMenu == MENU_MAP)) {
             MapController map = mapControllerProvider.get();
             app.show(map);
         }
