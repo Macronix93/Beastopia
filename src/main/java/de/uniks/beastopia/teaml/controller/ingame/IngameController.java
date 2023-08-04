@@ -180,7 +180,7 @@ public class IngameController extends Controller {
     private boolean updatingIndicator = false;
     private final List<Node> pathTiles = new ArrayList<>();
     private boolean autoMove = false;
-    private Position autoMoveNextPosition;
+    private List<Position> autoMovePath;
     private Position autoMoveTargetPosition;
     private int posx = 0;
     private int posy = 0;
@@ -328,16 +328,16 @@ public class IngameController extends Controller {
             return Math.abs(x1 - x2) <= 1 && Math.abs(y1 - y2) <= 1;
         };
 
-        List<Node> visiblePlayers = renderedPlayers.stream()
-                .filter(node -> tilePane.getChildren().contains(node))
-                .sorted(Comparator.comparingInt(node -> (int) node.getTranslateY()))
-                .toList();
+        Node[] visiblePlayers = (Node[]) renderedPlayers.stream()
+                .filter(node -> node != null && tilePane.getChildrenUnmodifiable().contains(node))
+                .sorted(Comparator.comparingDouble(Node::getTranslateY))
+                .toArray();
 
-        visiblePlayers.forEach(Node::toFront);
+        Arrays.stream(visiblePlayers).forEach(Node::toFront);
 
         for (var list : MAP_INFO.values()) {
             for (var pair : list) {
-                if (pair.getValue() != null && visiblePlayers.stream().anyMatch(p -> areNeighbours.apply(p, pair.getValue())) &&
+                if (pair.getValue() != null && Arrays.stream(visiblePlayers).anyMatch(p -> areNeighbours.apply(p, pair.getValue())) &&
                         pair.getKey().properties().stream().anyMatch(prop -> prop.name().equals("Roof")) &&
                         pair.getKey().properties().stream().filter(prop -> prop.name().equals("Roof")).findFirst().orElseThrow().value().equals("true")) {
                     pair.getValue().toFront();
@@ -865,8 +865,16 @@ public class IngameController extends Controller {
         if (destroying) {
             return;
         }
+
         if (target.x() == posx && target.y() == posy) {
             stopAutoMove();
+            return;
+        }
+
+        if (aStarService.isJumpable(new Position(posx, posy))) {
+            autoMovePath.remove(0);
+            autoMoveTargetPosition = target;
+            autoMove = true;
             return;
         }
 
@@ -883,7 +891,7 @@ public class IngameController extends Controller {
         }
 
         autoMoveTargetPosition = target;
-        autoMoveNextPosition = path.get(0);
+        autoMovePath = path;
         autoMove = true;
     }
 
@@ -892,7 +900,7 @@ public class IngameController extends Controller {
             return;
         }
         autoMove = false;
-        autoMoveNextPosition = null;
+        autoMovePath = new ArrayList<>();
         autoMoveTargetPosition = null;
         updateMouseIndicator();
     }
@@ -1352,7 +1360,7 @@ public class IngameController extends Controller {
     }
 
     private void handleDrawMousePath(KeyEvent keyEvent) {
-        if (keyEvent.isShiftDown() && keyEvent.getCode() == KeyCode.P) {
+        if (keyEvent.isControlDown() && keyEvent.isAltDown() && keyEvent.getCode() == KeyCode.P) {
             drawMousePath = !drawMousePath;
             updateMouseIndicator();
         }
@@ -1422,6 +1430,8 @@ public class IngameController extends Controller {
                     return;
                 }
 
+                Position autoMoveNextPosition = autoMovePath.get(0);
+
                 if (timerPause || posx == autoMoveNextPosition.x() && posy == autoMoveNextPosition.y()) {
                     return;
                 }
@@ -1454,7 +1464,8 @@ public class IngameController extends Controller {
             boolean moved = false;
 
             if (pressedKeys.contains(KeyCode.UP) || pressedKeys.contains(KeyCode.W)) {
-                if (!aStarService.isWalkable(new Position(posx, posy - 1))) {
+                if (!aStarService.isWalkable(new Position(posx, posy - 1)) &&
+                        !aStarService.isJumpableFrom(new Position(posx, posy), new Position(posx, posy - 1))) {
                     return;
                 }
 
@@ -1462,7 +1473,8 @@ public class IngameController extends Controller {
                 direction = Direction.UP;
                 moved = true;
             } else if (pressedKeys.contains(KeyCode.DOWN) || pressedKeys.contains(KeyCode.S)) {
-                if (!aStarService.isWalkable(new Position(posx, posy + 1))) {
+                if (!aStarService.isWalkable(new Position(posx, posy + 1)) &&
+                        !aStarService.isJumpableFrom(new Position(posx, posy), new Position(posx, posy + 1))) {
                     return;
                 }
 
@@ -1470,7 +1482,8 @@ public class IngameController extends Controller {
                 direction = Direction.DOWN;
                 moved = true;
             } else if (pressedKeys.contains(KeyCode.LEFT) || pressedKeys.contains(KeyCode.A)) {
-                if (!aStarService.isWalkable(new Position(posx - 1, posy))) {
+                if (!aStarService.isWalkable(new Position(posx - 1, posy)) &&
+                        !aStarService.isJumpableFrom(new Position(posx, posy), new Position(posx - 1, posy))) {
                     return;
                 }
 
@@ -1478,7 +1491,8 @@ public class IngameController extends Controller {
                 direction = Direction.LEFT;
                 moved = true;
             } else if (pressedKeys.contains(KeyCode.RIGHT) || pressedKeys.contains(KeyCode.D)) {
-                if (!aStarService.isWalkable(new Position(posx + 1, posy))) {
+                if (!aStarService.isWalkable(new Position(posx + 1, posy)) &&
+                        !aStarService.isJumpableFrom(new Position(posx, posy), new Position(posx + 1, posy))) {
                     return;
                 }
 
