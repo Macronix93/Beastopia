@@ -140,8 +140,16 @@ public class ItemDetailController extends Controller {
         if (onlyInventory) { //use
             usage = "use";
             switch (itemType.use()) {
-                case "itemBox" -> listenToNewItem();
-                case "monsterBox" -> listenToNewMonster();
+                case "itemBox" -> {
+                    if (cache.getCurrentEncounter() == null) {
+                        listenToNewItem();
+                    }
+                }
+                case "monsterBox" -> {
+                    if (cache.getCurrentEncounter() == null) {
+                        listenToNewMonster();
+                    }
+                }
                 case "effect" -> {
                     if (cache.getCurrentEncounter() != null) {
                         if (encounterController.getChosenMonster().isEmpty()) {
@@ -155,7 +163,13 @@ public class ItemDetailController extends Controller {
                                         new UseItemMove("use-item", itemType.id(), encounterController.getChosenMonster())
                                 )
                                 .observeOn(FX_SCHEDULER)
-                                .subscribe(System.out::println));
+                                .subscribe(item -> {
+                                    encounterController.itemBox.getChildren().clear();
+                                    encounterController.anchorPane.toBack();
+                                    encounterController.anchorPane.setStyle("-fx-background-color: none;");
+                                }));
+
+
                     } else {
                         ingameController.openBeastlist("shop", this);
                     }

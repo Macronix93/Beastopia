@@ -23,8 +23,10 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
@@ -38,7 +40,13 @@ import java.util.Stack;
 @SuppressWarnings("unused")
 public class EncounterController extends Controller {
     @FXML
-    VBox inventoryLayout;
+    public VBox inventoryLayout;
+    @FXML
+    public HBox itemBox;
+    @FXML
+    public AnchorPane anchorPane;
+    @FXML
+    StackPane stack;
     @FXML
     VBox attackBox1;
     @FXML
@@ -379,6 +387,10 @@ public class EncounterController extends Controller {
                                                         actionInfoText.appendText(getMonsterName(result.monster(), null) + " got status damage. It was " + result.effectiveness() + "!\n");
                                                 case "target-unknown" ->
                                                         actionInfoText.appendText(getMonsterName(result.monster(), null) + " missed the attack!\n");
+                                                case "item-success" ->
+                                                        actionInfoText.appendText(getMonsterName(result.monster(), null) + " successfully used an item!\n");
+                                                case "item-failed" ->
+                                                        actionInfoText.appendText(getMonsterName(result.monster(), null) + " used an item, but it failed!\n");
                                             }
                                             if (result.status() != null && !result.type().equals("status-removed") && !result.type().equals("status-damage")) {
                                                 actionInfoText.appendText(prefix + getMonsterName(result.monster(), null) + " is " + result.status() + "!\n");
@@ -473,14 +485,10 @@ public class EncounterController extends Controller {
                         .findFirst()
                         .ifPresent(opponent -> renderBeastController2.setMonsterOneOpponentId(opponent._id()));
             } else {
-                System.out.println("encounter is not wild");
                 cache.getCurrentOpponents().stream()
                         .filter(opponent -> opponent.monster() == null ? opponent.trainer().equals(this.enemyTrainer._id()) : opponent.monster().equals(enemyBeastInfoController1.getMonster()._id()))
                         .findFirst()
-                        .ifPresent(opponent -> {
-                            System.out.println("found opponent: " + opponent._id());
-                            renderBeastController2.setMonsterOneOpponentId(opponent._id());
-                        });
+                        .ifPresent(opponent -> renderBeastController2.setMonsterOneOpponentId(opponent._id()));
             }
             disposables.add(eventListener.listen("trainers." +
                             (cache.getCurrentEncounter().isWild() ? wildTrainerId : (this.enemyTrainer == null ? this.enemyAllyTrainer._id() : this.enemyTrainer._id())) + ".monsters." + this.enemyMonster._id() + ".updated", Monster.class)
@@ -610,32 +618,29 @@ public class EncounterController extends Controller {
 
     @FXML
     public void showItems() {
+        hasToChooseEnemy = false;
         if (inventoryController != null) {
             inventoryController.destroy();
-            inventoryLayout.getChildren().remove(inventoryParent);
+            itemBox.getChildren().remove(inventoryParent);
         }
-        inventoryLayout.setVisible(true);
         InventoryController inventoryController = inventoryControllerProvider.get();
         inventoryParent = inventoryController.render();
-        VBox.setVgrow(inventoryParent, javafx.scene.layout.Priority.ALWAYS);
         inventoryController.setIfShop(false);
         inventoryController.setOnItemClicked(this::toggleInventoryItemDetails);
         inventoryController.setOnCloseRequest(() -> {
-            inventoryLayout.setVisible(false);
-            setCloseRequests(inventoryLayout, inventoryParent);
-            setCloseRequests(inventoryLayout, itemDetailParent);
+            itemBox.getChildren().remove(itemDetailParent);
+            itemBox.getChildren().remove(inventoryParent);
+            anchorPane.toBack();
+            anchorPane.setStyle("-fx-background-color: none;");
         });
-
-        inventoryLayout.getChildren().add(inventoryParent);
-    }
-
-    public void setCloseRequests(VBox vBox, Parent parent) {
-        vBox.getChildren().remove(parent);
+        itemBox.getChildren().add(inventoryParent);
+        anchorPane.toFront();
+        anchorPane.setStyle("-fx-background-color: rgba(0,0,0,0.5);");
     }
 
     public void toggleInventoryItemDetails(ItemTypeDto itemTypeDto) {
         if (Objects.equals(lastItemTypeDto, itemTypeDto)) {
-            inventoryLayout.getChildren().remove(itemDetailParent);
+            itemBox.getChildren().remove(itemDetailParent);
             lastItemTypeDto = null;
             return;
         }
@@ -647,16 +652,13 @@ public class EncounterController extends Controller {
         ItemDetailController controller = itemDetailControllerProvider.get();
         controller.setInventoryController(inventoryController);
         controller.setEncounterController(this);
-        //subControllers.add(controller);
         controller.setItem(itemTypeDto);
         controller.setBooleanShop(false);
         controller.setOnlyInventory(onlyInventory);
         controller.init();
-        inventoryLayout.getChildren().remove(itemDetailParent);
-        //shopLayout.getChildren().remove(itemDetailParent);
+        itemBox.getChildren().remove(itemDetailParent);
         itemDetailParent = controller.render();
-        inventoryLayout.getChildren().add(0, itemDetailParent);
-        inventoryLayout.toFront();
+        itemBox.getChildren().add(0, itemDetailParent);
     }
 
     private void showChangeBeast() {
@@ -826,15 +828,14 @@ public class EncounterController extends Controller {
     }
 
     public void fightIsOver() {
-        Monster myMon = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), myMonster._id()).blockingFirst();
         EndScreenController endScreenController;
 
-        if (myMon.currentAttributes().health() <= 0) {
+        if (myMonster.currentAttributes().health() <= 0) {
             endScreenController = setEndScreen(false, myMonster, allyMonster, enemyMonster, enemyAllyMonster);
             app.show(endScreenController);
         } else {
             endScreenController = setEndScreen(true, enemyMonster, enemyAllyMonster, myMonster, allyMonster);
-            levelUp(myMon, endScreenController);
+            levelUp(myMonster, endScreenController);
         }
     }
 
@@ -1001,6 +1002,7 @@ public class EncounterController extends Controller {
     }
 
     public EndScreenController setEndScreen(boolean wonFight, Monster loser1, Monster loser2, Monster winner1, Monster winner2) {
+        cache.setCurrentEncounter(null);
         EndScreenController controller = endScreenControllerProvider.get();
         controller.setWinner(wonFight);
         if (wonFight) {
