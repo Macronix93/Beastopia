@@ -153,6 +153,7 @@ public class ItemDetailController extends Controller {
                 case "effect" -> {
                     if (cache.getCurrentEncounter() != null) {
                         if (encounterController.getChosenMonster().currentAttributes().health() <= 0) {
+                            encounterController.actionInfoText.appendText("Beast is dead. Choose a new one!\n");
                             return;
                         }
                         disposables.add(encounterOpponentsService.updateEncounterOpponent(

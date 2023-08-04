@@ -64,7 +64,7 @@ public class EncounterController extends Controller {
     @FXML
     VBox actionInfoBox;
     @FXML
-    TextArea actionInfoText;
+    public TextArea actionInfoText;
     @FXML
     VBox beastInfoBox;
     @FXML
@@ -820,7 +820,7 @@ public class EncounterController extends Controller {
                                 oldLevel = myMonster.level();
                                 oldHp = myMonster.attributes().health();
                             }
-                    ));
+                            , error -> System.err.println("Error: " + error.getMessage())));
         } else {
             hasToChooseEnemy = true;
             actionInfoText.appendText("Please choose a target!\n");
