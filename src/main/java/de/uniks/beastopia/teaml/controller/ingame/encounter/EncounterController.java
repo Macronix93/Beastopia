@@ -47,6 +47,8 @@ public class EncounterController extends Controller {
     @FXML
     public AnchorPane anchorPane;
     @FXML
+    public VBox catchInfoBox;
+    @FXML
     StackPane stack;
     @FXML
     VBox attackBox1;
@@ -916,7 +918,6 @@ public class EncounterController extends Controller {
                     }
                     if (!foundMonsterWithHP) {
                         EndScreenController endScreenController;
-                        //Monster myMon = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), myMonster._id()).blockingFirst();
                         endScreenController = setEndScreen(true, enemyMonster, enemyAllyMonster, myMonster, allyMonster);
                         levelUp(myMonster, endScreenController);
                     }
@@ -925,8 +926,6 @@ public class EncounterController extends Controller {
         } else {
             if (enemyMonster.currentAttributes().health() <= 0) {
                 EndScreenController endScreenController;
-                //Monster myMon = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), myMonster._id()).blockingFirst();
-                System.out.println("called win bei enemy");
                 endScreenController = setEndScreen(true, enemyMonster, enemyAllyMonster, myMonster, allyMonster);
                 levelUp(myMonster, endScreenController);
             }
@@ -1048,5 +1047,10 @@ public class EncounterController extends Controller {
 
     public String getChosenTarget() {
         return chosenTarget;
+    }
+
+    private void setCatchInfoBox() {
+        //TODO infocontroller.seton closerequest
+        //setbeasttype
     }
 }
