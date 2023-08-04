@@ -21,25 +21,6 @@ import de.uniks.beastopia.teaml.controller.menu.PauseController;
 import de.uniks.beastopia.teaml.rest.Map;
 import de.uniks.beastopia.teaml.rest.*;
 import de.uniks.beastopia.teaml.service.*;
-import de.uniks.beastopia.teaml.rest.Monster;
-import de.uniks.beastopia.teaml.rest.MonsterTypeDto;
-import de.uniks.beastopia.teaml.rest.MoveTrainerDto;
-import de.uniks.beastopia.teaml.rest.Opponent;
-import de.uniks.beastopia.teaml.rest.Region;
-import de.uniks.beastopia.teaml.rest.Tile;
-import de.uniks.beastopia.teaml.rest.TileProperty;
-import de.uniks.beastopia.teaml.rest.TileSet;
-import de.uniks.beastopia.teaml.rest.TileSetDescription;
-import de.uniks.beastopia.teaml.rest.Trainer;
-import de.uniks.beastopia.teaml.service.AchievementsService;
-import de.uniks.beastopia.teaml.service.AreaService;
-import de.uniks.beastopia.teaml.service.DataCache;
-import de.uniks.beastopia.teaml.service.EncounterOpponentsService;
-import de.uniks.beastopia.teaml.service.MondexService;
-import de.uniks.beastopia.teaml.service.PresetsService;
-import de.uniks.beastopia.teaml.service.RegionEncountersService;
-import de.uniks.beastopia.teaml.service.TokenStorage;
-import de.uniks.beastopia.teaml.service.TrainerService;
 import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.sockets.UDPEventListener;
 import de.uniks.beastopia.teaml.utils.*;
@@ -347,16 +328,16 @@ public class IngameController extends Controller {
             return Math.abs(x1 - x2) <= 1 && Math.abs(y1 - y2) <= 1;
         };
 
-        Node[] visiblePlayers = (Node[]) renderedPlayers.stream()
+        List<Node> visiblePlayers = renderedPlayers.stream()
                 .filter(node -> node != null && tilePane.getChildrenUnmodifiable().contains(node))
                 .sorted(Comparator.comparingDouble(Node::getTranslateY))
-                .toArray();
+                .toList();
 
-        Arrays.stream(visiblePlayers).forEach(Node::toFront);
+        visiblePlayers.forEach(Node::toFront);
 
         for (var list : MAP_INFO.values()) {
             for (var pair : list) {
-                if (pair.getValue() != null && Arrays.stream(visiblePlayers).anyMatch(p -> areNeighbours.apply(p, pair.getValue())) &&
+                if (pair.getValue() != null && visiblePlayers.stream().anyMatch(p -> areNeighbours.apply(p, pair.getValue())) &&
                         pair.getKey().properties().stream().anyMatch(prop -> prop.name().equals("Roof")) &&
                         pair.getKey().properties().stream().filter(prop -> prop.name().equals("Roof")).findFirst().orElseThrow().value().equals("true")) {
                     pair.getValue().toFront();
