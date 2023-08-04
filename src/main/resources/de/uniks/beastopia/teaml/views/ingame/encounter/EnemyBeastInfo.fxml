@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!--suppress JavaFxUnresolvedFxIdReference -->
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="70.0"
-      prefWidth="300.0" style="-fx-border-color: black;" xmlns="http://javafx.com/javafx/17.0.2-ea"
+<VBox fx:id="enemyBeastInfoContainer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+      minWidth="-Infinity" prefHeight="70.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/19"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="de.uniks.beastopia.teaml.controller.ingame.encounter.EnemyBeastInfoController">
     <HBox alignment="CENTER" prefHeight="30.0" prefWidth="200.0" spacing="5.0">
@@ -45,9 +48,10 @@
             <HBox.margin>
                 <Insets right="10.0"/>
             </HBox.margin>
-            <HBox fx:id="lifeBar" alignment="CENTER_LEFT" style="-fx-border-color: black;"/>
+            <HBox fx:id="lifeBar" alignment="CENTER_LEFT" style="-fx-border-color: #B15C5A; -fx-border-radius: 5;"/>
             <HBox fx:id="lifeBarValue" alignment="CENTER_LEFT"
-                  style="-fx-background-color: red; -fx-border-color: black;" StackPane.alignment="CENTER_LEFT"/>
+                  style="-fx-background-color: #F8CECC; -fx-background-radius: 5; -fx-border-color: #B15C5A; -fx-border-radius: 5;"
+                  StackPane.alignment="CENTER_LEFT"/>
         </StackPane>
     </HBox>
 </VBox>

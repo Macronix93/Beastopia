@@ -2,7 +2,18 @@ package de.uniks.beastopia.teaml.service;
 
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.Main;
-import de.uniks.beastopia.teaml.rest.*;
+import de.uniks.beastopia.teaml.rest.AbilityDto;
+import de.uniks.beastopia.teaml.rest.Achievement;
+import de.uniks.beastopia.teaml.rest.Area;
+import de.uniks.beastopia.teaml.rest.Encounter;
+import de.uniks.beastopia.teaml.rest.Item;
+import de.uniks.beastopia.teaml.rest.ItemTypeDto;
+import de.uniks.beastopia.teaml.rest.MonsterTypeDto;
+import de.uniks.beastopia.teaml.rest.Opponent;
+import de.uniks.beastopia.teaml.rest.Region;
+import de.uniks.beastopia.teaml.rest.TileSet;
+import de.uniks.beastopia.teaml.rest.Trainer;
+import de.uniks.beastopia.teaml.rest.User;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Scheduler;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -23,9 +34,12 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.*;
+import java.util.Objects;
 
 import static de.uniks.beastopia.teaml.service.PresetsService.PREVIEW_SCALING;
 
@@ -43,6 +57,7 @@ public class DataCache {
     private final List<String> visitedAreas = new ArrayList<>();
     private final Map<Integer, Image> itemImages = new HashMap<>();
     private final Map<Integer, Image> monsterImages = new HashMap<>();
+    private final Map<Integer, AbilityDto> abilities = new HashMap<>();
     Trainer trainer;
     Region joinedRegion;
     Encounter currentEncounter;
@@ -51,13 +66,13 @@ public class DataCache {
     private List<User> users = new ArrayList<>();
     private List<Area> areas = new ArrayList<>();
     private List<Achievement> myAchievements = new ArrayList<>();
-    private List<MonsterTypeDto> allBeasts = new ArrayList<>();
-    private List<Opponent> currentOpponents = new ArrayList<>();
     private TileSet mapTileset;
     private Image mapImage;
     private List<ItemTypeDto> presetItems = new ArrayList<>();
     private List<Item> trainerItems = new ArrayList<>();
     private List<Item> items = new ArrayList<>();
+    private List<Opponent> currentOpponents = new ArrayList<>();
+    private List<MonsterTypeDto> allBeasts = new ArrayList<>();
 
     @Inject
     public DataCache() {
@@ -355,6 +370,25 @@ public class DataCache {
         this.currentOpponents = new ArrayList<>(opponents);
     }
 
+    public void updateCurrentOpponents(Opponent opponentUpdate) {
+        for (int i = 0; i < currentOpponents.size(); i++) {
+            Opponent o = currentOpponents.get(i);
+            if (o._id().equals(opponentUpdate._id())) {
+                currentOpponents.set(i, opponentUpdate);
+                break;
+            }
+        }
+    }
+
+    public void removeOpponent(String opponentId) {
+        for (Opponent o : currentOpponents) {
+            if (o._id().equals(opponentId)) {
+                currentOpponents.remove(o);
+                break;
+            }
+        }
+    }
+
     public void addCurrentOpponent(Opponent o) {
         this.currentOpponents.add(o);
     }
@@ -455,6 +489,7 @@ public class DataCache {
     public Image getMapImage() {
         return this.mapImage;
     }
+
     public void setPresetItems(List<ItemTypeDto> presetItems) {
         this.presetItems = presetItems;
     }
@@ -470,6 +505,7 @@ public class DataCache {
     public void setItems(List<Item> i) {
         this.items = i;
     }
+
     public List<ItemTypeDto> getPresetItems() {
         return this.presetItems;
     }
@@ -492,5 +528,9 @@ public class DataCache {
 
     public List<Item> getTrainerItems() {
         return this.trainerItems;
+    }
+
+    public Map<Integer, AbilityDto> getAbilities() {
+        return abilities;
     }
 }

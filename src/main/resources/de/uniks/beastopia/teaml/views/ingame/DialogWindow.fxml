@@ -3,21 +3,23 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 <VBox fx:id="dialogWindow" alignment="CENTER" onKeyPressed="#handleKeyEvent" style="-fx-opacity: 0.9"
       xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="de.uniks.beastopia.teaml.controller.ingame.DialogWindowController">
     <HBox alignment="CENTER" spacing="10.0">
-        <VBox fx:id="imageBox" alignment="CENTER" style="-fx-opacity: 1" spacing="15.0">
+        <VBox fx:id="imageBox" alignment="CENTER" spacing="15.0" style="-fx-opacity: 1">
             <ImageView fx:id="trainerImageView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true"
                        preserveRatio="true"/>
         </VBox>
         <VBox alignment="CENTER">
             <VBox fx:id="textBox" alignment="CENTER" style="-fx-opacity: 1">
-                <Text fx:id="dialogText" strokeType="OUTSIDE" strokeWidth="0.0" VBox.vgrow="ALWAYS"/>
+                <Text fx:id="dialogText" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="200.0"
+                      VBox.vgrow="ALWAYS"/>
             </VBox>
-            <HBox fx:id="choiceBox" alignment="CENTER_RIGHT" style="-fx-opacity: 1" spacing="10.0">
+            <HBox fx:id="choiceBox" alignment="CENTER_RIGHT" spacing="10.0" style="-fx-opacity: 1">
                 <padding>
                     <Insets bottom="10.0" top="10.0"/>
                 </padding>
@@ -27,7 +29,7 @@
             <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
         </padding>
     </HBox>
-    <HBox alignment="BOTTOM_LEFT" style="-fx-opacity: 1" spacing="10.0">
+    <HBox alignment="BOTTOM_LEFT" spacing="10.0" style="-fx-opacity: 1">
         <!--suppress JavaFxUnresolvedFxIdReference -->
         <Button fx:id="closeButton" alignment="BOTTOM_LEFT" contentDisplay="BOTTOM" mnemonicParsing="false"
                 onAction="#close" text="Close"/>

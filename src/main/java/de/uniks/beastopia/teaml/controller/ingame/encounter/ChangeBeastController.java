@@ -3,6 +3,7 @@ package de.uniks.beastopia.teaml.controller.ingame.encounter;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.ChangeMonsterMove;
 import de.uniks.beastopia.teaml.rest.Monster;
+import de.uniks.beastopia.teaml.rest.Opponent;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.EncounterOpponentsService;
 import de.uniks.beastopia.teaml.service.TrainerService;
@@ -38,16 +39,27 @@ public class ChangeBeastController extends Controller {
     DataCache cache;
     @Inject
     Provider<ChangeBeastElementController> changeBeastElementControllerProvider;
-    private Monster currentMonster;
+    private Monster monsterToSwap;
+    private Monster allyMonster;
+    private String opponentId;
     private EncounterController encounterController;
     private LoadingPage loadingPage;
+    private boolean hasToSwapMonsterOne;
 
     @Inject
     public ChangeBeastController() {
     }
 
-    public void setCurrentMonster(Monster currentMonster) {
-        this.currentMonster = currentMonster;
+    public void setMonsterToSwap(Monster currentMonster) {
+        this.monsterToSwap = currentMonster;
+    }
+
+    public void setAllyMonster(Monster allyMonster) {
+        this.allyMonster = allyMonster;
+    }
+
+    public void setOpponentId(String opponent) {
+        this.opponentId = opponent;
     }
 
     public void setEncounterController(EncounterController controller) {
@@ -74,9 +86,7 @@ public class ChangeBeastController extends Controller {
 
                             subControllers.add(controller);
 
-                            if (teamMonster._id().equals(currentMonster._id())) {
-                                currentMonster = teamMonster;
-
+                            if (teamMonster._id().equals(monsterToSwap._id())) {
                                 fightingMonsters.add(teamMonster);
                                 currentBeasts.getChildren().add(controller.render());
                             } else {
@@ -94,7 +104,7 @@ public class ChangeBeastController extends Controller {
 
     @FXML
     public void back() {
-        app.show(encounterController.setOwnMonster(currentMonster));
+        app.showPrevious();
     }
 
     @FXML
@@ -105,44 +115,47 @@ public class ChangeBeastController extends Controller {
             Dialog.error(resources.getString("error"), resources.getString("twoMonSelected"));
         } else if (fightingMonsters.get(0).currentAttributes().health() == 0) {
             Dialog.error(resources.getString("error"), resources.getString("monNoHPLeft"));
-        } else if (currentMonster._id().equals(fightingMonsters.get(0)._id())) {
+        } else if (monsterToSwap._id().equals(fightingMonsters.get(0)._id())) {
             Dialog.error(resources.getString("error"), resources.getString("currentMonIsSame"));
+        } else if (allyMonster != null && fightingMonsters.get(0)._id().equals(allyMonster._id())) {
+            Dialog.error(resources.getString("error"), resources.getString("currentMonAlreadyFighting"));
         } else {
             disposables.add(encounterOpponentsService.getTrainerOpponents(cache.getJoinedRegion()._id(), cache.getTrainer()._id())
                     .subscribe(opponents -> {
-                        String opponentId = cache.getOpponentByTrainerID(cache.getTrainer()._id())._id();
-                        String monsterId = (opponents.get(0).monster() == null) ? fightingMonsters.get(0)._id() : null;
-
                         // Switch monster without expending a move. Otherwise, make a move
-                        if (opponents.get(0).monster() == null) {
-                            disposables.add(encounterOpponentsService.updateEncounterOpponent(
-                                            cache.getJoinedRegion()._id(),
-                                            cache.getCurrentEncounter()._id(),
-                                            opponentId,
-                                            fightingMonsters.get(0)._id()
-                                    )
-                                    .observeOn(FX_SCHEDULER)
-                                    .subscribe(update -> {
-                                        encounterController.setOwnMonster(fightingMonsters.get(0));
-                                        encounterController.setToUpdateUIOnChange();
-                                        app.show(encounterController);
-                                    }));
-                        } else {
-                            disposables.add(encounterOpponentsService.updateEncounterOpponent(
-                                            cache.getJoinedRegion()._id(),
-                                            cache.getCurrentEncounter()._id(),
-                                            opponentId,
-                                            monsterId,
-                                            new ChangeMonsterMove("change-monster", fightingMonsters.get(0)._id())
-                                    )
-                                    .observeOn(FX_SCHEDULER)
-                                    .subscribe(update -> {
-                                        encounterController.setOwnMonster(fightingMonsters.get(0));
-                                        encounterController.setToUpdateUIOnChange();
-                                        app.show(encounterController);
-                                    }));
+                        for (Opponent opponent : opponents) {
+                            if (opponent._id().equals(opponentId)) {
+                                if (opponent.monster() == null) {
+                                    disposables.add(encounterOpponentsService.updateEncounterOpponent(
+                                                    cache.getJoinedRegion()._id(),
+                                                    cache.getCurrentEncounter()._id(),
+                                                    opponent._id(),
+                                                    fightingMonsters.get(0)._id()
+                                            )
+                                            .observeOn(FX_SCHEDULER)
+                                            .subscribe(update -> {
+                                                cache.updateCurrentOpponents(update);
+                                                setChangedMonster();
+                                                app.show(encounterController);
+                                            }));
+                                } else {
+                                    disposables.add(encounterOpponentsService.updateEncounterOpponent(
+                                                    cache.getJoinedRegion()._id(),
+                                                    cache.getCurrentEncounter()._id(),
+                                                    opponent._id(),
+                                                    null,
+                                                    new ChangeMonsterMove("change-monster", fightingMonsters.get(0)._id())
+                                            )
+                                            .observeOn(FX_SCHEDULER)
+                                            .subscribe(update -> {
+                                                cache.updateCurrentOpponents(update);
+                                                setChangedMonster();
+                                                encounterController.setToUpdateUIOnChange();
+                                                app.show(encounterController);
+                                            }));
+                                }
+                            }
                         }
-
                     }));
         }
     }
@@ -153,6 +166,18 @@ public class ChangeBeastController extends Controller {
 
     public List<Monster> getBankMonsters() {
         return this.bankMonsters;
+    }
+
+    public void monsterInSlotOne(boolean value) {
+        this.hasToSwapMonsterOne = value;
+    }
+
+    private void setChangedMonster() {
+        if (hasToSwapMonsterOne) {
+            encounterController.setOwnMonster(fightingMonsters.get(0));
+        } else {
+            encounterController.setAllyMonster(fightingMonsters.get(0));
+        }
     }
 
     @Override

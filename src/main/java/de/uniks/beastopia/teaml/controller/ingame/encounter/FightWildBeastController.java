@@ -2,6 +2,7 @@ package de.uniks.beastopia.teaml.controller.ingame.encounter;
 
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Monster;
+import de.uniks.beastopia.teaml.rest.Trainer;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.EncounterOpponentsService;
 import de.uniks.beastopia.teaml.service.PresetsService;
@@ -95,31 +96,38 @@ public class FightWildBeastController extends Controller {
 
                     Monster allyMonster = null;
                     Monster enemyAllyMonster = null;
-                    String enemyAllyTrainer = null;
-                    String allyTrainer = null;
+                    Trainer enemyAllyTrainer = null;
+                    Trainer allyTrainer = null;
+                    Trainer enemyTrainer = null;
+                    Monster ownMonster;
 
-                    String enemyTrainer = o.get(1).trainer();
                     List<Monster> myMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(0).trainer()).blockingFirst();
                     List<Monster> enemyMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(1).trainer()).blockingFirst();
-                    Monster ownMonster = myMonsters.stream().filter(m -> m._id().equals(o.get(0).monster())).findFirst().orElseThrow();
+                    // When reconnecting: If no monster is set, then find the first monster with 0 HP to indicate swapping out
+                    if (o.get(0).monster() == null) {
+                        ownMonster = myMonsters.stream().filter(m -> m.currentAttributes().health() <= 0).findFirst().orElseThrow();
+                    } else {
+                        ownMonster = myMonsters.stream().filter(m -> m._id().equals(o.get(0).monster())).findFirst().orElseThrow();
+                    }
                     Monster enemyMonster = enemyMonsters.stream().filter(m -> m._id().equals(o.get(1).monster())).findFirst().orElseThrow();
 
                     if (o.size() == 3) {
                         List<Monster> enemyAllyMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(2).trainer()).blockingFirst();
                         enemyAllyMonster = enemyAllyMonsters.stream().filter(m -> m._id().equals(o.get(2).monster())).findFirst().orElseThrow();
-                        enemyAllyTrainer = o.get(2).trainer();
+                        enemyAllyTrainer = trainerService.getTrainer(cache.getJoinedRegion()._id(), o.get(2).trainer()).blockingFirst();
                     } else if (o.size() == 4) {
                         List<Monster> myAllyMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(1).trainer()).blockingFirst();
                         List<Monster> enemyAllyMonsters = trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), o.get(3).trainer()).blockingFirst();
                         allyMonster = myAllyMonsters.stream().filter(m -> m._id().equals(o.get(1).monster())).findFirst().orElseThrow();
                         enemyAllyMonster = enemyAllyMonsters.stream().filter(m -> m._id().equals(o.get(3).monster())).findFirst().orElseThrow();
-                        allyTrainer = o.get(1).trainer();
-                        enemyTrainer = o.get(0).trainer();
-                        enemyAllyTrainer = o.get(3).trainer();
+                        allyTrainer = trainerService.getTrainer(cache.getJoinedRegion()._id(), o.get(1).trainer()).blockingFirst();
+                        enemyTrainer = trainerService.getTrainer(cache.getJoinedRegion()._id(), o.get(0).trainer()).blockingFirst();
+                        enemyAllyTrainer = trainerService.getTrainer(cache.getJoinedRegion()._id(), o.get(3).trainer()).blockingFirst();
                     }
 
                     EncounterController controller = encounterControllerProvider.get()
                             .setOwnMonster(ownMonster)
+                            .setMyTrainer(cache.getTrainer())
                             .setEnemyMonster(enemyMonster)
                             .setOwnMonsters(myMonsters)
                             .setEnemyMonsters(enemyMonsters)
