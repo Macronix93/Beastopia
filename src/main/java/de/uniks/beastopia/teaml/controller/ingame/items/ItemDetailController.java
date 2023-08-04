@@ -3,11 +3,14 @@ package de.uniks.beastopia.teaml.controller.ingame.items;
 import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.ingame.IngameController;
+import de.uniks.beastopia.teaml.controller.ingame.encounter.EncounterController;
 import de.uniks.beastopia.teaml.rest.Item;
 import de.uniks.beastopia.teaml.rest.ItemTypeDto;
 import de.uniks.beastopia.teaml.rest.Monster;
 import de.uniks.beastopia.teaml.rest.UpdateItemDto;
+import de.uniks.beastopia.teaml.rest.UseItemMove;
 import de.uniks.beastopia.teaml.service.DataCache;
+import de.uniks.beastopia.teaml.service.EncounterOpponentsService;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import de.uniks.beastopia.teaml.service.TrainerItemsService;
 import de.uniks.beastopia.teaml.service.TrainerService;
@@ -53,6 +56,8 @@ public class ItemDetailController extends Controller {
     @Inject
     TrainerItemsService trainerItemsService;
     @Inject
+    EncounterOpponentsService encounterOpponentsService;
+    @Inject
     EventListener eventListener;
     @Inject
     PresetsService presetsService;
@@ -62,6 +67,7 @@ public class ItemDetailController extends Controller {
     private InventoryController inventoryController;
     private boolean buy;
     private IngameController ingameController;
+    private EncounterController encounterController;
     private Disposable itemEventListenerDisposable = null;
     private Disposable monsterEventListenerDisposable = null;
 
@@ -102,7 +108,7 @@ public class ItemDetailController extends Controller {
                 shopBtn.setDisable(true);
             } else {
                 float price = (float) (itemType.price() * 0.5);
-                String formattedPrice = String.format(Locale.ENGLISH,"%.1f", price);
+                String formattedPrice = String.format(Locale.ENGLISH, "%.1f", price);
                 cost.setText(resources.getString("val") + ": " + formattedPrice);
             }
         } else {
@@ -116,7 +122,7 @@ public class ItemDetailController extends Controller {
                 cost.setText(resources.getString("val") + ": " + itemType.price());
             } else {
                 float price = (float) (itemType.price() * 0.5);
-                String formattedPrice = String.format(Locale.ENGLISH,"%.1f", price);
+                String formattedPrice = String.format(Locale.ENGLISH, "%.1f", price);
                 cost.setText(resources.getString("val") + ": " + formattedPrice);
             }
         }
@@ -137,7 +143,22 @@ public class ItemDetailController extends Controller {
                 case "itemBox" -> listenToNewItem();
                 case "monsterBox" -> listenToNewMonster();
                 case "effect" -> {
-                    ingameController.openBeastlist("shop", this);
+                    if (cache.getCurrentEncounter() != null) {
+                        if (encounterController.getChosenMonster().isEmpty()) {
+                            return;
+                        }
+                        disposables.add(encounterOpponentsService.updateEncounterOpponent(
+                                        cache.getJoinedRegion()._id(),
+                                        cache.getCurrentEncounter()._id(),
+                                        encounterController.getChosenTarget(),
+                                        null,
+                                        new UseItemMove("use-item", itemType.id(), encounterController.getChosenMonster())
+                                )
+                                .observeOn(FX_SCHEDULER)
+                                .subscribe(System.out::println));
+                    } else {
+                        ingameController.openBeastlist("shop", this);
+                    }
                     return;
                 }
             }
@@ -180,9 +201,9 @@ public class ItemDetailController extends Controller {
                 }));
         disposables.add(trainerService.getTrainer(cache.getJoinedRegion()._id(), cache.getTrainer()._id())
                 .observeOn(FX_SCHEDULER).subscribe(trainer -> {
-                    cache.setTrainer(trainer);
-                    inventoryController.updateInventory();
-                }, error -> System.out.println("Error:" + error)
+                            cache.setTrainer(trainer);
+                            inventoryController.updateInventory();
+                        }, error -> System.out.println("Error:" + error)
                 ));
         ingameController.toggleInventoryItemDetails(itemType);
     }
@@ -232,5 +253,9 @@ public class ItemDetailController extends Controller {
 
     public void setIngameController(IngameController ingameController) {
         this.ingameController = ingameController;
+    }
+
+    public void setEncounterController(EncounterController encounterController) {
+        this.encounterController = encounterController;
     }
 }
