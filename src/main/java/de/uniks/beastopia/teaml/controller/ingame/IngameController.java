@@ -226,7 +226,7 @@ public class IngameController extends Controller {
     private DialogWindowController dialogWindowController;
     private MonsterTypeDto lastMondexMonster;
     private Timer timer;
-    private boolean visibleHints = true;
+    private boolean neversetHints;
 
     @Inject
     public IngameController() {
@@ -335,7 +335,7 @@ public class IngameController extends Controller {
 
         // Check if the player is still in an encounter and load that encounter
         List<Opponent> trainerOpponents = encounterOpponentsService.getTrainerOpponents(cache.getJoinedRegion()._id(), cache.getTrainer()._id()).blockingFirst();
-        if (trainerOpponents.size() >= 1) {
+        if (!trainerOpponents.isEmpty()) {
             // If the player is in an encounter, load the previous state
             disposables.add(encounterOpponentsService.getEncounterOpponents(cache.getJoinedRegion()._id(), trainerOpponents.get(0).encounter())
                     .observeOn(FX_SCHEDULER)
@@ -445,6 +445,11 @@ public class IngameController extends Controller {
         scoreboardHint.toFront();
         mapHint.toFront();
         invHint.toFront();
+
+        if (!cache.getHintsNotVisible() && !neversetHints) {
+            hideButtonHints();
+            setButtonHintsOpacity(0);
+        }
     }
 
     private void openFightNPCScreen(Encounter encounter) {
@@ -1231,15 +1236,11 @@ public class IngameController extends Controller {
     }
 
     public void handleButtonHints() {
+        neversetHints = true;
         int opacity;
-        if (visibleHints) {
+        if (cache.getHintsNotVisible()) {
             opacity = 0;
-            pauseHint.toBack();
-            beastlistHint.toBack();
-            scoreboardHint.toBack();
-            mapHint.toBack();
-            invHint.toBack();
-            visibleHints = false;
+            hideButtonHints();
         } else {
             opacity = 1;
             pauseHint.toFront();
@@ -1247,15 +1248,27 @@ public class IngameController extends Controller {
             scoreboardHint.toFront();
             mapHint.toFront();
             invHint.toFront();
-            visibleHints = true;
+            cache.setHintsNotVisible(true);
         }
-        pauseHint.setOpacity(opacity);
-        beastlistHint.setOpacity(opacity);
-        scoreboardHint.setOpacity(opacity);
-        mapHint.setOpacity(opacity);
-        invHint.setOpacity(opacity);
+        setButtonHintsOpacity(opacity);
     }
 
+    public void hideButtonHints() {
+        pauseHint.toBack();
+        beastlistHint.toBack();
+        scoreboardHint.toBack();
+        mapHint.toBack();
+        invHint.toBack();
+        cache.setHintsNotVisible(false);
+    }
+
+    public void setButtonHintsOpacity(int o) {
+        pauseHint.setOpacity(o);
+        beastlistHint.setOpacity(o);
+        scoreboardHint.setOpacity(o);
+        mapHint.setOpacity(o);
+        invHint.setOpacity(o);
+    }
 
     private void handlePlayerMovement(KeyEvent keyEvent) {
         if (!pressedKeys.contains(keyEvent.getCode())) {

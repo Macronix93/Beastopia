@@ -73,6 +73,7 @@ public class DataCache {
     private List<Item> items = new ArrayList<>();
     private List<Opponent> currentOpponents = new ArrayList<>();
     private List<MonsterTypeDto> allBeasts = new ArrayList<>();
+    private boolean visibleHints;
 
     @Inject
     public DataCache() {
@@ -532,5 +533,13 @@ public class DataCache {
 
     public Map<Integer, AbilityDto> getAbilities() {
         return abilities;
+    }
+
+    public boolean getHintsNotVisible() {
+        return this.visibleHints;
+    }
+    
+    public void setHintsNotVisible(boolean visibleHints) {
+        this.visibleHints = visibleHints;
     }
 }
