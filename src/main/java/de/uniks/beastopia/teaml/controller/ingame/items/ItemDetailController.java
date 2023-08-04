@@ -152,7 +152,7 @@ public class ItemDetailController extends Controller {
                 }
                 case "effect" -> {
                     if (cache.getCurrentEncounter() != null) {
-                        if (encounterController.getChosenMonster().isEmpty()) {
+                        if (encounterController.getChosenMonster().currentAttributes().health() <= 0) {
                             return;
                         }
                         disposables.add(encounterOpponentsService.updateEncounterOpponent(
@@ -160,7 +160,7 @@ public class ItemDetailController extends Controller {
                                         cache.getCurrentEncounter()._id(),
                                         encounterController.getChosenTarget(),
                                         null,
-                                        new UseItemMove("use-item", itemType.id(), encounterController.getChosenMonster())
+                                        new UseItemMove("use-item", itemType.id(), encounterController.getChosenMonster()._id())
                                 )
                                 .observeOn(FX_SCHEDULER)
                                 .subscribe(item -> {

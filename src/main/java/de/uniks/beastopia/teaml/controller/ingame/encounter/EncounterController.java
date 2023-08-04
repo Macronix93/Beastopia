@@ -1030,11 +1030,11 @@ public class EncounterController extends Controller {
         attackBox4.setDisable(disabled);
     }
 
-    public String getChosenMonster() {
+    public Monster getChosenMonster() {
         if (renderBeastController1.getOpponentIdMonsterOne() != null && renderBeastController1.getOpponentIdMonsterOne().equals(chosenTarget)) {
-            return beastInfoController1.getMonster()._id();
+            return beastInfoController1.getMonster();
         } else if (renderBeastController1.getOpponentIdMonsterTwo() != null && renderBeastController1.getOpponentIdMonsterTwo().equals(chosenTarget)) {
-            return beastInfoController2.getMonster()._id();
+            return beastInfoController2.getMonster();
         }
         return null;
     }
