@@ -32,29 +32,6 @@
                 <HBox fx:id="ownMonstersBox" alignment="CENTER" prefWidth="390.0"/>
                 <VBox alignment="CENTER" prefHeight="40.0" prefWidth="400.0">
                     <HBox alignment="CENTER" prefHeight="40.0" prefWidth="400.0" spacing="15.0">
-                        <VBox fx:id="attackBox4" alignment="CENTER" onMouseClicked="#executeAttack4" prefHeight="40.0"
-                              prefWidth="80.0">
-                            <Label fx:id="attackNameLabel4" text="Tackle">
-                                <font>
-                                    <Font size="14.0"/>
-                                </font>
-                            </Label>
-                            <Label fx:id="attackTypeLabel4" text="Type">
-                                <font>
-                                    <Font size="14.0"/>
-                                </font>
-                            </Label>
-                            <Label fx:id="accLabel4" text="value">
-                                <font>
-                                    <Font size="14.0"/>
-                                </font>
-                            </Label>
-                            <Label fx:id="powerLabel4" text="value">
-                                <font>
-                                    <Font size="14.0"/>
-                                </font>
-                            </Label>
-                        </VBox>
                         <VBox fx:id="attackBox1" alignment="CENTER" onMouseClicked="#executeAttack1" prefHeight="40.0"
                               prefWidth="80.0">
                             <Label fx:id="attackNameLabel1" text="Tackle">
@@ -78,8 +55,8 @@
                                 </font>
                             </Label>
                         </VBox>
-                        <VBox fx:id="attackBox2" alignment="CENTER" layoutX="218.0" layoutY="10.0"
-                              onMouseClicked="#executeAttack2" prefHeight="40.0" prefWidth="80.0">
+                        <VBox fx:id="attackBox2" alignment="CENTER" onMouseClicked="#executeAttack2" prefHeight="40.0"
+                              prefWidth="80.0">
                             <Label fx:id="attackNameLabel2" text="Tackle">
                                 <font>
                                     <Font size="14.0"/>
@@ -101,7 +78,7 @@
                                 </font>
                             </Label>
                         </VBox>
-                        <VBox fx:id="attackBox3" alignment="CENTER" layoutX="265.0" layoutY="10.0"
+                        <VBox fx:id="attackBox3" alignment="CENTER" layoutX="218.0" layoutY="10.0"
                               onMouseClicked="#executeAttack3" prefHeight="40.0" prefWidth="80.0">
                             <Label fx:id="attackNameLabel3" text="Tackle">
                                 <font>
@@ -119,6 +96,29 @@
                                 </font>
                             </Label>
                             <Label fx:id="powerLabel3" text="value">
+                                <font>
+                                    <Font size="14.0"/>
+                                </font>
+                            </Label>
+                        </VBox>
+                        <VBox fx:id="attackBox4" alignment="CENTER" layoutX="265.0" layoutY="10.0"
+                              onMouseClicked="#executeAttack4" prefHeight="40.0" prefWidth="80.0">
+                            <Label fx:id="attackNameLabel4" text="Tackle">
+                                <font>
+                                    <Font size="14.0"/>
+                                </font>
+                            </Label>
+                            <Label fx:id="attackTypeLabel4" text="Type">
+                                <font>
+                                    <Font size="14.0"/>
+                                </font>
+                            </Label>
+                            <Label fx:id="accLabel4" text="value">
+                                <font>
+                                    <Font size="14.0"/>
+                                </font>
+                            </Label>
+                            <Label fx:id="powerLabel4" text="value">
                                 <font>
                                     <Font size="14.0"/>
                                 </font>
