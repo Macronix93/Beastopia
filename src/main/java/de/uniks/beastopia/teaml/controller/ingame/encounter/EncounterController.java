@@ -47,6 +47,8 @@ public class EncounterController extends Controller {
     @FXML
     public AnchorPane anchorPane;
     @FXML
+    public AnchorPane infoAnchorPane;
+    @FXML
     public VBox catchInfoBox;
     @FXML
     StackPane stack;
@@ -126,6 +128,8 @@ public class EncounterController extends Controller {
     @Inject
     Provider<ItemDetailController> itemDetailControllerProvider;
     @Inject
+    Provider<CatchInfoController> catchInfoControllerProvider;
+    @Inject
     DataCache cache;
     @Inject
     TrainerService trainerService;
@@ -152,7 +156,7 @@ public class EncounterController extends Controller {
     //monsters in the fight
     Monster myMonster;
     Monster allyMonster;
-    Monster enemyMonster;
+    public Monster enemyMonster;
     Monster enemyAllyMonster;
 
     Trainer myTrainer;
@@ -627,28 +631,6 @@ public class EncounterController extends Controller {
         showChangeBeast();
     }
 
-    @FXML
-    public void showItems() {
-        hasToChooseEnemy = false;
-        if (inventoryController != null) {
-            inventoryController.destroy();
-            itemBox.getChildren().remove(inventoryParent);
-        }
-        InventoryController inventoryController = inventoryControllerProvider.get();
-        inventoryParent = inventoryController.render();
-        inventoryController.setIfShop(false);
-        inventoryController.setOnItemClicked(this::toggleInventoryItemDetails);
-        inventoryController.setOnCloseRequest(() -> {
-            itemBox.getChildren().remove(itemDetailParent);
-            itemBox.getChildren().remove(inventoryParent);
-            anchorPane.toBack();
-            anchorPane.setStyle("-fx-background-color: none;");
-        });
-        itemBox.getChildren().add(inventoryParent);
-        anchorPane.toFront();
-        anchorPane.setStyle("-fx-background-color: rgba(0,0,0,0.5);");
-    }
-
     public void toggleInventoryItemDetails(ItemTypeDto itemTypeDto) {
         if (Objects.equals(lastItemTypeDto, itemTypeDto)) {
             itemBox.getChildren().remove(itemDetailParent);
@@ -1046,8 +1028,50 @@ public class EncounterController extends Controller {
         return chosenTarget;
     }
 
-    private void setCatchInfoBox() {
-        //TODO infocontroller.seton closerequest
-        //setbeasttype
+    @FXML
+    public void showItems() {
+        hasToChooseEnemy = false;
+        if (inventoryController != null) {
+            inventoryController.destroy();
+            itemBox.getChildren().remove(inventoryParent);
+        }
+        InventoryController inventoryController = inventoryControllerProvider.get();
+        inventoryParent = inventoryController.render();
+        inventoryController.setIfShop(false);
+        inventoryController.setOnItemClicked(this::toggleInventoryItemDetails);
+        inventoryController.setOnCloseRequest(() -> {
+            itemBox.getChildren().remove(itemDetailParent);
+            itemBox.getChildren().remove(inventoryParent);
+            anchorPane.toBack();
+            anchorPane.setStyle("-fx-background-color: none;");
+        });
+        itemBox.getChildren().add(inventoryParent);
+        anchorPane.toFront();
+        anchorPane.setStyle("-fx-background-color: rgba(0,0,0,0.5);");
+    }
+
+    public void setCatchInfoBox(boolean caught) {
+        CatchInfoController catchInfoController = catchInfoControllerProvider.get();
+        if (caught) {
+            String catchInfo = resources.getString("successCatch");
+            String teamInfo = "";
+            if (cache.getTrainer().team().size() < 6) {
+                teamInfo = resources.getString("catchToTeam");
+            }
+            Parent catchInfoParent = catchInfoController.render();
+            catchInfoController.setCatchInfo(catchInfo, teamInfo, enemyMonster.type());
+            catchInfoController.setOnCloseRequest(() -> {
+                catchInfoBox.getChildren().remove(catchInfoParent);
+                infoAnchorPane.toBack();
+                infoAnchorPane.setStyle("-fx-background-color: none;");
+            });
+            catchInfoBox.getChildren().add(catchInfoParent);
+            infoAnchorPane.toFront();
+            infoAnchorPane.setStyle("-fx-background-color: rgba(0,0,0,0.5);");
+            //TODO set beastBall on top of beast
+        } else {
+            //TODO set x on top of beast
+        }
+
     }
 }

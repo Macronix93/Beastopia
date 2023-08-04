@@ -4,11 +4,7 @@ import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.ingame.IngameController;
 import de.uniks.beastopia.teaml.controller.ingame.encounter.EncounterController;
-import de.uniks.beastopia.teaml.rest.Item;
-import de.uniks.beastopia.teaml.rest.ItemTypeDto;
-import de.uniks.beastopia.teaml.rest.Monster;
-import de.uniks.beastopia.teaml.rest.UpdateItemDto;
-import de.uniks.beastopia.teaml.rest.UseItemMove;
+import de.uniks.beastopia.teaml.rest.*;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.EncounterOpponentsService;
 import de.uniks.beastopia.teaml.service.PresetsService;
@@ -112,7 +108,7 @@ public class ItemDetailController extends Controller {
                 cost.setText(resources.getString("val") + ": " + formattedPrice);
             }
         } else {
-            if (itemType.use() == null || itemType.use().equals("ball")) {
+            if ((itemType.use() == null || itemType.use().equals("ball") && cache.getCurrentEncounter() == null)) {
                 shopBtn.setOpacity(0);
                 shopBtn.setDisable(true);
             } else {
@@ -156,19 +152,7 @@ public class ItemDetailController extends Controller {
                             encounterController.actionInfoText.appendText("Beast is dead. Choose a new one!\n");
                             return;
                         }
-                        disposables.add(encounterOpponentsService.updateEncounterOpponent(
-                                        cache.getJoinedRegion()._id(),
-                                        cache.getCurrentEncounter()._id(),
-                                        encounterController.getChosenTarget(),
-                                        null,
-                                        new UseItemMove("use-item", itemType.id(), encounterController.getChosenMonster()._id())
-                                )
-                                .observeOn(FX_SCHEDULER)
-                                .subscribe(item -> {
-                                    encounterController.itemBox.getChildren().clear();
-                                    encounterController.anchorPane.toBack();
-                                    encounterController.anchorPane.setStyle("-fx-background-color: none;");
-                                }));
+                        useItemInFight(encounterController.getChosenMonster()._id());
 
 
                     } else {
@@ -176,9 +160,16 @@ public class ItemDetailController extends Controller {
                     }
                     return;
                 }
+                case "ball" -> {
+                    if (cache.getCurrentEncounter() != null) {
+                        if (cache.getCurrentEncounter().isWild()) {
+                            useItemInFight(encounterController.enemyMonster._id());
+                        }
+                    }
+                }
             }
         }
-        if (itemType.use() != null && !itemType.use().contains("effect") || !onlyInventory) {
+        if (itemType.use() != null && !itemType.use().contains("effect") && !itemType.use().contains("ball") || !onlyInventory ) {
             if (!buy && !onlyInventory) { //sell
                 amount = -1;
             }
@@ -198,6 +189,30 @@ public class ItemDetailController extends Controller {
                 });
             }
         }, 1000);
+    }
+
+    public void useItemInFight(String monsterId) {
+        disposables.add(encounterOpponentsService.updateEncounterOpponent(
+                        cache.getJoinedRegion()._id(),
+                        cache.getCurrentEncounter()._id(),
+                        encounterController.getChosenTarget(),
+                        null,
+                        new UseItemMove("use-item", itemType.id(), monsterId)
+                )
+                .observeOn(FX_SCHEDULER)
+                .subscribe(item -> {
+                    encounterController.itemBox.getChildren().clear();
+                    encounterController.anchorPane.toBack();
+                    encounterController.anchorPane.setStyle("-fx-background-color: none;");
+                    if (cache.getCurrentEncounter().isWild()) {
+                        for (Opponent opponent : cache.getCurrentOpponents()) {
+                            if (opponent.trainer().equals(cache.getTrainer()._id())) {
+                                encounterController.setCatchInfoBox(opponent.results().get(opponent.results().size() - 1).type().contains("success"));
+                                break;
+                            }
+                        }
+                    }
+                }));
     }
 
     public void useDetailButton(int amount, String usage, String monsterId) {
