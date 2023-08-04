@@ -1,9 +1,9 @@
 package de.uniks.beastopia.teaml.controller.ingame.encounter;
 
+import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Monster;
 import de.uniks.beastopia.teaml.service.PresetsService;
-import de.uniks.beastopia.teaml.Main;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -71,7 +71,7 @@ public class LevelUpController extends Controller {
     private Monster beast;
     private boolean newAbility;
     private boolean dev;
-    private int plusHP;
+    private double plusHP;
     private double healthWidth;
     private double expWidth;
     private EndScreenController endScreenController;
@@ -80,7 +80,7 @@ public class LevelUpController extends Controller {
     public LevelUpController() {
     }
 
-    public void setBeast(Monster beast, boolean newAbility, boolean dev, int hp, EndScreenController endScreenController) {
+    public void setBeast(Monster beast, boolean newAbility, boolean dev, double hp, EndScreenController endScreenController) {
         this.newAbility = newAbility;
         this.beast = beast;
         this.dev = dev;
@@ -100,6 +100,7 @@ public class LevelUpController extends Controller {
         starBg.setMinWidth(expWidth * borderBg.getWidth());
         starBg.setMaxWidth(expWidth * borderBg.getWidth());
     }
+
     @Override
     public Parent render() {
         Parent parent = super.render();
@@ -123,14 +124,14 @@ public class LevelUpController extends Controller {
                     }
                 }));
 
-        lifeValueLabel.setText(beast.currentAttributes().health() + " ");
-        maxLifeLabel.setText(" " + beast.attributes().health());
-        plusHPLabel.setText(" (+" + plusHP + " Max HP)");
+        lifeValueLabel.setText((int) beast.currentAttributes().health() + " ");
+        maxLifeLabel.setText(" " + (int) beast.attributes().health());
+        plusHPLabel.setText(" (+" + (int) plusHP + " Max HP)");
         xpValueLabel.setText(beast.experience() + " ");
         int maxExp = (int) Math.pow(beast.level(), 3) - (int) Math.pow(beast.level() - 1, 3);
         maxXpLabel.setText(maxExp + " ");
 
-        healthWidth = (double) beast.currentAttributes().health() / beast.attributes().health();
+        healthWidth = beast.currentAttributes().health() / beast.attributes().health();
         expWidth = (double) beast.experience() / maxExp;
 
         Timer timer = new Timer();

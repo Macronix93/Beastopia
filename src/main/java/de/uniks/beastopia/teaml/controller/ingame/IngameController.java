@@ -1206,7 +1206,11 @@ public class IngameController extends Controller {
 
     private void handlePauseMenu(KeyEvent keyEvent) {
         if (keyEvent.getCode().equals(KeyCode.ESCAPE) && (currentMenu == MENU_NONE || currentMenu == MENU_PAUSE)) {
-            openPauseMenu();
+            if (currentMenu == MENU_DIALOGWINDOW) {
+                closeTalk();
+            } else {
+                openPauseMenu();
+            }
         }
     }
 
