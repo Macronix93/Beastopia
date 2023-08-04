@@ -403,7 +403,12 @@ public class EncounterController extends Controller {
                             } else if (o.suffix().equals("deleted")) {
                                 cache.removeOpponent(o.data()._id());
 
-                                if (o.data()._id().equals(cache.getTrainer()._id()) && allyTrainer != null && !allyTrainer._id().equals(cache.getTrainer()._id())) {
+                                System.out.println(o.data().trainer().equals(cache.getTrainer()._id()));
+                                System.out.println(allyTrainer == null);
+                                System.out.println(allyTrainer != null ? allyTrainer._id().equals(cache.getTrainer()._id()) : "null");
+
+                                if (o.data().trainer().equals(cache.getTrainer()._id()) && allyTrainer != null && !allyTrainer._id().equals(cache.getTrainer()._id())) {
+                                    System.out.println();
                                     EndScreenController endScreenController = setEndScreen(false, myMonster, allyMonster, enemyMonster, enemyAllyMonster);
                                     app.show(endScreenController);
                                 } else {
