@@ -5,12 +5,14 @@ import de.uniks.beastopia.teaml.rest.Monster;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Ellipse;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 @SuppressWarnings("unused")
 public class RenderBeastController extends Controller {
@@ -27,11 +29,16 @@ public class RenderBeastController extends Controller {
     HBox selectBox;
     @Inject
     PresetsService presetsService;
+    @Inject
+    Provider<EncounterController> encounterControllerProvider;
 
     public Monster monster1;
     public Monster monster2;
     private String opponentIdMonsterOne;
     private String opponentIdMonsterTwo;
+    ImageView secondMonster;
+    HBox selectBox2;
+    private EncounterController encounterController;
 
     @Inject
     public RenderBeastController() {
@@ -48,23 +55,46 @@ public class RenderBeastController extends Controller {
     public Parent render() {
         Parent parent = super.render();
 
-        disposables.add(presetsService.getMonsterImage(monster1.type())
-                .observeOn(FX_SCHEDULER)
-                .subscribe(monsterImage -> {
-                    firstMonster.setImage(monsterImage);
-                    firstMonster.setOnMouseClicked(event -> System.out.println("Opponent ID: " + opponentIdMonsterOne));
-                }));
+        if (monster1 != null) {
+            disposables.add(presetsService.getMonsterImage(monster1.type())
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe(monsterImage -> {
+                        firstMonster.setImage(monsterImage);
+                        firstMonster.setOnMouseClicked(event -> {
+                            if (selectBox2 != null && selectBox2.getStyle().contains("-fx-border-radius: 10px;")) {
+                                selectBox2.setStyle("-fx-border-radius: 0px; -fx-alignment: CENTER; -fx-max-height: 125px; -fx-pref-height: 125px; -fx-pref-width: 125px;");
+                            }
+
+                            selectBox.setStyle("-fx-border-radius: 10px; -fx-border-color: #000000;");
+                            System.out.println("Chosen Opponent ID: " + opponentIdMonsterOne);
+                            encounterController.setChosenTarget(opponentIdMonsterOne);
+                        });
+                    }));
+        }
 
         if (monster2 != null) {
-            ImageView secondMonster = new ImageView();
+            secondMonster = new ImageView();
+            selectBox2 = new HBox();
 
             disposables.add(presetsService.getMonsterImage(monster2.type())
                     .observeOn(FX_SCHEDULER)
                     .subscribe(monsterImage -> {
                         secondMonster.setImage(monsterImage);
-                        secondMonster.setOnMouseClicked(event -> System.out.println("Opponent ID: " + opponentIdMonsterTwo));
+                        selectBox2.setStyle("-fx-alignment: CENTER; -fx-max-height: 125px; -fx-pref-height: 125px; -fx-pref-width: 125px;");
+                        selectBox2.getChildren().add(secondMonster);
+                        monsterContainer.getChildren().addAll(selectBox2);
+
+                        secondMonster.setOnMouseClicked(event -> {
+                            if (selectBox.getStyle().contains("-fx-border-radius: 10px;")) {
+                                selectBox.setStyle("");
+                            }
+
+                            selectBox2.setStyle("-fx-border-radius: 10px; -fx-border-color: #000000; -fx-alignment: CENTER; -fx-max-height: 125px; -fx-pref-height: 125px; -fx-pref-width: 125px;");
+                            //HBox fx:id="selectBox" alignment="CENTER" maxHeight="125.0" prefHeight="125.0" prefWidth="125.0"
+                            System.out.println("Chosen Opponent ID: " + opponentIdMonsterTwo);
+                            encounterController.setChosenTarget(opponentIdMonsterTwo);
+                        });
                     }));
-            monsterContainer.getChildren().add(secondMonster);
         }
 
         return parent;
@@ -95,6 +125,30 @@ public class RenderBeastController extends Controller {
 
     public String getOpponentIdMonsterTwo() {
         return opponentIdMonsterTwo;
+    }
+
+    public void setImageMonsterOne(Image image) {
+        this.firstMonster.setImage(image);
+        if (image == null) {
+            monsterContainer.getChildren().remove(selectBox);
+        }
+    }
+
+    public void setImageMonsterTwo(Image image) {
+        this.secondMonster.setImage(image);
+        if (image == null) {
+            monsterContainer.getChildren().remove(selectBox2);
+        }
+    }
+
+    public void setEncounterController(EncounterController controller) {
+        this.encounterController = controller;
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+
     }
 
 }

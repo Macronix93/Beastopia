@@ -3,12 +3,32 @@ package de.uniks.beastopia.teaml.controller.ingame;
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.controller.ingame.beastlist.BeastListController;
+import de.uniks.beastopia.teaml.controller.ingame.items.ShopController;
 import de.uniks.beastopia.teaml.controller.ingame.mondex.MondexListController;
 import de.uniks.beastopia.teaml.controller.ingame.scoreboard.ScoreboardController;
-import de.uniks.beastopia.teaml.controller.ingame.items.ShopController;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
-import de.uniks.beastopia.teaml.rest.*;
-import de.uniks.beastopia.teaml.service.*;
+import de.uniks.beastopia.teaml.rest.Achievement;
+import de.uniks.beastopia.teaml.rest.Area;
+import de.uniks.beastopia.teaml.rest.Chunk;
+import de.uniks.beastopia.teaml.rest.Encounter;
+import de.uniks.beastopia.teaml.rest.Layer;
+import de.uniks.beastopia.teaml.rest.Map;
+import de.uniks.beastopia.teaml.rest.NPCInfo;
+import de.uniks.beastopia.teaml.rest.Opponent;
+import de.uniks.beastopia.teaml.rest.Position;
+import de.uniks.beastopia.teaml.rest.Region;
+import de.uniks.beastopia.teaml.rest.Spawn;
+import de.uniks.beastopia.teaml.rest.TileSet;
+import de.uniks.beastopia.teaml.rest.TileSetDescription;
+import de.uniks.beastopia.teaml.rest.Trainer;
+import de.uniks.beastopia.teaml.rest.User;
+import de.uniks.beastopia.teaml.service.AreaService;
+import de.uniks.beastopia.teaml.service.DataCache;
+import de.uniks.beastopia.teaml.service.EncounterOpponentsService;
+import de.uniks.beastopia.teaml.service.PresetsService;
+import de.uniks.beastopia.teaml.service.RegionEncountersService;
+import de.uniks.beastopia.teaml.service.TokenStorage;
+import de.uniks.beastopia.teaml.service.TrainerService;
 import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.sockets.UDPEventListener;
 import de.uniks.beastopia.teaml.utils.PlayerState;
@@ -40,7 +60,13 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class IngameControllerTest extends ApplicationTest {
@@ -64,6 +90,10 @@ class IngameControllerTest extends ApplicationTest {
     TrainerService trainerService;
     @Mock
     PresetsService presetsService;
+    @Mock
+    EncounterOpponentsService encounterOpponentsService;
+    @Mock
+    RegionEncountersService regionEncountersService;
     @Mock
     UDPEventListener udpEventListener;
     @Mock
@@ -107,6 +137,9 @@ class IngameControllerTest extends ApplicationTest {
     final User user = new User(null, null, "ID_USER", "USER_NAME", "USER_STATUS", "USER_AVATAR", List.of());
     final Achievement achievement = new Achievement(null, null, "MoveCharacter", "ID_USER", null, 100);
     final List<Area> areas = List.of(area);
+    final Encounter encounter = new Encounter(null, null, "ID", "r", false);
+    final Opponent opponent = new Opponent(null, null, "ido", "e",
+            "t", true, true, "m", null, null, 0);
 
     @Override
     public void start(Stage stage) {
@@ -124,9 +157,13 @@ class IngameControllerTest extends ApplicationTest {
         doNothing().when(prefs).setArea(any());
         when(presetsService.getTileset(tileSetDescription)).thenReturn(Observable.just(tileSet));
         when(presetsService.getImage(tileSet)).thenReturn(Observable.just(image));
+        when(encounterOpponentsService.getTrainerOpponents(anyString(), anyString())).thenReturn(Observable.just(List.of(opponent)));
+        when(encounterOpponentsService.getEncounterOpponents(anyString(), anyString())).thenReturn(Observable.just(List.of(opponent)));
+        when(regionEncountersService.getRegionEncounter(anyString(), anyString())).thenReturn(Observable.just(encounter));
         when(cache.getTrainer()).thenReturn(trainer);
         when(cache.getMapImage()).thenReturn(image);
         when(cache.getMapTileset()).thenReturn(tileSet);
+        when(cache.getJoinedRegion()).thenReturn(region);
         doNothing().when(cache).setTrainer(trainer);
         when(entityControllerProvider.get()).thenReturn(playerController);
         doNothing().when(playerController).setTrainer(any());

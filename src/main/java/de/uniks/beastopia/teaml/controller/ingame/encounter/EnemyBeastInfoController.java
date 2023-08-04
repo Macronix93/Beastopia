@@ -27,6 +27,7 @@ public class EnemyBeastInfoController extends Controller {
     @Inject
     PresetsService presetsService;
     private Monster monster;
+    private Timer timer;
 
     @Inject
     public EnemyBeastInfoController() {
@@ -47,18 +48,21 @@ public class EnemyBeastInfoController extends Controller {
 
         //TODO: calculate lifebar value, call setLifeBarValue()
 
-        Timer timer = new Timer();
+        timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                Platform.runLater(() -> setLifeBarValue(monster.currentAttributes().health() / (double) monster.attributes().health()));
+                Platform.runLater(() -> setLifeBarValue(monster.currentAttributes().health() / (double) monster.attributes().health(), false));
             }
         }, 500);
 
         return parent;
     }
 
-    public void setLifeBarValue(double value) {
+    public void setLifeBarValue(double value, boolean killTimer) {
+        if (killTimer) {
+            timer.cancel();
+        }
         lifeBarValue.setMinWidth(lifeBar.getWidth() * value);
         lifeBarValue.setMaxWidth(lifeBar.getWidth() * value);
         lifeBarValue.setPrefWidth(lifeBar.getWidth() * value);
@@ -66,5 +70,17 @@ public class EnemyBeastInfoController extends Controller {
 
     public Monster getMonster() {
         return this.monster;
+    }
+
+    public void setLevel(int level) {
+        this.enemyLevel.setText(String.valueOf(level));
+    }
+
+    public void setName(String name) {
+        this.enemyName.setText(name);
+    }
+
+    public String getName() {
+        return enemyName.getText();
     }
 }

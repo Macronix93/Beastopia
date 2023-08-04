@@ -120,4 +120,8 @@ public class EntityController extends Controller {
             case 3 -> this.direction = Direction.DOWN;
         }
     }
+
+    public Direction getDirection() {
+        return direction;
+    }
 }

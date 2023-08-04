@@ -42,7 +42,6 @@ class BeastDetailControllerTest extends ApplicationTest {
         beastDetailController.setBeast(monster);
         when(presetsService.getMonsterType(anyInt())).thenReturn(Observable.empty());
         when(presetsService.getMonsterImage(anyInt())).thenReturn(Observable.empty());
-        when(presetsService.getAbility(anyInt())).thenReturn(Observable.empty());
 
         app.start(stage);
         app.show(beastDetailController);
