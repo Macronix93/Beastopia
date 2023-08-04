@@ -3,9 +3,11 @@ package de.uniks.beastopia.teaml.controller.ingame.encounter;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.ingame.IngameController;
 import de.uniks.beastopia.teaml.controller.ingame.items.InventoryController;
+import de.uniks.beastopia.teaml.controller.ingame.items.ItemDetailController;
 import de.uniks.beastopia.teaml.rest.AbilityDto;
 import de.uniks.beastopia.teaml.rest.AbilityMove;
 import de.uniks.beastopia.teaml.rest.Event;
+import de.uniks.beastopia.teaml.rest.ItemTypeDto;
 import de.uniks.beastopia.teaml.rest.Monster;
 import de.uniks.beastopia.teaml.rest.Opponent;
 import de.uniks.beastopia.teaml.rest.Result;
@@ -29,6 +31,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.Stack;
 
@@ -110,6 +113,8 @@ public class EncounterController extends Controller {
     @Inject
     Provider<LevelUpController> levelUpControllerProvider;
     @Inject
+    Provider<ItemDetailController> itemDetailControllerProvider;
+    @Inject
     DataCache cache;
     @Inject
     TrainerService trainerService;
@@ -151,6 +156,7 @@ public class EncounterController extends Controller {
     private boolean hasToChooseEnemy = false;
     private boolean isOneVersusTwo;
     private AbilityDto chosenAbility;
+    private ItemTypeDto lastItemTypeDto;
     Parent myMonsterParent;
     Parent allyMonsterParent;
     Parent enemyMonsterParent;
@@ -160,6 +166,7 @@ public class EncounterController extends Controller {
     Parent enemyMonsterInfo;
     Parent enemyAllyMonsterInfo;
     Parent inventoryParent;
+    Parent itemDetailParent;
 
     private float oldCoinNum;
     private AbilityDto ability1;
@@ -189,6 +196,7 @@ public class EncounterController extends Controller {
     public Parent render() {
         Parent parent = super.render();
 
+        inventoryLayout.setVisible(false);
         oldCoinNum = cache.getTrainer().coins();
         int numberOfAttackers = (int) cache.getCurrentOpponents().stream().filter(Opponent::isAttacker).count();
         isOneVersusTwo = numberOfAttackers == 2;
@@ -278,11 +286,13 @@ public class EncounterController extends Controller {
                                             // Get the updated monster and set new values
                                             if (o.data().monster() != null) {
                                                 Monster newAllyMonster = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), o.data().trainer(), o.data().monster()).blockingFirst();
+                                                beastInfoController2.setLevel(newAllyMonster.level());
                                                 beastInfoController2.setMonster(newAllyMonster);
                                                 beastInfoController2.setLifeBarValue(newAllyMonster.currentAttributes().health() / newAllyMonster.attributes().health(), false);
                                                 disposables.add(presetsService.getMonsterType(newAllyMonster.type())
                                                         .observeOn(FX_SCHEDULER)
                                                         .subscribe(monsterType -> {
+                                                            beastInfoController2.setName(monsterType.name());
                                                             renderBeastController1.setImageMonsterTwo(presetsService.getMonsterImage(monsterType.id()).blockingFirst());
 
                                                             actionInfoText.appendText(allyTrainer.name() + " sent out new beast " + monsterType.name() + ".\n");
@@ -463,10 +473,14 @@ public class EncounterController extends Controller {
                         .findFirst()
                         .ifPresent(opponent -> renderBeastController2.setMonsterOneOpponentId(opponent._id()));
             } else {
+                System.out.println("encounter is not wild");
                 cache.getCurrentOpponents().stream()
                         .filter(opponent -> opponent.monster() == null ? opponent.trainer().equals(this.enemyTrainer._id()) : opponent.monster().equals(enemyBeastInfoController1.getMonster()._id()))
                         .findFirst()
-                        .ifPresent(opponent -> renderBeastController2.setMonsterOneOpponentId(opponent._id()));
+                        .ifPresent(opponent -> {
+                            System.out.println("found opponent: " + opponent._id());
+                            renderBeastController2.setMonsterOneOpponentId(opponent._id());
+                        });
             }
             disposables.add(eventListener.listen("trainers." +
                             (cache.getCurrentEncounter().isWild() ? wildTrainerId : (this.enemyTrainer == null ? this.enemyAllyTrainer._id() : this.enemyTrainer._id())) + ".monsters." + this.enemyMonster._id() + ".updated", Monster.class)
@@ -576,7 +590,7 @@ public class EncounterController extends Controller {
             disposables.add(
                     encounterOpponentsService.deleteOpponent(cache.getJoinedRegion()._id(), cache.getCurrentEncounter()._id(), cache.getOpponentByTrainerID(cache.getTrainer()._id())._id())
                             .observeOn(FX_SCHEDULER)
-                            .doFinally(() -> {
+                            .subscribe(o -> {
                                 cache.setCurrentEncounter(null);
                                 cache.getCurrentOpponents().clear();
 
@@ -584,7 +598,6 @@ public class EncounterController extends Controller {
                                 controller.setRegion(cache.getJoinedRegion());
                                 app.show(controller);
                             })
-                            .subscribe()
             );
         }
     }
@@ -600,24 +613,50 @@ public class EncounterController extends Controller {
         if (inventoryController != null) {
             inventoryController.destroy();
             inventoryLayout.getChildren().remove(inventoryParent);
-        } else {
-            InventoryController inventoryController = inventoryControllerProvider.get();
-            inventoryParent = inventoryController.render();
-            VBox.setVgrow(inventoryParent, javafx.scene.layout.Priority.ALWAYS);
-            inventoryController.setIfShop(false);
-            inventoryController.setOnItemClicked(ingameControllerProvider.get()::toggleInventoryItemDetails);
-            inventoryController.setOnCloseRequest(() -> {
-                setCloseRequests(inventoryLayout, inventoryParent);
-                //setCloseRequests(scoreBoardLayout, itemDetailParent);
-                //setCloseRequests(shopLayout, beastListParent);
-            });
-
-            inventoryLayout.getChildren().add(inventoryParent);
         }
+        inventoryLayout.setVisible(true);
+        InventoryController inventoryController = inventoryControllerProvider.get();
+        inventoryParent = inventoryController.render();
+        VBox.setVgrow(inventoryParent, javafx.scene.layout.Priority.ALWAYS);
+        inventoryController.setIfShop(false);
+        inventoryController.setOnItemClicked(this::toggleInventoryItemDetails);
+        inventoryController.setOnCloseRequest(() -> {
+            inventoryLayout.setVisible(false);
+            setCloseRequests(inventoryLayout, inventoryParent);
+            setCloseRequests(inventoryLayout, itemDetailParent);
+        });
+
+        inventoryLayout.getChildren().add(inventoryParent);
     }
 
     public void setCloseRequests(VBox vBox, Parent parent) {
         vBox.getChildren().remove(parent);
+    }
+
+    public void toggleInventoryItemDetails(ItemTypeDto itemTypeDto) {
+        if (Objects.equals(lastItemTypeDto, itemTypeDto)) {
+            inventoryLayout.getChildren().remove(itemDetailParent);
+            lastItemTypeDto = null;
+            return;
+        }
+        setItemDetailController(itemTypeDto, !inventoryController.isShop);
+    }
+
+    private void setItemDetailController(ItemTypeDto itemTypeDto, boolean onlyInventory) {
+        lastItemTypeDto = itemTypeDto;
+        ItemDetailController controller = itemDetailControllerProvider.get();
+        controller.setInventoryController(inventoryController);
+        controller.setEncounterController(this);
+        //subControllers.add(controller);
+        controller.setItem(itemTypeDto);
+        controller.setBooleanShop(false);
+        controller.setOnlyInventory(onlyInventory);
+        controller.init();
+        inventoryLayout.getChildren().remove(itemDetailParent);
+        //shopLayout.getChildren().remove(itemDetailParent);
+        itemDetailParent = controller.render();
+        inventoryLayout.getChildren().add(0, itemDetailParent);
+        inventoryLayout.toFront();
     }
 
     private void showChangeBeast() {
@@ -756,7 +795,7 @@ public class EncounterController extends Controller {
     private void setAttackWithClick(VBox attackBox, AbilityDto abilityDto) {
         if ((renderBeastController1.getOpponentIdMonsterOne() != null && renderBeastController1.getOpponentIdMonsterOne().equals(chosenTarget) && myMonster.currentAttributes().health() <= 0) ||
                 (renderBeastController1.getOpponentIdMonsterTwo() != null && renderBeastController1.getOpponentIdMonsterTwo().equals(chosenTarget) && allyMonster.currentAttributes().health() <= 0)) {
-            //System.out.println("mon has no hp! change please");
+            actionInfoText.appendText("Beast is dead. Choose a new one!\n");
             return;
         }
         chosenAbility = abilityDto;
@@ -825,7 +864,7 @@ public class EncounterController extends Controller {
                 if (foundMonsterWithHP) {
                     foundMonsterWithHP = false;
                     for (Monster monster : allyMonsters) {
-                        if (!monster._id().equals(allyMonster._id()) && allyTrainer.team().contains(monster._id()) && monster.currentAttributes().health() > 0) {
+                        if (!monster._id().equals(allyMonster._id()) && allyTrainer.team().contains(monster._id()) && monster.currentAttributes().health() > 0 && allyTrainer._id().equals(cache.getTrainer()._id())) {
                             foundMonsterWithHP = true;
                             break;
                         }
@@ -987,5 +1026,18 @@ public class EncounterController extends Controller {
         attackBox2.setDisable(disabled);
         attackBox3.setDisable(disabled);
         attackBox4.setDisable(disabled);
+    }
+
+    public String getChosenMonster() {
+        if (renderBeastController1.getOpponentIdMonsterOne() != null && renderBeastController1.getOpponentIdMonsterOne().equals(chosenTarget)) {
+            return beastInfoController1.getMonster()._id();
+        } else if (renderBeastController1.getOpponentIdMonsterTwo() != null && renderBeastController1.getOpponentIdMonsterTwo().equals(chosenTarget)) {
+            return beastInfoController2.getMonster()._id();
+        }
+        return null;
+    }
+
+    public String getChosenTarget() {
+        return chosenTarget;
     }
 }

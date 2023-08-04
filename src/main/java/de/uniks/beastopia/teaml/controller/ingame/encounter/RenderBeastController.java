@@ -60,13 +60,12 @@ public class RenderBeastController extends Controller {
                     .observeOn(FX_SCHEDULER)
                     .subscribe(monsterImage -> {
                         firstMonster.setImage(monsterImage);
-                        firstMonster.setOnMouseClicked(event -> {
+                        selectBox.setOnMouseClicked(event -> {
                             if (selectBox2 != null && selectBox2.getStyle().contains("-fx-border-radius: 10px;")) {
                                 selectBox2.setStyle("-fx-border-radius: 0px; -fx-alignment: CENTER; -fx-max-height: 125px; -fx-pref-height: 125px; -fx-pref-width: 125px;");
                             }
-
                             selectBox.setStyle("-fx-border-radius: 10px; -fx-border-color: #000000;");
-                            System.out.println("Chosen Opponent ID: " + opponentIdMonsterOne);
+                            //System.out.println("Chosen Opponent ID: " + opponentIdMonsterOne);
                             encounterController.setChosenTarget(opponentIdMonsterOne);
                         });
                     }));
@@ -84,14 +83,12 @@ public class RenderBeastController extends Controller {
                         selectBox2.getChildren().add(secondMonster);
                         monsterContainer.getChildren().addAll(selectBox2);
 
-                        secondMonster.setOnMouseClicked(event -> {
+                        selectBox2.setOnMouseClicked(event -> {
                             if (selectBox.getStyle().contains("-fx-border-radius: 10px;")) {
                                 selectBox.setStyle("");
                             }
-
                             selectBox2.setStyle("-fx-border-radius: 10px; -fx-border-color: #000000; -fx-alignment: CENTER; -fx-max-height: 125px; -fx-pref-height: 125px; -fx-pref-width: 125px;");
-                            //HBox fx:id="selectBox" alignment="CENTER" maxHeight="125.0" prefHeight="125.0" prefWidth="125.0"
-                            System.out.println("Chosen Opponent ID: " + opponentIdMonsterTwo);
+                            //System.out.println("Chosen Opponent ID: " + opponentIdMonsterTwo);
                             encounterController.setChosenTarget(opponentIdMonsterTwo);
                         });
                     }));

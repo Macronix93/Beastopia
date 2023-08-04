@@ -86,6 +86,14 @@ public class BeastInfoController extends Controller {
         type.setText(value);
     }
 
+    public void setLevel(int level) {
+        this.level.setText(String.valueOf(level));
+    }
+
+    public void setName(String name) {
+        this.name.setText(name);
+    }
+
     public void setLifeBarValue(double value, boolean killTimer) {
         if (killTimer) {
             timer.cancel();
