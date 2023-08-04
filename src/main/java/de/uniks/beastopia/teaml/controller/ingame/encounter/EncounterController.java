@@ -403,12 +403,8 @@ public class EncounterController extends Controller {
                             } else if (o.suffix().equals("deleted")) {
                                 cache.removeOpponent(o.data()._id());
 
-                                System.out.println(o.data().trainer().equals(cache.getTrainer()._id()));
-                                System.out.println(allyTrainer == null);
-                                System.out.println(allyTrainer != null ? allyTrainer._id().equals(cache.getTrainer()._id()) : "null");
-
+                                // If our opponent gets deleted in a 1v2 situation, we should see the end screen
                                 if (o.data().trainer().equals(cache.getTrainer()._id()) && allyTrainer != null && !allyTrainer._id().equals(cache.getTrainer()._id())) {
-                                    System.out.println();
                                     EndScreenController endScreenController = setEndScreen(false, myMonster, allyMonster, enemyMonster, enemyAllyMonster);
                                     app.show(endScreenController);
                                 } else {
@@ -920,19 +916,14 @@ public class EncounterController extends Controller {
                         }
                     }
                     if (!foundMonsterWithHP) {
-                        EndScreenController endScreenController;
-                        //Monster myMon = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), myMonster._id()).blockingFirst();
-                        endScreenController = setEndScreen(true, enemyMonster, enemyAllyMonster, myMonster, allyMonster);
+                        EndScreenController endScreenController = setEndScreen(true, enemyMonster, enemyAllyMonster, myMonster, allyMonster);
                         levelUp(myMonster, endScreenController);
                     }
                 }
             }
         } else {
             if (enemyMonster.currentAttributes().health() <= 0) {
-                EndScreenController endScreenController;
-                //Monster myMon = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), myMonster._id()).blockingFirst();
-                System.out.println("called win bei enemy");
-                endScreenController = setEndScreen(true, enemyMonster, enemyAllyMonster, myMonster, allyMonster);
+                EndScreenController endScreenController = setEndScreen(true, enemyMonster, enemyAllyMonster, myMonster, allyMonster);
                 levelUp(myMonster, endScreenController);
             }
         }
@@ -954,9 +945,7 @@ public class EncounterController extends Controller {
                                 if (opponent.monster() != null) {
                                     updateEnemyMonster(opponent);
                                 } else {
-                                    EndScreenController endScreenController;
-                                    //Monster myMon = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), myMonster._id()).blockingFirst();
-                                    endScreenController = setEndScreen(true, enemyMonster, enemyAllyMonster, myMonster, allyMonster);
+                                    EndScreenController endScreenController = setEndScreen(true, enemyMonster, enemyAllyMonster, myMonster, allyMonster);
                                     levelUp(myMonster, endScreenController);
                                 }
                             }
