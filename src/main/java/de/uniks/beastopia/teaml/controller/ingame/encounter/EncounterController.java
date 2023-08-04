@@ -403,10 +403,7 @@ public class EncounterController extends Controller {
                             } else if (o.suffix().equals("deleted")) {
                                 cache.removeOpponent(o.data()._id());
 
-                                numberOfAttackers.set((int) cache.getCurrentOpponents().stream().filter(Opponent::isAttacker).count());
-                                isOneVersusTwo = numberOfAttackers.get() == 2;
-
-                                if (isOneVersusTwo && !cache.getCurrentOpponents().contains(cache.getOpponentByTrainerID(cache.getTrainer()._id()))) {
+                                if (o.data()._id().equals(cache.getTrainer()._id()) && allyTrainer != null && !allyTrainer._id().equals(cache.getTrainer()._id())) {
                                     EndScreenController endScreenController = setEndScreen(false, myMonster, allyMonster, enemyMonster, enemyAllyMonster);
                                     app.show(endScreenController);
                                 } else {
