@@ -965,4 +965,9 @@ public class EncounterController extends Controller {
         attackBox3.setDisable(disabled);
         attackBox4.setDisable(disabled);
     }
+
+    private void setCatchBeastInfoBox() {
+        catchBeastInfoBox.toFront();
+        //TODO das als eigenen controller darein und nicht hier
+    }
 }

@@ -197,7 +197,14 @@ public class ItemDetailController extends Controller {
                         } else {
                             beastName = presetsService.getMonsterType(monster.data().type()).blockingFirst().name();
                         }
-                        Dialog.info(resources.getString("unlockMonsterHeader"), resources.getString("unlockMonster") + " " + beastName);
+                        ingameController.showItemImage(itemType);
+                        Timer timer = new Timer();
+                        timer.schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+                                Platform.runLater(() -> Dialog.info(resources.getString("unlockMonsterHeader"), resources.getString("unlockMonster") + " " + beastName));
+                            }
+                        }, 3000);
                     });
         }
     }
@@ -217,7 +224,14 @@ public class ItemDetailController extends Controller {
                             if (!isUsedItem) {
                                 for (ItemTypeDto itemTypeDto : cache.getPresetItems()) {
                                     if (itemTypeDto.id() == item.data().type()) {
-                                        Dialog.info(resources.getString("newItemHeader"), resources.getString("newItem") + " " + itemTypeDto.name());
+                                        ingameController.showItemImage(itemType);
+                                        Timer timer = new Timer();
+                                        timer.schedule(new TimerTask() {
+                                            @Override
+                                            public void run() {
+                                                Platform.runLater(() -> Dialog.info(resources.getString("newItemHeader"), resources.getString("newItem") + " " + itemTypeDto.name()));
+                                            }
+                                        }, 3000);
                                     }
                                 }
                             }
