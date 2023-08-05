@@ -1,31 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Ellipse?>
-<VBox fx:id="monsterRenderBox" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="de.uniks.beastopia.teaml.controller.ingame.encounter.RenderBeastController">
+
+<VBox fx:id="monsterRenderBox" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.uniks.beastopia.teaml.controller.ingame.encounter.RenderBeastController">
     <StackPane>
         <Ellipse fx:id="ellipse" fill="#1fffca" radiusX="100.0" radiusY="125.0" stroke="BLACK" strokeType="INSIDE">
             <StackPane.margin>
-                <Insets/>
+                <Insets />
             </StackPane.margin>
         </Ellipse>
         <HBox fx:id="monsterContainer" alignment="CENTER" spacing="20.0">
-            <HBox fx:id="selectBox" alignment="CENTER" maxHeight="125.0" prefHeight="125.0" prefWidth="125.0">
-                <ImageView fx:id="firstMonster" fitHeight="125.0" fitWidth="125.0" pickOnBounds="true"
-                           preserveRatio="true"/>
-                <opaqueInsets>
-                    <Insets/>
-                </opaqueInsets>
-                <HBox.margin>
-                    <Insets/>
-                </HBox.margin>
-            </HBox>
+            <StackPane>
+                <VBox StackPane.alignment="TOP_CENTER">
+                    <ImageView fx:id="item" fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                        <VBox.margin>
+                            <Insets left="50.0" right="50.0" top="25.0"/>
+                        </VBox.margin>
+                    </ImageView>
+                </VBox>
+                <HBox fx:id="selectBox" alignment="CENTER" maxHeight="125.0" prefHeight="125.0" prefWidth="125.0">
+                    <ImageView fx:id="firstMonster" fitHeight="125.0" fitWidth="125.0" pickOnBounds="true"
+                               preserveRatio="true"/>
+                    <opaqueInsets>
+                        <Insets/>
+                    </opaqueInsets>
+                </HBox>
+            </StackPane>
         </HBox>
     </StackPane>
 </VBox>
