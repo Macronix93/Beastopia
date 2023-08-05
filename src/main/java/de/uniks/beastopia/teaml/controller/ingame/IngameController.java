@@ -1023,8 +1023,10 @@ public class IngameController extends Controller {
         Parent remotePlayer = otherPlayers.get(controller);
         controller.updateViewPort();
 
-        aStarService.updateMap(controller.getPosition(), true);
-        aStarService.updateMap(new Position(x, y), false);
+        if (tilePane.getChildren().contains(remotePlayer)) {
+            aStarService.updateMap(controller.getPosition(), true);
+            aStarService.updateMap(new Position(x, y), false);
+        }
 
         remotePlayer.setTranslateX(x * TILE_SIZE);
         remotePlayer.setTranslateY((y - 1) * TILE_SIZE);
