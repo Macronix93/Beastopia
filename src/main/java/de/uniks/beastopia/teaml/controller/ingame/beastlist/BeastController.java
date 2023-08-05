@@ -45,7 +45,7 @@ public class BeastController extends Controller {
                 .observeOn(FX_SCHEDULER)
                 .subscribe(monsterType -> name.setText(monsterType.name())));
 
-        hp.setText("HP: " + monster.currentAttributes().health() + " / " + monster.attributes().health());
+        hp.setText("HP: " + (int) monster.currentAttributes().health() + " / " + (int) monster.attributes().health());
         level.setText(String.valueOf(monster.level()));
 
         disposables.add(presetsService.getMonsterImage(monster.type())

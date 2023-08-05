@@ -61,7 +61,7 @@ public class BeastInfoController extends Controller {
                     type.setText("(" + monsterType.type().get(0) + ")");
                 }));
         level.setText(String.valueOf(monster.level()));
-        hpLabel.setText(monster.currentAttributes().health() + " / " + monster.attributes().health() + " (HP)");
+        hpLabel.setText((int) monster.currentAttributes().health() + " / " + (int) monster.attributes().health() + " (HP)");
         xpLabel.setText(monster.experience() + " / " + calcMaxXp() + " (Exp)");
 
         timer = new Timer();
@@ -69,7 +69,7 @@ public class BeastInfoController extends Controller {
             @Override
             public void run() {
                 Platform.runLater(() -> {
-                    setLifeBarValue(monster.currentAttributes().health() / (double) monster.attributes().health(), false);
+                    setLifeBarValue(monster.currentAttributes().health() / monster.attributes().health(), false);
                     setXpBarValue(monster.experience() / (double) calcMaxXp(), false);
                 });
             }
@@ -84,6 +84,14 @@ public class BeastInfoController extends Controller {
 
     public void setType(String value) {
         type.setText(value);
+    }
+
+    public void setLevel(int level) {
+        this.level.setText(String.valueOf(level));
+    }
+
+    public void setName(String name) {
+        this.name.setText(name);
     }
 
     public void setLifeBarValue(double value, boolean killTimer) {

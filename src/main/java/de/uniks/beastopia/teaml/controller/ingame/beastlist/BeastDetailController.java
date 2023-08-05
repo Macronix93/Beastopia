@@ -63,7 +63,7 @@ public class BeastDetailController extends Controller {
         speed.setText("Speed: " + monster.currentAttributes().speed());
         attack.setText("Attack: " + monster.currentAttributes().attack());
         defense.setText("Defense: " + monster.currentAttributes().defense());
-        hp.setText("HP: " + monster.currentAttributes().health() + " / " + monster.attributes().health());
+        hp.setText("HP: " + (int) monster.currentAttributes().health() + " / " + (int) monster.attributes().health());
 
         description.setEditable(false);
         description.setFocusTraversable(false);
