@@ -71,14 +71,14 @@ public class IngameController extends Controller {
     static final long FLIPPED_VERTICALLY_FLAG = 1L << 30;
     static final long FLIPPED_DIAGONALLY_FLAG = 1L << 29;
     static final long ROTATED_HEXAGONAL_120_FLAG = 1L << 28;
-    final ObjectProperty<PlayerState> state = new SimpleObjectProperty<>();
-    final java.util.Map<EntityController, Parent> otherPlayers = new HashMap<>();
-    private final List<Pair<TileSetDescription, Pair<TileSet, Image>>> tileSets = new ArrayList<>();
-    private final java.util.Map<Pair<Integer, Integer>, List<Pair<Tile, Node>>> MAP_INFO = new HashMap<>();
-    private final List<Controller> subControllers = new ArrayList<>();
-    private final List<Node> renderedPlayers = new ArrayList<>();
-    private final List<KeyCode> pressedKeys = new ArrayList<>();
-    private final String[] locationStrings = {"Moncenter", "House", "Store"};
+    private ObjectProperty<PlayerState> state = new SimpleObjectProperty<>();
+    private java.util.Map<EntityController, Parent> otherPlayers = new HashMap<>();
+    private List<Pair<TileSetDescription, Pair<TileSet, Image>>> tileSets = new ArrayList<>();
+    private java.util.Map<Pair<Integer, Integer>, List<Pair<Tile, Node>>> MAP_INFO = new HashMap<>();
+    private List<Controller> subControllers = new ArrayList<>();
+    private List<Node> renderedPlayers = new ArrayList<>();
+    private List<KeyCode> pressedKeys = new ArrayList<>();
+    private String[] locationStrings = {"Moncenter", "House", "Store"};
     @FXML
     public Pane tilePane;
     @FXML
@@ -121,8 +121,7 @@ public class IngameController extends Controller {
     Provider<JoinFightInfoController> joinFightInfoControllerProvider;
     @Inject
     Provider<ItemDetailController> itemDetailControllerProvider;
-    @Inject
-    AStarService aStarService;
+    AStarService aStarService = new AStarService();
     @Inject
     Prefs prefs;
     @Inject
@@ -178,7 +177,7 @@ public class IngameController extends Controller {
     private Region region;
     private Map map;
     private boolean updatingIndicator = false;
-    private final List<Node> pathTiles = new ArrayList<>();
+    private List<Node> pathTiles = new ArrayList<>();
     private boolean autoMove = false;
     private List<Position> autoMovePath;
     private Position autoMoveTargetPosition;
@@ -214,8 +213,19 @@ public class IngameController extends Controller {
     public void init() {
         super.init();
 
-        destroying = false;
+        state = new SimpleObjectProperty<>();
+        otherPlayers = new HashMap<>();
+        tileSets = new ArrayList<>();
+        MAP_INFO = new HashMap<>();
+        subControllers = new ArrayList<>();
+        renderedPlayers = new ArrayList<>();
+        pressedKeys = new ArrayList<>();
+        aStarService = new AStarService();
+        pathTiles = new ArrayList<>();
+        visibleHints = true;
         timerPause = false;
+        destroying = false;
+        drawMousePath = false;
 
         timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
@@ -591,7 +601,7 @@ public class IngameController extends Controller {
         controller.setDirection(trainer.direction());
         Parent parent = drawRemotePlayer(controller, trainer.x(), trainer.y());
         otherPlayers.put(controller, parent);
-        if (prefs.getArea() != null && !prefs.getArea()._id().equals(trainer.area())) {
+        if (!cache.getTrainer().area().equals(trainer.area())) {
             hideRemotePlayer(trainer);
         } else {
             aStarService.updateMap(new Position(trainer.x(), trainer.y()), false);

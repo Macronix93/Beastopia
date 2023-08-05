@@ -7,7 +7,6 @@ import de.uniks.beastopia.teaml.utils.Direction;
 import javafx.scene.Node;
 import javafx.util.Pair;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -20,8 +19,7 @@ public class AStarService {
     private int[][] fscore;
     private Position[][] parents;
 
-    @Inject
-    AStarService() {
+    public AStarService() {
 
     }
 
