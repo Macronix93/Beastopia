@@ -153,8 +153,6 @@ public class ItemDetailController extends Controller {
                             return;
                         }
                         useItemInFight(encounterController.getChosenMonster()._id());
-
-
                     } else {
                         ingameController.openBeastlist("shop", this);
                     }

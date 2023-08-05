@@ -397,18 +397,20 @@ public class EncounterController extends Controller {
                                                 case "target-unknown" ->
                                                         actionInfoText.appendText(getMonsterName(result.monster(), null) + " missed the attack!\n");
                                                 case "item-success" -> {
-                                                        actionInfoText.appendText(getMonsterName(result.monster(), null) + " successfully used an item!\n");
                                                     if (monBallUsed) {
-                                                        setCatchInfoBox(true);
-                                                        return;
+                                                        setMonBallUsed(false);
+                                                        actionInfoText.appendText("Trying to catch " + getMonsterName(result.monster(), null) + " with a ball!\n");
+                                                    } else {
+                                                        actionInfoText.appendText(getMonsterName(result.monster(), null) + " successfully used an item!\n");
                                                     }
                                                 }
                                                 case "item-failed" -> {
-                                                    actionInfoText.appendText(getMonsterName(result.monster(), null) + " used an item, but it failed!\n");
                                                     if (monBallUsed) {
                                                         setMonBallUsed(false);
-                                                        setCatchInfoBox(false);
-                                                        return;
+                                                        setCatchInfoBox(true);
+                                                        actionInfoText.appendText(getMonsterName(result.monster(), null) + " got out the ball!\n");
+                                                    } else {
+                                                        actionInfoText.appendText(getMonsterName(result.monster(), null) + " used an item, but it failed!\n");
                                                     }
                                                 }
                                             }
@@ -420,43 +422,48 @@ public class EncounterController extends Controller {
                                 }
                             } else if (o.suffix().equals("deleted")) {
                                 cache.removeOpponent(o.data()._id());
-                                //TODO maybe here when monball used ?
-                                // If our opponent gets deleted in a 1v2 situation, we should see the end screen
+                                if (monBallUsed && o.data().trainer().equals(cache.getTrainer()._id())) {
+                                    setMonBallUsed(false);
+                                    setCatchInfoBox(true);
+                                    return;
+                                }
                                 if (o.data().trainer().equals(cache.getTrainer()._id()) && allyTrainer != null && !allyTrainer._id().equals(cache.getTrainer()._id())) {
                                     EndScreenController endScreenController = setEndScreen(false, myMonster, allyMonster, enemyMonster, enemyAllyMonster);
                                     app.show(endScreenController);
                                 } else {
-                                    updateUIOnChange();
+                                    if (!monBallUsed) {
+                                        updateUIOnChange();
 
-                                    if (cache.getCurrentOpponents().size() > 1) {
-                                        if (renderBeastController1.getOpponentIdMonsterOne() != null && renderBeastController1.getOpponentIdMonsterOne().equals(o.data()._id())) {
-                                            beastInfoBox.getChildren().remove(myMonsterInfo);
-                                            beastInfoController1.destroy();
-                                            renderBeastController1.setMonster1(null);
-                                            renderBeastController1.setImageMonsterOne(null);
-                                            chosenTarget = renderBeastController1.getOpponentIdMonsterTwo();
-                                            setNumberOfAttacks(beastInfoController2.getMonster());
-                                            myTrainer = null;
-                                        } else if (renderBeastController1.getOpponentIdMonsterTwo() != null && renderBeastController1.getOpponentIdMonsterTwo().equals(o.data()._id())) {
-                                            beastInfoBox.getChildren().remove(allyMonsterInfo);
-                                            beastInfoController2.destroy();
-                                            renderBeastController1.setMonster2(null);
-                                            renderBeastController1.setImageMonsterTwo(null);
-                                            chosenTarget = renderBeastController1.getOpponentIdMonsterOne();
-                                            setNumberOfAttacks(beastInfoController1.getMonster());
-                                            allyTrainer = null;
-                                        } else if (renderBeastController2.getOpponentIdMonsterOne() != null && renderBeastController2.getOpponentIdMonsterOne().equals(o.data()._id())) {
-                                            enemyBeastInfo.getChildren().remove(enemyMonsterInfo);
-                                            enemyBeastInfoController1.destroy();
-                                            renderBeastController2.setMonster1(null);
-                                            renderBeastController2.setImageMonsterOne(null);
-                                            enemyTrainer = null;
-                                        } else if (renderBeastController2.getOpponentIdMonsterTwo() != null && renderBeastController2.getOpponentIdMonsterTwo().equals(o.data()._id())) {
-                                            enemyBeastInfo.getChildren().remove(enemyAllyMonsterInfo);
-                                            enemyBeastInfoController2.destroy();
-                                            renderBeastController2.setMonster2(null);
-                                            renderBeastController2.setImageMonsterTwo(null);
-                                            enemyAllyTrainer = null;
+                                        if (cache.getCurrentOpponents().size() > 1) {
+                                            if (renderBeastController1.getOpponentIdMonsterOne() != null && renderBeastController1.getOpponentIdMonsterOne().equals(o.data()._id())) {
+                                                beastInfoBox.getChildren().remove(myMonsterInfo);
+                                                beastInfoController1.destroy();
+                                                renderBeastController1.setMonster1(null);
+                                                renderBeastController1.setImageMonsterOne(null);
+                                                chosenTarget = renderBeastController1.getOpponentIdMonsterTwo();
+                                                setNumberOfAttacks(beastInfoController2.getMonster());
+                                                myTrainer = null;
+                                            } else if (renderBeastController1.getOpponentIdMonsterTwo() != null && renderBeastController1.getOpponentIdMonsterTwo().equals(o.data()._id())) {
+                                                beastInfoBox.getChildren().remove(allyMonsterInfo);
+                                                beastInfoController2.destroy();
+                                                renderBeastController1.setMonster2(null);
+                                                renderBeastController1.setImageMonsterTwo(null);
+                                                chosenTarget = renderBeastController1.getOpponentIdMonsterOne();
+                                                setNumberOfAttacks(beastInfoController1.getMonster());
+                                                allyTrainer = null;
+                                            } else if (renderBeastController2.getOpponentIdMonsterOne() != null && renderBeastController2.getOpponentIdMonsterOne().equals(o.data()._id())) {
+                                                enemyBeastInfo.getChildren().remove(enemyMonsterInfo);
+                                                enemyBeastInfoController1.destroy();
+                                                renderBeastController2.setMonster1(null);
+                                                renderBeastController2.setImageMonsterOne(null);
+                                                enemyTrainer = null;
+                                            } else if (renderBeastController2.getOpponentIdMonsterTwo() != null && renderBeastController2.getOpponentIdMonsterTwo().equals(o.data()._id())) {
+                                                enemyBeastInfo.getChildren().remove(enemyAllyMonsterInfo);
+                                                enemyBeastInfoController2.destroy();
+                                                renderBeastController2.setMonster2(null);
+                                                renderBeastController2.setImageMonsterTwo(null);
+                                                enemyAllyTrainer = null;
+                                            }
                                         }
                                     }
                                 }
@@ -833,11 +840,6 @@ public class EncounterController extends Controller {
     }
 
     public void fightIsOver() {
-        if (cache.getCurrentEncounter().isWild() && monBallUsed) {
-            setMonBallUsed(false);
-            setCatchInfoBox(true);
-            return;
-        }
         EndScreenController endScreenController;
 
         if (myMonster.currentAttributes().health() <= 0) {
@@ -1081,7 +1083,9 @@ public class EncounterController extends Controller {
                 catchInfoBox.getChildren().remove(catchInfoParent);
                 infoAnchorPane.toBack();
                 infoAnchorPane.setStyle("-fx-background-color: none;");
-                app.showPrevious();
+                IngameController controller = ingameControllerProvider.get();
+                controller.setRegion(cache.getJoinedRegion());
+                app.show(controller);
             });
             catchInfoBox.getChildren().add(catchInfoParent);
             infoAnchorPane.toFront();
