@@ -3,6 +3,7 @@ package de.uniks.beastopia.teaml.controller.ingame.encounter;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Monster;
 import de.uniks.beastopia.teaml.service.PresetsService;
+import de.uniks.beastopia.teaml.utils.AssetProvider;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -10,12 +11,15 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 
 import javax.inject.Inject;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
 @SuppressWarnings("unused")
 public class EnemyBeastInfoController extends Controller {
 
+    @FXML
+    HBox statusPocket;
     @FXML
     Label enemyName;
     @FXML
@@ -26,6 +30,8 @@ public class EnemyBeastInfoController extends Controller {
     HBox lifeBarValue;
     @Inject
     PresetsService presetsService;
+    @Inject
+    AssetProvider assets;
     private Monster monster;
     private Timer timer;
 
@@ -45,6 +51,7 @@ public class EnemyBeastInfoController extends Controller {
                 .observeOn(FX_SCHEDULER)
                 .subscribe(monsterType -> enemyName.setText(monsterType.name())));
         enemyLevel.setText(String.valueOf(monster.level()));
+        setStatus(monster.status(), false);
 
         //TODO: calculate lifebar value, call setLifeBarValue()
 
@@ -52,7 +59,10 @@ public class EnemyBeastInfoController extends Controller {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                Platform.runLater(() -> setLifeBarValue(monster.currentAttributes().health() / (double) monster.attributes().health(), false));
+                Platform.runLater(() -> {
+                    setLifeBarValue(monster.currentAttributes().health() / (double) monster.attributes().health(), false);
+                    setStatus(monster.status(), false);
+                });
             }
         }, 500);
 
@@ -60,12 +70,24 @@ public class EnemyBeastInfoController extends Controller {
     }
 
     public void setLifeBarValue(double value, boolean killTimer) {
-        if (killTimer) {
-            timer.cancel();
-        }
+        killTimer(killTimer);
         lifeBarValue.setMinWidth(lifeBar.getWidth() * value);
         lifeBarValue.setMaxWidth(lifeBar.getWidth() * value);
         lifeBarValue.setPrefWidth(lifeBar.getWidth() * value);
+    }
+
+    public void setStatus(List<String> status, boolean killTimer) {
+        killTimer(killTimer);
+        statusPocket.getChildren().clear();
+        if (!monster.status().isEmpty()) {
+            status.forEach(element -> statusPocket.getChildren().add(assets.getIcon("status", element, 25, 25)));
+        }
+    }
+
+    private void killTimer(boolean kill) {
+        if (kill) {
+            timer.cancel();
+        }
     }
 
     public Monster getMonster() {

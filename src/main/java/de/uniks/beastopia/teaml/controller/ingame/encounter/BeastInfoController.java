@@ -8,7 +8,6 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 
 import javax.inject.Inject;
@@ -19,8 +18,9 @@ import java.util.TimerTask;
 @SuppressWarnings("unused")
 public class BeastInfoController extends Controller {
 
+
     @FXML
-    ImageView statusImg;
+    HBox statusPocket;
     @FXML
     Label name;
     @FXML
@@ -42,8 +42,9 @@ public class BeastInfoController extends Controller {
 
     @Inject
     PresetsService presetsService;
-    private Monster monster;
+    @Inject
     AssetProvider assets;
+    private Monster monster;
     private Timer timer;
 
     @Inject
@@ -68,6 +69,7 @@ public class BeastInfoController extends Controller {
         level.setText(String.valueOf(monster.level()));
         hpLabel.setText(monster.currentAttributes().health() + " / " + monster.attributes().health() + " (HP)");
         xpLabel.setText(monster.experience() + " / " + calcMaxXp() + " (Exp)");
+        setStatus(monster.status(), false);
 
         timer = new Timer();
         timer.schedule(new TimerTask() {
@@ -76,6 +78,7 @@ public class BeastInfoController extends Controller {
                 Platform.runLater(() -> {
                     setLifeBarValue(monster.currentAttributes().health() / (double) monster.attributes().health(), false);
                     setXpBarValue(monster.experience() / (double) calcMaxXp(), false);
+                    setStatus(monster.status(), false);
                 });
             }
         }, 500);
@@ -102,22 +105,28 @@ public class BeastInfoController extends Controller {
     }
 
     public void setXpBarValue(double value, boolean killTimer) {
-        if (killTimer) {
-            timer.cancel();
-        }
+        killTimer(killTimer);
         xpBarValue.setMinWidth(xpBar.getWidth() * value);
         xpBarValue.setMaxWidth(xpBar.getWidth() * value);
         xpBarValue.setPrefWidth(xpBar.getWidth() * value);
     }
 
-    public Monster getMonster() {
-        return monster;
+    public void setStatus(List<String> status, boolean killTimer) {
+        killTimer(killTimer);
+        statusPocket.getChildren().clear();
+        if (!monster.status().isEmpty()) {
+            status.forEach(element -> statusPocket.getChildren().add(assets.getIcon("status", element, 25, 25)));
+        }
     }
 
-    public void setStatus(List<String> status) {
-        if (!monster.status().isEmpty()) {
-            statusImg = assets.getIcon("status", status.get(0), 25, 25);
+    private void killTimer(boolean kill) {
+        if (kill) {
+            timer.cancel();
         }
+    }
+
+    public Monster getMonster() {
+        return monster;
     }
 
     public String getName() {

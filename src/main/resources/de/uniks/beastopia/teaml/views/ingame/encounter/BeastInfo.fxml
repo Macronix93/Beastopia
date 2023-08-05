@@ -2,14 +2,12 @@
 
 <!--suppress JavaFxUnresolvedFxIdReference -->
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 <VBox fx:id="beastInfoContainer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
       prefHeight="100.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="de.uniks.beastopia.teaml.controller.ingame.encounter.BeastInfoController">
@@ -27,7 +25,7 @@
                 <Font size="16.0"/>
             </font>
         </Label>
-        <VBox prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS"/>
+        <HBox fx:id="statusPocket" alignment="CENTER" spacing="3.0" HBox.hgrow="ALWAYS"/>
         <Label text="Lvl. ">
             <font>
                 <Font size="16.0"/>
