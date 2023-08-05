@@ -21,7 +21,7 @@
     <padding>
         <Insets bottom="50.0" left="100.0" right="100.0" top="50.0" />
     </padding>
-    <GridPane fx:id="innerGridPane">
+    <GridPane fx:id="innerGridPane" maxHeight="600.0">
         <columnConstraints>
             <ColumnConstraints hgrow="SOMETIMES" />
         </columnConstraints>
