@@ -194,6 +194,7 @@ public class EncounterController extends Controller {
     RenderBeastController renderBeastController2;
     BeastInfoController beastInfoController1;
     BeastInfoController beastInfoController2;
+    private boolean monBallUsed;
 
     @Inject
     public EncounterController() {
@@ -395,10 +396,21 @@ public class EncounterController extends Controller {
                                                         actionInfoText.appendText(getMonsterName(result.monster(), null) + " got status damage. It was " + result.effectiveness() + "!\n");
                                                 case "target-unknown" ->
                                                         actionInfoText.appendText(getMonsterName(result.monster(), null) + " missed the attack!\n");
-                                                case "item-success" ->
+                                                case "item-success" -> {
                                                         actionInfoText.appendText(getMonsterName(result.monster(), null) + " successfully used an item!\n");
-                                                case "item-failed" ->
-                                                        actionInfoText.appendText(getMonsterName(result.monster(), null) + " used an item, but it failed!\n");
+                                                    if (monBallUsed) {
+                                                        setCatchInfoBox(true);
+                                                        return;
+                                                    }
+                                                }
+                                                case "item-failed" -> {
+                                                    actionInfoText.appendText(getMonsterName(result.monster(), null) + " used an item, but it failed!\n");
+                                                    if (monBallUsed) {
+                                                        setMonBallUsed(false);
+                                                        setCatchInfoBox(false);
+                                                        return;
+                                                    }
+                                                }
                                             }
                                             if (result.status() != null && !result.type().equals("status-removed") && !result.type().equals("status-damage")) {
                                                 actionInfoText.appendText(prefix + getMonsterName(result.monster(), null) + " is " + result.status() + "!\n");
@@ -408,7 +420,7 @@ public class EncounterController extends Controller {
                                 }
                             } else if (o.suffix().equals("deleted")) {
                                 cache.removeOpponent(o.data()._id());
-
+                                //TODO maybe here when monball used ?
                                 // If our opponent gets deleted in a 1v2 situation, we should see the end screen
                                 if (o.data().trainer().equals(cache.getTrainer()._id()) && allyTrainer != null && !allyTrainer._id().equals(cache.getTrainer()._id())) {
                                     EndScreenController endScreenController = setEndScreen(false, myMonster, allyMonster, enemyMonster, enemyAllyMonster);
@@ -821,6 +833,11 @@ public class EncounterController extends Controller {
     }
 
     public void fightIsOver() {
+        if (cache.getCurrentEncounter().isWild() && monBallUsed) {
+            setMonBallUsed(false);
+            setCatchInfoBox(true);
+            return;
+        }
         EndScreenController endScreenController;
 
         if (myMonster.currentAttributes().health() <= 0) {
@@ -1055,15 +1072,16 @@ public class EncounterController extends Controller {
         if (caught) {
             String catchInfo = resources.getString("successCatch");
             String teamInfo = "";
-            if (cache.getTrainer().team().size() < 6) {
+            if (cache.getTrainer().team().size() < 6) { //TODO wert vorher
                 teamInfo = resources.getString("catchToTeam");
             }
+            catchInfoController = catchInfoController.setCatchInfo(catchInfo, teamInfo, enemyMonster.type());
             Parent catchInfoParent = catchInfoController.render();
-            catchInfoController.setCatchInfo(catchInfo, teamInfo, enemyMonster.type());
             catchInfoController.setOnCloseRequest(() -> {
                 catchInfoBox.getChildren().remove(catchInfoParent);
                 infoAnchorPane.toBack();
                 infoAnchorPane.setStyle("-fx-background-color: none;");
+                app.showPrevious();
             });
             catchInfoBox.getChildren().add(catchInfoParent);
             infoAnchorPane.toFront();
@@ -1073,5 +1091,9 @@ public class EncounterController extends Controller {
             //TODO set x on top of beast
         }
 
+    }
+
+    public void setMonBallUsed(boolean used) {
+        monBallUsed = used;
     }
 }

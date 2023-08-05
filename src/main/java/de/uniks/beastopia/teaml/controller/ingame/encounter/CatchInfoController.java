@@ -1,6 +1,7 @@
 package de.uniks.beastopia.teaml.controller.ingame.encounter;
 
 import de.uniks.beastopia.teaml.controller.Controller;
+import de.uniks.beastopia.teaml.service.PresetsService;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
@@ -21,15 +22,18 @@ public class CatchInfoController extends Controller {
     private String catchInfo;
     private String catchToTeam;
     private int beastType;
+    @Inject
+    PresetsService presetsService;
 
     @Inject
     public CatchInfoController() {
     }
 
-    public void setCatchInfo(String catchInfo, String catchToTeam, int beastType) {
+    public CatchInfoController setCatchInfo(String catchInfo, String catchToTeam, int beastType) {
         this.catchInfo = catchInfo;
         this.catchToTeam = catchToTeam;
         this.beastType = beastType;
+        return this;
     }
 
     @Override
@@ -37,7 +41,7 @@ public class CatchInfoController extends Controller {
         Parent parent = super.render();
         catchInfoLabel.setText(catchInfo);
         catchToTeamLabel.setText(catchToTeam);
-        //TODO image
+        //disposables.add(presetsService.getMonsterImage(beastType).observeOn(FX_SCHEDULER).subscribe(catchImage::setImage));
         return parent;
     }
 

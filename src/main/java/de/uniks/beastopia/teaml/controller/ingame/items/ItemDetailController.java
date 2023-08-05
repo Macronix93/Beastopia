@@ -204,13 +204,8 @@ public class ItemDetailController extends Controller {
                     encounterController.itemBox.getChildren().clear();
                     encounterController.anchorPane.toBack();
                     encounterController.anchorPane.setStyle("-fx-background-color: none;");
-                    if (cache.getCurrentEncounter().isWild()) {
-                        for (Opponent opponent : cache.getCurrentOpponents()) {
-                            if (opponent.trainer().equals(cache.getTrainer()._id())) {
-                                encounterController.setCatchInfoBox(opponent.results().get(opponent.results().size() - 1).type().contains("success"));
-                                break;
-                            }
-                        }
+                    if (itemType.use().equals("ball")) {
+                        encounterController.setMonBallUsed(true);
                     }
                 }));
     }
