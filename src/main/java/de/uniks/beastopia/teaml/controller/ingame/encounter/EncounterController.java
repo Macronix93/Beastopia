@@ -23,6 +23,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -31,11 +32,7 @@ import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @SuppressWarnings("unused")
@@ -195,6 +192,7 @@ public class EncounterController extends Controller {
     BeastInfoController beastInfoController1;
     BeastInfoController beastInfoController2;
     private boolean monBallUsed;
+    public ItemTypeDto usedItemTypeDto;
 
     @Inject
     public EncounterController() {
@@ -1095,7 +1093,18 @@ public class EncounterController extends Controller {
             catchInfoBox.getChildren().add(catchInfoParent);
             infoAnchorPane.toFront();
             infoAnchorPane.setStyle("-fx-background-color: rgba(0,0,0,0.5);");
-            //TODO set beastBall on top of beast
+            if (cache.getItemImages().containsKey(usedItemTypeDto.id())) {
+                renderBeastController2.setItemAnimation(cache.getItemImages().get(usedItemTypeDto.id()));
+            } else {
+                disposables.add(presetsService.getItemImage(usedItemTypeDto.id())
+                        .observeOn(FX_SCHEDULER)
+                        .subscribe(itemImage -> {
+                            Map<Integer, Image> itemImages = new HashMap<>();
+                            itemImages.put(usedItemTypeDto.id(), itemImage);
+                            cache.setItemImages(itemImages);
+                            renderBeastController2.setItemAnimation(cache.getItemImages().get(usedItemTypeDto.id()));
+                        }));
+            }
         } else {
             //TODO set x on top of beast
         }

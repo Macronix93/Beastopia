@@ -16,10 +16,10 @@
         </Ellipse>
         <HBox fx:id="monsterContainer" alignment="CENTER" spacing="20.0">
             <StackPane>
-                <VBox StackPane.alignment="TOP_CENTER">
-                    <ImageView fx:id="item" fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                <VBox fx:id="itemImageBox" StackPane.alignment="TOP_CENTER">
+                    <ImageView fx:id="itemImage" fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
                         <VBox.margin>
-                            <Insets left="50.0" right="50.0" top="25.0" />
+                            <Insets left="50.0" right="50.0" top="15.0" />
                         </VBox.margin>
                     </ImageView>
                 </VBox>

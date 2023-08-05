@@ -28,7 +28,9 @@ public class RenderBeastController extends Controller {
     @FXML
     HBox selectBox;
     @FXML
-    public ImageView item;
+    public ImageView itemImage;
+    @FXML
+    public VBox itemImageBox;
     @Inject
     PresetsService presetsService;
     @Inject
@@ -56,6 +58,8 @@ public class RenderBeastController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
+
+        itemImageBox.toBack();
 
         if (monster1 != null) {
             disposables.add(presetsService.getMonsterImage(monster1.type())
@@ -148,6 +152,11 @@ public class RenderBeastController extends Controller {
     public void destroy() {
         super.destroy();
 
+    }
+
+    public void setItemAnimation(Image image) {
+        itemImage.setImage(image);
+        //TODO und danach wiederr löschen
     }
 
 }

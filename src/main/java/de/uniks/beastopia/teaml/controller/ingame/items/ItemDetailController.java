@@ -152,6 +152,7 @@ public class ItemDetailController extends Controller {
                             encounterController.actionInfoText.appendText("Beast is dead. Choose a new one!\n");
                             return;
                         }
+                        encounterController.usedItemTypeDto = itemType;
                         useItemInFight(encounterController.getChosenMonster()._id());
                     } else {
                         ingameController.openBeastlist("shop", this);
@@ -161,6 +162,7 @@ public class ItemDetailController extends Controller {
                 case "ball" -> {
                     if (cache.getCurrentEncounter() != null) {
                         if (cache.getCurrentEncounter().isWild()) {
+                            encounterController.usedItemTypeDto = itemType;
                             useItemInFight(encounterController.enemyMonster._id());
                         }
                     }
