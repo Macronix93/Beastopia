@@ -12,6 +12,7 @@ import de.uniks.beastopia.teaml.rest.NPCInfo;
 import de.uniks.beastopia.teaml.rest.Opponent;
 import de.uniks.beastopia.teaml.rest.Region;
 import de.uniks.beastopia.teaml.rest.Trainer;
+import de.uniks.beastopia.teaml.rest.UseItemMove;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.EncounterOpponentsService;
 import de.uniks.beastopia.teaml.service.PresetsService;
@@ -159,7 +160,7 @@ class EncounterControllerTest extends ApplicationTest {
     @Test
     void useAttack1() {
         AbilityMove abilityMove = new AbilityMove("ability", 0, "000000000000000000000000");
-        Variant<AbilityMove, ChangeMonsterMove> move = new Variant<>();
+        Variant<AbilityMove, ChangeMonsterMove, UseItemMove> move = new Variant<>();
         move.setT(abilityMove);
 
         when(encounterOpponentsService.updateEncounterOpponent("id", "ID", null, null, move.getT()))
@@ -171,7 +172,7 @@ class EncounterControllerTest extends ApplicationTest {
     @Test
     void useAttack2() {
         AbilityMove abilityMove = new AbilityMove("ability", 0, "000000000000000000000000");
-        Variant<AbilityMove, ChangeMonsterMove> move = new Variant<>();
+        Variant<AbilityMove, ChangeMonsterMove, UseItemMove> move = new Variant<>();
         move.setT(abilityMove);
 
         when(encounterOpponentsService.updateEncounterOpponent("id", "ID", null, null, move.getT()))
@@ -183,7 +184,7 @@ class EncounterControllerTest extends ApplicationTest {
     @Test
     void useAttack3() {
         AbilityMove abilityMove = new AbilityMove("ability", 0, "000000000000000000000000");
-        Variant<AbilityMove, ChangeMonsterMove> move = new Variant<>();
+        Variant<AbilityMove, ChangeMonsterMove, UseItemMove> move = new Variant<>();
         move.setT(abilityMove);
 
         when(encounterOpponentsService.updateEncounterOpponent("id", "ID", null, null, move.getT()))
@@ -195,7 +196,7 @@ class EncounterControllerTest extends ApplicationTest {
     @Test
     void useAttack4() {
         AbilityMove abilityMove = new AbilityMove("ability", 0, "000000000000000000000000");
-        Variant<AbilityMove, ChangeMonsterMove> move = new Variant<>();
+        Variant<AbilityMove, ChangeMonsterMove, UseItemMove> move = new Variant<>();
         move.setT(abilityMove);
 
         when(encounterOpponentsService.updateEncounterOpponent("id", "ID", null, null, move.getT()))

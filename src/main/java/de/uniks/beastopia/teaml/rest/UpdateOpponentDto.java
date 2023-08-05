@@ -4,6 +4,6 @@ import de.uniks.beastopia.teaml.utils.Variant;
 
 public record UpdateOpponentDto(
         String monster,
-        Variant<AbilityMove, ChangeMonsterMove> move
-)
-{}
+        Variant<AbilityMove, ChangeMonsterMove, UseItemMove> move
+) {
+}
