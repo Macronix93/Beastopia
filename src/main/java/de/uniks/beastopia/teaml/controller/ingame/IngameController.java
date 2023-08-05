@@ -808,8 +808,9 @@ public class IngameController extends Controller {
         indicator.setTranslateX(x * TILE_SIZE);
         indicator.setTranslateY(y * TILE_SIZE);
 
+        var path = aStarService.findPath(new Position(posx, posy), new Position(x, y));
         boolean walkable = aStarService.isWalkable(new Position(x, y));
-        indicator.setStyle("-fx-border-color: " + (walkable ? "white" : "red") + "; -fx-border-width: 2px;");
+        indicator.setStyle("-fx-border-color: " + ((walkable && !path.isEmpty()) ? "white" : "red") + "; -fx-border-width: 2px;");
 
         indicator.setOnMouseExited(event -> removeMouseIndicator(false));
         indicator.setOnMouseClicked(event -> startAutoMove(new Position(x, y)));
@@ -825,7 +826,7 @@ public class IngameController extends Controller {
             tilePane.getChildren().removeAll(pathTiles);
             pathTiles.clear();
             if (drawMousePath) {
-                for (var pos : aStarService.findPath(new Position(posx, posy), new Position(x, y))) {
+                for (var pos : path) {
                     if (pos.x() != x || pos.y() != y) {
                         drawPathTile(pos.x(), pos.y(), Color.BLUE);
                     }
@@ -927,6 +928,7 @@ public class IngameController extends Controller {
         autoMovePath = new ArrayList<>();
         autoMoveTargetPosition = null;
         updateMouseIndicator();
+        setIdleState();
     }
 
     public void setOrigin(int tilex, int tiley) {
