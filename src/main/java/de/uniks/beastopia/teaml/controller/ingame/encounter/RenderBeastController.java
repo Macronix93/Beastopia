@@ -27,6 +27,8 @@ public class RenderBeastController extends Controller {
     ImageView firstMonster;
     @FXML
     HBox selectBox;
+    @FXML
+    public ImageView item;
     @Inject
     PresetsService presetsService;
     @Inject

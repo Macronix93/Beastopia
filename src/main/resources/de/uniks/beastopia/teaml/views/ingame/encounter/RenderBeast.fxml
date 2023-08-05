@@ -19,15 +19,14 @@
                 <VBox StackPane.alignment="TOP_CENTER">
                     <ImageView fx:id="item" fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
                         <VBox.margin>
-                            <Insets left="50.0" right="50.0" top="25.0"/>
+                            <Insets left="50.0" right="50.0" top="25.0" />
                         </VBox.margin>
                     </ImageView>
                 </VBox>
                 <HBox fx:id="selectBox" alignment="CENTER" maxHeight="125.0" prefHeight="125.0" prefWidth="125.0">
-                    <ImageView fx:id="firstMonster" fitHeight="125.0" fitWidth="125.0" pickOnBounds="true"
-                               preserveRatio="true"/>
+                    <ImageView fx:id="firstMonster" fitHeight="125.0" fitWidth="125.0" pickOnBounds="true" preserveRatio="true" />
                     <opaqueInsets>
-                        <Insets/>
+                        <Insets />
                     </opaqueInsets>
                 </HBox>
             </StackPane>
