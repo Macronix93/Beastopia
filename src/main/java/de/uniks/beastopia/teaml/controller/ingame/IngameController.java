@@ -280,9 +280,14 @@ public class IngameController extends Controller {
                 app.show(controller);
                 return;
             }
+
+            aStarService.updateMap(new Position(posx, posy), true);
             posx = trainer.x();
             posy = trainer.y();
+            aStarService.updateMap(new Position(posx, posy), false);
+
             updateOrigin();
+
 
             timerPause = false;
             spawned = true;
@@ -493,8 +498,6 @@ public class IngameController extends Controller {
             }
 
             if (cache.getTrainer()._id().equals(dto._id())) {
-                aStarService.updateMap(new Position(posx, posy), true);
-                aStarService.updateMap(new Position(dto.x(), dto.y()), false);
                 updateMouseIndicator();
                 playerController.updateTrainer(dto);
                 return;
@@ -502,10 +505,6 @@ public class IngameController extends Controller {
 
             for (EntityController entityController : otherPlayers.keySet()) {
                 if (entityController.getTrainer()._id().equals(dto._id())) {
-                    if (entityController.getPosition() != null) {
-                        aStarService.updateMap(entityController.getPosition(), true);
-                    }
-                    aStarService.updateMap(new Position(dto.x(), dto.y()), false);
                     updateMouseIndicator();
                     entityController.updateTrainer(dto);
                     return;
@@ -1023,6 +1022,10 @@ public class IngameController extends Controller {
     private void moveRemotePlayer(EntityController controller, int x, int y) {
         Parent remotePlayer = otherPlayers.get(controller);
         controller.updateViewPort();
+
+        aStarService.updateMap(controller.getPosition(), true);
+        aStarService.updateMap(new Position(x, y), false);
+
         remotePlayer.setTranslateX(x * TILE_SIZE);
         remotePlayer.setTranslateY((y - 1) * TILE_SIZE);
         updateDrawOrder();
@@ -1093,6 +1096,7 @@ public class IngameController extends Controller {
 
         Pair<Integer, Integer> posXY = new Pair<>(posx, posy);
 
+        state.setValue(PlayerState.WALKING);
         if (MAP_INFO.containsKey(posXY)) {
             for (var pair : MAP_INFO.get(posXY)) {
                 Tile tile = pair.getKey();

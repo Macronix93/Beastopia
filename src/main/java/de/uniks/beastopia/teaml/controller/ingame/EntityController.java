@@ -80,21 +80,21 @@ public class EntityController extends Controller {
     }
 
     public void updateViewPort() {
+        int VIEW_SIZE = 96;
+        if (state.get().equals(PlayerState.JUMP)) {
+            VIEW_SIZE = (int) (VIEW_SIZE * 1.2);
+        }
+        entityView.setFitWidth(VIEW_SIZE);
+        entityView.setFitHeight(VIEW_SIZE);
         entityView.setViewport(getViewport());
     }
 
     @Override
     public Parent render() {
-        int VIEW_SIZE = 96;
-        if (state.get().equals(PlayerState.JUMP)) {
-            VIEW_SIZE = (int) (VIEW_SIZE * 1.2);
-        }
         parent = super.render();
         entityView.toFront();
         entityView.setPreserveRatio(true);
         entityView.setSmooth(true);
-        entityView.setFitWidth(VIEW_SIZE);
-        entityView.setFitHeight(VIEW_SIZE);
         updateViewPort();
 
         disposables.add(cache.getOrLoadTrainerImage(trainer.image(), true).observeOn(FX_SCHEDULER).subscribe(image -> entityView.setImage(image)));
