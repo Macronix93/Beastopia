@@ -1074,8 +1074,13 @@ public class EncounterController extends Controller {
         if (caught) {
             String catchInfo = resources.getString("successCatch");
             String teamInfo = "";
-            if (cache.getTrainer().team().size() < 6) { //TODO wert vorher
+            if (cache.getTrainer().team().size() < 6) {
                 teamInfo = resources.getString("catchToTeam");
+                List<String> newTeam = cache.getTrainer().team();
+                newTeam.add(enemyMonster._id());
+                disposables.add(trainerService.updateTrainer(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), null, null, newTeam).observeOn(FX_SCHEDULER).subscribe(
+                        trainer -> cache.setTrainer(trainer)
+                ));
             }
             catchInfoController = catchInfoController.setCatchInfo(catchInfo, teamInfo, enemyMonster.type());
             Parent catchInfoParent = catchInfoController.render();

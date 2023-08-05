@@ -8,18 +8,22 @@ import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
 
+@SuppressWarnings("unused")
 public class CatchInfoController extends Controller {
-    @FXML
-    public Label catchInfoLabel;
     @FXML
     public ImageView catchImage;
     @FXML
     public Label catchToTeamLabel;
+    @FXML
+    public VBox catchInfoBg;
+    @FXML
+    public Label catchInfo;
     private Runnable onCloseRequest;
-    private String catchInfo;
+    private String catchInfoText;
     private String catchToTeam;
     private int beastType;
     @Inject
@@ -29,8 +33,8 @@ public class CatchInfoController extends Controller {
     public CatchInfoController() {
     }
 
-    public CatchInfoController setCatchInfo(String catchInfo, String catchToTeam, int beastType) {
-        this.catchInfo = catchInfo;
+    public CatchInfoController setCatchInfo(String catchInfoText, String catchToTeam, int beastType) {
+        this.catchInfoText = catchInfoText;
         this.catchToTeam = catchToTeam;
         this.beastType = beastType;
         return this;
@@ -39,9 +43,16 @@ public class CatchInfoController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
-        catchInfoLabel.setText(catchInfo);
-        catchToTeamLabel.setText(catchToTeam);
-        //disposables.add(presetsService.getMonsterImage(beastType).observeOn(FX_SCHEDULER).subscribe(catchImage::setImage));
+        disposables.add(presetsService.getMonsterType(beastType).observeOn(FX_SCHEDULER).subscribe(
+                t -> {
+                    catchInfo.setText(catchInfoText + " " + t.name() + "!");
+                    if (!catchToTeam.isEmpty()) {
+                        catchToTeamLabel.setText(t.name() + " " + catchToTeam);
+                    }
+                    disposables.add(presetsService.getMonsterImage(t.id()).subscribe(
+                            i -> catchImage.setImage(i)));
+                }
+        ));
         return parent;
     }
 
