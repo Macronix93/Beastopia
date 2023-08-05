@@ -6,6 +6,7 @@ import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.FriendListService;
 import de.uniks.beastopia.teaml.sockets.EventListener;
+import de.uniks.beastopia.teaml.utils.AssetProvider;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.stage.Stage;
@@ -31,6 +32,9 @@ class FriendControllerTest extends ApplicationTest {
 
     @Spy
     App app;
+    @Spy
+    @SuppressWarnings("unused")
+    AssetProvider assets;
     @Mock
     FriendListService friendListService;
     @Mock
