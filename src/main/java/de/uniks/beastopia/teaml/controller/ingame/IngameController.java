@@ -351,8 +351,9 @@ public class IngameController extends Controller {
             return Math.abs(x1 - x2) <= 1 && Math.abs(y1 - y2) <= 1;
         };
 
+        Set<Node> tilePaneChildren = new HashSet<>(tilePane.getChildren());
         List<Node> visiblePlayers = renderedPlayers.stream()
-                .filter(node -> node != null && tilePane.getChildrenUnmodifiable().contains(node))
+                .filter(node -> node != null && tilePaneChildren.contains(node))
                 .sorted(Comparator.comparingDouble(Node::getTranslateY))
                 .toList();
 
@@ -545,7 +546,6 @@ public class IngameController extends Controller {
                             pauseMenuParent.setPickOnBounds(false);
                             loadRemoteTrainer(trainers);
                             listenToTrainerEvents();
-
 
                             loadingPage.setDone();
                         }
@@ -1476,6 +1476,7 @@ public class IngameController extends Controller {
                 posx = autoMoveNextPosition.x();
                 posy = autoMoveNextPosition.y();
 
+                checkMovementAchievement();
                 onUI(() -> {
                     aStarService.updateMap(new Position(lastposx, lastposy), true);
                     aStarService.updateMap(new Position(posx, posy), false);

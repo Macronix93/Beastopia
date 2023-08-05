@@ -20,7 +20,6 @@ public class AStarService {
     private int[][] fscore;
     private Position[][] parents;
 
-
     @Inject
     AStarService() {
 
