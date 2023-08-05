@@ -65,13 +65,16 @@
     -fx-alignment: center;
 }
 
-#registerButton,
 #loginButton {
-    -fx-border-width: 0px;
-    -fx-border-radius: 0px;
-    -fx-background-radius: 0px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
     -fx-effect: dropshadow(gaussian, #D6B656, 0, 0, 0, 0);
     -fx-alignment: center;
+    -fx-font-weight: bold;
+}
+
+#registerButton {
+    -fx-border-width: 0px;
 }
 
 #mainMenuButton,
@@ -261,4 +264,18 @@
 
 #ellipse {
     -fx-fill: #CEEDC7;
+}
+
+#backroundHbox {
+    -fx-background-color: #DBF0EB;
+}
+
+#innerGridPane {
+    -fx-background-color: #CEEDC7;
+    -fx-border-color: #82B366;
+    -fx-border-radius: 10;
+}
+
+.combo-box, .arrow-button {
+    -fx-background-color: linear-gradient(to bottom, #DBF0EB, #CEEDC7);
 }

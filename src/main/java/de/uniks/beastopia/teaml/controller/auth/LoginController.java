@@ -18,6 +18,9 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.RadioButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.text.Text;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -43,6 +46,12 @@ public class LoginController extends Controller {
     public RadioButton selectGermanLanguage;
     @FXML
     public ImageView banner;
+    @FXML
+    public HBox backroundHbox;
+    @FXML
+    public GridPane innerGridPane;
+    @FXML
+    public Text singupText;
 
     @Inject
     Provider<RegistrationController> registrationControllerProvider;
