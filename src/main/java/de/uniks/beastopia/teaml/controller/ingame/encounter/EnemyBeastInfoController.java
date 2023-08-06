@@ -60,7 +60,7 @@ public class EnemyBeastInfoController extends Controller {
             @Override
             public void run() {
                 Platform.runLater(() -> {
-                    setLifeBarValue(monster.currentAttributes().health() / (double) monster.attributes().health(), false);
+                    setLifeBarValue(monster.currentAttributes().health() / monster.attributes().health(), false);
                     setStatus(monster.status(), false);
                 });
             }

@@ -139,11 +139,4 @@ public class RenderBeastController extends Controller {
     public void setEncounterController(EncounterController controller) {
         this.encounterController = controller;
     }
-
-    @Override
-    public void destroy() {
-        super.destroy();
-
-    }
-
 }

@@ -2,18 +2,7 @@ package de.uniks.beastopia.teaml.service;
 
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.Main;
-import de.uniks.beastopia.teaml.rest.AbilityDto;
-import de.uniks.beastopia.teaml.rest.Achievement;
-import de.uniks.beastopia.teaml.rest.Area;
-import de.uniks.beastopia.teaml.rest.Encounter;
-import de.uniks.beastopia.teaml.rest.Item;
-import de.uniks.beastopia.teaml.rest.ItemTypeDto;
-import de.uniks.beastopia.teaml.rest.MonsterTypeDto;
-import de.uniks.beastopia.teaml.rest.Opponent;
-import de.uniks.beastopia.teaml.rest.Region;
-import de.uniks.beastopia.teaml.rest.TileSet;
-import de.uniks.beastopia.teaml.rest.Trainer;
-import de.uniks.beastopia.teaml.rest.User;
+import de.uniks.beastopia.teaml.rest.*;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Scheduler;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -34,12 +23,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import static de.uniks.beastopia.teaml.service.PresetsService.PREVIEW_SCALING;
 
@@ -69,7 +55,6 @@ public class DataCache {
     private Image mapImage;
     private List<ItemTypeDto> presetItems = new ArrayList<>();
     private List<Item> trainerItems = new ArrayList<>();
-    private List<Item> items = new ArrayList<>();
     private List<Opponent> currentOpponents = new ArrayList<>();
     private List<MonsterTypeDto> allBeasts = new ArrayList<>();
 
@@ -495,14 +480,6 @@ public class DataCache {
 
     public void setMapImage(Image image) {
         this.mapImage = image;
-    }
-
-    public List<Item> getItems() {
-        return this.items;
-    }
-
-    public void setItems(List<Item> i) {
-        this.items = i;
     }
 
     public List<ItemTypeDto> getPresetItems() {

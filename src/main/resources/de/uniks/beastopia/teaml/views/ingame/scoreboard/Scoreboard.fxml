@@ -1,16 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-
 <HBox alignment="CENTER_RIGHT" onKeyPressed="#handleKeyEvent" prefHeight="317.0" prefWidth="516.0" spacing="5.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.uniks.beastopia.teaml.controller.ingame.scoreboard.ScoreboardController">
     <ScrollPane fitToWidth="true" hbarPolicy="NEVER" prefHeight="317.0" prefWidth="236.0" style="-fx-background-color: transparent;" HBox.hgrow="ALWAYS">
         <VBox fx:id="achievements" prefWidth="200.0" style="-fx-border-color: black;" />
@@ -21,6 +16,7 @@
                 <Insets top="5.0" />
             </padding>
             <HBox alignment="CENTER" prefHeight="35.0" prefWidth="251.0" spacing="10.0">
+                <!--suppress JavaFxUnresolvedFxIdReference -->
             <Label fx:id="scoreBoardTitle" text="Scoreboard">
                <font>
                   <Font size="18.0" />

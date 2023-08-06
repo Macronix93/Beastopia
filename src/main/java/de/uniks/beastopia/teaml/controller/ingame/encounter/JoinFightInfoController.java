@@ -82,11 +82,6 @@ public class JoinFightInfoController extends Controller {
 
     private void onTimerFinished() {
         parent.getChildren().remove(infoSign);
-        destroy();
-    }
-
-    @Override
-    public void destroy() {
         super.destroy();
     }
 }
