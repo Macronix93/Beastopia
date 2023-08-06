@@ -5,6 +5,7 @@ import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.rest.Monster;
 import de.uniks.beastopia.teaml.rest.MonsterAttributes;
 import de.uniks.beastopia.teaml.service.PresetsService;
+import de.uniks.beastopia.teaml.utils.AssetProvider;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
@@ -16,6 +17,8 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
@@ -26,12 +29,15 @@ class BeastControllerTest extends ApplicationTest {
     final MonsterAttributes attributes = new MonsterAttributes(1, 1, 1, 1);
     @Spy
     App app;
+    @Spy
+    @SuppressWarnings("unused")
+    AssetProvider assets;
     @InjectMocks
     BeastController beastController;
     @Mock
     PresetsService presetsService;
     final MonsterAttributes currentAttributes = new MonsterAttributes(0, 0, 0, 0);
-    final Monster monster = new Monster(null, null, "MONSTER_ID", "TRAINER_ID", 0, 0, 0, null, attributes, currentAttributes, null);
+    final Monster monster = new Monster(null, null, "MONSTER_ID", "TRAINER_ID", 0, 0, 0, null, attributes, currentAttributes, List.of("burned"));
 
 
     @Override
