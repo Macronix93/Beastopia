@@ -1,19 +1,14 @@
 package de.uniks.beastopia.teaml.controller.menu;
 
-import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.auth.LoginController;
 import de.uniks.beastopia.teaml.controller.menu.social.FriendListController;
-import de.uniks.beastopia.teaml.service.AchievementsService;
-import de.uniks.beastopia.teaml.service.AuthService;
-import de.uniks.beastopia.teaml.service.DataCache;
-import de.uniks.beastopia.teaml.service.TokenStorage;
+import de.uniks.beastopia.teaml.service.*;
 import de.uniks.beastopia.teaml.utils.Dialog;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -23,7 +18,6 @@ import javax.inject.Provider;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 public class MenuController extends Controller {
     private final List<Controller> subControllers = new ArrayList<>();
@@ -50,7 +44,13 @@ public class MenuController extends Controller {
     @Inject
     TokenStorage tokenStorage;
     @Inject
+    ImageService imageService;
+    @Inject
     AchievementsService achievementsService;
+    @Inject
+    DataCache cache;
+    @Inject
+    Prefs prefs;
     @FXML
     private VBox friendListContainer;
     @FXML
@@ -61,10 +61,6 @@ public class MenuController extends Controller {
     private ImageView userAvatar;
     @FXML
     private Text userName;
-    @Inject
-    DataCache cache;
-    @Inject
-    Prefs prefs;
 
     @Inject
     public MenuController() {
@@ -100,7 +96,7 @@ public class MenuController extends Controller {
     public Parent render() {
         Parent parent = super.render();
 
-        banner.setImage(new Image(Objects.requireNonNull(Main.class.getResourceAsStream("assets/beastopia_banner.png"))));
+        banner.setImage(imageService.getBanner());
         userAvatar.setImage(cache.getImageAvatar(tokenStorage.getCurrentUser()));
         userName.setText(tokenStorage.getCurrentUser().name());
 
