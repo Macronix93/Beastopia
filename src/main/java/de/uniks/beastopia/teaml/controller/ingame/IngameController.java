@@ -121,7 +121,8 @@ public class IngameController extends Controller {
     Provider<JoinFightInfoController> joinFightInfoControllerProvider;
     @Inject
     Provider<ItemDetailController> itemDetailControllerProvider;
-    AStarService aStarService = new AStarService();
+    @Inject
+    AStarService aStarService;
     @Inject
     Prefs prefs;
     @Inject
@@ -220,7 +221,6 @@ public class IngameController extends Controller {
         subControllers = new ArrayList<>();
         renderedPlayers = new ArrayList<>();
         pressedKeys = new ArrayList<>();
-        aStarService = new AStarService();
         pathTiles = new ArrayList<>();
         visibleHints = true;
         timerPause = false;
