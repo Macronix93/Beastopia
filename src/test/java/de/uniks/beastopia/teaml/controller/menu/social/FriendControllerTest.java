@@ -5,6 +5,7 @@ import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.FriendListService;
+import de.uniks.beastopia.teaml.service.ImageService;
 import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import io.reactivex.rxjava3.core.Observable;
@@ -46,6 +47,8 @@ class FriendControllerTest extends ApplicationTest {
     @SuppressWarnings("unused")
     @Mock
     DataCache cache;
+    @Mock
+    ImageService imageService;
     @InjectMocks
     FriendController friendController;
     @Spy
