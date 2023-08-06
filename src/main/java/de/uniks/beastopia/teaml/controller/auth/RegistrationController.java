@@ -111,6 +111,7 @@ public class RegistrationController extends Controller {
     @FXML
     private void uploadAvatar() {
         File file = cache.provideImageFile(app);
+        if (file == null) return;
         this.bufferedImage = cache.provideBufferedImage(file);
         avatarPreview.setImage(new Image(file.toURI().toString(), 128, 128, true, true, true));
     }
