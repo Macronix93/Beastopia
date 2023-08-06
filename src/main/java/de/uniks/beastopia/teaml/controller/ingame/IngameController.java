@@ -265,10 +265,7 @@ public class IngameController extends Controller {
         mondexListController.setOnBeastClicked(this::toggleMondexDetails);
         mondexListController.init();
 
-        pauseController.setOnCloseRequest(() -> {
-            pauseMenuLayout.getChildren().remove(pauseMenuParent);
-            currentMenu = MENU_NONE;
-        });
+        pauseController.setOnCloseRequest(this::closePause);
         pauseController.init();
 
         state.setValue(PlayerState.IDLE);
@@ -1870,8 +1867,6 @@ public class IngameController extends Controller {
     public void openPauseMenu() {
         if (pauseMenuLayout.getChildren().contains(pauseMenuParent)) {
             closePause();
-            pauseMenuLayout.getChildren().remove(pauseMenuParent);
-            currentMenu = MENU_NONE;
         } else {
             for (Node tile : tilePane.getChildren()) {
                 if (tile instanceof ImageView imageView) {
@@ -1882,6 +1877,7 @@ public class IngameController extends Controller {
             }
             pauseHint.setOpacity(0);
             pauseMenuLayout.getChildren().add(pauseMenuParent);
+            pauseMenuParent.requestFocus();
             currentMenu = MENU_PAUSE;
         }
     }
@@ -1908,6 +1904,8 @@ public class IngameController extends Controller {
             }
             tile.setOpacity(1);
         }
+        pauseMenuLayout.getChildren().remove(pauseMenuParent);
+        currentMenu = MENU_NONE;
         pauseHint.setOpacity(1);
     }
 
