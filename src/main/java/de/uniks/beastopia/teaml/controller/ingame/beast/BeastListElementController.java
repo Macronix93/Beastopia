@@ -32,6 +32,8 @@ public class BeastListElementController extends ListCell<Monster> {
     @FXML
     public Label beastLabel;
     @FXML
+    public ProgressBar hpBar;
+    @FXML
     public ProgressBar expProgress;
     @FXML
     public GridPane gridPane;
@@ -77,6 +79,7 @@ public class BeastListElementController extends ListCell<Monster> {
             beastLabel.setText(type.name() + " (" + type.type().get(0) + ") Lv. " + item.level());
             int maxExp = (int) Math.round(Math.pow(item.level(), 3) - Math.pow((item.level() - 1), 3));
             expProgress.setProgress((double) item.experience() / maxExp);
+            hpBar.setProgress(item.currentAttributes().health() / item.attributes().health());
             upButton.setOnAction(event -> {
                 int index = getListView().getItems().indexOf(item);
                 swap(index, index - 1);
