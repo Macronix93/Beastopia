@@ -35,7 +35,7 @@
                 </VBox.margin>
                 <ImageView fx:id="banner" fitHeight="73.0" fitWidth="344.0" pickOnBounds="true" preserveRatio="true" />
                 <VBox alignment="CENTER">
-                    <ImageView fitHeight="69.0" fitWidth="78.0">
+                    <ImageView fx:id="companyLogo" fitHeight="69.0" fitWidth="78.0">
                         <Image url="@../../assets/DeadBirdsSociety_Logo_tr.PNG" />
                     </ImageView>
                     <ImageView fitHeight="25.0" fitWidth="78.0">
