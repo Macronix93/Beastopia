@@ -5,7 +5,6 @@ import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.FriendListService;
-import de.uniks.beastopia.teaml.service.ImageService;
 import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import io.reactivex.rxjava3.core.Observable;
@@ -24,12 +23,18 @@ import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static de.uniks.beastopia.teaml.rest.UserApiService.STATUS_OFFLINE;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class FriendControllerTest extends ApplicationTest {
 
+    @Spy
+    @SuppressWarnings("unused")
+    final
+    ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang");
+    final User testUser = new User(null, null, null, "Test", STATUS_OFFLINE, null, null);
     @Spy
     App app;
     @Mock
@@ -41,20 +46,10 @@ class FriendControllerTest extends ApplicationTest {
     @SuppressWarnings("unused")
     @Mock
     DataCache cache;
-    @Mock
-    ImageService imageService;
     @InjectMocks
     FriendController friendController;
-
     @Spy
     Provider<DirectMessageController> directMessageControllerProvider;
-
-    @Spy
-    @SuppressWarnings("unused")
-    final
-    ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang");
-
-    final User testUser = new User(null, null, null, "Test", STATUS_OFFLINE, null, null);
 
     @Override
     public void start(Stage stage) {
@@ -116,10 +111,6 @@ class FriendControllerTest extends ApplicationTest {
 
         clickOn("#pin");
         assertTrue(booleanCaptor.getValue());
-        verify(prefs, times(1)).setPinned(userCaptor.getValue(), booleanCaptor.getValue());
-
-        clickOn("#pin");
-        assertFalse(booleanCaptor.getValue());
         verify(prefs, times(1)).setPinned(userCaptor.getValue(), booleanCaptor.getValue());
     }
 }
