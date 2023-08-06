@@ -114,6 +114,12 @@ rightListBox {
 #yourBeastsPane,
 #fightingBeastPane,
 #VBoxInvList,
+#scoreBoard,
+#achievements,
+#VBoxBeastList,
+#VBoxBeastDetail,
+#VBoxMondexList,
+#VBoxMondexDetail,
 #VBoxItemDetail {
     -fx-background-color: #677878;
     -fx-border-color: #162326;
@@ -127,15 +133,12 @@ rightListBox {
     -fx-font-size: 14px;
 }
 
+#beast,
+#VBoxBeastDetail .description,
+#scoreboardUser,
 #friendList,
 #_rootElement,
-#scoreBoard,
-#achievements,
-#VBoxBeastList,
-#VBoxMondexList,
-#VBoxMondexDetail,
 #scrollFriends,
-#VBoxBeastDetail,
 #changeBeastElement,
 #_ItemRootElement,
 .beastTeamElement {

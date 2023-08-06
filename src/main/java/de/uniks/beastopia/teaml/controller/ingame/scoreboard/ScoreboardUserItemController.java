@@ -7,6 +7,7 @@ import de.uniks.beastopia.teaml.service.DataCache;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 
 import javax.inject.Inject;
@@ -16,6 +17,8 @@ import java.util.function.Consumer;
 
 public class ScoreboardUserItemController extends Controller {
 
+    @FXML
+    public HBox scoreboardUser;
     @FXML
     private Text nameText;
     @FXML
