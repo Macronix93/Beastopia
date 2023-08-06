@@ -2,7 +2,16 @@ package de.uniks.beastopia.teaml.controller.ingame.encounter;
 
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.ingame.IngameController;
-import de.uniks.beastopia.teaml.rest.*;
+import de.uniks.beastopia.teaml.controller.ingame.items.InventoryController;
+import de.uniks.beastopia.teaml.controller.ingame.items.ItemDetailController;
+import de.uniks.beastopia.teaml.rest.AbilityDto;
+import de.uniks.beastopia.teaml.rest.AbilityMove;
+import de.uniks.beastopia.teaml.rest.Event;
+import de.uniks.beastopia.teaml.rest.ItemTypeDto;
+import de.uniks.beastopia.teaml.rest.Monster;
+import de.uniks.beastopia.teaml.rest.Opponent;
+import de.uniks.beastopia.teaml.rest.Result;
+import de.uniks.beastopia.teaml.rest.Trainer;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.EncounterOpponentsService;
 import de.uniks.beastopia.teaml.service.PresetsService;
@@ -14,20 +23,31 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.Stack;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @SuppressWarnings("unused")
 public class EncounterController extends Controller {
-
+    @FXML
+    public VBox inventoryLayout;
+    @FXML
+    public HBox itemBox;
+    @FXML
+    public AnchorPane anchorPane;
+    @FXML
+    StackPane stack;
     @FXML
     VBox attackBox1;
     @FXML
@@ -45,7 +65,7 @@ public class EncounterController extends Controller {
     @FXML
     VBox actionInfoBox;
     @FXML
-    TextArea actionInfoText;
+    public TextArea actionInfoText;
     @FXML
     VBox beastInfoBox;
     @FXML
@@ -94,17 +114,23 @@ public class EncounterController extends Controller {
     @Inject
     Provider<IngameController> ingameControllerProvider;
     @Inject
+    Provider<InventoryController> inventoryControllerProvider;
+    @Inject
     Provider<ChangeBeastController> changeBeastControllerProvider;
     @Inject
     Provider<EndScreenController> endScreenControllerProvider;
     @Inject
     Provider<LevelUpController> levelUpControllerProvider;
     @Inject
+    Provider<ItemDetailController> itemDetailControllerProvider;
+    @Inject
     DataCache cache;
     @Inject
     TrainerService trainerService;
     @Inject
     PresetsService presetsService;
+    @Inject
+    InventoryController inventoryController;
     @Inject
     EncounterOpponentsService encounterOpponentsService;
     @Inject
@@ -118,7 +144,7 @@ public class EncounterController extends Controller {
     private List<Monster> enemyMonsters = new ArrayList<>();
     private final List<Monster> enemyAllyMonsters = new ArrayList<>();
     private int oldLevel;
-    private int oldHp;
+    private double oldHp;
     private final String wildTrainerId = "000000000000000000000000";
     //monsters in the fight
     Monster myMonster;
@@ -138,6 +164,7 @@ public class EncounterController extends Controller {
     private boolean hasToChooseEnemy = false;
     private boolean isOneVersusTwo;
     private AbilityDto chosenAbility;
+    private ItemTypeDto lastItemTypeDto;
     Parent myMonsterParent;
     Parent allyMonsterParent;
     Parent enemyMonsterParent;
@@ -146,6 +173,8 @@ public class EncounterController extends Controller {
     Parent allyMonsterInfo;
     Parent enemyMonsterInfo;
     Parent enemyAllyMonsterInfo;
+    Parent inventoryParent;
+    Parent itemDetailParent;
 
     private float oldCoinNum;
     private AbilityDto ability1;
@@ -175,9 +204,10 @@ public class EncounterController extends Controller {
     public Parent render() {
         Parent parent = super.render();
 
+        inventoryLayout.setVisible(false);
         oldCoinNum = cache.getTrainer().coins();
-        int numberOfAttackers = (int) cache.getCurrentOpponents().stream().filter(Opponent::isAttacker).count();
-        isOneVersusTwo = numberOfAttackers == 2;
+        AtomicInteger numberOfAttackers = new AtomicInteger((int) cache.getCurrentOpponents().stream().filter(Opponent::isAttacker).count());
+        isOneVersusTwo = numberOfAttackers.get() == 2;
 
         if (myTrainer != null) {
             beastInfoController1 = beastInfoControllerProvider.get().setMonster(myMonster);
@@ -264,12 +294,15 @@ public class EncounterController extends Controller {
                                             // Get the updated monster and set new values
                                             if (o.data().monster() != null) {
                                                 Monster newAllyMonster = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), o.data().trainer(), o.data().monster()).blockingFirst();
+                                                beastInfoController2.setLevel(newAllyMonster.level());
                                                 beastInfoController2.setMonster(newAllyMonster);
-                                                beastInfoController2.setLifeBarValue(newAllyMonster.currentAttributes().health() / (double) newAllyMonster.attributes().health(), false);
+                                                beastInfoController2.hpLabel.setText((int) newAllyMonster.currentAttributes().health() + " / " + (int) newAllyMonster.attributes().health() + " (HP)");
+                                                beastInfoController2.setLifeBarValue(newAllyMonster.currentAttributes().health() / newAllyMonster.attributes().health(), false);
                                                 beastInfoController2.setStatus(newAllyMonster.status(), false);
                                                 disposables.add(presetsService.getMonsterType(newAllyMonster.type())
                                                         .observeOn(FX_SCHEDULER)
                                                         .subscribe(monsterType -> {
+                                                            beastInfoController2.setName(monsterType.name());
                                                             renderBeastController1.setImageMonsterTwo(presetsService.getMonsterImage(monsterType.id()).blockingFirst());
 
                                                             actionInfoText.appendText(allyTrainer.name() + " sent out new beast " + monsterType.name() + ".\n");
@@ -289,7 +322,7 @@ public class EncounterController extends Controller {
                                                 Monster newEnemyMonster = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), o.data().trainer(), o.data().monster()).blockingFirst();
                                                 enemyBeastInfoController1.setMonster(newEnemyMonster);
                                                 enemyBeastInfoController1.setLevel(newEnemyMonster.level());
-                                                enemyBeastInfoController1.setLifeBarValue(newEnemyMonster.currentAttributes().health() / (double) newEnemyMonster.attributes().health(), false);
+                                                enemyBeastInfoController1.setLifeBarValue(newEnemyMonster.currentAttributes().health() / newEnemyMonster.attributes().health(), false);
                                                 enemyBeastInfoController1.setStatus(newEnemyMonster.status(), false);
                                                 disposables.add(presetsService.getMonsterType(newEnemyMonster.type())
                                                         .observeOn(FX_SCHEDULER)
@@ -314,7 +347,7 @@ public class EncounterController extends Controller {
                                                 Monster newEnemyAllyMonster = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), o.data().trainer(), o.data().monster()).blockingFirst();
                                                 enemyBeastInfoController2.setMonster(newEnemyAllyMonster);
                                                 enemyBeastInfoController2.setLevel(newEnemyAllyMonster.level());
-                                                enemyBeastInfoController2.setLifeBarValue(newEnemyAllyMonster.currentAttributes().health() / (double) newEnemyAllyMonster.attributes().health(), false);
+                                                enemyBeastInfoController2.setLifeBarValue(newEnemyAllyMonster.currentAttributes().health() / newEnemyAllyMonster.attributes().health(), false);
                                                 enemyBeastInfoController2.setStatus(newEnemyAllyMonster.status(), false);
                                                 disposables.add(presetsService.getMonsterType(newEnemyAllyMonster.type())
                                                         .observeOn(FX_SCHEDULER)
@@ -358,6 +391,10 @@ public class EncounterController extends Controller {
                                                         actionInfoText.appendText(getMonsterName(result.monster(), null) + " got status damage. It was " + result.effectiveness() + "!\n");
                                                 case "target-unknown" ->
                                                         actionInfoText.appendText(getMonsterName(result.monster(), null) + " missed the attack!\n");
+                                                case "item-success" ->
+                                                        actionInfoText.appendText(getMonsterName(result.monster(), null) + " successfully used an item!\n");
+                                                case "item-failed" ->
+                                                        actionInfoText.appendText(getMonsterName(result.monster(), null) + " used an item, but it failed!\n");
                                             }
                                             if (result.status() != null && !result.type().equals("status-removed") && !result.type().equals("status-damage")) {
                                                 actionInfoText.appendText(prefix + getMonsterName(result.monster(), null) + " is " + result.status() + "!\n");
@@ -367,37 +404,44 @@ public class EncounterController extends Controller {
                                 }
                             } else if (o.suffix().equals("deleted")) {
                                 cache.removeOpponent(o.data()._id());
-                                updateUIOnChange();
 
-                                if (cache.getCurrentOpponents().size() > 1) {
-                                    if (renderBeastController1.getOpponentIdMonsterOne() != null && renderBeastController1.getOpponentIdMonsterOne().equals(o.data()._id())) {
-                                        beastInfoBox.getChildren().remove(myMonsterInfo);
-                                        beastInfoController1.destroy();
-                                        renderBeastController1.setMonster1(null);
-                                        renderBeastController1.setImageMonsterOne(null);
-                                        chosenTarget = renderBeastController1.getOpponentIdMonsterTwo();
-                                        setNumberOfAttacks(beastInfoController2.getMonster());
-                                        myTrainer = null;
-                                    } else if (renderBeastController1.getOpponentIdMonsterTwo() != null && renderBeastController1.getOpponentIdMonsterTwo().equals(o.data()._id())) {
-                                        beastInfoBox.getChildren().remove(allyMonsterInfo);
-                                        beastInfoController2.destroy();
-                                        renderBeastController1.setMonster2(null);
-                                        renderBeastController1.setImageMonsterTwo(null);
-                                        chosenTarget = renderBeastController1.getOpponentIdMonsterOne();
-                                        setNumberOfAttacks(beastInfoController1.getMonster());
-                                        allyTrainer = null;
-                                    } else if (renderBeastController2.getOpponentIdMonsterOne() != null && renderBeastController2.getOpponentIdMonsterOne().equals(o.data()._id())) {
-                                        enemyBeastInfo.getChildren().remove(enemyMonsterInfo);
-                                        enemyBeastInfoController1.destroy();
-                                        renderBeastController2.setMonster1(null);
-                                        renderBeastController2.setImageMonsterOne(null);
-                                        enemyTrainer = null;
-                                    } else if (renderBeastController2.getOpponentIdMonsterTwo() != null && renderBeastController2.getOpponentIdMonsterTwo().equals(o.data()._id())) {
-                                        enemyBeastInfo.getChildren().remove(enemyAllyMonsterInfo);
-                                        enemyBeastInfoController2.destroy();
-                                        renderBeastController2.setMonster2(null);
-                                        renderBeastController2.setImageMonsterTwo(null);
-                                        enemyAllyTrainer = null;
+                                // If our opponent gets deleted in a 1v2 situation, we should see the end screen
+                                if (o.data().trainer().equals(cache.getTrainer()._id()) && allyTrainer != null && !allyTrainer._id().equals(cache.getTrainer()._id())) {
+                                    EndScreenController endScreenController = setEndScreen(false, myMonster, allyMonster, enemyMonster, enemyAllyMonster);
+                                    app.show(endScreenController);
+                                } else {
+                                    updateUIOnChange();
+
+                                    if (cache.getCurrentOpponents().size() > 1) {
+                                        if (renderBeastController1.getOpponentIdMonsterOne() != null && renderBeastController1.getOpponentIdMonsterOne().equals(o.data()._id())) {
+                                            beastInfoBox.getChildren().remove(myMonsterInfo);
+                                            beastInfoController1.destroy();
+                                            renderBeastController1.setMonster1(null);
+                                            renderBeastController1.setImageMonsterOne(null);
+                                            chosenTarget = renderBeastController1.getOpponentIdMonsterTwo();
+                                            setNumberOfAttacks(beastInfoController2.getMonster());
+                                            myTrainer = null;
+                                        } else if (renderBeastController1.getOpponentIdMonsterTwo() != null && renderBeastController1.getOpponentIdMonsterTwo().equals(o.data()._id())) {
+                                            beastInfoBox.getChildren().remove(allyMonsterInfo);
+                                            beastInfoController2.destroy();
+                                            renderBeastController1.setMonster2(null);
+                                            renderBeastController1.setImageMonsterTwo(null);
+                                            chosenTarget = renderBeastController1.getOpponentIdMonsterOne();
+                                            setNumberOfAttacks(beastInfoController1.getMonster());
+                                            allyTrainer = null;
+                                        } else if (renderBeastController2.getOpponentIdMonsterOne() != null && renderBeastController2.getOpponentIdMonsterOne().equals(o.data()._id())) {
+                                            enemyBeastInfo.getChildren().remove(enemyMonsterInfo);
+                                            enemyBeastInfoController1.destroy();
+                                            renderBeastController2.setMonster1(null);
+                                            renderBeastController2.setImageMonsterOne(null);
+                                            enemyTrainer = null;
+                                        } else if (renderBeastController2.getOpponentIdMonsterTwo() != null && renderBeastController2.getOpponentIdMonsterTwo().equals(o.data()._id())) {
+                                            enemyBeastInfo.getChildren().remove(enemyAllyMonsterInfo);
+                                            enemyBeastInfoController2.destroy();
+                                            renderBeastController2.setMonster2(null);
+                                            renderBeastController2.setImageMonsterTwo(null);
+                                            enemyAllyTrainer = null;
+                                        }
                                     }
                                 }
                             }
@@ -409,8 +453,8 @@ public class EncounterController extends Controller {
     }
 
     private Monster updateMonsterInfo(Event<Monster> monsterEvent, BeastInfoController beastInfoController, List<Monster> monsterList) {
-        beastInfoController.hpLabel.setText(monsterEvent.data().currentAttributes().health() + " / " + monsterEvent.data().attributes().health() + " (HP)");
-        beastInfoController.setLifeBarValue(monsterEvent.data().currentAttributes().health() / (double) monsterEvent.data().attributes().health(), false);
+        beastInfoController.hpLabel.setText((int) monsterEvent.data().currentAttributes().health() + " / " + (int) monsterEvent.data().attributes().health() + " (HP)");
+        beastInfoController.setLifeBarValue(monsterEvent.data().currentAttributes().health() / monsterEvent.data().attributes().health(), false);
         beastInfoController.setStatus(monsterEvent.data().status(), false);
         Monster monster = monsterEvent.data();
         updateMonsterInList(monster, monsterList);
@@ -463,7 +507,7 @@ public class EncounterController extends Controller {
                     .observeOn(FX_SCHEDULER)
                     .subscribe(monsterEvent -> {
                         enemyMonster = monsterEvent.data();
-                        enemyBeastInfoController1.setLifeBarValue(enemyMonster.currentAttributes().health() / (double) enemyMonster.attributes().health(), false);
+                        enemyBeastInfoController1.setLifeBarValue(enemyMonster.currentAttributes().health() / monsterEvent.data().attributes().health(), false);
                         enemyBeastInfoController1.setStatus(enemyMonster.status(), false);
                         updateMonsterInList(enemyMonster, enemyMonsters);
                     }));
@@ -476,7 +520,7 @@ public class EncounterController extends Controller {
                     .observeOn(FX_SCHEDULER)
                     .subscribe(monsterEvent -> {
                         enemyAllyMonster = monsterEvent.data();
-                        enemyBeastInfoController2.setLifeBarValue(enemyAllyMonster.currentAttributes().health() / (double) enemyAllyMonster.attributes().health(), false);
+                        enemyBeastInfoController2.setLifeBarValue(enemyAllyMonster.currentAttributes().health() / monsterEvent.data().attributes().health(), false);
                         enemyBeastInfoController2.setStatus(enemyAllyMonster.status(), false);
                         updateMonsterInList(enemyAllyMonster, enemyAllyMonsters);
                     }));
@@ -568,7 +612,7 @@ public class EncounterController extends Controller {
             disposables.add(
                     encounterOpponentsService.deleteOpponent(cache.getJoinedRegion()._id(), cache.getCurrentEncounter()._id(), cache.getOpponentByTrainerID(cache.getTrainer()._id())._id())
                             .observeOn(FX_SCHEDULER)
-                            .doFinally(() -> {
+                            .subscribe(o -> {
                                 cache.setCurrentEncounter(null);
                                 cache.getCurrentOpponents().clear();
 
@@ -576,7 +620,6 @@ public class EncounterController extends Controller {
                                 controller.setRegion(cache.getJoinedRegion());
                                 app.show(controller);
                             })
-                            .subscribe()
             );
         }
     }
@@ -585,6 +628,51 @@ public class EncounterController extends Controller {
     public void changeMonster() {
         hasToChooseEnemy = false;
         showChangeBeast();
+    }
+
+    @FXML
+    public void showItems() {
+        hasToChooseEnemy = false;
+        if (inventoryController != null) {
+            inventoryController.destroy();
+            itemBox.getChildren().remove(inventoryParent);
+        }
+        InventoryController inventoryController = inventoryControllerProvider.get();
+        inventoryParent = inventoryController.render();
+        inventoryController.setIfShop(false);
+        inventoryController.setOnItemClicked(this::toggleInventoryItemDetails);
+        inventoryController.setOnCloseRequest(() -> {
+            itemBox.getChildren().remove(itemDetailParent);
+            itemBox.getChildren().remove(inventoryParent);
+            anchorPane.toBack();
+            anchorPane.setStyle("-fx-background-color: none;");
+        });
+        itemBox.getChildren().add(inventoryParent);
+        anchorPane.toFront();
+        anchorPane.setStyle("-fx-background-color: rgba(0,0,0,0.5);");
+    }
+
+    public void toggleInventoryItemDetails(ItemTypeDto itemTypeDto) {
+        if (Objects.equals(lastItemTypeDto, itemTypeDto)) {
+            itemBox.getChildren().remove(itemDetailParent);
+            lastItemTypeDto = null;
+            return;
+        }
+        setItemDetailController(itemTypeDto, !inventoryController.isShop);
+    }
+
+    private void setItemDetailController(ItemTypeDto itemTypeDto, boolean onlyInventory) {
+        lastItemTypeDto = itemTypeDto;
+        ItemDetailController controller = itemDetailControllerProvider.get();
+        controller.setInventoryController(inventoryController);
+        controller.setEncounterController(this);
+        controller.setItem(itemTypeDto);
+        controller.setBooleanShop(false);
+        controller.setOnlyInventory(onlyInventory);
+        controller.init();
+        itemBox.getChildren().remove(itemDetailParent);
+        itemDetailParent = controller.render();
+        itemBox.getChildren().add(0, itemDetailParent);
     }
 
     private void showChangeBeast() {
@@ -723,6 +811,7 @@ public class EncounterController extends Controller {
     private void setAttackWithClick(VBox attackBox, AbilityDto abilityDto) {
         if ((renderBeastController1.getOpponentIdMonsterOne() != null && renderBeastController1.getOpponentIdMonsterOne().equals(chosenTarget) && myMonster.currentAttributes().health() <= 0) ||
                 (renderBeastController1.getOpponentIdMonsterTwo() != null && renderBeastController1.getOpponentIdMonsterTwo().equals(chosenTarget) && allyMonster.currentAttributes().health() <= 0)) {
+            actionInfoText.appendText("Beast is dead. Choose a new one!\n");
             return;
         }
         chosenAbility = abilityDto;
@@ -745,7 +834,7 @@ public class EncounterController extends Controller {
                                 oldLevel = myMonster.level();
                                 oldHp = myMonster.attributes().health();
                             }
-                    ));
+                            , error -> System.err.println("Error: " + error.getMessage())));
         } else {
             hasToChooseEnemy = true;
             actionInfoText.appendText("Please choose a target!\n");
@@ -753,15 +842,14 @@ public class EncounterController extends Controller {
     }
 
     public void fightIsOver() {
-        Monster myMon = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), myMonster._id()).blockingFirst();
         EndScreenController endScreenController;
 
-        if (myMon.currentAttributes().health() <= 0) {
+        if (myMonster.currentAttributes().health() <= 0) {
             endScreenController = setEndScreen(false, myMonster, allyMonster, enemyMonster, enemyAllyMonster);
             app.show(endScreenController);
         } else {
             endScreenController = setEndScreen(true, enemyMonster, enemyAllyMonster, myMonster, allyMonster);
-            levelUp(myMon, endScreenController);
+            levelUp(myMonster, endScreenController);
         }
     }
 
@@ -771,13 +859,13 @@ public class EncounterController extends Controller {
         if (opponent.monster() != null) {
             if (renderBeastController1.getOpponentIdMonsterOne() != null && renderBeastController1.getOpponentIdMonsterOne().equals(opponent._id())) {
                 myMonster = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), myMonster._id()).blockingFirst();
-                beastInfoController1.hpLabel.setText(myMonster.currentAttributes().health() + " / " + myMonster.attributes().health() + " (HP)");
-                beastInfoController1.setLifeBarValue(myMonster.currentAttributes().health() / (double) myMonster.attributes().health(), true);
+                beastInfoController1.hpLabel.setText((int) myMonster.currentAttributes().health() + " / " + (int) myMonster.attributes().health() + " (HP)");
+                beastInfoController1.setLifeBarValue(myMonster.currentAttributes().health() / myMonster.attributes().health(), true);
                 beastInfoController1.setStatus(myMonster.status(), true);
             } else if (renderBeastController1.getOpponentIdMonsterTwo() != null && renderBeastController1.getOpponentIdMonsterTwo().equals(opponent._id())) {
                 allyMonster = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), allyTrainer._id(), allyMonster._id()).blockingFirst();
-                beastInfoController2.hpLabel.setText(allyMonster.currentAttributes().health() + " / " + allyMonster.attributes().health() + " (HP)");
-                beastInfoController2.setLifeBarValue(allyMonster.currentAttributes().health() / (double) allyMonster.attributes().health(), true);
+                beastInfoController2.hpLabel.setText((int) allyMonster.currentAttributes().health() + " / " + (int) allyMonster.attributes().health() + " (HP)");
+                beastInfoController2.setLifeBarValue(allyMonster.currentAttributes().health() / allyMonster.attributes().health(), true);
                 beastInfoController2.setStatus(allyMonster.status(), true);
             }
         } else {
@@ -793,22 +881,20 @@ public class EncounterController extends Controller {
                 if (foundMonsterWithHP) {
                     foundMonsterWithHP = false;
                     for (Monster monster : allyMonsters) {
-                        if (!monster._id().equals(allyMonster._id()) && allyTrainer.team().contains(monster._id()) && monster.currentAttributes().health() > 0) {
+                        if (!monster._id().equals(allyMonster._id()) && allyTrainer.team().contains(monster._id()) && monster.currentAttributes().health() > 0 && allyTrainer._id().equals(cache.getTrainer()._id())) {
                             foundMonsterWithHP = true;
                             break;
                         }
                     }
                     if (!foundMonsterWithHP) {
-                        EndScreenController endScreenController;
-                        endScreenController = setEndScreen(false, myMonster, allyMonster, enemyMonster, enemyAllyMonster);
+                        EndScreenController endScreenController = setEndScreen(false, myMonster, allyMonster, enemyMonster, enemyAllyMonster);
                         app.show(endScreenController);
                     }
                 }
             } else {
                 // We lost = show lose screen
                 if (!foundMonsterWithHP) {
-                    EndScreenController endScreenController;
-                    endScreenController = setEndScreen(false, myMonster, allyMonster, enemyMonster, enemyAllyMonster);
+                    EndScreenController endScreenController = setEndScreen(false, myMonster, allyMonster, enemyMonster, enemyAllyMonster);
                     app.show(endScreenController);
                 } else {
                     showChangeBeast();
@@ -837,19 +923,15 @@ public class EncounterController extends Controller {
                         }
                     }
                     if (!foundMonsterWithHP) {
-                        EndScreenController endScreenController;
-                        Monster myMon = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), myMonster._id()).blockingFirst();
-                        endScreenController = setEndScreen(true, enemyMonster, enemyAllyMonster, myMonster, allyMonster);
-                        levelUp(myMon, endScreenController);
+                        EndScreenController endScreenController = setEndScreen(true, enemyMonster, enemyAllyMonster, myMonster, allyMonster);
+                        levelUp(myMonster, endScreenController);
                     }
                 }
             }
         } else {
             if (enemyMonster.currentAttributes().health() <= 0) {
-                EndScreenController endScreenController;
-                Monster myMon = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), myMonster._id()).blockingFirst();
-                endScreenController = setEndScreen(true, enemyMonster, enemyAllyMonster, myMonster, allyMonster);
-                levelUp(myMon, endScreenController);
+                EndScreenController endScreenController = setEndScreen(true, enemyMonster, enemyAllyMonster, myMonster, allyMonster);
+                levelUp(myMonster, endScreenController);
             }
         }
     }
@@ -870,10 +952,8 @@ public class EncounterController extends Controller {
                                 if (opponent.monster() != null) {
                                     updateEnemyMonster(opponent);
                                 } else {
-                                    EndScreenController endScreenController;
-                                    Monster myMon = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), myMonster._id()).blockingFirst();
-                                    endScreenController = setEndScreen(true, enemyMonster, enemyAllyMonster, myMonster, allyMonster);
-                                    levelUp(myMon, endScreenController);
+                                    EndScreenController endScreenController = setEndScreen(true, enemyMonster, enemyAllyMonster, myMonster, allyMonster);
+                                    levelUp(myMonster, endScreenController);
                                 }
                             }
                         }
@@ -955,5 +1035,18 @@ public class EncounterController extends Controller {
         attackBox2.setDisable(disabled);
         attackBox3.setDisable(disabled);
         attackBox4.setDisable(disabled);
+    }
+
+    public Monster getChosenMonster() {
+        if (renderBeastController1.getOpponentIdMonsterOne() != null && renderBeastController1.getOpponentIdMonsterOne().equals(chosenTarget)) {
+            return beastInfoController1.getMonster();
+        } else if (renderBeastController1.getOpponentIdMonsterTwo() != null && renderBeastController1.getOpponentIdMonsterTwo().equals(chosenTarget)) {
+            return beastInfoController2.getMonster();
+        }
+        return null;
+    }
+
+    public String getChosenTarget() {
+        return chosenTarget;
     }
 }

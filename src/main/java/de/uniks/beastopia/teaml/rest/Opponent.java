@@ -13,8 +13,8 @@ public record Opponent(
         boolean isAttacker,
         boolean isNPC,
         String monster,
-        Variant<AbilityMove, ChangeMonsterMove> move,
+        Variant<AbilityMove, ChangeMonsterMove, UseItemMove> move,
         List<Result> results,
         int coins
-)
-{}
+) {
+}

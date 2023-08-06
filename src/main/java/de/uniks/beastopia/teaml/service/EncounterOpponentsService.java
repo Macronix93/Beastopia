@@ -5,6 +5,7 @@ import de.uniks.beastopia.teaml.rest.ChangeMonsterMove;
 import de.uniks.beastopia.teaml.rest.EncounterOpponentsApiService;
 import de.uniks.beastopia.teaml.rest.Opponent;
 import de.uniks.beastopia.teaml.rest.UpdateOpponentDto;
+import de.uniks.beastopia.teaml.rest.UseItemMove;
 import de.uniks.beastopia.teaml.utils.Variant;
 import io.reactivex.rxjava3.core.Observable;
 
@@ -33,7 +34,7 @@ public class EncounterOpponentsService {
 
     @SuppressWarnings("SameParameterValue")
     public Observable<Opponent> updateEncounterOpponent(String regionId, String encounterId, String opponentId, String monster, AbilityMove abilityMove) {
-        Variant<AbilityMove, ChangeMonsterMove> move = new Variant<>();
+        Variant<AbilityMove, ChangeMonsterMove, UseItemMove> move = new Variant<>();
         move.setT(abilityMove);
         return encounterOpponentsApiService.updateEncounterOpponent(regionId, encounterId, opponentId,
                 new UpdateOpponentDto(monster, move));
@@ -41,8 +42,15 @@ public class EncounterOpponentsService {
 
     @SuppressWarnings("SameParameterValue")
     public Observable<Opponent> updateEncounterOpponent(String regionId, String encounterId, String opponentId, String monster, ChangeMonsterMove changeMonsterMove) {
-        Variant<AbilityMove, ChangeMonsterMove> move = new Variant<>();
+        Variant<AbilityMove, ChangeMonsterMove, UseItemMove> move = new Variant<>();
         move.setU(changeMonsterMove);
+        return encounterOpponentsApiService.updateEncounterOpponent(regionId, encounterId, opponentId,
+                new UpdateOpponentDto(monster, move));
+    }
+
+    public Observable<Opponent> updateEncounterOpponent(String regionId, String encounterId, String opponentId, String monster, UseItemMove useItemMove) {
+        Variant<AbilityMove, ChangeMonsterMove, UseItemMove> move = new Variant<>();
+        move.setV(useItemMove);
         return encounterOpponentsApiService.updateEncounterOpponent(regionId, encounterId, opponentId,
                 new UpdateOpponentDto(monster, move));
     }
