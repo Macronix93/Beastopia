@@ -155,13 +155,6 @@ rightListBox {
     -fx-background-color: #4C5250;
 }
 
-#scoreBoard,
-#achievements,
-#VBoxBeastList,
-#VBoxBeastDetail {
-    -fx-background-color: #4C5250;
-}
-
 #scoreBoardTitle {
     -fx-font-size: 23px;
 }
