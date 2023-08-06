@@ -29,6 +29,7 @@
     -fx-effect: dropshadow(gaussian, #E7F6F2, 5, 0, 0, 1);
 }
 
+#achievementPane .box,
 #rememberMe .box {
     -fx-background-color: #E7F6F2;
     -fx-border-color: #C9D6D3;
@@ -134,6 +135,7 @@ rightListBox {
 }
 
 #beast,
+#description,
 #VBoxBeastDetail .description,
 #scoreboardUser,
 #friendList,
@@ -255,7 +257,7 @@ Text {
 #attackBox2,
 #attackBox3,
 #attackBox4 {
-    -fx-font-size: 14px;
+    -fx-font-size: 11px;
     -fx-background-color: #677878;
     -fx-border-color: #162326;
 }
@@ -273,4 +275,8 @@ Text {
 
 #ellipse {
     -fx-fill: #395B64;
+}
+
+#achievementPane .button {
+    -fx-background-color: #4C5250;
 }
