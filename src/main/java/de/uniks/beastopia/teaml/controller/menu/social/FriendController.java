@@ -6,6 +6,7 @@ import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.FriendListService;
+import de.uniks.beastopia.teaml.service.ImageService;
 import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
@@ -48,6 +49,8 @@ public class FriendController extends Controller {
     @Inject
     EventListener eventListener;
     @Inject
+    ImageService imageService;
+    @Inject
     DataCache cache;
     private User user;
     private Boolean friendPin;
@@ -73,8 +76,6 @@ public class FriendController extends Controller {
                     updateOnlineStatus(user);
                 }));
 
-        pinned = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/filled_pin.png")).toString());
-        notPinned = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/pin.png")).toString());
         addImage = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/plus.png")).toString());
         removeImage = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/minus.png")).toString());
     }
@@ -100,6 +101,8 @@ public class FriendController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
+        pinned = imageService.getPinnedImage();
+        notPinned = imageService.getNotPinnedImage();
         friendAvatar.setImage(cache.getImageAvatar(user));
         name.setText(user.name());
         updateOnlineStatus(user);
