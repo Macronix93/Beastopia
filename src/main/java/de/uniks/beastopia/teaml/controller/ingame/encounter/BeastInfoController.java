@@ -123,7 +123,7 @@ public class BeastInfoController extends Controller {
         killTimer(killTimer);
         statusPocket.getChildren().clear();
         if (!monster.status().isEmpty()) {
-            status.forEach(element -> statusPocket.getChildren().add(assets.getIcon("status", element, 25, 25)));
+            status.forEach(element -> statusPocket.getChildren().add(assets.getIcon("status", element.trim(), 25, 25)));
         }
     }
 

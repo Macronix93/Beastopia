@@ -32,6 +32,6 @@
       <HBox alignment="TOP_RIGHT" GridPane.columnIndex="1">
         <Label fx:id="level" alignment="CENTER" />
       </HBox>
-      <HBox alignment="TOP_RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+        <HBox fx:id="statusPocket" alignment="CENTER" spacing="3.0" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
     </GridPane>
 </GridPane>
