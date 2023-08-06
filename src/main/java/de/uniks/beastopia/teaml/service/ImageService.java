@@ -2,10 +2,7 @@ package de.uniks.beastopia.teaml.service;
 
 import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.utils.Prefs;
-import javafx.scene.image.Image;
-import javafx.scene.image.PixelReader;
-import javafx.scene.image.PixelWriter;
-import javafx.scene.image.WritableImage;
+import javafx.scene.image.*;
 import javafx.scene.paint.Color;
 
 import javax.inject.Inject;
@@ -20,7 +17,7 @@ public class ImageService {
     ImageService() {
     }
 
-    public Image makeImageBlack (Image image) {
+    public Image makeImageBlack(Image image) {
         PixelReader pixelReader = image.getPixelReader();
         int width = (int) image.getWidth();
         int height = (int) image.getHeight();
@@ -42,7 +39,7 @@ public class ImageService {
         return blackImage;
     }
 
-    public Image makeImageWhite (Image image) {
+    public Image makeImageWhite(Image image) {
         PixelReader pixelReader = image.getPixelReader();
         int width = (int) image.getWidth();
         int height = (int) image.getHeight();
@@ -86,5 +83,34 @@ public class ImageService {
         } else {
             return makeImageWhite(image);
         }
+    }
+
+    public ImageView getPinnedImage() {
+        Image input = new Image(Objects.requireNonNull(Main.class.getResourceAsStream("assets/buttons/filled_pin.png")));
+        ImageView output;
+        if (prefs.getTheme().equals("light")) {
+            output = new ImageView(input);
+        } else {
+            output = new ImageView(makeImageWhite(input));
+        }
+        return setupImage(output);
+    }
+
+    public ImageView getNotPinnedImage() {
+        Image input = new Image(Objects.requireNonNull(Main.class.getResourceAsStream("assets/buttons/pin.png")));
+        ImageView output;
+        if (prefs.getTheme().equals("light")) {
+            output = new ImageView(input);
+        } else {
+            output = new ImageView(makeImageWhite(input));
+        }
+        return setupImage(output);
+    }
+
+    private ImageView setupImage(ImageView imageView) {
+        imageView.setCache(false);
+        imageView.setFitHeight(25.0);
+        imageView.setFitWidth(25.0);
+        return imageView;
     }
 }
