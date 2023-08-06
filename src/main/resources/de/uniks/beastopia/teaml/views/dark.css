@@ -287,7 +287,7 @@ Text {
     -fx-background-color: #666666;
 }
 
-#innerGridPane {
+#innerGridPane, #innerVBox{
     -fx-background-color: linear-gradient(to bottom, #395B64, #3D4241);
     -fx-border-color: #313131;
     -fx-border-radius: 10;
