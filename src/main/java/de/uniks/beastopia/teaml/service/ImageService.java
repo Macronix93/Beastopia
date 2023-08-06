@@ -79,4 +79,12 @@ public class ImageService {
             return makeImageWhite(new Image(Objects.requireNonNull(Main.class.getResourceAsStream("assets/DeadBirdsSociety_Logo_tr.PNG"))));
         }
     }
+
+    public Image getThemeImage(Image image) {
+        if (prefs.getTheme().equals("light")) {
+            return image;
+        } else {
+            return makeImageWhite(image);
+        }
+    }
 }
