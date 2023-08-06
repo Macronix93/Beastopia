@@ -66,75 +66,66 @@
                     </RadioButton>
                 </HBox>
             </VBox>
-         <VBox spacing="15.0">
-            <children>
-               <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%Username">
-                  <font>
-                     <Font size="20.0" />
-                  </font>
-               </Text>
-               <TextField fx:id="usernameInput" />
-            </children>
-         </VBox>
-         <VBox spacing="15.0">
-            <children>
-               <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%Password">
-                  <font>
-                     <Font size="20.0" />
-                  </font>
-               </Text>
-               <PasswordField fx:id="passwordInput" />
-            </children>
-         </VBox>
-         <VBox spacing="15.0">
-            <children>
-               <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%ConfirmPassword">
-                  <font>
-                     <Font size="20.0" />
-                  </font>
-               </Text>
-               <PasswordField fx:id="passwordRepeatInput" />
-               <HBox alignment="CENTER">
-                  <children>
-                     <Button defaultButton="true" mnemonicParsing="false" onAction="#uploadAvatar" prefHeight="29.0" prefWidth="138.0" text="%UploadAvatar" HBox.hgrow="NEVER">
+            <VBox spacing="15.0">
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%Username">
+                    <font>
+                        <Font size="20.0"/>
+                    </font>
+                </Text>
+                <TextField fx:id="usernameInput"/>
+            </VBox>
+            <VBox spacing="15.0">
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%Password">
+                    <font>
+                        <Font size="20.0"/>
+                    </font>
+                </Text>
+                <PasswordField fx:id="passwordInput"/>
+            </VBox>
+            <VBox spacing="15.0">
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%ConfirmPassword">
+                    <font>
+                        <Font size="20.0"/>
+                    </font>
+                </Text>
+                <PasswordField fx:id="passwordRepeatInput"/>
+                <HBox alignment="CENTER">
+                    <Button defaultButton="true" mnemonicParsing="false" onAction="#uploadAvatar" prefHeight="29.0"
+                            prefWidth="138.0" text="%UploadAvatar" HBox.hgrow="NEVER">
                         <font>
-                           <Font size="18.0" />
+                            <Font size="18.0"/>
                         </font>
-                     </Button>
-                     <Region HBox.hgrow="ALWAYS" />
-                     <ImageView fx:id="avatarPreview" fitHeight="59.0" fitWidth="151.0" pickOnBounds="true" preserveRatio="true" HBox.hgrow="NEVER">
-                        <image>
-                           <Image url="@../../assets/Lumnix_Logo_tr.png" />
-                        </image>
-                     </ImageView>
-                  </children>
-               </HBox>
-               <HBox alignment="CENTER">
-                  <children>
-                     <Button fx:id="signUpButton" defaultButton="true" mnemonicParsing="false" onAction="#signUp" prefHeight="60.0" prefWidth="138.0" text="%SignUpButton" HBox.hgrow="NEVER">
+                    </Button>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <ImageView fx:id="avatarPreview" fitHeight="59.0" fitWidth="151.0" pickOnBounds="true"
+                               preserveRatio="true" HBox.hgrow="NEVER">
+                        <Image url="@../../assets/Lumnix_Logo_tr.png"/>
+                    </ImageView>
+                </HBox>
+                <HBox alignment="CENTER">
+                    <Button fx:id="signUpButton" defaultButton="true" mnemonicParsing="false" onAction="#signUp"
+                            prefHeight="60.0" prefWidth="138.0" text="%SignUpButton" HBox.hgrow="NEVER">
                         <font>
-                           <Font size="20.0" />
+                            <Font size="20.0"/>
                         </font>
-                     </Button>
-                     <Region HBox.hgrow="ALWAYS" />
-                     <VBox alignment="CENTER" HBox.hgrow="NEVER">
-                        <children>
-                           <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%AlreadyAccount">
-                              <font>
-                                 <Font size="15.0" />
-                              </font>
-                           </Text>
-                           <Button fx:id="login" mnemonicParsing="false" onAction="#switchToSignIn" style="-fx-background-color: transparent;" text="%SignIn" textFill="#0430c3" underline="true">
-                              <font>
-                                 <Font size="15.0" />
-                              </font>
-                           </Button>
-                        </children>
-                     </VBox>
-                  </children>
-               </HBox>
-            </children>
-         </VBox>
+                    </Button>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <VBox alignment="CENTER" HBox.hgrow="NEVER">
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%AlreadyAccount">
+                            <font>
+                                <Font size="15.0"/>
+                            </font>
+                        </Text>
+                        <Button fx:id="login" mnemonicParsing="false" onAction="#switchToSignIn"
+                                style="-fx-background-color: transparent;" text="%SignIn" textFill="#0430c3"
+                                underline="true">
+                            <font>
+                                <Font size="15.0"/>
+                            </font>
+                        </Button>
+                    </VBox>
+                </HBox>
+            </VBox>
         </VBox>
         <HBox.margin>
           <Insets />

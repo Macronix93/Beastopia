@@ -16,6 +16,8 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
@@ -34,6 +36,12 @@ public class RegistrationController extends Controller {
     public ImageView avatarPreview;
     @FXML
     public ImageView banner;
+    @FXML
+    public HBox backroundHbox;
+    @FXML
+    public GridPane innerGridPane;
+    @FXML
+    public Button login;
     @FXML
     private TextField usernameInput;
     @FXML
