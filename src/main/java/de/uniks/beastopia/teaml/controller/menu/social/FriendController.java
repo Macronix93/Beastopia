@@ -12,6 +12,7 @@ import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Paint;
@@ -26,6 +27,8 @@ import java.util.function.Consumer;
 import static de.uniks.beastopia.teaml.rest.UserApiService.STATUS_ONLINE;
 
 public class FriendController extends Controller {
+    @FXML
+    public ImageView chatImage;
     @FXML
     ImageView friendAvatar;
     @FXML
@@ -101,6 +104,7 @@ public class FriendController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
+        chatImage.setImage(imageService.getThemeImage(new Image(Objects.requireNonNull(Main.class.getResourceAsStream("assets/buttons/chat.png")))));
         pinned = imageService.getPinnedImage();
         notPinned = imageService.getNotPinnedImage();
         friendAvatar.setImage(cache.getImageAvatar(user));
