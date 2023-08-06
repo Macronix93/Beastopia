@@ -9,6 +9,7 @@ import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import de.uniks.beastopia.teaml.service.TrainerService;
 import de.uniks.beastopia.teaml.utils.Dialog;
+import de.uniks.beastopia.teaml.utils.LoadingPage;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -50,6 +51,7 @@ public class EditBeastTeamController extends Controller {
     final ObservableList<Monster> beastList = FXCollections.observableArrayList();
     final ObservableList<Monster> teamList = FXCollections.observableArrayList();
     List<MonsterTypeDto> allBeasts;
+    private LoadingPage loadingPage;
 
     @Inject
     public EditBeastTeamController() {
@@ -63,6 +65,7 @@ public class EditBeastTeamController extends Controller {
                         beasts -> {
                             cache.setAllBeasts(beasts);
                             allBeasts = beasts;
+                            loadingPage.setDone();
                         },
                         error -> Dialog.error(error.getMessage(), "Error")
                 ));
@@ -75,7 +78,7 @@ public class EditBeastTeamController extends Controller {
 
     @Override
     public Parent render() {
-        Parent parent = super.render();
+        loadingPage = LoadingPage.makeLoadingPage(super.render());
         beastListView.setId("beastListView");
         disposables.add(trainerService.getTrainerMonsters(prefs.getRegionID(), cache.getTrainer()._id())
                 .observeOn(FX_SCHEDULER)
@@ -84,7 +87,7 @@ public class EditBeastTeamController extends Controller {
                     this.beastListView.setCellFactory(param -> beastListElementControllerProvider.get());
                     this.teamListView.setCellFactory(param -> beastListElementControllerProvider.get());
                 }));
-        return parent;
+        return loadingPage.parent();
     }
 
     public void setupListView(List<Monster> monsters) {
