@@ -250,7 +250,7 @@ Text {
 #attackBox2,
 #attackBox3,
 #attackBox4 {
-    -fx-font-size: 11px;
+    -fx-font-size: 10px;
     -fx-background-color: #677878;
     -fx-border-color: #162326;
 }
