@@ -5,6 +5,7 @@ import de.uniks.beastopia.teaml.controller.auth.LoginController;
 import de.uniks.beastopia.teaml.service.AuthService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.utils.Dialog;
+import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -24,6 +25,8 @@ public class DeleteUserController extends Controller {
     Button deleteUserButton;
     @FXML
     Button cancelButton;
+    @Inject
+    Prefs prefs;
     @Inject
     AuthService authService;
     @Inject
@@ -60,7 +63,10 @@ public class DeleteUserController extends Controller {
     private void deleteConfirmed() {
         disposables.add(authService.deleteUser()
                 .observeOn(FX_SCHEDULER).subscribe(
-                        lr -> app.show(loginControllerProvider.get()),
+                        lr -> {
+                            prefs.clearRememberMe();
+                            app.show(loginControllerProvider.get());
+                        },
                         error -> Dialog.error(error, resources.getString("deleteFailed"))));
     }
 
