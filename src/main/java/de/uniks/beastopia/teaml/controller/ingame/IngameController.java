@@ -8,7 +8,6 @@ import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.ingame.beast.EditBeastTeamController;
 import de.uniks.beastopia.teaml.controller.ingame.beastlist.BeastDetailController;
 import de.uniks.beastopia.teaml.controller.ingame.beastlist.BeastListController;
-import de.uniks.beastopia.teaml.controller.ingame.encounter.ChangeBeastController;
 import de.uniks.beastopia.teaml.controller.ingame.encounter.FightWildBeastController;
 import de.uniks.beastopia.teaml.controller.ingame.encounter.JoinFightInfoController;
 import de.uniks.beastopia.teaml.controller.ingame.encounter.StartFightNPCController;
@@ -180,6 +179,8 @@ public class IngameController extends Controller {
     private Button beastTeamHint;
     @FXML
     private Button disableHint;
+    @FXML
+    private Button talkHint;
     @FXML
     private HBox shopLayout;
     private Region region;
@@ -1168,32 +1169,36 @@ public class IngameController extends Controller {
 
     public void handleTalkToTrainer(KeyEvent keyEvent) {
         if (keyEvent.getCode().equals(KeyCode.T)) {
-            Trainer trainer = canTalkToNPC();
-            if (trainer != null) {
-                if (trainer.npc() == null || trainer.npc().encounterOnTalk()) {
-                    List<Opponent> trainerOpponents = encounterOpponentsService.getTrainerOpponents(cache.getJoinedRegion()._id(), trainer._id()).blockingFirst();
+            talkToTrainer();
+        }
+    }
 
-                    if (!(trainerOpponents.equals(List.of()))) {
-                        List<Opponent> allOpponents = encounterOpponentsService.getEncounterOpponents(cache.getJoinedRegion()._id(), trainerOpponents.get(0).encounter()).blockingFirst();
+    public void talkToTrainer() {
+        Trainer trainer = canTalkToNPC();
+        if (trainer != null) {
+            if (trainer.npc() == null || trainer.npc().encounterOnTalk()) {
+                List<Opponent> trainerOpponents = encounterOpponentsService.getTrainerOpponents(cache.getJoinedRegion()._id(), trainer._id()).blockingFirst();
 
-                        if (allOpponents.size() == 3) {
-                            talkToJoinFight(trainer);
-                        } else {
-                            talkToFightingNPC(trainer);
-                        }
+                if (!(trainerOpponents.equals(List.of()))) {
+                    List<Opponent> allOpponents = encounterOpponentsService.getEncounterOpponents(cache.getJoinedRegion()._id(), trainerOpponents.get(0).encounter()).blockingFirst();
+
+                    if (allOpponents.size() == 3) {
+                        talkToJoinFight(trainer);
                     } else {
-                        startEncounterOnTalk(trainer);
+                        talkToFightingNPC(trainer);
                     }
-                } else if (trainer.npc().starters() != null) {
-                    talkToStartersNPC(trainer);
-                } else if (trainer.npc().canHeal()) {
-                    talkToNurse(trainer);
-                } else if (trainer.npc().sells() != null) {
-                    openShop(trainer);
+                } else {
+                    startEncounterOnTalk(trainer);
                 }
-            } else {
-                closeTalk();
+            } else if (trainer.npc().starters() != null) {
+                talkToStartersNPC(trainer);
+            } else if (trainer.npc().canHeal()) {
+                talkToNurse(trainer);
+            } else if (trainer.npc().sells() != null) {
+                openShop(trainer);
             }
+        } else {
+            closeTalk();
         }
     }
 
@@ -1454,6 +1459,7 @@ public class IngameController extends Controller {
             invHint.toBack();
             mondexHint.toBack();
             beastTeamHint.toBack();
+            talkHint.toBack();
             disableHint.setText("Enable Buttons with Shift + B");
             visibleHints = false;
         } else {
@@ -1465,6 +1471,7 @@ public class IngameController extends Controller {
             invHint.toFront();
             mondexHint.toFront();
             beastTeamHint.toFront();
+            talkHint.toFront();
             disableHint.setText("Disable Buttons with Shift + B");
             visibleHints = true;
         }
@@ -1475,6 +1482,7 @@ public class IngameController extends Controller {
         invHint.setOpacity(opacity);
         mondexHint.setOpacity(opacity);
         beastTeamHint.setOpacity(opacity);
+        talkHint.setOpacity(opacity);
     }
 
 
@@ -1709,6 +1717,11 @@ public class IngameController extends Controller {
         handleButtonHints();
     }
 
+    @FXML
+    void clickOnTalkButton() {
+        talkToTrainer();
+    }
+
     public void openBeastlist(String layout, ItemDetailController itemDetailController) {
         HBox hbox = scoreBoardLayout;
         if (layout.equals("shop")) {
@@ -1798,6 +1811,14 @@ public class IngameController extends Controller {
         mapHint.setDisable(value == 0);
         invHint.setOpacity(value);
         invHint.setDisable(value == 0);
+        mondexHint.setOpacity(value);
+        mondexHint.setDisable(value == 0);
+        beastTeamHint.setOpacity(value);
+        beastTeamHint.setDisable(value == 0);
+        talkHint.setOpacity(value);
+        talkHint.setDisable(value == 0);
+        disableHint.setOpacity(value);
+        disableHint.setDisable(value == 0);
     }
 
     public void openShopInventory() {

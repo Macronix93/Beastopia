@@ -16,6 +16,11 @@
             <Pane fx:id="tilePane" prefHeight="200.0" prefWidth="200.0" />
         </ScrollPane>
         <AnchorPane fx:id="overlay" prefHeight="200.0" prefWidth="200.0">
+         <Button fx:id="talkHint" alignment="CENTER" minWidth="180.0" mnemonicParsing="false" onAction="#clickOnTalkButton" onKeyPressed="#keyDown" onKeyReleased="#keyUp" style="-fx-background-color: transparent; -fx-border-color: black; -fx-border-radius: 10;" text="%TforTalk" textAlignment="CENTER" AnchorPane.bottomAnchor="240.0">
+            <font>
+               <Font size="14.0" />
+            </font>
+         </Button>
          <Button fx:id="beastTeamHint" alignment="CENTER" minWidth="180.0" mnemonicParsing="false" onAction="#clickOnBeastTeamButton" onKeyPressed="#keyDown" onKeyReleased="#keyUp" style="-fx-background-color: transparent; -fx-border-color: black; -fx-border-radius: 10;" text="%XforBTeam" textAlignment="CENTER" AnchorPane.bottomAnchor="210.0">
             <font>
                <Font size="14.0" />
