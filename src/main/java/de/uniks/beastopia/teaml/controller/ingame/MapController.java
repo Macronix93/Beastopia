@@ -54,6 +54,9 @@ public class MapController extends Controller {
     private Map map;
     private Area currentArea;
     private String fastTravelAreaName;
+    private Shape clickTarget;
+    private int clickTargetStrokeBefore = 0;
+    private Color clickTargetColorBefore = Color.BLACK;
 
     @Inject
     public MapController() {
@@ -153,8 +156,24 @@ public class MapController extends Controller {
         if (!cache.areaVisited(name)) {
             name = "Unknown area";
             description = "This area is unknown. New mysteries, adventures and dangers are awaiting you!";
+        } else if (cache.isFastTravelable(object.name())) {
+            description += "\n" + "You've already visited " + object.name() + ". Fast travel is available.";
         }
-        shape.setOnMouseClicked(clickEvent -> setFastTravelTarget(cache.isFastTravelable(object.name()) ? object.name() : null));
+        shape.setOnMouseClicked(clickEvent -> {
+            if (clickTarget != null) {
+                clickTarget.setStroke(clickTargetColorBefore);
+                clickTarget.setStrokeWidth(clickTargetStrokeBefore);
+            }
+
+            clickTarget = shape;
+
+            clickTargetStrokeBefore = (int) shape.getStrokeWidth();
+            clickTargetColorBefore = (Color) shape.getStroke();
+
+            shape.setStroke(Color.WHITE);
+            shape.setStrokeWidth(3);
+            setFastTravelTarget(cache.isFastTravelable(object.name()) ? object.name() : null);
+        });
         regionInfo.setText(name, description);
         double maxX = anchorPane.widthProperty().getValue();
         double maxY = anchorPane.heightProperty().getValue();
