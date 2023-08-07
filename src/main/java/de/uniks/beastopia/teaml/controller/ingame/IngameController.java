@@ -8,6 +8,7 @@ import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.ingame.beast.EditBeastTeamController;
 import de.uniks.beastopia.teaml.controller.ingame.beastlist.BeastDetailController;
 import de.uniks.beastopia.teaml.controller.ingame.beastlist.BeastListController;
+import de.uniks.beastopia.teaml.controller.ingame.encounter.ChangeBeastController;
 import de.uniks.beastopia.teaml.controller.ingame.encounter.FightWildBeastController;
 import de.uniks.beastopia.teaml.controller.ingame.encounter.JoinFightInfoController;
 import de.uniks.beastopia.teaml.controller.ingame.encounter.StartFightNPCController;
@@ -173,6 +174,12 @@ public class IngameController extends Controller {
     private Button mapHint;
     @FXML
     private Button invHint;
+    @FXML
+    private Button mondexHint;
+    @FXML
+    private Button beastTeamHint;
+    @FXML
+    private Button disableHint;
     @FXML
     private HBox shopLayout;
     private Region region;
@@ -1445,6 +1452,9 @@ public class IngameController extends Controller {
             scoreboardHint.toBack();
             mapHint.toBack();
             invHint.toBack();
+            mondexHint.toBack();
+            beastTeamHint.toBack();
+            disableHint.setText("Enable Buttons with Shift + B");
             visibleHints = false;
         } else {
             opacity = 1;
@@ -1453,6 +1463,9 @@ public class IngameController extends Controller {
             scoreboardHint.toFront();
             mapHint.toFront();
             invHint.toFront();
+            mondexHint.toFront();
+            beastTeamHint.toFront();
+            disableHint.setText("Disable Buttons with Shift + B");
             visibleHints = true;
         }
         pauseHint.setOpacity(opacity);
@@ -1460,6 +1473,8 @@ public class IngameController extends Controller {
         scoreboardHint.setOpacity(opacity);
         mapHint.setOpacity(opacity);
         invHint.setOpacity(opacity);
+        mondexHint.setOpacity(opacity);
+        beastTeamHint.setOpacity(opacity);
     }
 
 
@@ -1677,6 +1692,21 @@ public class IngameController extends Controller {
     @FXML
     void clickOnInventoryButton() {
         openInventory(false);
+    }
+
+    @FXML
+    void clickOnMondexButton() {
+        openMondexList();
+    }
+
+    @FXML
+    void clickOnBeastTeamButton() {
+        app.show(editBeastTeamControllerProvider.get());
+    }
+
+    @FXML
+    void clickOnDisableButton() {
+        handleButtonHints();
     }
 
     public void openBeastlist(String layout, ItemDetailController itemDetailController) {
