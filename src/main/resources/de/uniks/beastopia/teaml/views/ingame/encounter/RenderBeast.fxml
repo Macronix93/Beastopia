@@ -6,29 +6,33 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Ellipse?>
-
-<VBox fx:id="monsterRenderBox" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.uniks.beastopia.teaml.controller.ingame.encounter.RenderBeastController">
+<VBox fx:id="monsterRenderBox" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="de.uniks.beastopia.teaml.controller.ingame.encounter.RenderBeastController">
     <StackPane>
         <Ellipse fx:id="ellipse" fill="#1fffca" radiusX="100.0" radiusY="125.0" stroke="BLACK" strokeType="INSIDE">
             <StackPane.margin>
-                <Insets />
+                <Insets/>
             </StackPane.margin>
         </Ellipse>
         <HBox fx:id="monsterContainer" alignment="CENTER" spacing="20.0">
             <StackPane>
                 <VBox fx:id="itemImageBox" StackPane.alignment="TOP_CENTER">
-                    <ImageView fx:id="itemImage" fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                    <ImageView fx:id="itemImage" fitHeight="25.0" fitWidth="25.0" pickOnBounds="true"
+                               preserveRatio="true">
                         <VBox.margin>
-                            <Insets left="50.0" right="50.0" top="15.0" />
+                            <Insets left="50.0" right="50.0" top="15.0"/>
                         </VBox.margin>
                     </ImageView>
                 </VBox>
-                <HBox fx:id="selectBox" alignment="CENTER" maxHeight="125.0" prefHeight="125.0" prefWidth="125.0">
-                    <ImageView fx:id="firstMonster" fitHeight="125.0" fitWidth="125.0" pickOnBounds="true" preserveRatio="true" />
-                    <opaqueInsets>
-                        <Insets />
-                    </opaqueInsets>
-                </HBox>
+                <VBox fx:id="selectBox" alignment="BOTTOM_CENTER" maxHeight="150.0" maxWidth="125.0"
+                      StackPane.alignment="CENTER">
+                    <ImageView fx:id="firstMonster" fitHeight="125.0" fitWidth="125.0" pickOnBounds="true"
+                               preserveRatio="true">
+                        <VBox.margin>
+                            <Insets/>
+                        </VBox.margin>
+                    </ImageView>
+                </VBox>
             </StackPane>
         </HBox>
     </StackPane>

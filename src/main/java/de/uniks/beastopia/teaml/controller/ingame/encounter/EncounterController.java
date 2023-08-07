@@ -32,7 +32,13 @@ import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.Stack;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @SuppressWarnings("unused")
@@ -373,6 +379,8 @@ public class EncounterController extends Controller {
                                     cache.updateCurrentOpponents(o.data());
                                     String monsterName = getMonsterName(o.data().monster(), null);
                                     if (monsterName != null && results != null) {
+                                        renderBeastController1.removeSelectBox();
+                                        renderBeastController2.removeSelectBox();
                                         if (o.data().trainer().equals(cache.getTrainer()._id())) {
                                             setAttackBoxesDisabled(false);
                                         }
@@ -414,6 +422,17 @@ public class EncounterController extends Controller {
                                             }
                                             if (result.status() != null && !result.type().equals("status-removed") && !result.type().equals("status-damage")) {
                                                 actionInfoText.appendText(prefix + getMonsterName(result.monster(), null) + " is " + result.status() + "!\n");
+                                            }
+                                            if (result.type().contains("item")) {
+                                                if (renderBeastController1.getOpponentIdMonsterOne() != null && renderBeastController1.getOpponentIdMonsterOne().equals(opponentId)) {
+                                                    showItemAnimation(renderBeastController1, renderBeastController1.selectBox, result.item());
+                                                } else if (renderBeastController1.getOpponentIdMonsterTwo() != null && renderBeastController1.getOpponentIdMonsterTwo().equals(opponentId)) {
+                                                    showItemAnimation(renderBeastController1, renderBeastController1.selectBox2, result.item());
+                                                } else if (renderBeastController2.getOpponentIdMonsterOne() != null && renderBeastController2.getOpponentIdMonsterOne().equals(opponentId)) {
+                                                    showItemAnimation(renderBeastController2, renderBeastController2.selectBox, result.item());
+                                                } else if (renderBeastController2.getOpponentIdMonsterTwo() != null && renderBeastController2.getOpponentIdMonsterTwo().equals(opponentId)) {
+                                                    showItemAnimation(renderBeastController2, renderBeastController2.selectBox2, result.item());
+                                                }
                                             }
                                         }
                                     }
@@ -872,10 +891,10 @@ public class EncounterController extends Controller {
 
             if (isOneVersusTwo) {
                 // Also check if my ally still has monsters
-                if (foundMonsterWithHP) {
+                if (foundMonsterWithHP && allyTrainer != null && allyTrainer._id().equals(cache.getTrainer()._id())) {
                     foundMonsterWithHP = false;
                     for (Monster monster : allyMonsters) {
-                        if (!monster._id().equals(allyMonster._id()) && allyTrainer.team().contains(monster._id()) && monster.currentAttributes().health() > 0 && allyTrainer._id().equals(cache.getTrainer()._id())) {
+                        if (!monster._id().equals(allyMonster._id()) && allyTrainer.team().contains(monster._id()) && monster.currentAttributes().health() > 0) {
                             foundMonsterWithHP = true;
                             break;
                         }
@@ -1093,18 +1112,7 @@ public class EncounterController extends Controller {
             catchInfoBox.getChildren().add(catchInfoParent);
             infoAnchorPane.toFront();
             infoAnchorPane.setStyle("-fx-background-color: rgba(0,0,0,0.5);");
-            if (cache.getItemImages().containsKey(usedItemTypeDto.id())) {
-                renderBeastController2.setItemAnimation(cache.getItemImages().get(usedItemTypeDto.id()));
-            } else {
-                disposables.add(presetsService.getItemImage(usedItemTypeDto.id())
-                        .observeOn(FX_SCHEDULER)
-                        .subscribe(itemImage -> {
-                            Map<Integer, Image> itemImages = new HashMap<>();
-                            itemImages.put(usedItemTypeDto.id(), itemImage);
-                            cache.setItemImages(itemImages);
-                            renderBeastController2.setItemAnimation(cache.getItemImages().get(usedItemTypeDto.id()));
-                        }));
-            }
+            showItemAnimation(renderBeastController2, null, -1);
         } else {
             //TODO set x on top of beast
         }
@@ -1113,5 +1121,21 @@ public class EncounterController extends Controller {
 
     public void setMonBallUsed(boolean used) {
         monBallUsed = used;
+    }
+
+    public void showItemAnimation(RenderBeastController renderBeastController, VBox selectBox, int itemId) {
+        int usedItemId = itemId == -1 ? usedItemTypeDto.id() : itemId;
+        if (cache.getItemImages().containsKey(usedItemId)) {
+            renderBeastController.setItemAnimation(cache.getItemImages().get(usedItemId), selectBox);
+        } else {
+            disposables.add(presetsService.getItemImage(usedItemId)
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe(itemImage -> {
+                        Map<Integer, Image> itemImages = new HashMap<>();
+                        itemImages.put(usedItemId, itemImage);
+                        cache.setItemImages(itemImages);
+                        renderBeastController.setItemAnimation(cache.getItemImages().get(usedItemId), selectBox);
+                    }));
+        }
     }
 }
