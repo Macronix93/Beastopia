@@ -60,7 +60,7 @@ public class AStarService {
     }
 
     public void updateMap(Position pos, boolean walkable) {
-        if (pos.x() < map.length && pos.y() < map[0].length && pos.x() >= 0 && pos.y() >= 0) {
+        if (pos != null && pos.x() < map.length && pos.y() < map[0].length && pos.x() >= 0 && pos.y() >= 0) {
             if (mapOverride[pos.x()][pos.y()] != null) {
                 return;
             }
