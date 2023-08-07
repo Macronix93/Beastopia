@@ -79,7 +79,7 @@ public class EnemyBeastInfoController extends Controller {
     public void setStatus(List<String> status, boolean killTimer) {
         killTimer(killTimer);
         statusPocket.getChildren().clear();
-        if (!monster.status().isEmpty()) {
+        if (!status.isEmpty()) {
             status.forEach(element -> statusPocket.getChildren().add(assets.getIcon("status", element.trim(), 25, 25)));
         }
     }
