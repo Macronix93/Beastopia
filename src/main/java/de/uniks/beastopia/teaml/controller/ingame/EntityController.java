@@ -35,6 +35,7 @@ public class EntityController extends Controller {
     @Inject
     DataCache cache;
     private Position position;
+    private Position oldPosition;
 
     @Inject
     public EntityController() {
@@ -52,6 +53,10 @@ public class EntityController extends Controller {
         return position;
     }
 
+    public Position getOldPosition() {
+        return oldPosition;
+    }
+
     @Override
     public void init() {
         super.init();
@@ -59,6 +64,7 @@ public class EntityController extends Controller {
     }
 
     public void updateTrainer(MoveTrainerDto data) {
+        oldPosition = position;
         position = new Position(data.x(), data.y());
         setDirection(data.direction());
         index = (index + 1) % 6;
