@@ -70,10 +70,17 @@ public class BeastListElementController extends ListCell<Monster> {
                 throw new RuntimeException(e);
             }
 
-            disposables.add(presetsService.getMonsterImage(item.type())
-                    .observeOn(FX_SCHEDULER)
-                    .subscribe(image -> beastImg.setImage(image),
-                            Throwable::printStackTrace));
+            if (cache.imageIsDownloaded(item.type())) {
+                beastImg.setImage(cache.getMonsterImage(item.type()));
+            } else {
+                disposables.add(presetsService.getMonsterImage(item.type())
+                        .observeOn(FX_SCHEDULER)
+                        .subscribe(image -> {
+                                    cache.addMonsterImages(item.type(), image);
+                                    beastImg.setImage(image);
+                                },
+                                Throwable::printStackTrace));
+            }
 
             MonsterTypeDto type = cache.getBeastDto(item.type());
             beastLabel.setText(type.name() + " (" + type.type().get(0) + ") Lv. " + item.level());

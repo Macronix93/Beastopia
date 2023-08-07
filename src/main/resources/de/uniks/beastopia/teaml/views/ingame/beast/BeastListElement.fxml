@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <GridPane fx:id="gridPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-          prefHeight="65.0" prefWidth="250.0" styleClass="beastTeamElement" xmlns="http://javafx.com/javafx/19"
+          prefHeight="65.0" prefWidth="240.0" styleClass="beastTeamElement" xmlns="http://javafx.com/javafx/19"
           xmlns:fx="http://javafx.com/fxml/1">
     <columnConstraints>
         <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="80.0" minWidth="10.0" prefWidth="69.0"/>
@@ -25,24 +25,31 @@
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
         <Label fx:id="beastLabel" text="Label" />
-        <HBox GridPane.rowIndex="1">
-            <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+        <HBox alignment="CENTER_LEFT" GridPane.rowIndex="1">
+            <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                 <Image url="@../../../assets/icons8-heart-32.png"/>
             </ImageView>
-            <ProgressBar fx:id="hpBar" prefWidth="200.0" progress="0.0" style="-fx-accent: red;">
+            <ProgressBar fx:id="hpBar" prefHeight="18.0" prefWidth="200.0" progress="0.0" style="-fx-accent: red;">
                 <HBox.margin>
                     <Insets left="5.0" right="5.0"/>
                 </HBox.margin>
+                <padding>
+                    <Insets bottom="2.0" left="2.0" right="2.0" top="2.0"/>
+                </padding>
             </ProgressBar>
         </HBox>
         <HBox fx:id="buttonBox" alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="2">
-            <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                 <Image url="@../../../assets/icons8-star-48.png"/>
             </ImageView>
-            <ProgressBar fx:id="expProgress" prefHeight="20.0" prefWidth="68.0" progress="0.0" styleClass="expBar">
+            <ProgressBar fx:id="expProgress" prefHeight="18.0" prefWidth="68.0" progress="0.0"
+                         style="-fx-accent: yellow;">
                 <HBox.margin>
                     <Insets left="5.0" right="5.0"/>
                 </HBox.margin>
+                <padding>
+                    <Insets bottom="2.0" left="2.0" right="2.0" top="2.0"/>
+                </padding>
             </ProgressBar>
             <Button fx:id="upButton" maxHeight="20.0" maxWidth="20.0" minHeight="20.0" minWidth="20.0"
                     mnemonicParsing="false" prefHeight="20.0" prefWidth="20.0">
