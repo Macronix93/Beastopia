@@ -7,28 +7,8 @@ import de.uniks.beastopia.teaml.controller.ingame.items.ShopController;
 import de.uniks.beastopia.teaml.controller.ingame.mondex.MondexListController;
 import de.uniks.beastopia.teaml.controller.ingame.scoreboard.ScoreboardController;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
-import de.uniks.beastopia.teaml.rest.Achievement;
-import de.uniks.beastopia.teaml.rest.Area;
-import de.uniks.beastopia.teaml.rest.Chunk;
-import de.uniks.beastopia.teaml.rest.Encounter;
-import de.uniks.beastopia.teaml.rest.Layer;
-import de.uniks.beastopia.teaml.rest.Map;
-import de.uniks.beastopia.teaml.rest.NPCInfo;
-import de.uniks.beastopia.teaml.rest.Opponent;
-import de.uniks.beastopia.teaml.rest.Position;
-import de.uniks.beastopia.teaml.rest.Region;
-import de.uniks.beastopia.teaml.rest.Spawn;
-import de.uniks.beastopia.teaml.rest.TileSet;
-import de.uniks.beastopia.teaml.rest.TileSetDescription;
-import de.uniks.beastopia.teaml.rest.Trainer;
-import de.uniks.beastopia.teaml.rest.User;
-import de.uniks.beastopia.teaml.service.AreaService;
-import de.uniks.beastopia.teaml.service.DataCache;
-import de.uniks.beastopia.teaml.service.EncounterOpponentsService;
-import de.uniks.beastopia.teaml.service.PresetsService;
-import de.uniks.beastopia.teaml.service.RegionEncountersService;
-import de.uniks.beastopia.teaml.service.TokenStorage;
-import de.uniks.beastopia.teaml.service.TrainerService;
+import de.uniks.beastopia.teaml.rest.*;
+import de.uniks.beastopia.teaml.service.*;
 import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.sockets.UDPEventListener;
 import de.uniks.beastopia.teaml.utils.PlayerState;
@@ -60,13 +40,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.atLeast;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class IngameControllerTest extends ApplicationTest {
@@ -77,6 +51,8 @@ class IngameControllerTest extends ApplicationTest {
     Provider<MapController> mapControllerProvider;
     @Mock
     Provider<SoundController> soundControllerProvider;
+    @Mock
+    EncounterOpponentsService encounterOpponentsService;
     @Mock
     SoundController soundController;
     @Mock
@@ -91,9 +67,7 @@ class IngameControllerTest extends ApplicationTest {
     @Mock
     PresetsService presetsService;
     @Mock
-    EncounterOpponentsService encounterOpponentsService;
-    @Mock
-    RegionEncountersService regionEncountersService;
+    AStarService aStarService;
     @Mock
     UDPEventListener udpEventListener;
     @Mock
@@ -137,9 +111,6 @@ class IngameControllerTest extends ApplicationTest {
     final User user = new User(null, null, "ID_USER", "USER_NAME", "USER_STATUS", "USER_AVATAR", List.of());
     final Achievement achievement = new Achievement(null, null, "MoveCharacter", "ID_USER", null, 100);
     final List<Area> areas = List.of(area);
-    final Encounter encounter = new Encounter(null, null, "ID", "r", false);
-    final Opponent opponent = new Opponent(null, null, "ido", "e",
-            "t", true, true, "m", null, null, 0);
 
     @Override
     public void start(Stage stage) {
@@ -157,9 +128,7 @@ class IngameControllerTest extends ApplicationTest {
         doNothing().when(prefs).setArea(any());
         when(presetsService.getTileset(tileSetDescription)).thenReturn(Observable.just(tileSet));
         when(presetsService.getImage(tileSet)).thenReturn(Observable.just(image));
-        when(encounterOpponentsService.getTrainerOpponents(anyString(), anyString())).thenReturn(Observable.just(List.of(opponent)));
-        when(encounterOpponentsService.getEncounterOpponents(anyString(), anyString())).thenReturn(Observable.just(List.of(opponent)));
-        when(regionEncountersService.getRegionEncounter(anyString(), anyString())).thenReturn(Observable.just(encounter));
+        when(encounterOpponentsService.getTrainerOpponents(anyString(), anyString())).thenReturn(Observable.just(List.of()));
         when(cache.getTrainer()).thenReturn(trainer);
         when(cache.getMapImage()).thenReturn(image);
         when(cache.getMapTileset()).thenReturn(tileSet);
@@ -181,6 +150,7 @@ class IngameControllerTest extends ApplicationTest {
         when(soundControllerProvider.get()).thenReturn(soundController);
         doNothing().when(pauseController).setOnCloseRequest(any());
         doNothing().when(pauseController).init();
+        when(pauseController.render()).thenReturn(new Pane());
         ingameController.setRegion(region);
 
         app.start(stage);
@@ -208,19 +178,29 @@ class IngameControllerTest extends ApplicationTest {
     void movePlayer() {
         when(cache.getMyAchievements()).thenReturn(List.of(achievement));
         when(cache.getTrainer()).thenReturn(trainer);
+        when(aStarService.isWalkable(any())).thenReturn(true);
         doNothing().when(udpEventListener).send(anyString());
+
         press(KeyCode.W);
         sleep(300);
         release(KeyCode.W);
+        sleep(300);
+
         press(KeyCode.S);
         sleep(300);
         release(KeyCode.S);
+        sleep(300);
+
         press(KeyCode.A);
         sleep(300);
         release(KeyCode.A);
+        sleep(300);
+
         press(KeyCode.D);
         sleep(300);
         release(KeyCode.D);
+        sleep(300);
+
         verify(udpEventListener, atLeast(4)).send(anyString());
     }
 
