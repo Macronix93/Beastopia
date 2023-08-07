@@ -78,7 +78,7 @@ public class IngameController extends Controller {
     private List<Controller> subControllers = new ArrayList<>();
     private List<Node> renderedPlayers = new ArrayList<>();
     private List<KeyCode> pressedKeys = new ArrayList<>();
-    private String[] locationStrings = {"Moncenter", "House", "Store"};
+    private final String[] locationStrings = {"Moncenter", "House", "Store"};
     @FXML
     public Pane tilePane;
     @FXML
@@ -521,8 +521,8 @@ public class IngameController extends Controller {
                 playerController.updateTrainer(dto);
                 return;
             } else {
-                Trainer oldTrainer = cache.getTrainers().get(dto._id());
                 if (cache.getTrainers().get(dto._id()) != null) {
+                    Trainer oldTrainer = cache.getTrainers().get(dto._id());
                     Trainer updatedTrainer = new Trainer(oldTrainer.createdAt(), oldTrainer.updatedAt(), oldTrainer._id(),
                             oldTrainer.region(), oldTrainer.user(), oldTrainer.name(), oldTrainer.image(), oldTrainer.team()
                             , oldTrainer.encounteredMonsterTypes(), oldTrainer.visitedAreas(), oldTrainer.coins(),
