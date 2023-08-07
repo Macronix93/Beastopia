@@ -1031,7 +1031,7 @@ public class IngameController extends Controller {
         controller.updateViewPort();
 
         if (tilePane.getChildren().contains(remotePlayer)) {
-            aStarService.updateMap(controller.getPosition(), true);
+            aStarService.updateMap(controller.getOldPosition(), true);
             aStarService.updateMap(new Position(x, y), false);
         }
 
@@ -1514,40 +1514,32 @@ public class IngameController extends Controller {
             boolean moved = false;
 
             if (pressedKeys.contains(KeyCode.UP) || pressedKeys.contains(KeyCode.W)) {
-                if (!aStarService.isWalkable(new Position(posx, posy - 1)) &&
-                        !aStarService.isJumpableFrom(new Position(posx, posy), new Position(posx, posy - 1))) {
-                    return;
-                }
-
-                posy--;
                 direction = Direction.UP;
+                if (aStarService.isWalkable(new Position(posx, posy - 1)) ||
+                        aStarService.isJumpableFrom(new Position(posx, posy), new Position(posx, posy - 1))) {
+                    posy--;
+                }
                 moved = true;
             } else if (pressedKeys.contains(KeyCode.DOWN) || pressedKeys.contains(KeyCode.S)) {
-                if (!aStarService.isWalkable(new Position(posx, posy + 1)) &&
-                        !aStarService.isJumpableFrom(new Position(posx, posy), new Position(posx, posy + 1))) {
-                    return;
-                }
-
-                posy++;
                 direction = Direction.DOWN;
+                if (aStarService.isWalkable(new Position(posx, posy + 1)) ||
+                        aStarService.isJumpableFrom(new Position(posx, posy), new Position(posx, posy + 1))) {
+                    posy++;
+                }
                 moved = true;
             } else if (pressedKeys.contains(KeyCode.LEFT) || pressedKeys.contains(KeyCode.A)) {
-                if (!aStarService.isWalkable(new Position(posx - 1, posy)) &&
-                        !aStarService.isJumpableFrom(new Position(posx, posy), new Position(posx - 1, posy))) {
-                    return;
-                }
-
-                posx--;
                 direction = Direction.LEFT;
+                if (aStarService.isWalkable(new Position(posx - 1, posy)) ||
+                        aStarService.isJumpableFrom(new Position(posx, posy), new Position(posx - 1, posy))) {
+                    posx--;
+                }
                 moved = true;
             } else if (pressedKeys.contains(KeyCode.RIGHT) || pressedKeys.contains(KeyCode.D)) {
-                if (!aStarService.isWalkable(new Position(posx + 1, posy)) &&
-                        !aStarService.isJumpableFrom(new Position(posx, posy), new Position(posx + 1, posy))) {
-                    return;
-                }
-
-                posx++;
                 direction = Direction.RIGHT;
+                if (aStarService.isWalkable(new Position(posx + 1, posy)) ||
+                        aStarService.isJumpableFrom(new Position(posx, posy), new Position(posx + 1, posy))) {
+                    posx++;
+                }
                 moved = true;
             }
 
