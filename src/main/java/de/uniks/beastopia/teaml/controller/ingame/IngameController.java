@@ -411,7 +411,11 @@ public class IngameController extends Controller {
     private void loadTrainers(List<Trainer> trainers) {
         Trainer myTrainer = loadMyTrainer(trainers);
         cache.setTrainer(myTrainer);
-        cache.setTrainers(trainers);
+        java.util.Map<String, Trainer> trainerMap = new HashMap<>();
+        for (Trainer t: trainers) {
+            trainerMap.put(t._id(), t);
+        }
+        cache.setTrainers(trainerMap);
 
         disposables.add(areaService.getAreas(this.region._id()).observeOn(FX_SCHEDULER).subscribe(areas -> {
             cache.setAreas(areas);
@@ -501,6 +505,13 @@ public class IngameController extends Controller {
             if (cache.getTrainer()._id().equals(dto._id())) {
                 playerController.updateTrainer(dto);
                 return;
+            } else {
+                Trainer oldTrainer = cache.getTrainers().get(dto._id());
+                Trainer updatedTrainer = new Trainer(oldTrainer.createdAt(), oldTrainer.updatedAt(), oldTrainer._id(),
+                        oldTrainer.region(), oldTrainer.user(), oldTrainer.name(), oldTrainer.image(), oldTrainer.team()
+                        , oldTrainer.encounteredMonsterTypes(), oldTrainer.visitedAreas(), oldTrainer.coins(),
+                        dto.area(), dto.x(), dto.y(), dto.direction(), oldTrainer.npc());
+                cache.updateTrainers(updatedTrainer);
             }
 
             for (EntityController entityController : otherPlayers.keySet()) {
@@ -566,6 +577,7 @@ public class IngameController extends Controller {
     }
 
     private void createRemotePlayer(Trainer trainer) {
+        cache.updateTrainers(trainer);
         EntityController controller = entityControllerProvider.get();
         ObjectProperty<PlayerState> ps = new SimpleObjectProperty<>();
         controller.playerState().bind(ps);
@@ -642,6 +654,9 @@ public class IngameController extends Controller {
     }
 
     private void removeRemotePlayer(Trainer trainer) {
+        if (cache.getTrainers().containsKey(trainer._id())) {
+            cache.removeRemoteTrainer(trainer._id());
+        }
         EntityController trainerController = getEntityController(trainer);
         if (trainerController == null) {
             return;
@@ -996,7 +1011,7 @@ public class IngameController extends Controller {
     }
 
     private Trainer canTalkToNPC() {
-        for (Trainer trainer : cache.getTrainers()) {
+        for (Trainer trainer : cache.getTrainers().values()) {
             if (trainer._id().equals(cache.getTrainer()._id())) {
                 continue;
             }
@@ -1020,7 +1035,7 @@ public class IngameController extends Controller {
                 }
             }
         }
-        for (Trainer trainer : cache.getTrainers()) {
+        for (Trainer trainer : cache.getTrainers().values()) {
             if (trainer._id().equals(cache.getTrainer()._id())) {
                 continue;
             }

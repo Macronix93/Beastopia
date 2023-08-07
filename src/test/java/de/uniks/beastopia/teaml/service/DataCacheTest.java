@@ -80,9 +80,9 @@ class DataCacheTest {
 
     @Test
     public void charactersImages() {
-        List<Trainer> trainers = List.of(
-                new Trainer(null, null, "ID1", "REGION", "USER", "NAME1", "IMAGE1", List.of(), List.of(), List.of(), 0, "AREA", 0, 0, 0, null),
-                new Trainer(null, null, "ID2", "REGION", "USER", "NAME2", "IMAGE2", List.of(), List.of(), List.of(), 0, "AREA", 0, 0, 0, null)
+        Map<String, Trainer> trainers = Map.of(
+                "1", new Trainer(null, null, "ID1", "REGION", "USER", "NAME1", "IMAGE1", List.of(), List.of(), List.of(), 0, "AREA", 0, 0, 0, null),
+                "2", new Trainer(null, null, "ID2", "REGION", "USER", "NAME2", "IMAGE2", List.of(), List.of(), List.of(), 0, "AREA", 0, 0, 0, null)
         );
 
         List<Image> images = List.of(
