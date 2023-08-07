@@ -127,9 +127,9 @@
                     </HBox>
                 </VBox>
                 <HBox alignment="CENTER" prefHeight="79.0" prefWidth="390.0" spacing="20.0" VBox.vgrow="ALWAYS">
-                    <Button fx:id="leaveEncounter" mnemonicParsing="false" onMouseClicked="#leaveEncounter" prefWidth="100.0" text="Leave Encounter" wrapText="true" />
-                    <Button fx:id="showItems" mnemonicParsing="false" onMouseClicked="#showItems" prefWidth="100.0" text="Items" />
-                    <Button fx:id="changeMonster" mnemonicParsing="false" onMouseClicked="#changeMonster" prefWidth="100.0" text="Change Monster" wrapText="true" />
+                    <Button fx:id="leaveButton" alignment="CENTER" minHeight="50.0" mnemonicParsing="false" onMouseClicked="#leaveEncounter" prefWidth="120.0" text="%leaveEncounter" textAlignment="CENTER" textOverrun="CLIP" wrapText="true" />
+                    <Button fx:id="changeMonster" minHeight="50.0" mnemonicParsing="false" onMouseClicked="#changeMonster" prefWidth="100.0" text="%changeMonster" textAlignment="CENTER" textOverrun="CLIP" wrapText="true" />
+                    <Button fx:id="showItems" mnemonicParsing="false" onMouseClicked="#showItems" prefWidth="100.0" text="%Items" textAlignment="CENTER" />
                     <VBox.margin>
                         <Insets bottom="20.0" />
                     </VBox.margin>
