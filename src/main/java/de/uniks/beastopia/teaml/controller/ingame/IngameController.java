@@ -522,11 +522,13 @@ public class IngameController extends Controller {
                 return;
             } else {
                 Trainer oldTrainer = cache.getTrainers().get(dto._id());
-                Trainer updatedTrainer = new Trainer(oldTrainer.createdAt(), oldTrainer.updatedAt(), oldTrainer._id(),
-                        oldTrainer.region(), oldTrainer.user(), oldTrainer.name(), oldTrainer.image(), oldTrainer.team()
-                        , oldTrainer.encounteredMonsterTypes(), oldTrainer.visitedAreas(), oldTrainer.coins(),
-                        dto.area(), dto.x(), dto.y(), dto.direction(), oldTrainer.npc());
-                cache.updateTrainers(updatedTrainer);
+                if (cache.getTrainers().get(dto._id()) != null) {
+                    Trainer updatedTrainer = new Trainer(oldTrainer.createdAt(), oldTrainer.updatedAt(), oldTrainer._id(),
+                            oldTrainer.region(), oldTrainer.user(), oldTrainer.name(), oldTrainer.image(), oldTrainer.team()
+                            , oldTrainer.encounteredMonsterTypes(), oldTrainer.visitedAreas(), oldTrainer.coins(),
+                            dto.area(), dto.x(), dto.y(), dto.direction(), oldTrainer.npc());
+                    cache.updateTrainers(updatedTrainer);
+                }
             }
 
             for (EntityController entityController : otherPlayers.keySet()) {
