@@ -78,7 +78,7 @@ public class IngameController extends Controller {
     private List<Controller> subControllers = new ArrayList<>();
     private List<Node> renderedPlayers = new ArrayList<>();
     private List<KeyCode> pressedKeys = new ArrayList<>();
-    private String[] locationStrings = {"Moncenter", "House", "Store"};
+    private final String[] locationStrings = {"Moncenter", "House", "Store"};
     @FXML
     public Pane tilePane;
     @FXML
@@ -198,7 +198,6 @@ public class IngameController extends Controller {
     private DialogWindowController dialogWindowController;
     private MonsterTypeDto lastMondexMonster;
     private Timer timer;
-    private boolean visibleHints = true;
     private boolean timerPause = false;
     private boolean destroying = false;
     private boolean drawMousePath = false;
@@ -223,7 +222,6 @@ public class IngameController extends Controller {
         renderedPlayers = new ArrayList<>();
         pressedKeys = new ArrayList<>();
         pathTiles = new ArrayList<>();
-        visibleHints = true;
         timerPause = false;
         destroying = false;
         drawMousePath = false;
