@@ -2,41 +2,65 @@
 
 <!--suppress JavaFxUnresolvedFxIdReference -->
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
-<HBox fx:id="ingame" alignment="BOTTOM_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="750.0" spacing="20.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.uniks.beastopia.teaml.controller.ingame.IngameController">
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Font?>
+
+<HBox fx:id="ingame" alignment="BOTTOM_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="750.0" spacing="20.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.uniks.beastopia.teaml.controller.ingame.IngameController">
     <StackPane fx:id="pauseMenuLayout" prefHeight="150.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
-        <ScrollPane fx:id="mapPane" onKeyPressed="#keyDown" onKeyReleased="#keyUp"
-                    style="-fx-background-color: transparent;">
+        <ScrollPane fx:id="mapPane" onKeyPressed="#keyDown" onKeyReleased="#keyUp" style="-fx-background-color: transparent;">
             <Pane fx:id="tilePane" prefHeight="200.0" prefWidth="200.0" />
         </ScrollPane>
         <AnchorPane fx:id="overlay" prefHeight="200.0" prefWidth="200.0">
-            <Button fx:id="mapHint" alignment="CENTER" minWidth="180.0" mnemonicParsing="false" onAction="#clickOnMapButton" onKeyPressed="#keyDown" onKeyReleased="#keyUp" style="-fx-background-color: transparent; -fx-border-color: black; -fx-border-radius: 10;" text="%MforMap" textAlignment="CENTER" AnchorPane.bottomAnchor="90.0" AnchorPane.leftAnchor="0.0">
-                <font>
-                    <Font size="14.0" />
-                </font>
-            </Button>
-            <Button fx:id="scoreboardHint" alignment="CENTER" minWidth="180.0" mnemonicParsing="false" onAction="#clickOnScoreboardButton" onKeyPressed="#keyDown" onKeyReleased="#keyUp" style="-fx-background-color: transparent; -fx-border-color: black; -fx-border-radius: 10;" text="%NforScoreboard" textAlignment="CENTER" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="0.0">
-                <font>
-                    <Font size="14.0" />
-                </font>
-            </Button>
-            <Button fx:id="beastlistHint" alignment="CENTER" minWidth="180.0" mnemonicParsing="false" onAction="#clickOnBeastListButton" onKeyPressed="#keyDown" onKeyReleased="#keyUp" style="-fx-background-color: transparent; -fx-border-color: black; -fx-border-radius: 10;" text="%BforBeastlist" textAlignment="CENTER" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="0.0">
-                <font>
-                    <Font size="14.0" />
-                </font>
-            </Button>
-         <Button fx:id="invHint" alignment="CENTER" layoutY="446.0" minWidth="180.0" mnemonicParsing="false" onAction="#clickOnInventoryButton" onKeyPressed="#keyDown" onKeyReleased="#keyUp" style="-fx-background-color: transparent; -fx-border-color: black; -fx-border-radius: 10;" text="%IforInv" textAlignment="CENTER" AnchorPane.bottomAnchor="120.0">
+         <Button fx:id="talkHint" alignment="CENTER" minWidth="180.0" mnemonicParsing="false" onAction="#clickOnTalkButton" onKeyPressed="#keyDown" onKeyReleased="#keyUp" style="-fx-background-color: transparent; -fx-border-color: black; -fx-border-radius: 10;" text="%TforTalk" textAlignment="CENTER" AnchorPane.bottomAnchor="240.0">
             <font>
                <Font size="14.0" />
             </font>
          </Button>
-            <Button fx:id="pauseHint" alignment="CENTER" minWidth="180.0" mnemonicParsing="false" onAction="#clickOnPauseMenuButton" onKeyPressed="#keyDown" onKeyReleased="#keyUp" style="-fx-background-color: transparent; -fx-border-color: black; -fx-border-radius: 10;" text="%ESCtoPause" textAlignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0">
+         <Button fx:id="beastTeamHint" alignment="CENTER" minWidth="180.0" mnemonicParsing="false" onAction="#clickOnBeastTeamButton" onKeyPressed="#keyDown" onKeyReleased="#keyUp" style="-fx-background-color: transparent; -fx-border-color: black; -fx-border-radius: 10;" text="%XforBTeam" textAlignment="CENTER" AnchorPane.bottomAnchor="210.0">
+            <font>
+               <Font size="14.0" />
+            </font>
+         </Button>
+         <Button fx:id="mondexHint" alignment="CENTER" minWidth="180.0" mnemonicParsing="false" onAction="#clickOnMondexButton" onKeyPressed="#keyDown" onKeyReleased="#keyUp" style="-fx-background-color: transparent; -fx-border-color: black; -fx-border-radius: 10;" text="%LforMondex" textAlignment="CENTER" AnchorPane.bottomAnchor="180.0">
+            <font>
+               <Font size="14.0" />
+            </font>
+         </Button>
+         <Button fx:id="invHint" alignment="CENTER" layoutY="446.0" minWidth="180.0" mnemonicParsing="false" onAction="#clickOnInventoryButton" onKeyPressed="#keyDown" onKeyReleased="#keyUp" style="-fx-background-color: transparent; -fx-border-color: black; -fx-border-radius: 10;" text="%IforInv" textAlignment="CENTER" AnchorPane.bottomAnchor="150.0">
+            <font>
+               <Font size="14.0" />
+            </font>
+         </Button>
+            <Button fx:id="mapHint" alignment="CENTER" minWidth="180.0" mnemonicParsing="false" onAction="#clickOnMapButton" onKeyPressed="#keyDown" onKeyReleased="#keyUp" style="-fx-background-color: transparent; -fx-border-color: black; -fx-border-radius: 10;" text="%MforMap" textAlignment="CENTER" AnchorPane.bottomAnchor="120.0" AnchorPane.leftAnchor="0.0">
                 <font>
                     <Font size="14.0" />
                 </font>
             </Button>
+            <Button fx:id="scoreboardHint" alignment="CENTER" minWidth="180.0" mnemonicParsing="false" onAction="#clickOnScoreboardButton" onKeyPressed="#keyDown" onKeyReleased="#keyUp" style="-fx-background-color: transparent; -fx-border-color: black; -fx-border-radius: 10;" text="%NforScoreboard" textAlignment="CENTER" AnchorPane.bottomAnchor="90.0" AnchorPane.leftAnchor="0.0">
+                <font>
+                    <Font size="14.0" />
+                </font>
+            </Button>
+            <Button fx:id="beastlistHint" alignment="CENTER" minWidth="180.0" mnemonicParsing="false" onAction="#clickOnBeastListButton" onKeyPressed="#keyDown" onKeyReleased="#keyUp" style="-fx-background-color: transparent; -fx-border-color: black; -fx-border-radius: 10;" text="%BforBeastlist" textAlignment="CENTER" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="0.0">
+                <font>
+                    <Font size="14.0" />
+                </font>
+            </Button>
+            <Button fx:id="pauseHint" alignment="CENTER" minWidth="180.0" mnemonicParsing="false" onAction="#clickOnPauseMenuButton" onKeyPressed="#keyDown" onKeyReleased="#keyUp" style="-fx-background-color: transparent; -fx-border-color: black; -fx-border-radius: 10;" text="%ESCtoPause" textAlignment="CENTER" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="0.0">
+                <font>
+                    <Font size="14.0" />
+                </font>
+            </Button>
+         <Button fx:id="disableHint" alignment="CENTER" minWidth="180.0" mnemonicParsing="false" onAction="#clickOnDisableButton" onKeyPressed="#keyDown" onKeyReleased="#keyUp" style="-fx-background-color: transparent; -fx-border-color: black; -fx-border-radius: 10;" text="%ShiftBforDisable" textAlignment="CENTER" AnchorPane.bottomAnchor="0.0">
+            <font>
+               <Font size="14.0" />
+            </font>
+         </Button>
             <HBox fx:id="scoreBoardLayout" alignment="TOP_RIGHT" prefHeight="510.0" prefWidth="523.0" AnchorPane.bottomAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="25.0" />
             <HBox fx:id="shopLayout" prefHeight="510.0" prefWidth="523.0" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="25.0" AnchorPane.topAnchor="25.0" />
         </AnchorPane>
