@@ -74,7 +74,6 @@ public class RenderBeastController extends Controller {
                                 selectBox2.setStyle("-fx-border-radius: 0px; -fx-alignment: BOTTOM_CENTER; -fx-max-height: 150px; -fx-pref-height: 150px; -fx-pref-width: 125px;");
                             }
                             selectBox.setStyle("-fx-border-radius: 10px; -fx-border-color: #000000;");
-                            //System.out.println("Chosen Opponent ID: " + opponentIdMonsterOne);
                             encounterController.setChosenTarget(opponentIdMonsterOne);
                         });
                     }));
@@ -97,7 +96,6 @@ public class RenderBeastController extends Controller {
                                 selectBox.setStyle("");
                             }
                             selectBox2.setStyle("-fx-border-radius: 10px; -fx-border-color: #000000; -fx-alignment: BOTTOM_CENTER; -fx-max-height: 150px; -fx-pref-height: 150px; -fx-pref-width: 125px;");
-                            //System.out.println("Chosen Opponent ID: " + opponentIdMonsterTwo);
                             encounterController.setChosenTarget(opponentIdMonsterTwo);
                         });
                     }));
