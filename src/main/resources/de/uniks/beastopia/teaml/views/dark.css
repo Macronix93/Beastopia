@@ -114,6 +114,7 @@ rightListBox {
 #yourBeastsPane,
 #fightingBeastPane,
 #VBoxInvList,
+#VBoxShopList,
 #VBoxItemDetail {
     -fx-background-color: #677878;
     -fx-border-color: #162326;
