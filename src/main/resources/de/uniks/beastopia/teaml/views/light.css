@@ -232,7 +232,7 @@
 #attackBox2,
 #attackBox3,
 #attackBox4 {
-    -fx-font-size: 11px;
+    -fx-font-size: 10px;
     -fx-background-color: white;
     -fx-border-color: black;
 }
