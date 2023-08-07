@@ -225,14 +225,6 @@
     -fx-background-color: #E8E8E8;
 }
 
-.expBar {
-    -fx-background-color: #FFD4B2;
-    -fx-border-color: #D79B00;
-    -fx-border-width: 1px;
-    -fx-border-radius: 5px;
-    -fx-background-radius: 5px;
-}
-
 #actionInfoText {
     -fx-font-size: 16px;
     -fx-background-color: white;
