@@ -445,8 +445,19 @@ public class EncounterController extends Controller {
                                     return;
                                 }
                                 if (o.data().trainer().equals(cache.getTrainer()._id()) && allyTrainer != null && !allyTrainer._id().equals(cache.getTrainer()._id())) {
-                                    EndScreenController endScreenController = setEndScreen(false, myMonster, allyMonster, enemyMonster, enemyAllyMonster);
-                                    app.show(endScreenController);
+                                    if (myMonster.currentAttributes().health() == 0) {
+                                        boolean foundMonsterWithHP = false;
+                                        for (Monster monster : ownMonsters) {
+                                            if (!monster._id().equals(myMonster._id()) && cache.getTrainer().team().contains(monster._id()) && monster.currentAttributes().health() > 0) {
+                                                foundMonsterWithHP = true;
+                                                break;
+                                            }
+                                        }
+                                        if (!foundMonsterWithHP) {
+                                            EndScreenController endScreenController = setEndScreen(false, myMonster, allyMonster, enemyMonster, enemyAllyMonster);
+                                            app.show(endScreenController);
+                                        }
+                                    }
                                 } else {
                                     if (!monBallUsed) {
                                         updateUIOnChange();
@@ -888,8 +899,10 @@ public class EncounterController extends Controller {
                     break;
                 }
             }
+            System.out.println(foundMonsterWithHP);
 
             if (isOneVersusTwo) {
+                System.out.println("is a one versus two or two versus two");
                 // Also check if my ally still has monsters
                 if (foundMonsterWithHP && allyTrainer != null && allyTrainer._id().equals(cache.getTrainer()._id())) {
                     foundMonsterWithHP = false;
