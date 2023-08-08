@@ -1,11 +1,11 @@
 package de.uniks.beastopia.teaml.controller.menu.social;
 
-import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Group;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.GroupListService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
+import de.uniks.beastopia.teaml.utils.AssetProvider;
 import de.uniks.beastopia.teaml.utils.Dialog;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
@@ -17,7 +17,6 @@ import javafx.scene.text.Text;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import java.util.Objects;
 import java.util.function.Consumer;
 
 public class ChatUserController extends Controller {
@@ -42,6 +41,8 @@ public class ChatUserController extends Controller {
     GroupListService groupListService;
     @Inject
     Provider<DirectMessageController> directMessageControllerProvider;
+    @Inject
+    AssetProvider assets;
     private Group group;
     private ImageView pinnedImg;
     private ImageView notPinnedImg;
@@ -55,8 +56,8 @@ public class ChatUserController extends Controller {
 
     @Override
     public void init() {
-        pinnedImg = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/filled_pin.png")).toString());
-        notPinnedImg = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/pin.png")).toString());
+        pinnedImg = assets.getIcon("buttons", "filled_pin", 25, 25);
+        notPinnedImg = assets.getIcon("buttons", "pin", 25, 25);
     }
 
     public void setOnGroupClicked(Consumer<Group> onGroupClicked) {
@@ -99,13 +100,8 @@ public class ChatUserController extends Controller {
         onGroupClicked.accept(group);
     }
 
-    private ImageView createImage(String imageUrl) {
-        ImageView imageView = new ImageView(imageUrl);
-        imageView.setFitHeight(25.0);
-        imageView.setFitWidth(25.0);
-        return imageView;
-    }
 
+    @SuppressWarnings("DuplicatedCode")
     public void deleteGroup() {
         if (group.members().size() < 2) {
             disposables.add(groupListService.deleteGroup(group).observeOn(FX_SCHEDULER).subscribe(
@@ -120,6 +116,7 @@ public class ChatUserController extends Controller {
         }
     }
 
+    @SuppressWarnings("DuplicatedCode")
     @FXML
     public void pinGroup() {
         if (!prefs.isPinned(this.group)) {

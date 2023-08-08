@@ -46,7 +46,7 @@ public class ShopControllerTest extends ApplicationTest {
     DataCache cache;
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
         AppPreparer.prepare(app);
         shopController.setTrainer(trainer);
         when(itemControllerProvider.get()).thenReturn(mockedItemController);

@@ -1,9 +1,9 @@
 package de.uniks.beastopia.teaml.controller.ingame.encounter;
 
-import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Monster;
 import de.uniks.beastopia.teaml.service.PresetsService;
+import de.uniks.beastopia.teaml.utils.AssetProvider;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -15,7 +15,6 @@ import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import java.util.Objects;
 
 public class ChangeBeastElementController extends Controller {
     @FXML
@@ -25,13 +24,16 @@ public class ChangeBeastElementController extends Controller {
     @FXML
     public ProgressBar expProgress;
     @FXML
+    public ProgressBar hpBar;
+    @FXML
     public GridPane changeBeastElement;
     @FXML
     public Button addOrRemoveButton;
 
     @Inject
     PresetsService presetsService;
-
+    @Inject
+    AssetProvider assets;
     @Inject
     Provider<ChangeBeastController> changeBeastControllerProvider;
     ChangeBeastController changeBeastController;
@@ -60,8 +62,8 @@ public class ChangeBeastElementController extends Controller {
     public Parent render() {
         Parent parent = super.render();
 
-        removeImage = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/minus.png")).toString());
-        addImage = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/plus.png")).toString());
+        removeImage = assets.getIcon("buttons", "minus", 20, 20);
+        addImage = assets.getIcon("buttons", "plus", 20, 20);
 
         disposables.add(presetsService.getMonsterType(monster.type())
                 .observeOn(FX_SCHEDULER)
@@ -76,6 +78,7 @@ public class ChangeBeastElementController extends Controller {
 
         int maxExp = (int) Math.round(Math.pow(monster.level(), 3) - Math.pow((monster.level() - 1), 3));
         expProgress.setProgress((double) monster.experience() / maxExp);
+        hpBar.setProgress(monster.currentAttributes().health() / monster.attributes().health());
 
         teamPane = changeBeastController.beastTeam;
         fightingPane = changeBeastController.currentBeasts;
@@ -106,13 +109,5 @@ public class ChangeBeastElementController extends Controller {
             teamPane.getChildren().add(changeBeastElement);
             addOrRemoveButton.setGraphic(addImage);
         }
-    }
-
-    private ImageView createImage(String imageUrl) {
-        ImageView imageView = new ImageView(imageUrl);
-        imageView.setCache(false);
-        imageView.setFitHeight(25.0);
-        imageView.setFitWidth(25.0);
-        return imageView;
     }
 }

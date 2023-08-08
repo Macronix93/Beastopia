@@ -29,7 +29,6 @@ import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -41,9 +40,9 @@ class BeastListControllerTest extends ApplicationTest {
     ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang", Locale.forLanguageTag("en"));
     final MonsterAttributes attributes = new MonsterAttributes(1, 1, 1, 1);
     final MonsterAttributes currentAttributes = new MonsterAttributes(0, 0, 0, 0);
-    final Monster monster1 = new Monster(null, null, "MONSTER_1", "TRAINER_ID", 0, 0, 0, null, attributes, currentAttributes);
-    final Monster monster2 = new Monster(null, null, "MONSTER_2", "TRAINER_ID", 0, 0, 0, null, attributes, currentAttributes);
-    final Monster monster3 = new Monster(null, null, "MONSTER_3", "TRAINER_ID", 0, 0, 0, null, attributes, currentAttributes);
+    final Monster monster1 = new Monster(null, null, "MONSTER_1", "TRAINER_ID", 0, 0, 0, null, attributes, currentAttributes, null);
+    final Monster monster2 = new Monster(null, null, "MONSTER_2", "TRAINER_ID", 0, 0, 0, null, attributes, currentAttributes, null);
+    final Monster monster3 = new Monster(null, null, "MONSTER_3", "TRAINER_ID", 0, 0, 0, null, attributes, currentAttributes, null);
     final List<Monster> monsters = List.of(monster1, monster2, monster3);
     final BeastController mockedBeastController1 = mock();
     final BeastController mockedBeastController2 = mock();
@@ -63,7 +62,7 @@ class BeastListControllerTest extends ApplicationTest {
     Prefs prefs;
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
         AppPreparer.prepare(app);
 
         Label testLabel1 = new javafx.scene.control.Label("Label1");

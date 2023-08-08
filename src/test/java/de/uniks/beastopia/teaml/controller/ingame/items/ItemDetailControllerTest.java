@@ -39,7 +39,7 @@ public class ItemDetailControllerTest extends ApplicationTest {
     DataCache cache;
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
         AppPreparer.prepare(app);
         itemDetailController.setItem(itemTypeDto);
         itemDetailController.setBooleanShop(false);

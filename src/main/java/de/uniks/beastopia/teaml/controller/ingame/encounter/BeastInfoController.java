@@ -3,6 +3,7 @@ package de.uniks.beastopia.teaml.controller.ingame.encounter;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Monster;
 import de.uniks.beastopia.teaml.service.PresetsService;
+import de.uniks.beastopia.teaml.utils.AssetProvider;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -10,12 +11,16 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 
 import javax.inject.Inject;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
 @SuppressWarnings("unused")
 public class BeastInfoController extends Controller {
 
+
+    @FXML
+    HBox statusPocket;
     @FXML
     Label name;
     @FXML
@@ -26,7 +31,6 @@ public class BeastInfoController extends Controller {
     Label hpLabel;
     @FXML
     Label xpLabel;
-
     @FXML
     HBox lifeBar;
     @FXML
@@ -38,6 +42,8 @@ public class BeastInfoController extends Controller {
 
     @Inject
     PresetsService presetsService;
+    @Inject
+    AssetProvider assets;
     private Monster monster;
     private Timer timer;
 
@@ -63,6 +69,7 @@ public class BeastInfoController extends Controller {
         level.setText(String.valueOf(monster.level()));
         hpLabel.setText((int) monster.currentAttributes().health() + " / " + (int) monster.attributes().health() + " (HP)");
         xpLabel.setText(monster.experience() + " / " + calcMaxXp() + " (Exp)");
+        setStatus(monster.status(), false);
 
         timer = new Timer();
         timer.schedule(new TimerTask() {
@@ -71,6 +78,7 @@ public class BeastInfoController extends Controller {
                 Platform.runLater(() -> {
                     setLifeBarValue(monster.currentAttributes().health() / monster.attributes().health(), false);
                     setXpBarValue(monster.experience() / (double) calcMaxXp(), false);
+                    setStatus(monster.status(), false);
                 });
             }
         }, 500);
@@ -105,12 +113,24 @@ public class BeastInfoController extends Controller {
     }
 
     public void setXpBarValue(double value, boolean killTimer) {
-        if (killTimer) {
-            timer.cancel();
-        }
+        killTimer(killTimer);
         xpBarValue.setMinWidth(xpBar.getWidth() * value);
         xpBarValue.setMaxWidth(xpBar.getWidth() * value);
         xpBarValue.setPrefWidth(xpBar.getWidth() * value);
+    }
+
+    public void setStatus(List<String> status, boolean killTimer) {
+        killTimer(killTimer);
+        statusPocket.getChildren().clear();
+        if (!status.isEmpty()) {
+            status.forEach(element -> statusPocket.getChildren().add(assets.getIcon("status", element.trim(), 25, 25)));
+        }
+    }
+
+    private void killTimer(boolean kill) {
+        if (kill) {
+            timer.cancel();
+        }
     }
 
     public Monster getMonster() {

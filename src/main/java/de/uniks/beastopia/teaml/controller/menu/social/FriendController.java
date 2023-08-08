@@ -1,12 +1,12 @@
 package de.uniks.beastopia.teaml.controller.menu.social;
 
 
-import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.FriendListService;
 import de.uniks.beastopia.teaml.sockets.EventListener;
+import de.uniks.beastopia.teaml.utils.AssetProvider;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -19,7 +19,6 @@ import javafx.scene.text.Text;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import java.util.Objects;
 import java.util.function.Consumer;
 
 import static de.uniks.beastopia.teaml.rest.UserApiService.STATUS_ONLINE;
@@ -49,6 +48,8 @@ public class FriendController extends Controller {
     EventListener eventListener;
     @Inject
     DataCache cache;
+    @Inject
+    AssetProvider assets;
     private User user;
     private Boolean friendPin;
     private ImageView pinned;
@@ -73,10 +74,10 @@ public class FriendController extends Controller {
                     updateOnlineStatus(user);
                 }));
 
-        pinned = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/filled_pin.png")).toString());
-        notPinned = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/pin.png")).toString());
-        addImage = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/plus.png")).toString());
-        removeImage = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/minus.png")).toString());
+        pinned = assets.getIcon("buttons", "filled_pin", 25, 25);
+        notPinned = assets.getIcon("buttons", "pin", 25, 25);
+        addImage = assets.getIcon("buttons", "plus", 25, 25);
+        removeImage = assets.getIcon("buttons", "minus", 25, 25);
     }
 
     public void setOnFriendChanged(Consumer<User> onFriendChanged) {
@@ -131,14 +132,6 @@ public class FriendController extends Controller {
         } else {
             statusCircle.setFill(Paint.valueOf("red"));
         }
-    }
-
-    private ImageView createImage(String imageUrl) {
-        ImageView imageView = new ImageView(imageUrl);
-        imageView.setCache(false);
-        imageView.setFitHeight(25.0);
-        imageView.setFitWidth(25.0);
-        return imageView;
     }
 
     @FXML

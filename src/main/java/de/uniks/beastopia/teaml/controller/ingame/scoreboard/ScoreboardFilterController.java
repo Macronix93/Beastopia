@@ -86,7 +86,7 @@ public class ScoreboardFilterController extends Controller {
             }
         }
 
-        filterApplied = selectedAchievements.size() != 0;
+        filterApplied = !selectedAchievements.isEmpty();
         selectedAchievementSet = new HashSet<>(selectedAchievements);
 
         filteredControllers.setPredicate(controller -> {

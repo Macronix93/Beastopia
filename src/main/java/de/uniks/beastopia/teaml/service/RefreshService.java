@@ -1,7 +1,7 @@
 package de.uniks.beastopia.teaml.service;
 
-import de.uniks.beastopia.teaml.rest.LoginResult;
 import de.uniks.beastopia.teaml.rest.AuthApiService;
+import de.uniks.beastopia.teaml.rest.LoginResult;
 import de.uniks.beastopia.teaml.rest.RefreshDto;
 import io.reactivex.rxjava3.core.Observable;
 

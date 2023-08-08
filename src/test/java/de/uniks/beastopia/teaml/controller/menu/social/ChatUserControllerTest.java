@@ -6,6 +6,7 @@ import de.uniks.beastopia.teaml.rest.Group;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.TokenStorage;
+import de.uniks.beastopia.teaml.utils.AssetProvider;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -31,6 +32,9 @@ class ChatUserControllerTest extends ApplicationTest {
     @Spy
     @SuppressWarnings("unused")
     ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang");
+    @Spy
+    @SuppressWarnings("unused")
+    AssetProvider assets;
     @SuppressWarnings("unused")
     @Mock
     TokenStorage tokenStorage;

@@ -100,7 +100,6 @@ public class MapController extends Controller {
     private void drawObjectGroup(Layer layer) {
         for (MapObject object : layer.objects()) {
             RegionInfoController regionInfo = regionInfoControllerProvider.get();
-            regionInfo.init();
             if (object.polygon() == null) {
                 drawRectangle(object, regionInfo);
             } else {
@@ -199,20 +198,20 @@ public class MapController extends Controller {
             for (Chunk chunk : layer.chunks()) {
                 int chunkX = chunk.x();
                 int chunkY = chunk.y();
-                setTile(TILE_SIZE, chunk.data(), chunkX, chunkY, chunk.width(), chunk.height());
+                setTile(TILE_SIZE, chunk.data(), chunkX, chunkY, chunk.width());
             }
         } else if (layer.data() != null) {
             int chunkX = layer.x();
             int chunkY = layer.y();
-            setTile(TILE_SIZE, layer.data(), chunkX, chunkY, layer.width(), layer.height());
+            setTile(TILE_SIZE, layer.data(), chunkX, chunkY, layer.width());
         }
     }
 
-    private void setTile(int TILE_SIZE, List<Long> data, int xPos, int yPos, int width, int height) {
+    private void setTile(int TILE_SIZE, List<Long> data, int xPos, int yPos, int width) {
         int index = 0;
         for (long id : data) {
             int x = index % width + xPos;
-            int y = index / height + yPos;
+            int y = index / width + yPos;
             index++;
             ImageView view = new ImageView();
             view.setPreserveRatio(true);

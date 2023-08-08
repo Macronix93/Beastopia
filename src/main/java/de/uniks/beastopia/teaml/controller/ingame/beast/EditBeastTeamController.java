@@ -134,11 +134,6 @@ public class EditBeastTeamController extends Controller {
                 ));
     }
 
-    @Override
-    public void destroy() {
-        super.destroy();
-    }
-
     public void filterMonster() {
         ObservableList<Monster> filtered;
         if (isInt(filterBar.getText())) {
@@ -158,7 +153,7 @@ public class EditBeastTeamController extends Controller {
     public void moveItemToBeasts() {
         filterBar.clear();
         beastListView.setItems(beastList);
-        if (teamList.size() > 0 && teamListView.getSelectionModel().getSelectedItem() != null) {
+        if (!teamList.isEmpty() && teamListView.getSelectionModel().getSelectedItem() != null) {
             beastList.add(teamListView.getSelectionModel().getSelectedItem());
             teamListView.getItems().remove(teamListView.getSelectionModel().getSelectedItem());
         }

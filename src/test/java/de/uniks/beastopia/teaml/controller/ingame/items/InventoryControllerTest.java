@@ -23,7 +23,6 @@ import java.util.ResourceBundle;
 import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -51,7 +50,7 @@ public class InventoryControllerTest extends ApplicationTest {
     TrainerItemsService trainerItemsService;
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
         AppPreparer.prepare(app);
         when(presetsService.getItems()).thenReturn(Observable.just(itemTypeDtos));
         when(cache.getTrainer()).thenReturn(trainer);

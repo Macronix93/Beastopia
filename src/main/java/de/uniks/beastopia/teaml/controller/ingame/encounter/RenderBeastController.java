@@ -149,12 +149,6 @@ public class RenderBeastController extends Controller {
         this.encounterController = controller;
     }
 
-    @Override
-    public void destroy() {
-        super.destroy();
-
-    }
-
     public void setItemAnimation(Image image, VBox selectBox) {
         ImageView imageView = new ImageView();
         imageView.setFitHeight(25);
@@ -188,5 +182,4 @@ public class RenderBeastController extends Controller {
             selectBox2.setStyle("-fx-alignment: BOTTOM_CENTER; -fx-max-height: 150px; -fx-pref-height: 150px; -fx-pref-width: 125px;");
         }
     }
-
 }

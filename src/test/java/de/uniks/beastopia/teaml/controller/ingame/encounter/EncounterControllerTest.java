@@ -2,17 +2,7 @@ package de.uniks.beastopia.teaml.controller.ingame.encounter;
 
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.AppPreparer;
-import de.uniks.beastopia.teaml.rest.AbilityDto;
-import de.uniks.beastopia.teaml.rest.AbilityMove;
-import de.uniks.beastopia.teaml.rest.ChangeMonsterMove;
-import de.uniks.beastopia.teaml.rest.Encounter;
-import de.uniks.beastopia.teaml.rest.Monster;
-import de.uniks.beastopia.teaml.rest.MonsterAttributes;
-import de.uniks.beastopia.teaml.rest.NPCInfo;
-import de.uniks.beastopia.teaml.rest.Opponent;
-import de.uniks.beastopia.teaml.rest.Region;
-import de.uniks.beastopia.teaml.rest.Trainer;
-import de.uniks.beastopia.teaml.rest.UseItemMove;
+import de.uniks.beastopia.teaml.rest.*;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.EncounterOpponentsService;
 import de.uniks.beastopia.teaml.service.PresetsService;
@@ -37,11 +27,7 @@ import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class EncounterControllerTest extends ApplicationTest {
@@ -71,8 +57,8 @@ class EncounterControllerTest extends ApplicationTest {
 
     final MonsterAttributes attributes = new MonsterAttributes(1, 1, 1, 1);
     final MonsterAttributes currentAttributes = new MonsterAttributes(1, 0, 0, 0);
-    final Monster monster1 = new Monster(null, null, "MONSTER_1", "TRAINER_ID", 2, 1, 1, Map.of("1", 1, "2", 2, "3", 1, "4", 2), attributes, currentAttributes);
-    final Monster monster2 = new Monster(null, null, "MONSTER_2", "TRAINER_ID", 4, 2, 5, Map.of("1", 1, "2", 2, "3", 1, "4", 2), attributes, currentAttributes);
+    final Monster monster1 = new Monster(null, null, "MONSTER_1", "TRAINER_ID", 2, 1, 1, Map.of("1", 1, "2", 2, "3", 1, "4", 2), attributes, currentAttributes, null);
+    final Monster monster2 = new Monster(null, null, "MONSTER_2", "TRAINER_ID", 4, 2, 5, Map.of("1", 1, "2", 2, "3", 1, "4", 2), attributes, currentAttributes, null);
     final Encounter encounter = new Encounter(null, null, "ID", "r", true);
     final Opponent opponent = new Opponent(null, null, "ido", "e",
             "t", true, true, "m", null, null, 0);

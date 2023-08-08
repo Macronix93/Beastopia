@@ -23,7 +23,8 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class MapControllerTest extends ApplicationTest {
@@ -71,7 +72,7 @@ class MapControllerTest extends ApplicationTest {
         when(cache.getArea(any())).thenReturn(area);
         when(cache.getJoinedRegion()).thenReturn(region);
         when(regionInfoControllerProvider.get()).thenReturn(regionInfoController);
-        doNothing().when(regionInfoController).init();
+        //doNothing().when(regionInfoController).init();
 
         app.start(stage);
         app.show(mapController);

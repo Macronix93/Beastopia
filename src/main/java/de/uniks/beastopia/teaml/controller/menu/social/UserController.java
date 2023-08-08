@@ -1,9 +1,9 @@
 package de.uniks.beastopia.teaml.controller.menu.social;
 
-import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.DataCache;
+import de.uniks.beastopia.teaml.utils.AssetProvider;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -12,7 +12,6 @@ import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 
 import javax.inject.Inject;
-import java.util.Objects;
 import java.util.function.Consumer;
 
 
@@ -30,11 +29,9 @@ public class UserController extends Controller {
     Prefs prefs;
     @Inject
     DataCache cache;
+    @Inject
+    AssetProvider assets;
     private User user;
-    private ImageView pinned;
-    private ImageView notPinned;
-    private ImageView add;
-    private ImageView remove;
     private Consumer<User> onUserToggled;
     private Consumer<User> onUserPinToggled;
     private boolean isAdded;
@@ -66,27 +63,20 @@ public class UserController extends Controller {
         avatar.setImage(cache.getImageAvatar(user));
 
         if (prefs.isPinned(user)) {
-            this.pinButton.setGraphic(pinned);
+            this.pinButton.setGraphic(assets.getIcon("buttons", "filled_pin", 15, 15));
         } else {
-            this.pinButton.setGraphic(notPinned);
+            this.pinButton.setGraphic(assets.getIcon("buttons", "pin", 15, 15));
         }
 
         if (isAdded) {
-            this.addRemoveButton.setGraphic(remove);
+            this.addRemoveButton.setGraphic(assets.getIcon("buttons", "minus", 15, 15));
         } else {
-            this.addRemoveButton.setGraphic(add);
+            this.addRemoveButton.setGraphic(assets.getIcon("buttons", "plus", 15, 15));
         }
 
         return parent;
     }
 
-    @Override
-    public void init() {
-        pinned = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/filled_pin.png")).toString());
-        notPinned = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/pin.png")).toString());
-        add = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/plus.png")).toString());
-        remove = createImage(Objects.requireNonNull(Main.class.getResource("assets/buttons/minus.png")).toString());
-    }
 
     public void setUser(User user) {
         this.user = user;
@@ -100,13 +90,6 @@ public class UserController extends Controller {
     @FXML
     public void pin() {
         onUserPinToggled.accept(user);
-    }
-
-    private ImageView createImage(String imageUrl) {
-        ImageView imageView = new ImageView(imageUrl);
-        imageView.setFitHeight(20.0);
-        imageView.setFitWidth(20.0);
-        return imageView;
     }
 
     @Override
