@@ -154,6 +154,11 @@ public class EncounterController extends Controller {
     private final List<Monster> enemyAllyMonsters = new ArrayList<>();
     private int oldLevel;
     private double oldHp;
+    private int oldAttack;
+    private int oldDefense;
+    private int oldSpeed;
+    private int oldType;
+    private Map<String, Integer> oldAbilities;
     private final String wildTrainerId = "000000000000000000000000";
     //monsters in the fight
     Monster myMonster;
@@ -859,6 +864,11 @@ public class EncounterController extends Controller {
                                 }
                                 oldLevel = myMonster.level();
                                 oldHp = myMonster.attributes().health();
+                                oldAttack = myMonster.attributes().attack();
+                                oldDefense = myMonster.attributes().defense();
+                                oldSpeed = myMonster.attributes().speed();
+                                oldType = myMonster.type();
+                                oldAbilities = myMonster.abilities();
                             }
                             , error -> System.err.println("Error: " + error.getMessage())));
         } else {
@@ -1022,14 +1032,21 @@ public class EncounterController extends Controller {
     public void levelUp(Monster myMon, EndScreenController endScreenController) {
         if (myMon.level() > oldLevel) { //Level Up
             LevelUpController controller = levelUpControllerProvider.get();
-            if (myMon.abilities().size() > myMonster.abilities().size()) { //new attack
-                if (myMon.type() != myMonster.type()) { // Evolved
-                    controller.setBeast(myMonster, true, true, (myMonster.attributes().health() - oldHp), endScreenController);
-                } else {
-                    controller.setBeast(myMon, true, false, (myMonster.attributes().health() - oldHp), endScreenController);
+            // Check if abilities are the same, if not = new ability learned
+            Map<String, Integer> newAbilities = new HashMap<>();
+            for (Map.Entry<String, Integer> entry : myMon.abilities().entrySet()) {
+                String key = entry.getKey();
+                Integer value = entry.getValue();
+                if (!oldAbilities.containsKey(key)) {
+                    newAbilities.put(key, value);
                 }
+            }
+            if (myMon.abilities().size() > oldAbilities.size() || !newAbilities.isEmpty()) { //new attack
+                controller.setBeast(myMon, newAbilities, myMon.type() != oldType, (myMonster.attributes().health() - oldHp), (myMonster.attributes().attack() - oldAttack),
+                        (myMonster.attributes().defense() - oldDefense), (myMonster.attributes().speed() - oldSpeed), endScreenController);
             } else {
-                controller.setBeast(myMon, false, false, (myMonster.attributes().health() - oldHp), endScreenController);
+                controller.setBeast(myMon, null, false, (myMonster.attributes().health() - oldHp), (myMonster.attributes().attack() - oldAttack),
+                        (myMonster.attributes().defense() - oldDefense), (myMonster.attributes().speed() - oldSpeed), endScreenController);
             }
             app.show(controller);
         } else {

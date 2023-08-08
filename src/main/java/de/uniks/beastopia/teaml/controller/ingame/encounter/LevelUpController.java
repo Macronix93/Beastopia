@@ -3,6 +3,7 @@ package de.uniks.beastopia.teaml.controller.ingame.encounter;
 import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Monster;
+import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
@@ -17,6 +18,7 @@ import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
 import javax.inject.Inject;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -66,12 +68,19 @@ public class LevelUpController extends Controller {
     public VBox beastInfo;
     @FXML
     public VBox abilityInfo;
+    @FXML
+    public Label statsLabel;
     @Inject
     PresetsService presetsService;
+    @Inject
+    DataCache cache;
     private Monster beast;
-    private boolean newAbility;
+    private Map<String, Integer> newAbilities;
     private boolean dev;
     private double plusHP;
+    private int plusAttack;
+    private int plusDefense;
+    private int plusSpeed;
     private double healthWidth;
     private double expWidth;
     private EndScreenController endScreenController;
@@ -80,11 +89,14 @@ public class LevelUpController extends Controller {
     public LevelUpController() {
     }
 
-    public void setBeast(Monster beast, boolean newAbility, boolean dev, double hp, EndScreenController endScreenController) {
-        this.newAbility = newAbility;
+    public void setBeast(Monster beast, Map<String, Integer> newAbilities, boolean dev, double hp, int attack, int defense, int speed, EndScreenController endScreenController) {
+        this.newAbilities = newAbilities;
         this.beast = beast;
         this.dev = dev;
         this.plusHP = hp;
+        this.plusAttack = attack;
+        this.plusDefense = defense;
+        this.plusSpeed = speed;
         this.endScreenController = endScreenController;
     }
 
@@ -104,6 +116,8 @@ public class LevelUpController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
+
+        abilityInfo.setVisible(false);
         headline.setText("Level up!");
         heart.setImage(new Image(Objects.requireNonNull(Main.class.getResourceAsStream("assets/herz.png"))));
         heart.setFitWidth(25);
@@ -113,20 +127,18 @@ public class LevelUpController extends Controller {
         star.setFitWidth(25);
         star.setFitHeight(25);
 
-        disposables.add(presetsService.getMonsterType(beast.type())
-                .observeOn(FX_SCHEDULER)
-                .subscribe(type -> {
-                    up_text_bottom.setText(type.name() + " " + type.type() + " Lvl. " + beast.level());
-                    if (this.newAbility) {
-                        up_text.setText(type.name() + " " + resources.getString("lvl+A"));
-                    } else {
-                        up_text.setText(type.name() + " " + resources.getString("lvl+"));
-                    }
-                }));
+        up_text_bottom.setText(cache.getBeastDto(beast.type()).name() + " " + cache.getBeastDto(beast.type()).type() + " Lvl. " + beast.level());
+        if (this.newAbilities != null) {
+            up_text.setText(cache.getBeastDto(beast.type()).name() + " " + resources.getString("lvl+A") + " ");
+        } else {
+            up_text.setText(cache.getBeastDto(beast.type()).name() + " " + resources.getString("lvl+"));
+        }
 
         lifeValueLabel.setText((int) beast.currentAttributes().health() + " ");
         maxLifeLabel.setText(" " + (int) beast.attributes().health());
         plusHPLabel.setText(" (+" + (int) plusHP + " Max HP)");
+        statsLabel.setText("Attack: " + beast.attributes().attack() + " (+" + plusAttack + "), Defense: " +
+                beast.attributes().defense() + " (+" + plusDefense + "), Speed: " + beast.attributes().speed() + " (+" + plusSpeed + ")");
         xpValueLabel.setText(beast.experience() + " ");
         int maxExp = (int) Math.pow(beast.level(), 3) - (int) Math.pow(beast.level() - 1, 3);
         maxXpLabel.setText(maxExp + " ");
@@ -177,17 +189,23 @@ public class LevelUpController extends Controller {
                     .subscribe(monsterImage -> image.setImage(monsterImage)));
         }
 
-        if (this.newAbility) {
-            String lastKey = (String) beast.abilities().keySet().toArray()[beast.abilities().size() - 1];
-            disposables.add(presetsService.getAbility(beast.abilities().get(lastKey))
-                    .observeOn(FX_SCHEDULER)
-                    .subscribe(abilityDto -> {
-                        attack.setText(abilityDto.name());
-                        abilityLabel.setText(abilityDto.name());
-                        accuracy.setText("Accuracy: " + abilityDto.accuracy());
-                        type.setText("Type: " + abilityDto.type());
-                        power.setText("Power: " + abilityDto.power());
-                    }));
+        if (this.newAbilities != null) {
+            Map.Entry<String, Integer> lastEntry = null;
+            for (Map.Entry<String, Integer> entry : newAbilities.entrySet()) {
+                lastEntry = entry;
+            }
+            if (lastEntry != null) {
+                disposables.add(presetsService.getAbility(Integer.parseInt(lastEntry.getKey()))
+                        .observeOn(FX_SCHEDULER)
+                        .subscribe(abilityDto -> {
+                            abilityInfo.setVisible(true);
+                            abilityLabel.setText(abilityDto.name() + ".");
+                            attack.setText(abilityDto.name());
+                            accuracy.setText("Accuracy: " + abilityDto.accuracy());
+                            type.setText("Type: " + abilityDto.type());
+                            power.setText("Power: " + abilityDto.power());
+                        }));
+            }
         }
 
         return parent;
