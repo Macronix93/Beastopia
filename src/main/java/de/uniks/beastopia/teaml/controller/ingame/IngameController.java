@@ -206,7 +206,6 @@ public class IngameController extends Controller {
     private DialogWindowController dialogWindowController;
     private MonsterTypeDto lastMondexMonster;
     private Timer timer;
-    private boolean visibleHints = true;
     private boolean timerPause = false;
     private boolean destroying = false;
     private boolean drawMousePath = false;
@@ -465,7 +464,7 @@ public class IngameController extends Controller {
 
         if (!cache.getHintsNotVisible()) {
             hideButtonHints();
-            setButtonHintsOpacity(0);
+            setOpacities(0);
         }
     }
 
@@ -1472,7 +1471,7 @@ public class IngameController extends Controller {
             disableHint.setText("Disable Buttons with Shift + B");
             cache.setHintsNotVisible(true);
         }
-        setButtonHintsOpacity(opacity);
+        setOpacities(opacity);
     }
 
     public void hideButtonHints() {
@@ -1486,17 +1485,6 @@ public class IngameController extends Controller {
         talkHint.toBack();
         disableHint.setText("Enable Buttons with Shift + B");
         cache.setHintsNotVisible(false);
-    }
-
-    public void setButtonHintsOpacity(int o) {
-        pauseHint.setOpacity(o);
-        beastlistHint.setOpacity(o);
-        scoreboardHint.setOpacity(o);
-        mapHint.setOpacity(o);
-        invHint.setOpacity(o);
-        mondexHint.setOpacity(opacity);
-        beastTeamHint.setOpacity(opacity);
-        talkHint.setOpacity(opacity);
     }
 
     private void handlePlayerMovement(KeyEvent keyEvent) {
@@ -1731,6 +1719,7 @@ public class IngameController extends Controller {
         HBox hbox = scoreBoardLayout;
         if (layout.equals("shop")) {
             setOpacities(0);
+            setDisables(0);
             hbox = shopLayout;
         }
         if (hbox.getChildren().contains(beastListParent)) {
@@ -1807,27 +1796,31 @@ public class IngameController extends Controller {
 
     public void setOpacities(int value) {
         pauseHint.setOpacity(value);
-        pauseHint.setDisable(value == 0);
         beastlistHint.setOpacity(value);
-        beastlistHint.setDisable(value == 0);
         scoreboardHint.setOpacity(value);
-        scoreboardHint.setDisable(value == 0);
         mapHint.setOpacity(value);
-        mapHint.setDisable(value == 0);
         invHint.setOpacity(value);
-        invHint.setDisable(value == 0);
         mondexHint.setOpacity(value);
-        mondexHint.setDisable(value == 0);
         beastTeamHint.setOpacity(value);
-        beastTeamHint.setDisable(value == 0);
         talkHint.setOpacity(value);
-        talkHint.setDisable(value == 0);
         disableHint.setOpacity(value);
+    }
+
+    public void setDisables(int value) {
+        pauseHint.setDisable(value == 0);
+        beastlistHint.setDisable(value == 0);
+        scoreboardHint.setDisable(value == 0);
+        mapHint.setDisable(value == 0);
+        invHint.setDisable(value == 0);
+        mondexHint.setDisable(value == 0);
+        beastTeamHint.setDisable(value == 0);
+        talkHint.setDisable(value == 0);
         disableHint.setDisable(value == 0);
     }
 
     public void openShopInventory() {
         setOpacities(0);
+        setDisables(0);
         for (Node tile : tilePane.getChildren()) {
             if (tile instanceof ImageView imageView) {
                 imageView.setFitWidth(TILE_SIZE);
