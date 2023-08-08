@@ -465,6 +465,7 @@ public class IngameController extends Controller {
         if (!cache.getHintsNotVisible()) {
             hideButtonHints();
             setOpacities(0);
+            disableHint.setOpacity(1);
         }
     }
 
@@ -1472,6 +1473,7 @@ public class IngameController extends Controller {
             cache.setHintsNotVisible(true);
         }
         setOpacities(opacity);
+        disableHint.setOpacity(1);
     }
 
     public void hideButtonHints() {

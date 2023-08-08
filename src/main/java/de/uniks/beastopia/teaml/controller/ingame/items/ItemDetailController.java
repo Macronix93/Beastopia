@@ -108,7 +108,7 @@ public class ItemDetailController extends Controller {
                 cost.setText(resources.getString("val") + ": " + formattedPrice);
             }
         } else {
-            if ((itemType.use() == null || itemType.use().equals("ball") && cache.getCurrentEncounter() == null)) {
+            if ((itemType.use() == null || itemType.use().equals("ball") && cache.getCurrentEncounter() == null) || cache.getCurrentEncounter() != null && !cache.getCurrentEncounter().isWild()) {
                 shopBtn.setOpacity(0);
                 shopBtn.setDisable(true);
             } else {
@@ -192,6 +192,9 @@ public class ItemDetailController extends Controller {
     }
 
     public void useItemInFight(String monsterId) {
+        if (itemType.use().equals("ball")) {
+            encounterController.setMonBallUsed(true);
+        }
         disposables.add(encounterOpponentsService.updateEncounterOpponent(
                         cache.getJoinedRegion()._id(),
                         cache.getCurrentEncounter()._id(),
@@ -204,9 +207,6 @@ public class ItemDetailController extends Controller {
                     encounterController.itemBox.getChildren().clear();
                     encounterController.anchorPane.toBack();
                     encounterController.anchorPane.setStyle("-fx-background-color: none;");
-                    if (itemType.use().equals("ball")) {
-                        encounterController.setMonBallUsed(true);
-                    }
                 }));
     }
 

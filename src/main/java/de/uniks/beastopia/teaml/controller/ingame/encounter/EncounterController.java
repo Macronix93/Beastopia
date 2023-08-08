@@ -405,20 +405,14 @@ public class EncounterController extends Controller {
                                                 case "item-success" -> {
                                                     if (monBallUsed) {
                                                         setMonBallUsed(false);
-                                                        actionInfoText.appendText("Trying to catch " + getMonsterName(result.monster(), null) + " with a ball!\n");
+                                                        setCatchInfoBox(false);
+                                                        actionInfoText.appendText(getMonsterName(result.monster(), null) + " got out the ball!\n");
+                                                        return;
                                                     } else {
                                                         actionInfoText.appendText(getMonsterName(result.monster(), null) + " successfully used an item!\n");
                                                     }
                                                 }
-                                                case "item-failed" -> {
-                                                    if (monBallUsed) {
-                                                        setMonBallUsed(false);
-                                                        setCatchInfoBox(true);
-                                                        actionInfoText.appendText(getMonsterName(result.monster(), null) + " got out the ball!\n");
-                                                    } else {
-                                                        actionInfoText.appendText(getMonsterName(result.monster(), null) + " used an item, but it failed!\n");
-                                                    }
-                                                }
+                                                case "item-failed" -> actionInfoText.appendText(getMonsterName(result.monster(), null) + " used an item, but it failed!\n");
                                             }
                                             if (result.status() != null && !result.type().equals("status-removed") && !result.type().equals("status-damage")) {
                                                 actionInfoText.appendText(prefix + getMonsterName(result.monster(), null) + " is " + result.status() + "!\n");
@@ -1127,6 +1121,7 @@ public class EncounterController extends Controller {
             infoAnchorPane.setStyle("-fx-background-color: rgba(0,0,0,0.5);");
             showItemAnimation(renderBeastController2, null, -1);
         } else {
+            System.out.println("Catch failed");
             //TODO set x on top of beast
         }
 
