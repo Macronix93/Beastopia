@@ -69,17 +69,8 @@ public class ChangeBeastElementController extends Controller {
         removeImage = assets.getIcon("buttons", "minus", 20, 20);
         addImage = assets.getIcon("buttons", "plus", 20, 20);
 
-
-        if (cache.getAllBeasts().stream().noneMatch(type -> type.id() == monster.type())) {
-            disposables.add(presetsService.getMonsterType(monster.type())
-                    .observeOn(FX_SCHEDULER)
-                    .subscribe(monsterType -> {
-                        cache.addToAllBeasts(monsterType);
-                        beastLabel.setText(monsterType.name() + " " + monsterType.type() + " Lv. " + monster.level());
-                    }));
-        } else {
-            beastLabel.setText(cache.getBeastDto(monster.type()).name() + " " + cache.getBeastDto(monster.type()).type() + " Lv. " + monster.level());
-        }
+        beastLabel.setText(cache.getBeastDto(monster.type()).name() + " " + cache.getBeastDto(monster.type()).type() + " Lv. " + monster.level());
+        beastLabel.setStyle("-fx-font-size: 16px");
         if (!cache.imageIsDownloaded(monster.type())) {
             Image monsterImage = presetsService.getMonsterImage(monster.type()).blockingFirst();
             cache.addMonsterImages(monster.type(), monsterImage);
@@ -87,7 +78,6 @@ public class ChangeBeastElementController extends Controller {
         } else {
             beastImg.setImage(cache.getMonsterImage(monster.type()));
         }
-        beastLabel.setStyle("-fx-font-size: 16px");
 
         int maxExp = (int) Math.round(Math.pow(monster.level(), 3) - Math.pow((monster.level() - 1), 3));
         expProgress.setProgress((double) monster.experience() / maxExp);

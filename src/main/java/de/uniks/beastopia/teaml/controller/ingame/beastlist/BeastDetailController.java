@@ -68,21 +68,9 @@ public class BeastDetailController extends Controller {
 
         description.setEditable(false);
         description.setFocusTraversable(false);
-
-        if (cache.getAllBeasts().stream().noneMatch(type -> type.id() == monster.type())) {
-            disposables.add(presetsService.getMonsterType(monster.type())
-                    .observeOn(FX_SCHEDULER)
-                    .subscribe(monsterType -> {
-                        cache.addToAllBeasts(monsterType);
-                        name.setText(monsterType.name());
-                        type.setText("Type: " + monsterType.type().get(0));
-                        description.setText(monsterType.description() + "\n\n");
-                    }));
-        } else {
-            name.setText(cache.getBeastDto(monster.type()).name());
-            type.setText("Type: " + cache.getBeastDto(monster.type()).type().get(0));
-            description.setText(cache.getBeastDto(monster.type()).description() + "\n\n");
-        }
+        name.setText(cache.getBeastDto(monster.type()).name());
+        type.setText("Type: " + cache.getBeastDto(monster.type()).type().get(0));
+        description.setText(cache.getBeastDto(monster.type()).description() + "\n\n");
 
         for (Map.Entry<String, Integer> entry : monster.abilities().entrySet()) {
             int ability = Integer.parseInt(entry.getKey());

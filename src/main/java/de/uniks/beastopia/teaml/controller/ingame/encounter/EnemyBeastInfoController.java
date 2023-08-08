@@ -52,16 +52,7 @@ public class EnemyBeastInfoController extends Controller {
     public Parent render() {
         Parent parent = super.render();
 
-        if (cache.getAllBeasts().stream().noneMatch(type -> type.id() == monster.type())) {
-            disposables.add(presetsService.getMonsterType(monster.type())
-                    .observeOn(FX_SCHEDULER)
-                    .subscribe(monsterType -> {
-                        cache.addToAllBeasts(monsterType);
-                        enemyName.setText(monsterType.name());
-                    }));
-        } else {
-            enemyName.setText(cache.getBeastDto(monster.type()).name());
-        }
+        enemyName.setText(cache.getBeastDto(monster.type()).name());
         enemyLevel.setText(String.valueOf(monster.level()));
         setStatus(monster.status(), false);
 

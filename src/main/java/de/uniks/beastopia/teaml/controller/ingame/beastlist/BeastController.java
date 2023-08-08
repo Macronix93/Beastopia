@@ -55,16 +55,7 @@ public class BeastController extends Controller {
     public Parent render() {
         Parent parent = super.render();
 
-        if (cache.getAllBeasts().stream().noneMatch(type -> type.id() == monster.type())) {
-            disposables.add(presetsService.getMonsterType(monster.type())
-                    .observeOn(FX_SCHEDULER)
-                    .subscribe(monsterType -> {
-                        cache.addToAllBeasts(monsterType);
-                        name.setText(monsterType.name());
-                    }));
-        } else {
-            name.setText(cache.getBeastDto(monster.type()).name());
-        }
+        name.setText(cache.getBeastDto(monster.type()).name());
         if (!cache.imageIsDownloaded(monster.type())) {
             Image monsterImage = presetsService.getMonsterImage(monster.type()).blockingFirst();
             cache.addMonsterImages(monster.type(), monsterImage);

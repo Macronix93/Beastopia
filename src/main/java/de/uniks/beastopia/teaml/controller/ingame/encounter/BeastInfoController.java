@@ -62,19 +62,9 @@ public class BeastInfoController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
-
-        if (cache.getAllBeasts().stream().noneMatch(type -> type.id() == monster.type())) {
-            disposables.add(presetsService.getMonsterType(monster.type())
-                    .observeOn(FX_SCHEDULER)
-                    .subscribe(monsterType -> {
-                        cache.addToAllBeasts(monsterType);
-                        name.setText(monsterType.name());
-                        type.setText("(" + monsterType.type().get(0) + ")");
-                    }));
-        } else {
-            name.setText(cache.getBeastDto(monster.type()).name());
-            type.setText("(" + cache.getBeastDto(monster.type()).type().get(0) + ")");
-        }
+        
+        name.setText(cache.getBeastDto(monster.type()).name());
+        type.setText("(" + cache.getBeastDto(monster.type()).type().get(0) + ")");
         level.setText(String.valueOf(monster.level()));
         hpLabel.setText((int) monster.currentAttributes().health() + " / " + (int) monster.attributes().health() + " (HP)");
         xpLabel.setText(monster.experience() + " / " + calcMaxXp() + " (Exp)");

@@ -308,19 +308,8 @@ public class EncounterController extends Controller {
                                                 beastInfoController2.hpLabel.setText((int) newAllyMonster.currentAttributes().health() + " / " + (int) newAllyMonster.attributes().health() + " (HP)");
                                                 beastInfoController2.setLifeBarValue(newAllyMonster.currentAttributes().health() / newAllyMonster.attributes().health(), false);
                                                 beastInfoController2.setStatus(newAllyMonster.status(), false);
-
-                                                if (cache.getAllBeasts().stream().noneMatch(type -> type.id() == newAllyMonster.type())) {
-                                                    disposables.add(presetsService.getMonsterType(newAllyMonster.type())
-                                                            .observeOn(FX_SCHEDULER)
-                                                            .subscribe(monsterType -> {
-                                                                cache.addToAllBeasts(monsterType);
-                                                                beastInfoController2.setName(monsterType.name());
-                                                                actionInfoText.appendText(allyTrainer.name() + " sent out new beast " + monsterType.name() + ".\n");
-                                                            }));
-                                                } else {
-                                                    beastInfoController2.setName(cache.getBeastDto(newAllyMonster.type()).name());
-                                                    actionInfoText.appendText(allyTrainer.name() + " sent out new beast " + cache.getBeastDto(newAllyMonster.type()).name() + ".\n");
-                                                }
+                                                beastInfoController2.setName(cache.getBeastDto(newAllyMonster.type()).name());
+                                                actionInfoText.appendText(allyTrainer.name() + " sent out new beast " + cache.getBeastDto(newAllyMonster.type()).name() + ".\n");
                                                 if (!cache.imageIsDownloaded(newAllyMonster.type())) {
                                                     Image monsterImage = presetsService.getMonsterImage(newAllyMonster.type()).blockingFirst();
                                                     cache.addMonsterImages(newAllyMonster.type(), monsterImage);
@@ -506,19 +495,8 @@ public class EncounterController extends Controller {
         enemyBeastInfoController1.setLevel(newEnemyMonster.level());
         enemyBeastInfoController1.setLifeBarValue(newEnemyMonster.currentAttributes().health() / newEnemyMonster.attributes().health(), false);
         enemyBeastInfoController1.setStatus(newEnemyMonster.status(), false);
-
-        if (cache.getAllBeasts().stream().noneMatch(type -> type.id() == newEnemyMonster.type())) {
-            disposables.add(presetsService.getMonsterType(newEnemyMonster.type())
-                    .observeOn(FX_SCHEDULER)
-                    .subscribe(monsterType -> {
-                        cache.addToAllBeasts(monsterType);
-                        enemyBeastInfoController1.setName(monsterType.name());
-                        actionInfoText.appendText(enemyTrainer.name() + " sent out new beast " + monsterType.name() + ".\n");
-                    }));
-        } else {
-            enemyBeastInfoController1.setName(cache.getBeastDto(newEnemyMonster.type()).name());
-            actionInfoText.appendText(enemyTrainer.name() + " sent out new beast " + cache.getBeastDto(newEnemyMonster.type()).name() + ".\n");
-        }
+        enemyBeastInfoController1.setName(cache.getBeastDto(newEnemyMonster.type()).name());
+        actionInfoText.appendText(enemyTrainer.name() + " sent out new beast " + cache.getBeastDto(newEnemyMonster.type()).name() + ".\n");
         return newEnemyMonster;
     }
 
