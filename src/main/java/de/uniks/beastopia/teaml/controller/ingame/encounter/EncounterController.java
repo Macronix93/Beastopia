@@ -1,5 +1,6 @@
 package de.uniks.beastopia.teaml.controller.ingame.encounter;
 
+import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.ingame.IngameController;
 import de.uniks.beastopia.teaml.controller.ingame.items.InventoryController;
@@ -1122,7 +1123,7 @@ public class EncounterController extends Controller {
             showItemAnimation(renderBeastController2, null, -1);
         } else {
             System.out.println("Catch failed");
-            //TODO set x on top of beast
+            showItemAnimation(renderBeastController2, null, -5);
         }
 
     }
@@ -1132,18 +1133,23 @@ public class EncounterController extends Controller {
     }
 
     public void showItemAnimation(RenderBeastController renderBeastController, VBox selectBox, int itemId) {
-        int usedItemId = itemId == -1 ? usedItemTypeDto.id() : itemId;
-        if (cache.getItemImages().containsKey(usedItemId)) {
-            renderBeastController.setItemAnimation(cache.getItemImages().get(usedItemId), selectBox);
+        if (itemId == -5) {
+            Image catchFailedImage = new Image(Objects.requireNonNull(Main.class.getResourceAsStream("assets/close.png")));
+            renderBeastController.setItemAnimation(catchFailedImage, selectBox);
         } else {
-            disposables.add(presetsService.getItemImage(usedItemId)
-                    .observeOn(FX_SCHEDULER)
-                    .subscribe(itemImage -> {
-                        Map<Integer, Image> itemImages = new HashMap<>();
-                        itemImages.put(usedItemId, itemImage);
-                        cache.setItemImages(itemImages);
-                        renderBeastController.setItemAnimation(cache.getItemImages().get(usedItemId), selectBox);
-                    }));
+            int usedItemId = itemId == -1 ? usedItemTypeDto.id() : itemId;
+            if (cache.getItemImages().containsKey(usedItemId)) {
+                renderBeastController.setItemAnimation(cache.getItemImages().get(usedItemId), selectBox);
+            } else {
+                disposables.add(presetsService.getItemImage(usedItemId)
+                        .observeOn(FX_SCHEDULER)
+                        .subscribe(itemImage -> {
+                            Map<Integer, Image> itemImages = new HashMap<>();
+                            itemImages.put(usedItemId, itemImage);
+                            cache.setItemImages(itemImages);
+                            renderBeastController.setItemAnimation(cache.getItemImages().get(usedItemId), selectBox);
+                        }));
+            }
         }
     }
 }
