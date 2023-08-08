@@ -2,6 +2,7 @@ package de.uniks.beastopia.teaml.controller.ingame.encounter;
 
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Monster;
+import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import de.uniks.beastopia.teaml.utils.AssetProvider;
 import javafx.application.Platform;
@@ -43,6 +44,8 @@ public class BeastInfoController extends Controller {
     @Inject
     PresetsService presetsService;
     @Inject
+    DataCache cache;
+    @Inject
     AssetProvider assets;
     private Monster monster;
     private Timer timer;
@@ -60,12 +63,18 @@ public class BeastInfoController extends Controller {
     public Parent render() {
         Parent parent = super.render();
 
-        disposables.add(presetsService.getMonsterType(monster.type())
-                .observeOn(FX_SCHEDULER)
-                .subscribe(monsterType -> {
-                    name.setText(monsterType.name());
-                    type.setText("(" + monsterType.type().get(0) + ")");
-                }));
+        if (cache.getAllBeasts().stream().noneMatch(type -> type.id() == monster.type())) {
+            disposables.add(presetsService.getMonsterType(monster.type())
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe(monsterType -> {
+                        cache.addToAllBeasts(monsterType);
+                        name.setText(monsterType.name());
+                        type.setText("(" + monsterType.type().get(0) + ")");
+                    }));
+        } else {
+            name.setText(cache.getBeastDto(monster.type()).name());
+            type.setText("(" + cache.getBeastDto(monster.type()).type().get(0) + ")");
+        }
         level.setText(String.valueOf(monster.level()));
         hpLabel.setText((int) monster.currentAttributes().health() + " / " + (int) monster.attributes().health() + " (HP)");
         xpLabel.setText(monster.experience() + " / " + calcMaxXp() + " (Exp)");
