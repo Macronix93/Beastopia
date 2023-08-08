@@ -174,6 +174,14 @@ public class IngameController extends Controller {
     @FXML
     private Button invHint;
     @FXML
+    private Button mondexHint;
+    @FXML
+    private Button beastTeamHint;
+    @FXML
+    private Button disableHint;
+    @FXML
+    private Button talkHint;
+    @FXML
     private HBox shopLayout;
     private Region region;
     private Map map;
@@ -202,7 +210,6 @@ public class IngameController extends Controller {
     private boolean timerPause = false;
     private boolean destroying = false;
     private boolean drawMousePath = false;
-    private boolean neversetHints = true;
 
     @Inject
     public IngameController() {
@@ -417,7 +424,11 @@ public class IngameController extends Controller {
     private void loadTrainers(List<Trainer> trainers) {
         Trainer myTrainer = loadMyTrainer(trainers);
         cache.setTrainer(myTrainer);
-        cache.setTrainers(trainers);
+        java.util.Map<String, Trainer> trainerMap = new HashMap<>();
+        for (Trainer t: trainers) {
+            trainerMap.put(t._id(), t);
+        }
+        cache.setTrainers(trainerMap);
 
         disposables.add(areaService.getAreas(this.region._id()).observeOn(FX_SCHEDULER).subscribe(areas -> {
             cache.setAreas(areas);
@@ -452,7 +463,7 @@ public class IngameController extends Controller {
         mapHint.toFront();
         invHint.toFront();
 
-        if (!cache.getHintsNotVisible() && !neversetHints) {
+        if (!cache.getHintsNotVisible()) {
             hideButtonHints();
             setButtonHintsOpacity(0);
         }
@@ -513,6 +524,15 @@ public class IngameController extends Controller {
                 updateMouseIndicator();
                 playerController.updateTrainer(dto);
                 return;
+            } else {
+                if (cache.getTrainers().get(dto._id()) != null) {
+                    Trainer oldTrainer = cache.getTrainers().get(dto._id());
+                    Trainer updatedTrainer = new Trainer(oldTrainer.createdAt(), oldTrainer.updatedAt(), oldTrainer._id(),
+                            oldTrainer.region(), oldTrainer.user(), oldTrainer.name(), oldTrainer.image(), oldTrainer.team()
+                            , oldTrainer.encounteredMonsterTypes(), oldTrainer.visitedAreas(), oldTrainer.coins(),
+                            dto.area(), dto.x(), dto.y(), dto.direction(), oldTrainer.npc());
+                    cache.updateTrainers(updatedTrainer);
+                }
             }
 
             for (EntityController entityController : otherPlayers.keySet()) {
@@ -585,6 +605,7 @@ public class IngameController extends Controller {
     }
 
     private void createRemotePlayer(Trainer trainer) {
+        cache.updateTrainers(trainer);
         EntityController controller = entityControllerProvider.get();
         ObjectProperty<PlayerState> ps = new SimpleObjectProperty<>();
         controller.playerState().bind(ps);
@@ -664,6 +685,9 @@ public class IngameController extends Controller {
     }
 
     private void removeRemotePlayer(Trainer trainer) {
+        if (cache.getTrainers().containsKey(trainer._id())) {
+            cache.removeRemoteTrainer(trainer._id());
+        }
         EntityController trainerController = getEntityController(trainer);
         if (trainerController == null) {
             return;
@@ -1151,37 +1175,41 @@ public class IngameController extends Controller {
 
     public void handleTalkToTrainer(KeyEvent keyEvent) {
         if (keyEvent.getCode().equals(KeyCode.T)) {
-            Trainer trainer = canTalkToNPC();
-            if (trainer != null) {
-                if (trainer.npc() == null || trainer.npc().encounterOnTalk()) {
-                    List<Opponent> trainerOpponents = encounterOpponentsService.getTrainerOpponents(cache.getJoinedRegion()._id(), trainer._id()).blockingFirst();
+            talkToTrainer();
+        }
+    }
 
-                    if (!(trainerOpponents.equals(List.of()))) {
-                        List<Opponent> allOpponents = encounterOpponentsService.getEncounterOpponents(cache.getJoinedRegion()._id(), trainerOpponents.get(0).encounter()).blockingFirst();
+    public void talkToTrainer() {
+        Trainer trainer = canTalkToNPC();
+        if (trainer != null) {
+            if (trainer.npc() == null || trainer.npc().encounterOnTalk()) {
+                List<Opponent> trainerOpponents = encounterOpponentsService.getTrainerOpponents(cache.getJoinedRegion()._id(), trainer._id()).blockingFirst();
 
-                        if (allOpponents.size() == 3) {
-                            talkToJoinFight(trainer);
-                        } else {
-                            talkToFightingNPC(trainer);
-                        }
+                if (!(trainerOpponents.equals(List.of()))) {
+                    List<Opponent> allOpponents = encounterOpponentsService.getEncounterOpponents(cache.getJoinedRegion()._id(), trainerOpponents.get(0).encounter()).blockingFirst();
+
+                    if (allOpponents.size() == 3) {
+                        talkToJoinFight(trainer);
                     } else {
-                        startEncounterOnTalk(trainer);
+                        talkToFightingNPC(trainer);
                     }
-                } else if (trainer.npc().starters() != null) {
-                    talkToStartersNPC(trainer);
-                } else if (trainer.npc().canHeal()) {
-                    talkToNurse(trainer);
-                } else if (trainer.npc().sells() != null) {
-                    openShop(trainer);
+                } else {
+                    startEncounterOnTalk(trainer);
                 }
-            } else {
-                closeTalk();
+            } else if (trainer.npc().starters() != null) {
+                talkToStartersNPC(trainer);
+            } else if (trainer.npc().canHeal()) {
+                talkToNurse(trainer);
+            } else if (trainer.npc().sells() != null) {
+                openShop(trainer);
             }
+        } else {
+            closeTalk();
         }
     }
 
     private Trainer canTalkToNPC() {
-        for (Trainer trainer : cache.getTrainers()) {
+        for (Trainer trainer : cache.getTrainers().values()) {
             if (trainer._id().equals(cache.getTrainer()._id())) {
                 continue;
             }
@@ -1205,7 +1233,7 @@ public class IngameController extends Controller {
                 }
             }
         }
-        for (Trainer trainer : cache.getTrainers()) {
+        for (Trainer trainer : cache.getTrainers().values()) {
             if (trainer._id().equals(cache.getTrainer()._id())) {
                 continue;
             }
@@ -1427,7 +1455,6 @@ public class IngameController extends Controller {
     }
 
     public void handleButtonHints() {
-        neversetHints = true;
         int opacity;
         if (cache.getHintsNotVisible()) {
             opacity = 0;
@@ -1439,6 +1466,10 @@ public class IngameController extends Controller {
             scoreboardHint.toFront();
             mapHint.toFront();
             invHint.toFront();
+            mondexHint.toFront();
+            beastTeamHint.toFront();
+            talkHint.toFront();
+            disableHint.setText("Disable Buttons with Shift + B");
             cache.setHintsNotVisible(true);
         }
         setButtonHintsOpacity(opacity);
@@ -1450,6 +1481,10 @@ public class IngameController extends Controller {
         scoreboardHint.toBack();
         mapHint.toBack();
         invHint.toBack();
+        mondexHint.toBack();
+        beastTeamHint.toBack();
+        talkHint.toBack();
+        disableHint.setText("Enable Buttons with Shift + B");
         cache.setHintsNotVisible(false);
     }
 
@@ -1459,6 +1494,9 @@ public class IngameController extends Controller {
         scoreboardHint.setOpacity(o);
         mapHint.setOpacity(o);
         invHint.setOpacity(o);
+        mondexHint.setOpacity(opacity);
+        beastTeamHint.setOpacity(opacity);
+        talkHint.setOpacity(opacity);
     }
 
     private void handlePlayerMovement(KeyEvent keyEvent) {
@@ -1669,6 +1707,26 @@ public class IngameController extends Controller {
         openInventory(false);
     }
 
+    @FXML
+    void clickOnMondexButton() {
+        openMondexList();
+    }
+
+    @FXML
+    void clickOnBeastTeamButton() {
+        app.show(editBeastTeamControllerProvider.get());
+    }
+
+    @FXML
+    void clickOnDisableButton() {
+        handleButtonHints();
+    }
+
+    @FXML
+    void clickOnTalkButton() {
+        talkToTrainer();
+    }
+
     public void openBeastlist(String layout, ItemDetailController itemDetailController) {
         HBox hbox = scoreBoardLayout;
         if (layout.equals("shop")) {
@@ -1758,6 +1816,14 @@ public class IngameController extends Controller {
         mapHint.setDisable(value == 0);
         invHint.setOpacity(value);
         invHint.setDisable(value == 0);
+        mondexHint.setOpacity(value);
+        mondexHint.setDisable(value == 0);
+        beastTeamHint.setOpacity(value);
+        beastTeamHint.setDisable(value == 0);
+        talkHint.setOpacity(value);
+        talkHint.setDisable(value == 0);
+        disableHint.setOpacity(value);
+        disableHint.setDisable(value == 0);
     }
 
     public void openShopInventory() {
