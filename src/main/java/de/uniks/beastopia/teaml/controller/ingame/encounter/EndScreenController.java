@@ -10,6 +10,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 
@@ -63,33 +64,8 @@ public class EndScreenController extends Controller {
     public Parent render() {
         Parent parent = super.render();
 
-        disposables.add(presetsService.getMonsterImage(winner1.type())
-                .observeOn(FX_SCHEDULER)
-                .subscribe(monsterImage -> winnerImg.setImage(monsterImage)));
-
-        if (winner2 != null) {
-            ImageView secondWinner = new ImageView();
-            secondWinner.setX(125);
-            secondWinner.setY(125);
-            disposables.add(presetsService.getMonsterImage(winner2.type())
-                    .observeOn(FX_SCHEDULER)
-                    .subscribe(secondWinner::setImage));
-            leftMonsterContainer.getChildren().add(secondWinner);
-        }
-
-        disposables.add(presetsService.getMonsterImage(loser1.type())
-                .observeOn(FX_SCHEDULER)
-                .subscribe(monsterImage -> loserImg.setImage(monsterImage)));
-
-        if (loser2 != null) {
-            ImageView secondLoser = new ImageView();
-            secondLoser.setX(125);
-            secondLoser.setY(125);
-            disposables.add(presetsService.getMonsterImage(loser2.type())
-                    .observeOn(FX_SCHEDULER)
-                    .subscribe(secondLoser::setImage));
-            rightMonsterContainer.getChildren().add(secondLoser);
-        }
+        getEndScreenImages(winner1, winnerImg, winner2, leftMonsterContainer);
+        getEndScreenImages(loser1, loserImg, loser2, rightMonsterContainer);
 
         if (isWinner) {
             resultLabel.setText(resources.getString("fightWon"));
@@ -100,6 +76,30 @@ public class EndScreenController extends Controller {
         coinInfo.setText(gainedCoins);
 
         return parent;
+    }
+
+    private void getEndScreenImages(Monster monster1, ImageView winnerImg, Monster monster2, VBox leftMonsterContainer) {
+        if (!dataCache.imageIsDownloaded(monster1.type())) {
+            Image monsterImage = presetsService.getMonsterImage(monster1.type()).blockingFirst();
+            dataCache.addMonsterImages(monster1.type(), monsterImage);
+            winnerImg.setImage(monsterImage);
+        } else {
+            winnerImg.setImage(dataCache.getMonsterImage(monster1.type()));
+        }
+
+        if (monster2 != null) {
+            ImageView secondWinner = new ImageView();
+            secondWinner.setX(125);
+            secondWinner.setY(125);
+            if (!dataCache.imageIsDownloaded(monster2.type())) {
+                Image monsterImage = presetsService.getMonsterImage(monster2.type()).blockingFirst();
+                dataCache.addMonsterImages(monster2.type(), monsterImage);
+                secondWinner.setImage(monsterImage);
+            } else {
+                secondWinner.setImage(dataCache.getMonsterImage(monster2.type()));
+            }
+            leftMonsterContainer.getChildren().add(secondWinner);
+        }
     }
 
     public void onLeaveButtonClicked() {
