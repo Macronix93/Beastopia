@@ -121,6 +121,7 @@ rightListBox {
 #VBoxBeastDetail,
 #VBoxMondexList,
 #VBoxMondexDetail,
+#VBoxShopList,
 #VBoxItemDetail {
     -fx-background-color: #677878;
     -fx-border-color: #162326;
@@ -264,4 +265,12 @@ Text {
 
 #achievementPane .button {
     -fx-background-color: #4C5250;
+}
+
+#catchInfoBg {
+    -fx-background-color: #395B64;
+    -fx-border-color: #162326;
+    -fx-border-width: 1px;
+    -fx-border-radius: 25px;
+    -fx-background-radius: 25px;
 }
