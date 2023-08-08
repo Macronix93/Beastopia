@@ -9,6 +9,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.GridPane;
 
 import javax.inject.Inject;
 import java.util.function.Consumer;
@@ -16,6 +17,8 @@ import java.util.function.Consumer;
 public class BeastController extends Controller {
     @FXML
     public HBox statusPocket;
+    @FXML
+    public GridPane beast;
     @Inject
     PresetsService presetsService;
     @Inject

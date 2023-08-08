@@ -34,7 +34,8 @@ public class DataCache {
 
     private static final ImageView IMAGE_VIEW = new ImageView();
     private static final Scheduler FX_SCHEDULER = io.reactivex.rxjava3.schedulers.Schedulers.from(Platform::runLater);
-    private final List<Trainer> trainers = new ArrayList<>();
+    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
+    private Map<String, Trainer> trainers = new HashMap<>();
     private final List<Pair<String, Image>> characters = new ArrayList<>();
     private final List<Pair<String, Image>> charactersResized = new ArrayList<>();
     private final List<Pair<String, Observable<Image>>> charactersAiring = new ArrayList<>();
@@ -57,6 +58,7 @@ public class DataCache {
     private List<Item> trainerItems = new ArrayList<>();
     private List<Opponent> currentOpponents = new ArrayList<>();
     private List<MonsterTypeDto> allBeasts = new ArrayList<>();
+    private boolean visibleHints;
 
     @Inject
     public DataCache() {
@@ -211,20 +213,25 @@ public class DataCache {
         }
     }
 
-    public List<Trainer> getTrainers() {
+    public Map<String, Trainer> getTrainers() {
         return trainers;
     }
 
-    public void setTrainers(List<Trainer> trainers) {
+    public void updateTrainers(Trainer toUpdate) {
+        trainers.put(toUpdate._id(), toUpdate);
+    }
+
+    public void setTrainers(Map<String, Trainer> trainers) {
         this.trainers.clear();
-        this.trainers.addAll(trainers);
+        this.trainers = trainers;
+    }
+
+    public void removeRemoteTrainer(String id) {
+        trainers.remove(id);
     }
 
     public Trainer getTrainer(String id) {
-        return trainers.stream()
-                .filter(trainer -> trainer._id().equals(id))
-                .findFirst()
-                .orElse(null);
+        return trainers.get(id);
     }
 
     public List<Pair<String, Image>> getCharacters() {
@@ -508,5 +515,13 @@ public class DataCache {
 
     public Map<Integer, AbilityDto> getAbilities() {
         return abilities;
+    }
+
+    public boolean getHintsNotVisible() {
+        return this.visibleHints;
+    }
+
+    public void setHintsNotVisible(boolean visibleHints) {
+        this.visibleHints = visibleHints;
     }
 }

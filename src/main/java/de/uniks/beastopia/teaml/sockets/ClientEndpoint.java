@@ -1,6 +1,13 @@
 package de.uniks.beastopia.teaml.sockets;
 
-import javax.websocket.*;
+import javax.websocket.CloseReason;
+import javax.websocket.ContainerProvider;
+import javax.websocket.OnClose;
+import javax.websocket.OnError;
+import javax.websocket.OnMessage;
+import javax.websocket.OnOpen;
+import javax.websocket.Session;
+import javax.websocket.WebSocketContainer;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,9 +57,10 @@ public class ClientEndpoint {
     }
 
     @OnMessage
-    public synchronized void onMessage(String Message) {
-        for (final Consumer<String> handler : this.messageHandlers) {
-            handler.accept(Message);
+    public synchronized void onMessage(String message) {
+        List<Consumer<String>> handlersCopy = new ArrayList<>(this.messageHandlers);
+        for (Consumer<String> handler : handlersCopy) {
+            handler.accept(message);
         }
     }
 
