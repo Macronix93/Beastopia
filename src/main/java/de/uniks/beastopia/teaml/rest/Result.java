@@ -6,7 +6,6 @@ public record Result(
         int ability,
         int item,
         String effectiveness,
-        int item,
         String status
 ) {
 }
