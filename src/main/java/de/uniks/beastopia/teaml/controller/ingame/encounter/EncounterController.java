@@ -5,7 +5,14 @@ import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.ingame.IngameController;
 import de.uniks.beastopia.teaml.controller.ingame.items.InventoryController;
 import de.uniks.beastopia.teaml.controller.ingame.items.ItemDetailController;
-import de.uniks.beastopia.teaml.rest.*;
+import de.uniks.beastopia.teaml.rest.AbilityDto;
+import de.uniks.beastopia.teaml.rest.AbilityMove;
+import de.uniks.beastopia.teaml.rest.Event;
+import de.uniks.beastopia.teaml.rest.ItemTypeDto;
+import de.uniks.beastopia.teaml.rest.Monster;
+import de.uniks.beastopia.teaml.rest.Opponent;
+import de.uniks.beastopia.teaml.rest.Result;
+import de.uniks.beastopia.teaml.rest.Trainer;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.EncounterOpponentsService;
 import de.uniks.beastopia.teaml.service.PresetsService;
@@ -18,12 +25,21 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
-import javafx.scene.layout.*;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.Stack;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @SuppressWarnings("unused")
@@ -292,14 +308,26 @@ public class EncounterController extends Controller {
                                                 beastInfoController2.hpLabel.setText((int) newAllyMonster.currentAttributes().health() + " / " + (int) newAllyMonster.attributes().health() + " (HP)");
                                                 beastInfoController2.setLifeBarValue(newAllyMonster.currentAttributes().health() / newAllyMonster.attributes().health(), false);
                                                 beastInfoController2.setStatus(newAllyMonster.status(), false);
-                                                disposables.add(presetsService.getMonsterType(newAllyMonster.type())
-                                                        .observeOn(FX_SCHEDULER)
-                                                        .subscribe(monsterType -> {
-                                                            beastInfoController2.setName(monsterType.name());
-                                                            renderBeastController1.setImageMonsterTwo(presetsService.getMonsterImage(monsterType.id()).blockingFirst());
 
-                                                            actionInfoText.appendText(allyTrainer.name() + " sent out new beast " + monsterType.name() + ".\n");
-                                                        }));
+                                                if (cache.getAllBeasts().stream().noneMatch(type -> type.id() == newAllyMonster.type())) {
+                                                    disposables.add(presetsService.getMonsterType(newAllyMonster.type())
+                                                            .observeOn(FX_SCHEDULER)
+                                                            .subscribe(monsterType -> {
+                                                                cache.addToAllBeasts(monsterType);
+                                                                beastInfoController2.setName(monsterType.name());
+                                                                actionInfoText.appendText(allyTrainer.name() + " sent out new beast " + monsterType.name() + ".\n");
+                                                            }));
+                                                } else {
+                                                    beastInfoController2.setName(cache.getBeastDto(newAllyMonster.type()).name());
+                                                    actionInfoText.appendText(allyTrainer.name() + " sent out new beast " + cache.getBeastDto(newAllyMonster.type()).name() + ".\n");
+                                                }
+                                                if (!cache.imageIsDownloaded(newAllyMonster.type())) {
+                                                    Image monsterImage = presetsService.getMonsterImage(newAllyMonster.type()).blockingFirst();
+                                                    cache.addMonsterImages(newAllyMonster.type(), monsterImage);
+                                                    renderBeastController1.setImageMonsterTwo(monsterImage);
+                                                } else {
+                                                    renderBeastController1.setImageMonsterTwo(cache.getMonsterImage(newAllyMonster.type()));
+                                                }
                                                 renderBeastController1.setMonsterOneOpponentId(opponentId);
                                                 renderBeastController1.setMonster2(newAllyMonster);
                                                 allyMonster = newAllyMonster;
@@ -312,19 +340,14 @@ public class EncounterController extends Controller {
                                         if (!enemyBeastInfoController1.getMonster()._id().equals(o.data().monster())) {
                                             // Get the updated monster and set new values
                                             if (o.data().monster() != null) {
-                                                Monster newEnemyMonster = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), o.data().trainer(), o.data().monster()).blockingFirst();
-                                                enemyBeastInfoController1.setMonster(newEnemyMonster);
-                                                enemyBeastInfoController1.setLevel(newEnemyMonster.level());
-                                                enemyBeastInfoController1.setLifeBarValue(newEnemyMonster.currentAttributes().health() / newEnemyMonster.attributes().health(), false);
-                                                enemyBeastInfoController1.setStatus(newEnemyMonster.status(), false);
-                                                disposables.add(presetsService.getMonsterType(newEnemyMonster.type())
-                                                        .observeOn(FX_SCHEDULER)
-                                                        .subscribe(monsterType -> {
-                                                            enemyBeastInfoController1.setName(monsterType.name());
-                                                            renderBeastController2.setImageMonsterOne(presetsService.getMonsterImage(monsterType.id()).blockingFirst());
-
-                                                            actionInfoText.appendText(enemyTrainer.name() + " sent out new beast " + monsterType.name() + ".\n");
-                                                        }));
+                                                Monster newEnemyMonster = getNewEnemyMonster(o, enemyBeastInfoController1, enemyTrainer);
+                                                if (!cache.imageIsDownloaded(newEnemyMonster.type())) {
+                                                    Image monsterImage = presetsService.getMonsterImage(newEnemyMonster.type()).blockingFirst();
+                                                    cache.addMonsterImages(newEnemyMonster.type(), monsterImage);
+                                                    renderBeastController2.setImageMonsterOne(monsterImage);
+                                                } else {
+                                                    renderBeastController2.setImageMonsterOne(cache.getMonsterImage(newEnemyMonster.type()));
+                                                }
                                                 renderBeastController2.setMonsterOneOpponentId(opponentId);
                                                 renderBeastController2.setMonster1(newEnemyMonster);
                                                 enemyMonster = newEnemyMonster;
@@ -337,19 +360,14 @@ public class EncounterController extends Controller {
                                         if (!enemyBeastInfoController2.getMonster()._id().equals(o.data().monster())) {
                                             // Get the updated monster and set new values
                                             if (o.data().monster() != null) {
-                                                Monster newEnemyAllyMonster = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), o.data().trainer(), o.data().monster()).blockingFirst();
-                                                enemyBeastInfoController2.setMonster(newEnemyAllyMonster);
-                                                enemyBeastInfoController2.setLevel(newEnemyAllyMonster.level());
-                                                enemyBeastInfoController2.setLifeBarValue(newEnemyAllyMonster.currentAttributes().health() / newEnemyAllyMonster.attributes().health(), false);
-                                                enemyBeastInfoController2.setStatus(newEnemyAllyMonster.status(), false);
-                                                disposables.add(presetsService.getMonsterType(newEnemyAllyMonster.type())
-                                                        .observeOn(FX_SCHEDULER)
-                                                        .subscribe(monsterType -> {
-                                                            enemyBeastInfoController2.setName(monsterType.name());
-                                                            renderBeastController2.setImageMonsterTwo(presetsService.getMonsterImage(monsterType.id()).blockingFirst());
-
-                                                            actionInfoText.appendText(enemyAllyTrainer.name() + " sent out new beast " + monsterType.name() + ".\n");
-                                                        }));
+                                                Monster newEnemyAllyMonster = getNewEnemyMonster(o, enemyBeastInfoController2, enemyAllyTrainer);
+                                                if (!cache.imageIsDownloaded(newEnemyAllyMonster.type())) {
+                                                    Image monsterImage = presetsService.getMonsterImage(newEnemyAllyMonster.type()).blockingFirst();
+                                                    cache.addMonsterImages(newEnemyAllyMonster.type(), monsterImage);
+                                                    renderBeastController2.setImageMonsterTwo(monsterImage);
+                                                } else {
+                                                    renderBeastController2.setImageMonsterTwo(cache.getMonsterImage(newEnemyAllyMonster.type()));
+                                                }
                                                 renderBeastController2.setMonsterTwoOpponentId(opponentId);
                                                 renderBeastController2.setMonster2(newEnemyAllyMonster);
                                                 enemyAllyMonster = newEnemyAllyMonster;
@@ -396,7 +414,8 @@ public class EncounterController extends Controller {
                                                         actionInfoText.appendText(getMonsterName(result.monster(), null) + " successfully used an item!\n");
                                                     }
                                                 }
-                                                case "item-failed" -> actionInfoText.appendText(getMonsterName(result.monster(), null) + " used an item, but it failed!\n");
+                                                case "item-failed" ->
+                                                        actionInfoText.appendText(getMonsterName(result.monster(), null) + " used an item, but it failed!\n");
                                             }
                                             if (result.status() != null && !result.type().equals("status-removed") && !result.type().equals("status-damage")) {
                                                 actionInfoText.appendText(prefix + getMonsterName(result.monster(), null) + " is " + result.status() + "!\n");
@@ -479,6 +498,28 @@ public class EncounterController extends Controller {
         );
 
         return parent;
+    }
+
+    private Monster getNewEnemyMonster(Event<Opponent> o, EnemyBeastInfoController enemyBeastInfoController1, Trainer enemyTrainer) {
+        Monster newEnemyMonster = trainerService.getTrainerMonster(cache.getJoinedRegion()._id(), o.data().trainer(), o.data().monster()).blockingFirst();
+        enemyBeastInfoController1.setMonster(newEnemyMonster);
+        enemyBeastInfoController1.setLevel(newEnemyMonster.level());
+        enemyBeastInfoController1.setLifeBarValue(newEnemyMonster.currentAttributes().health() / newEnemyMonster.attributes().health(), false);
+        enemyBeastInfoController1.setStatus(newEnemyMonster.status(), false);
+
+        if (cache.getAllBeasts().stream().noneMatch(type -> type.id() == newEnemyMonster.type())) {
+            disposables.add(presetsService.getMonsterType(newEnemyMonster.type())
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe(monsterType -> {
+                        cache.addToAllBeasts(monsterType);
+                        enemyBeastInfoController1.setName(monsterType.name());
+                        actionInfoText.appendText(enemyTrainer.name() + " sent out new beast " + monsterType.name() + ".\n");
+                    }));
+        } else {
+            enemyBeastInfoController1.setName(cache.getBeastDto(newEnemyMonster.type()).name());
+            actionInfoText.appendText(enemyTrainer.name() + " sent out new beast " + cache.getBeastDto(newEnemyMonster.type()).name() + ".\n");
+        }
+        return newEnemyMonster;
     }
 
     private Monster updateMonsterInfo(Event<Monster> monsterEvent, BeastInfoController beastInfoController, List<Monster> monsterList) {
