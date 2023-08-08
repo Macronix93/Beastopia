@@ -50,25 +50,10 @@ public class EditBeastTeamController extends Controller {
     Provider<BeastListElementController> beastListElementControllerProvider;
     final ObservableList<Monster> beastList = FXCollections.observableArrayList();
     final ObservableList<Monster> teamList = FXCollections.observableArrayList();
-    List<MonsterTypeDto> allBeasts;
     private LoadingPage loadingPage;
 
     @Inject
     public EditBeastTeamController() {
-    }
-
-    @Override
-    public void init() {
-        disposables.add(presetsService.getAllBeasts()
-                .observeOn(FX_SCHEDULER)
-                .subscribe(
-                        beasts -> {
-                            cache.setAllBeasts(beasts);
-                            allBeasts = beasts;
-                            loadingPage.setDone();
-                        },
-                        error -> Dialog.error(error.getMessage(), "Error")
-                ));
     }
 
     @Override
@@ -86,6 +71,7 @@ public class EditBeastTeamController extends Controller {
                     setupListView(monsters);
                     this.beastListView.setCellFactory(param -> beastListElementControllerProvider.get());
                     this.teamListView.setCellFactory(param -> beastListElementControllerProvider.get());
+                    loadingPage.setDone();
                 }));
         return loadingPage.parent();
     }
@@ -139,7 +125,7 @@ public class EditBeastTeamController extends Controller {
         if (isInt(filterBar.getText())) {
             filtered = beastList.filtered(monster -> monster.level() == Integer.parseInt(filterBar.getText()));
         } else {
-            List<MonsterTypeDto> matchingNames = allBeasts.stream()
+            List<MonsterTypeDto> matchingNames = cache.getAllBeasts().stream()
                     .filter(monsterTypeDto ->
                             monsterTypeDto.name().toLowerCase().startsWith(filterBar.getText().toLowerCase()))
                     .toList();

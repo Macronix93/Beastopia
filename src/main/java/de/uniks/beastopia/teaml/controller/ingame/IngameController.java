@@ -287,6 +287,10 @@ public class IngameController extends Controller {
             cache.setMapImage(presetsService.getImage(cache.getMapTileset()).blockingFirst());
         }
 
+        if (cache.getAllBeasts().isEmpty()) {
+            disposables.add(presetsService.getAllBeasts().observeOn(FX_SCHEDULER).subscribe(beasts -> cache.setAllBeasts(beasts), error -> Dialog.error(error.getMessage(), "Error")));
+        }
+
         scoreBoardController.setOnCloseRequested(() -> {
             scoreBoardLayout.getChildren().remove(scoreBoardParent);
             currentMenu = MENU_NONE;
