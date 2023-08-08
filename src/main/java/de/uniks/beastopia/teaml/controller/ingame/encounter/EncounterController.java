@@ -391,7 +391,7 @@ public class EncounterController extends Controller {
                                                 case "ability-success" ->
                                                         actionInfoText.appendText(prefix + monsterName + " used " + cache.getAbilities().computeIfAbsent(result.ability(), id -> presetsService.getAbility(id).blockingFirst()).name() + ". It was " + result.effectiveness() + ".\n");
                                                 case "ability-failed" ->
-                                                        actionInfoText.appendText(prefix + monsterName + " used " + cache.getAbilities().computeIfAbsent(result.ability(), id -> presetsService.getAbility(id).blockingFirst()).name() + ". It failed due to status!\n");
+                                                        actionInfoText.appendText(prefix + monsterName + "'s attack failed due to status!\n");
                                                 case "ability-no-uses" ->
                                                         actionInfoText.appendText(prefix + monsterName + " used " + cache.getAbilities().computeIfAbsent(result.ability(), id -> presetsService.getAbility(id).blockingFirst()).name() + ". There are no ability points left!\n");
                                                 case "target-defeated" ->
@@ -1135,7 +1135,7 @@ public class EncounterController extends Controller {
                         trainer -> cache.setTrainer(trainer)
                 ));
             }
-            catchInfoController = catchInfoController.setCatchInfo(catchInfo, teamInfo, enemyMonster.type());
+            catchInfoController = catchInfoController.setCatchInfo(catchInfo, teamInfo, enemyMonster);
             Parent catchInfoParent = catchInfoController.render();
             catchInfoController.setOnCloseRequest(() -> {
                 catchInfoBox.getChildren().remove(catchInfoParent);
