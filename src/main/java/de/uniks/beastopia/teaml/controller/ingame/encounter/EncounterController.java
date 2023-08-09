@@ -1045,7 +1045,7 @@ public class EncounterController extends Controller {
                 controller.setBeast(myMon, newAbilities, myMon.type() != oldType, (myMonster.attributes().health() - oldHp), (myMonster.attributes().attack() - oldAttack),
                         (myMonster.attributes().defense() - oldDefense), (myMonster.attributes().speed() - oldSpeed), endScreenController);
             } else {
-                controller.setBeast(myMon, null, false, (myMonster.attributes().health() - oldHp), (myMonster.attributes().attack() - oldAttack),
+                controller.setBeast(myMon, null, myMon.type() != oldType, (myMonster.attributes().health() - oldHp), (myMonster.attributes().attack() - oldAttack),
                         (myMonster.attributes().defense() - oldDefense), (myMonster.attributes().speed() - oldSpeed), endScreenController);
             }
             app.show(controller);
