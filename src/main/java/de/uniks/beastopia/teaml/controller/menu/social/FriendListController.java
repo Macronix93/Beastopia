@@ -1,9 +1,11 @@
 package de.uniks.beastopia.teaml.controller.menu.social;
 
+import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.FriendListService;
+import de.uniks.beastopia.teaml.service.ImageService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.utils.LoadingPage;
@@ -14,6 +16,8 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
@@ -22,9 +26,10 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class FriendListController extends Controller {
+    final Timer timer = new Timer();
     private final List<Controller> subControllers = new ArrayList<>();
-    @Inject
-    DataCache cache;
+    @FXML
+    public ImageView searchImage;
     @FXML
     public TextField searchName;
     @FXML
@@ -36,6 +41,8 @@ public class FriendListController extends Controller {
     @FXML
     public Button showChats;
     @Inject
+    DataCache cache;
+    @Inject
     Provider<FriendController> friendControllerProvider;
     @Inject
     Provider<DirectMessageController> directMessageControllerProvider;
@@ -45,11 +52,12 @@ public class FriendListController extends Controller {
     TokenStorage tokenStorage;
     @Inject
     Prefs prefs;
+    @Inject
+    ImageService imageService;
     LoadingPage loadingPage;
     @Inject
     @SuppressWarnings("unused")
     EventListener eventListener;
-    final Timer timer = new Timer();
     TimerTask currentTask;
     long taskStamp;
     String lastSearch = null;
@@ -62,6 +70,7 @@ public class FriendListController extends Controller {
     @Override
     public Parent render() {
         loadingPage = LoadingPage.makeLoadingPage(super.render());
+        searchImage.setImage(imageService.getThemeImage(new Image(Objects.requireNonNull(Main.class.getResourceAsStream("assets/buttons/search.png")))));
 
         if (cache.getAllUsers().isEmpty()) {
             disposables.add(friendListService.getUsers()

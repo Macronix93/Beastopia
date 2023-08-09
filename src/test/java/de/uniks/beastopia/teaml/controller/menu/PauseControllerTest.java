@@ -3,6 +3,7 @@ package de.uniks.beastopia.teaml.controller.menu;
 import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.controller.menu.social.FriendListController;
+import de.uniks.beastopia.teaml.service.ImageService;
 import de.uniks.beastopia.teaml.utils.SoundController;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
@@ -21,33 +22,29 @@ import java.util.ResourceBundle;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class PauseControllerTest extends ApplicationTest {
 
+    @Spy
+    @SuppressWarnings("unused")
+    final
+    ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang", Locale.forLanguageTag("en"));
     @Mock
     Provider<FriendListController> friendListControllerProvider;
-
     @Mock
     Provider<MenuController> menuControllerProvider;
     @Mock
     Provider<SoundController> soundControllerProvider;
     @Mock
     SoundController soundController;
+    @Mock
+    ImageService imageService;
     @Spy
     App app;
     @InjectMocks
     PauseController pauseController;
-
-    @Spy
-    @SuppressWarnings("unused")
-    final
-    ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang", Locale.forLanguageTag("en"));
-
     FriendListController mockedFriendListController;
     MenuController mockedMenuController;
 
