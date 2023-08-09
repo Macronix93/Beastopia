@@ -301,7 +301,6 @@ public class IngameController extends Controller {
 
             updateOrigin();
 
-
             timerPause = false;
             spawned = true;
         });
@@ -466,6 +465,7 @@ public class IngameController extends Controller {
             hideButtonHints();
             setOpacities(0);
             disableHint.setOpacity(1);
+            disableHint.setText("Enable Buttons with Shift + B");
         }
     }
 
@@ -1459,6 +1459,7 @@ public class IngameController extends Controller {
         if (cache.getHintsNotVisible()) {
             opacity = 0;
             hideButtonHints();
+            cache.setHintsNotVisible(false);
         } else {
             opacity = 1;
             pauseHint.toFront();
@@ -1859,7 +1860,7 @@ public class IngameController extends Controller {
         closePause();
         hBox.getChildren().remove(parent);
         currentMenu = MENU_NONE;
-        setOpacities(1);
+        //TODO
     }
 
     public void openShop(Trainer trainer) {
@@ -1898,7 +1899,7 @@ public class IngameController extends Controller {
         //false = details: inventory shop, true = details: only inventory
     }
 
-    private void toggleShopItemDetails(ItemTypeDto itemTypeDto) {
+    public void toggleShopItemDetails(ItemTypeDto itemTypeDto) {
         if (Objects.equals(lastItemTypeDto, itemTypeDto)) {
             shopLayout.getChildren().remove(itemDetailParent);
             lastItemTypeDto = null;
