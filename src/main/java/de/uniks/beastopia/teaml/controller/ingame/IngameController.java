@@ -1988,8 +1988,12 @@ public class IngameController extends Controller {
         playerController.destroy();
         scoreBoardController.destroy();
         beastListController.destroy();
-        shopController.destroy();
-        inventoryController.destroy();
+        if (shopController != null) {
+            shopController.destroy();
+        }
+        if (inventoryController != null) {
+            inventoryController.destroy();
+        }
 
         if (dialogWindowController != null) {
             dialogWindowController.destroy();
