@@ -1,5 +1,6 @@
 package de.uniks.beastopia.teaml.controller.menu;
 
+import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.auth.LoginController;
 import de.uniks.beastopia.teaml.controller.menu.social.FriendListController;
@@ -9,6 +10,7 @@ import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -18,6 +20,7 @@ import javax.inject.Provider;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class MenuController extends Controller {
     private final List<Controller> subControllers = new ArrayList<>();
@@ -29,6 +32,10 @@ public class MenuController extends Controller {
     public Button logoutBtn;
     @FXML
     public Button editProfileBtn;
+    @FXML
+    public ImageView editProfileImage;
+    @FXML
+    public ImageView settingsImage;
     @Inject
     Provider<RegionController> regionControllerProvider;
     @Inject
@@ -99,6 +106,8 @@ public class MenuController extends Controller {
         banner.setImage(imageService.getBanner());
         userAvatar.setImage(cache.getImageAvatar(tokenStorage.getCurrentUser()));
         userName.setText(tokenStorage.getCurrentUser().name());
+        editProfileImage.setImage(imageService.getThemeImage(new Image(Objects.requireNonNull(Main.class.getResourceAsStream("assets/buttons/edit.png")))));
+        settingsImage.setImage(imageService.getThemeImage(new Image(Objects.requireNonNull(Main.class.getResourceAsStream("assets/buttons/settings.png")))));
 
         Controller friendListController = friendListControllerProvider.get();
         subControllers.add(friendListController);
