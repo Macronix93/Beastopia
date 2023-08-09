@@ -41,6 +41,7 @@
     -fx-effect: dropshadow(gaussian, #D6B656, 5, 0, 0, 1);
 }
 
+#achievementPane .box,
 #rememberMe .box {
     -fx-background-color: #FFD4B2;
     -fx-border-color: #D79B00;
@@ -114,6 +115,12 @@
 #fightingBeastPane,
 #VBoxShopList,
 #VBoxInvList,
+#scoreBoard,
+#achievements,
+#VBoxBeastList,
+#VBoxMondexList,
+#VBoxMondexDetail,
+#VBoxBeastDetail,
 #VBoxItemDetail {
     -fx-background-color: linear-gradient(to bottom, #CEEDC7, #DBF0EB);
     -fx-border-color: #82B366;
@@ -127,14 +134,11 @@
     -fx-font-size: 14px;
 }
 
+#beast,
+#description,
+#scoreboardUser,
 #friendList,
 #_rootElement,
-#scoreBoard,
-#achievements,
-#VBoxBeastList,
-#VBoxMondexList,
-#VBoxMondexDetail,
-#VBoxBeastDetail,
 #scrollFriends,
 #changeBeastElement,
 #_ItemRootElement,
@@ -147,13 +151,6 @@
 }
 
 #textArea_description {
-    -fx-background-color: #FFD4B2;
-}
-
-#scoreBoard,
-#achievements,
-#VBoxBeastList,
-#VBoxBeastDetail {
     -fx-background-color: #FFD4B2;
 }
 
@@ -228,14 +225,6 @@
     -fx-background-color: #E8E8E8;
 }
 
-.expBar {
-    -fx-background-color: #FFD4B2;
-    -fx-border-color: #D79B00;
-    -fx-border-width: 1px;
-    -fx-border-radius: 5px;
-    -fx-background-radius: 5px;
-}
-
 #actionInfoText {
     -fx-font-size: 16px;
     -fx-background-color: white;
@@ -246,7 +235,7 @@
 #attackBox2,
 #attackBox3,
 #attackBox4 {
-    -fx-font-size: 14px;
+    -fx-font-size: 10px;
     -fx-background-color: white;
     -fx-border-color: black;
 }
@@ -265,6 +254,19 @@
 #ellipse {
     -fx-fill: #CEEDC7;
 }
+
+#achievementPane .button {
+    -fx-background-color: #FFD4B2;
+}
+
+#catchInfoBg {
+    -fx-background-color: #CEEDC7;
+    -fx-border-color: #82B366;
+    -fx-border-width: 1px;
+    -fx-border-radius: 25px;
+    -fx-background-radius: 25px;
+}
+
 
 #backroundHbox {
     -fx-background-color: #DBF0EB;

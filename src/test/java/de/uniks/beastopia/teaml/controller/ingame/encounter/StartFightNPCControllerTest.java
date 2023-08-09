@@ -93,9 +93,4 @@ class StartFightNPCControllerTest extends ApplicationTest {
     void title() {
         assertEquals(app.getStage().getTitle(), resources.getString("titleEncounter"));
     }
-
-    @Test
-    void startFight() {
-        //TODO when encounter-screen ready
-    }
 }

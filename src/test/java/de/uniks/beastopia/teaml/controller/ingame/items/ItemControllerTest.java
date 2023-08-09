@@ -44,7 +44,7 @@ public class ItemControllerTest extends ApplicationTest {
     DataCache cache;
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
         AppPreparer.prepare(app);
         itemController.setItem(itemTypeDto);
         itemController.setScore(100);

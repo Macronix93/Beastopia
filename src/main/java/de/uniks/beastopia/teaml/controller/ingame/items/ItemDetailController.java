@@ -4,11 +4,7 @@ import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.ingame.IngameController;
 import de.uniks.beastopia.teaml.controller.ingame.encounter.EncounterController;
-import de.uniks.beastopia.teaml.rest.Item;
-import de.uniks.beastopia.teaml.rest.ItemTypeDto;
-import de.uniks.beastopia.teaml.rest.Monster;
-import de.uniks.beastopia.teaml.rest.UpdateItemDto;
-import de.uniks.beastopia.teaml.rest.UseItemMove;
+import de.uniks.beastopia.teaml.rest.*;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.EncounterOpponentsService;
 import de.uniks.beastopia.teaml.service.PresetsService;
@@ -112,7 +108,7 @@ public class ItemDetailController extends Controller {
                 cost.setText(resources.getString("val") + ": " + formattedPrice);
             }
         } else {
-            if (itemType.use() == null || itemType.use().equals("ball")) {
+            if ((itemType.use() == null || itemType.use().equals("ball") && cache.getCurrentEncounter() == null) || cache.getCurrentEncounter() != null && !cache.getCurrentEncounter().isWild()) {
                 shopBtn.setOpacity(0);
                 shopBtn.setDisable(true);
             } else {
@@ -156,29 +152,24 @@ public class ItemDetailController extends Controller {
                             encounterController.actionInfoText.appendText("Beast is dead. Choose a new one!\n");
                             return;
                         }
-                        disposables.add(encounterOpponentsService.updateEncounterOpponent(
-                                        cache.getJoinedRegion()._id(),
-                                        cache.getCurrentEncounter()._id(),
-                                        encounterController.getChosenTarget(),
-                                        null,
-                                        new UseItemMove("use-item", itemType.id(), encounterController.getChosenMonster()._id())
-                                )
-                                .observeOn(FX_SCHEDULER)
-                                .subscribe(item -> {
-                                    encounterController.itemBox.getChildren().clear();
-                                    encounterController.anchorPane.toBack();
-                                    encounterController.anchorPane.setStyle("-fx-background-color: none;");
-                                }));
-
-
+                        encounterController.usedItemTypeDto = itemType;
+                        useItemInFight(encounterController.getChosenMonster()._id());
                     } else {
                         ingameController.openBeastlist("shop", this);
                     }
                     return;
                 }
+                case "ball" -> {
+                    if (cache.getCurrentEncounter() != null) {
+                        if (cache.getCurrentEncounter().isWild()) {
+                            encounterController.usedItemTypeDto = itemType;
+                            useItemInFight(encounterController.enemyMonster._id());
+                        }
+                    }
+                }
             }
         }
-        if (itemType.use() != null && !itemType.use().contains("effect") || !onlyInventory) {
+        if (itemType.use() != null && !itemType.use().contains("effect") && !itemType.use().contains("ball") || !onlyInventory ) {
             if (!buy && !onlyInventory) { //sell
                 amount = -1;
             }
@@ -198,6 +189,25 @@ public class ItemDetailController extends Controller {
                 });
             }
         }, 1000);
+    }
+
+    public void useItemInFight(String monsterId) {
+        if (itemType.use().equals("ball")) {
+            encounterController.setMonBallUsed(true);
+        }
+        disposables.add(encounterOpponentsService.updateEncounterOpponent(
+                        cache.getJoinedRegion()._id(),
+                        cache.getCurrentEncounter()._id(),
+                        encounterController.getChosenTarget(),
+                        null,
+                        new UseItemMove("use-item", itemType.id(), monsterId)
+                )
+                .observeOn(FX_SCHEDULER)
+                .subscribe(item -> {
+                    encounterController.itemBox.getChildren().clear();
+                    encounterController.anchorPane.toBack();
+                    encounterController.anchorPane.setStyle("-fx-background-color: none;");
+                }));
     }
 
     public void useDetailButton(int amount, String usage, String monsterId) {
@@ -233,7 +243,14 @@ public class ItemDetailController extends Controller {
                         } else {
                             beastName = presetsService.getMonsterType(monster.data().type()).blockingFirst().name();
                         }
-                        Dialog.info(resources.getString("unlockMonsterHeader"), resources.getString("unlockMonster") + " " + beastName);
+                        ingameController.showItemImage(itemType);
+                        Timer timer = new Timer();
+                        timer.schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+                                Platform.runLater(() -> Dialog.info(resources.getString("unlockMonsterHeader"), resources.getString("unlockMonster") + " " + beastName));
+                            }
+                        }, 3000);
                     });
         }
     }
@@ -253,7 +270,14 @@ public class ItemDetailController extends Controller {
                             if (!isUsedItem) {
                                 for (ItemTypeDto itemTypeDto : cache.getPresetItems()) {
                                     if (itemTypeDto.id() == item.data().type()) {
-                                        Dialog.info(resources.getString("newItemHeader"), resources.getString("newItem") + " " + itemTypeDto.name());
+                                        ingameController.showItemImage(itemType);
+                                        Timer timer = new Timer();
+                                        timer.schedule(new TimerTask() {
+                                            @Override
+                                            public void run() {
+                                                Platform.runLater(() -> Dialog.info(resources.getString("newItemHeader"), resources.getString("newItem") + " " + itemTypeDto.name()));
+                                            }
+                                        }, 3000);
                                     }
                                 }
                             }

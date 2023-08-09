@@ -6,6 +6,7 @@ import de.uniks.beastopia.teaml.rest.Group;
 import de.uniks.beastopia.teaml.service.GroupListService;
 import de.uniks.beastopia.teaml.service.ImageService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
+import de.uniks.beastopia.teaml.utils.AssetProvider;
 import de.uniks.beastopia.teaml.utils.Dialog;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
@@ -48,6 +49,8 @@ public class ChatGroupController extends Controller {
     @Inject
     Prefs prefs;
     @Inject
+    AssetProvider assets;
+    @Inject
     ImageService imageService;
     private Group group;
     private ImageView pinnedImg;
@@ -82,6 +85,7 @@ public class ChatGroupController extends Controller {
         notPinnedImg = imageService.getNotPinnedImage();
 
         name.setText(group.name());
+
         groupAvatar.setImage(new Image(Objects.requireNonNull(Main.class.getResource("assets/group.png")).toString()));
         editButton.setImage(imageService.getThemeImage(new Image(Objects.requireNonNull(Main.class.getResourceAsStream("assets/buttons/edit.png")))));
 
@@ -98,6 +102,8 @@ public class ChatGroupController extends Controller {
         onGroupClicked.accept(group);
     }
 
+
+    @SuppressWarnings("DuplicatedCode")
     @FXML
     public void deleteGroup() {
         if (group.members().size() < 2) {
@@ -113,6 +119,7 @@ public class ChatGroupController extends Controller {
         }
     }
 
+    @SuppressWarnings("DuplicatedCode")
     @FXML
     public void pinGroup() {
         if (!prefs.isPinned(this.group)) {

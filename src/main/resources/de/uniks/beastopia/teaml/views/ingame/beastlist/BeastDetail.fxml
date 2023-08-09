@@ -32,6 +32,6 @@
         </GridPane>
     </HBox>
     <ScrollPane fitToHeight="true" fitToWidth="true" style="-fx-background-color: transparent;">
-        <TextArea fx:id="description" style="-fx-background-color: transparent; -fx-border-color: black;" wrapText="true" />
+        <TextArea fx:id="description" wrapText="true" />
     </ScrollPane>
 </VBox>

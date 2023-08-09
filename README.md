@@ -123,7 +123,27 @@ Gallo</a>
 
 <a href="https://www.flaticon.com/de/kostenlose-icons/angst" title="angst Icons">Angst Icons erstellt von Freepik - Flaticon</a>
 
-
-
-
 <a href="https://www.flaticon.com/free-icons/coin" title="coin icons">Coin icons created by Freepik - Flaticon</a>
+
+<a href="https://www.flaticon.com/free-icons/close" title="close icons">Close icons created by Pixel perfect - Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/spiral" title="spiral- Icons">Spiral- Icons erstellt von Freepik -
+Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/schlafen" title="schlafen Icons">Schlafen Icons erstellt von
+Freepik - Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/risiko" title="risiko Icons">Risiko Icons erstellt von Good Ware -
+Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/feuer" title="feuer Icons">Feuer Icons erstellt von Ferdinand -
+Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/gefrierschrank" title="gefrierschrank Icons">Gefrierschrank Icons
+erstellt von Smashicons - Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/vorhangeschloss" title="vorhängeschloss Icons">Vorhängeschloss
+Icons erstellt von Freepik - Flaticon</a>
+
+<a href="https://www.flaticon.com/de/kostenlose-icons/kein-einlass" title="kein einlass Icons">Kein einlass Icons
+erstellt von Mihimihi - Flaticon</a>

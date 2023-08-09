@@ -74,8 +74,4 @@ public class MondexElementController extends Controller {
         onBeastClicked.accept(monster);
     }
 
-    @Override
-    public void destroy() {
-        super.destroy();
-    }
 }

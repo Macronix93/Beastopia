@@ -48,6 +48,7 @@ public class SoundController {
                 sfxPlayer.play();
             }
         } catch (URISyntaxException | NullPointerException | MalformedURLException e) {
+            //noinspection CallToPrintStackTrace
             e.printStackTrace();
         }
     }

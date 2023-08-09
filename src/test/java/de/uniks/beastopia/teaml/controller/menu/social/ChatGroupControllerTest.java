@@ -7,6 +7,7 @@ import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.GroupListService;
 import de.uniks.beastopia.teaml.service.ImageService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
+import de.uniks.beastopia.teaml.utils.AssetProvider;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.scene.control.Label;
@@ -46,6 +47,9 @@ public class ChatGroupControllerTest extends ApplicationTest {
     @Spy
     @SuppressWarnings("unused")
     ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang");
+    @Spy
+    @SuppressWarnings("unused")
+    AssetProvider assets;
 
     Group group;
 

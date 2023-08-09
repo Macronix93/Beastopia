@@ -21,16 +21,11 @@ public class RegionInfoController extends Controller {
     }
 
     @Override
-    public void init() {
-        super.init();
-    }
-
-    @Override
     public Parent render() {
         Parent parent = super.render();
 
         this.place.setText(name);
-        if (information.equals("")) {
+        if (information.isEmpty()) {
             this.description.visibleProperty().setValue(false);
         } else {
             this.description.setText(information);

@@ -11,6 +11,8 @@ import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
@@ -118,8 +120,10 @@ public class PauseController extends Controller {
     }
 
     @FXML
-    public void pauseMenu() {
-        onCloseRequest.run();
+    public void pauseMenu(KeyEvent event) {
+        if (event.getCode() == KeyCode.ESCAPE) {
+            onCloseRequest.run();
+        }
     }
 
     public void beastTeamButtonPressed() {

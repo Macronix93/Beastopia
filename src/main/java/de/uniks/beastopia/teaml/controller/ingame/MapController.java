@@ -54,6 +54,9 @@ public class MapController extends Controller {
     private Map map;
     private Area currentArea;
     private String fastTravelAreaName;
+    private Shape clickTarget;
+    private int clickTargetStrokeBefore = 0;
+    private Color clickTargetColorBefore = Color.BLACK;
 
     @Inject
     public MapController() {
@@ -97,7 +100,6 @@ public class MapController extends Controller {
     private void drawObjectGroup(Layer layer) {
         for (MapObject object : layer.objects()) {
             RegionInfoController regionInfo = regionInfoControllerProvider.get();
-            regionInfo.init();
             if (object.polygon() == null) {
                 drawRectangle(object, regionInfo);
             } else {
@@ -153,8 +155,24 @@ public class MapController extends Controller {
         if (!cache.areaVisited(name)) {
             name = "Unknown area";
             description = "This area is unknown. New mysteries, adventures and dangers are awaiting you!";
+        } else if (cache.isFastTravelable(object.name())) {
+            description += "\n" + "You've already visited " + object.name() + ". Fast travel is available.";
         }
-        shape.setOnMouseClicked(clickEvent -> setFastTravelTarget(cache.isFastTravelable(object.name()) ? object.name() : null));
+        shape.setOnMouseClicked(clickEvent -> {
+            if (clickTarget != null) {
+                clickTarget.setStroke(clickTargetColorBefore);
+                clickTarget.setStrokeWidth(clickTargetStrokeBefore);
+            }
+
+            clickTarget = shape;
+
+            clickTargetStrokeBefore = (int) shape.getStrokeWidth();
+            clickTargetColorBefore = (Color) shape.getStroke();
+
+            shape.setStroke(Color.WHITE);
+            shape.setStrokeWidth(3);
+            setFastTravelTarget(cache.isFastTravelable(object.name()) ? object.name() : null);
+        });
         regionInfo.setText(name, description);
         double maxX = anchorPane.widthProperty().getValue();
         double maxY = anchorPane.heightProperty().getValue();
@@ -180,20 +198,20 @@ public class MapController extends Controller {
             for (Chunk chunk : layer.chunks()) {
                 int chunkX = chunk.x();
                 int chunkY = chunk.y();
-                setTile(TILE_SIZE, chunk.data(), chunkX, chunkY, chunk.width(), chunk.height());
+                setTile(TILE_SIZE, chunk.data(), chunkX, chunkY, chunk.width());
             }
         } else if (layer.data() != null) {
             int chunkX = layer.x();
             int chunkY = layer.y();
-            setTile(TILE_SIZE, layer.data(), chunkX, chunkY, layer.width(), layer.height());
+            setTile(TILE_SIZE, layer.data(), chunkX, chunkY, layer.width());
         }
     }
 
-    private void setTile(int TILE_SIZE, List<Long> data, int xPos, int yPos, int width, int height) {
+    private void setTile(int TILE_SIZE, List<Long> data, int xPos, int yPos, int width) {
         int index = 0;
         for (long id : data) {
             int x = index % width + xPos;
-            int y = index / height + yPos;
+            int y = index / width + yPos;
             index++;
             ImageView view = new ImageView();
             view.setPreserveRatio(true);
