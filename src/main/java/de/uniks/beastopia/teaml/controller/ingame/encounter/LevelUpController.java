@@ -2,6 +2,7 @@ package de.uniks.beastopia.teaml.controller.ingame.encounter;
 
 import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
+import de.uniks.beastopia.teaml.rest.AbilityDto;
 import de.uniks.beastopia.teaml.rest.Monster;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
@@ -157,36 +158,36 @@ public class LevelUpController extends Controller {
                     starBg.setMaxWidth(expWidth * borderBg.getWidth());
                 });
             }
-        }, 100);
+        }, 200);
 
         if (dev) { //Fade old Image -> New one
-            disposables.add(presetsService.getMonsterImage(beast.type() - 1)
-                    .observeOn(FX_SCHEDULER)
-                    .subscribe(beforeImg -> {
-                        image.setImage(beforeImg);
+            image.setImage(cache.getMonsterImage(beast.type() - 1));
 
-                        FadeTransition fadeOut = new FadeTransition(Duration.seconds(2), image);
-                        fadeOut.setFromValue(1.0);
-                        fadeOut.setToValue(0.0);
+            FadeTransition fadeOut = new FadeTransition(Duration.seconds(2), image);
+            fadeOut.setFromValue(1.0);
+            fadeOut.setToValue(0.0);
+            fadeOut.play();
 
-                        disposables.add(presetsService.getMonsterImage(beast.type())
-                                .observeOn(FX_SCHEDULER)
-                                .subscribe(afterImage -> {
-                                    FadeTransition fadeIn = new FadeTransition(Duration.seconds(2), image);
-                                    fadeIn.setFromValue(0.0);
-                                    fadeIn.setToValue(1.0);
+            FadeTransition fadeIn = new FadeTransition(Duration.seconds(2), image);
+            fadeIn.setFromValue(0.0);
+            fadeIn.setToValue(1.0);
 
-                                    fadeOut.setOnFinished(event -> { // set new img and start fade
-                                        image.setImage(afterImage);
-                                        fadeIn.play();
-                                    });
-                                    fadeOut.play();
-                                }));
-                    }));
+            fadeOut.setOnFinished(event -> { // set new img and start fade
+                if (cache.imageIsDownloaded(beast.type())) {
+                    image.setImage(cache.getMonsterImage(beast.type()));
+                    fadeIn.play();
+                } else {
+                    disposables.add(presetsService.getMonsterImage(beast.type())
+                            .observeOn(FX_SCHEDULER)
+                            .subscribe(afterImage -> {
+                                cache.addMonsterImages(beast.type(), afterImage);
+                                image.setImage(afterImage);
+                                fadeIn.play();
+                            }));
+                }
+            });
         } else {
-            disposables.add(presetsService.getMonsterImage(beast.type())
-                    .observeOn(FX_SCHEDULER)
-                    .subscribe(monsterImage -> image.setImage(monsterImage)));
+            image.setImage(cache.getMonsterImage(beast.type()));
         }
 
         if (this.newAbilities != null) {
@@ -195,16 +196,28 @@ public class LevelUpController extends Controller {
                 lastEntry = entry;
             }
             if (lastEntry != null) {
-                disposables.add(presetsService.getAbility(Integer.parseInt(lastEntry.getKey()))
-                        .observeOn(FX_SCHEDULER)
-                        .subscribe(abilityDto -> {
-                            abilityInfo.setVisible(true);
-                            abilityLabel.setText(abilityDto.name() + ".");
-                            attack.setText(abilityDto.name());
-                            accuracy.setText("Accuracy: " + abilityDto.accuracy());
-                            type.setText("Type: " + abilityDto.type());
-                            power.setText("Power: " + abilityDto.power());
-                        }));
+                abilityInfo.setVisible(true);
+
+                int index = Integer.parseInt(lastEntry.getKey());
+                if (cache.getAbilities().containsKey(index)) {
+                    AbilityDto abilityDto = cache.getAbilities().get(index);
+                    abilityLabel.setText(cache.getAbilities().get(index).name() + ".");
+                    attack.setText(abilityDto.name());
+                    accuracy.setText("Accuracy: " + abilityDto.accuracy());
+                    type.setText("Type: " + abilityDto.type());
+                    power.setText("Power: " + abilityDto.power());
+                } else {
+                    disposables.add(presetsService.getAbility(Integer.parseInt(lastEntry.getKey()))
+                            .observeOn(FX_SCHEDULER)
+                            .subscribe(abilityDto -> {
+                                cache.getAbilities().put(abilityDto.id(), abilityDto);
+                                abilityLabel.setText(abilityDto.name() + ".");
+                                attack.setText(abilityDto.name());
+                                accuracy.setText("Accuracy: " + abilityDto.accuracy());
+                                type.setText("Type: " + abilityDto.type());
+                                power.setText("Power: " + abilityDto.power());
+                            }));
+                }
             }
         }
 
