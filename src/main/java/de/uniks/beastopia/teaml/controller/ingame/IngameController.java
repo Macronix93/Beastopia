@@ -1771,6 +1771,8 @@ public class IngameController extends Controller {
     public void openInventory() {
         if (scoreBoardLayout.getChildren().contains(inventoryParent)) {
             scoreBoardLayout.getChildren().remove(inventoryParent);
+            scoreBoardLayout.getChildren().remove(itemDetailParent);
+            inventoryController.destroy();
             currentMenu = MENU_NONE;
         } else {
             currentMenu = MENU_INVENTORY;
@@ -1785,14 +1787,22 @@ public class IngameController extends Controller {
                 inventoryController.setIfShop(false);
                 inventoryController.setOnItemClicked(this::toggleInventoryItemDetails);
                 inventoryController.setOnCloseRequest(() -> {
-                    setCloseRequests(scoreBoardLayout, inventoryParent);
-                    lastMonster = null;
-                    setCloseRequests(scoreBoardLayout, itemDetailParent);
-                    setCloseRequests(shopLayout, beastListParent);
+                    scoreBoardLayout.getChildren().remove(inventoryParent);
+                    scoreBoardLayout.getChildren().remove(itemDetailParent);
+                    inventoryController.destroy();
+                    if (shopLayout.getChildren().contains(beastListParent)) {
+                        shopLayout.getChildren().remove(beastListParent);
+                        shopLayout.getChildren().remove(beastDetailParent);
+                        beastListController.destroy();
+                    }
+                    currentMenu = MENU_NONE;
+                    cache.setHintsNotVisible(true);
+                    handleButtonHints();
                 });
                 inventoryParent = inventoryController.render();
                 inventoryParent.setPickOnBounds(false);
                 scoreBoardLayout.getChildren().add(inventoryParent);
+                currentMenu = MENU_INVENTORY;
             }
         }
     }
@@ -1844,23 +1854,21 @@ public class IngameController extends Controller {
             inventoryController.init();
             inventoryController.setIfShop(true);
             inventoryController.setOnItemClicked(this::toggleInventoryItemDetails);
-            inventoryController.setOnCloseRequest(() -> {
-                setCloseRequests(scoreBoardLayout, inventoryParent);
-                lastMonster = null;
-                setCloseRequests(scoreBoardLayout, itemDetailParent);
-                inventoryController.destroy();
-            });
             inventoryParent = inventoryController.render();
             inventoryParent.setPickOnBounds(false);
             scoreBoardLayout.getChildren().add(inventoryParent);
+            currentMenu = MENU_SHOP;
         }
     }
 
-    public void setCloseRequests(HBox hBox, Parent parent) {
-        closePause();
-        hBox.getChildren().remove(parent);
-        currentMenu = MENU_NONE;
-        //TODO
+    public void setTileOpacity() {
+        for (Node tile : tilePane.getChildren()) {
+            if (tile instanceof ImageView imageView) {
+                imageView.setFitWidth(TILE_SIZE + 1);
+                imageView.setFitHeight(TILE_SIZE + 1);
+            }
+            tile.setOpacity(1);
+        }
     }
 
     public void openShop(Trainer trainer) {
@@ -1874,19 +1882,26 @@ public class IngameController extends Controller {
             tile.setOpacity(0.5);
         }
         setOpacities(0);
+        setDisables(0);
+        openInventory(true);
         shopController.setOnItemClicked(this::toggleShopItemDetails);
         shopController.setOnCloseRequest(() -> {
-            setCloseRequests(shopLayout, shopParent);
-            inventoryController.close();
-            inventoryController.destroy();
-            setCloseRequests(shopLayout, itemDetailParent);
+            shopLayout.getChildren().remove(shopParent);
+            shopLayout.getChildren().remove(itemDetailParent);
             shopController.destroy();
+            setTileOpacity();
+            scoreBoardLayout.getChildren().remove(inventoryParent);
+            scoreBoardLayout.getChildren().remove(itemDetailParent);
+            inventoryController.destroy();
+            currentMenu = MENU_NONE;
+            cache.setHintsNotVisible(true);
+            handleButtonHints();
+            currentMenu = MENU_NONE;
         });
         shopParent = shopController.render();
         shopParent.setPickOnBounds(false);
         shopLayout.getChildren().add(shopParent);
         currentMenu = MENU_SHOP;
-        openInventory(true);
     }
 
     public void toggleInventoryItemDetails(ItemTypeDto itemTypeDto) {
@@ -1964,13 +1979,7 @@ public class IngameController extends Controller {
     }
 
     public void closePause() {
-        for (Node tile : tilePane.getChildren()) {
-            if (tile instanceof ImageView imageView) {
-                imageView.setFitWidth(TILE_SIZE + 1);
-                imageView.setFitHeight(TILE_SIZE + 1);
-            }
-            tile.setOpacity(1);
-        }
+        setTileOpacity();
         pauseMenuLayout.getChildren().remove(pauseMenuParent);
         currentMenu = MENU_NONE;
         pauseHint.setOpacity(1);
