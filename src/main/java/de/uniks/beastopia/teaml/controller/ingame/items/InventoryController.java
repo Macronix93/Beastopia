@@ -96,30 +96,38 @@ public class InventoryController extends Controller {
     }
 
     private void reload() {
-        disposables.add(trainerItemsService.getItems(cache.getJoinedRegion()._id(), cache.getTrainer()._id())
-                .observeOn(FX_SCHEDULER)
-                .subscribe(itemList -> {
-                    itemTrainerTypes.clear();
-                    cache.setTrainerItems(itemList);
-                    for (ItemTypeDto itemType : presetItemTypes) { //filter items
-                        for (Item item : cache.getTrainerItems()) {
-                            if (itemType.id() == item.type() && item.amount() > 0) {
-                                itemTrainerTypes.add(itemType);
-                            }
-                        }
-                    }
-                    for (ItemTypeDto itemTypeDto : itemTrainerTypes) { //create subController
-                        ItemController itemController = itemControllerProvider.get().setItem(itemTypeDto);
-                        itemController.setScore(Objects.requireNonNull(findItem(itemTypeDto)).amount());
-                        itemController.setOnItemClicked(onItemClicked);
-                        itemController.init();
-                        subControllers.add(itemController);
-                        Parent parent = itemController.render();
-                        if (!VBoxItems.getChildren().contains(parent)) {
-                            VBoxItems.getChildren().add(parent);
-                        }
-                    }
-                }));
+        itemTrainerTypes.clear();
+        if (cache.getTrainerItems().isEmpty()) {
+            disposables.add(trainerItemsService.getItems(cache.getJoinedRegion()._id(), cache.getTrainer()._id())
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe(itemList -> {
+                        cache.setTrainerItems(itemList);
+                        createSubControllers();
+                    }));
+        } else {
+            createSubControllers();
+        }
+    }
+
+    private void createSubControllers() {
+        for (ItemTypeDto itemType : presetItemTypes) { //filter items
+            for (Item item : cache.getTrainerItems()) {
+                if (itemType.id() == item.type() && item.amount() > 0) {
+                    itemTrainerTypes.add(itemType);
+                }
+            }
+        }
+        for (ItemTypeDto itemTypeDto : itemTrainerTypes) { //create subController
+            ItemController itemController = itemControllerProvider.get().setItem(itemTypeDto);
+            itemController.setScore(Objects.requireNonNull(findItem(itemTypeDto)).amount());
+            itemController.setOnItemClicked(onItemClicked);
+            itemController.init();
+            subControllers.add(itemController);
+            Parent parent = itemController.render();
+            if (!VBoxItems.getChildren().contains(parent)) {
+                VBoxItems.getChildren().add(parent);
+            }
+        }
     }
 
     private Item findItem(ItemTypeDto itemTypeDto) {
