@@ -1,15 +1,12 @@
 package de.uniks.beastopia.teaml.controller.ingame;
 
+import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.menu.MenuController;
 import de.uniks.beastopia.teaml.rest.Achievement;
 import de.uniks.beastopia.teaml.rest.Region;
 import de.uniks.beastopia.teaml.rest.Trainer;
-import de.uniks.beastopia.teaml.service.AchievementsService;
-import de.uniks.beastopia.teaml.service.DataCache;
-import de.uniks.beastopia.teaml.service.PresetsService;
-import de.uniks.beastopia.teaml.service.TokenStorage;
-import de.uniks.beastopia.teaml.service.TrainerService;
+import de.uniks.beastopia.teaml.service.*;
 import de.uniks.beastopia.teaml.utils.Dialog;
 import de.uniks.beastopia.teaml.utils.LoadingPage;
 import javafx.beans.property.IntegerProperty;
@@ -29,28 +26,18 @@ import javafx.util.Pair;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.Date;
+import java.util.Objects;
 import java.util.stream.IntStream;
 
 public class TrainerController extends Controller {
     public static final int PREVIEW_SCALING = 5;
     public static final Rectangle2D PREVIEW_VIEWPORT = new javafx.geometry.Rectangle2D(48 * PREVIEW_SCALING, 0, 16 * PREVIEW_SCALING, 32 * PREVIEW_SCALING);
-
-    @SuppressWarnings("unused")
+    private final SimpleStringProperty trainerName = new SimpleStringProperty();
+    private final IntegerProperty currentIndex = new SimpleIntegerProperty(0);
     @FXML
-    private VBox trainerContainer;
+    public ImageView leftArrowImage;
     @FXML
-    private TextField trainerNameInput;
-    @FXML
-    private Text regionNameDisplay;
-    @FXML
-    private ImageView trainerSprite;
-    @FXML
-    private Button deleteTrainerButton;
-    @FXML
-    private Text spriteNameDisplay;
-    @FXML
-    private Button saveTrainerButton;
-
+    public ImageView rightArrowImage;
     @Inject
     TokenStorage tokenStorage;
     @Inject
@@ -67,14 +54,27 @@ public class TrainerController extends Controller {
     Provider<MenuController> menuControllerProvider;
     @Inject
     Provider<DeleteTrainerController> deleteTrainerControllerProvider;
-
+    @Inject
+    ImageService imageService;
+    @SuppressWarnings("unused")
+    @FXML
+    private VBox trainerContainer;
+    @FXML
+    private TextField trainerNameInput;
+    @FXML
+    private Text regionNameDisplay;
+    @FXML
+    private ImageView trainerSprite;
+    @FXML
+    private Button deleteTrainerButton;
+    @FXML
+    private Text spriteNameDisplay;
+    @FXML
+    private Button saveTrainerButton;
     private Trainer trainer;
     private String backController;
     private LoadingPage loadingPage;
     private String currentSprite = "";
-
-    private final SimpleStringProperty trainerName = new SimpleStringProperty();
-    private final IntegerProperty currentIndex = new SimpleIntegerProperty(0);
 
     @Inject
     public TrainerController() {
@@ -138,6 +138,9 @@ public class TrainerController extends Controller {
     @Override
     public Parent render() {
         loadingPage = LoadingPage.makeLoadingPage(super.render());
+
+        leftArrowImage.setImage(imageService.getThemeImage(new Image(Objects.requireNonNull(Main.class.getResourceAsStream("assets/buttons/arrow_left.png")))));
+        rightArrowImage.setImage(imageService.getThemeImage(new Image(Objects.requireNonNull(Main.class.getResourceAsStream("assets/buttons/arrow_right.png")))));
 
         trainerNameInput.textProperty().bindBidirectional(trainerName);
         regionNameDisplay.setText(cache.getJoinedRegion().name());

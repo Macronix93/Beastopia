@@ -8,6 +8,7 @@ import de.uniks.beastopia.teaml.rest.Achievement;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.AuthService;
 import de.uniks.beastopia.teaml.service.DataCache;
+import de.uniks.beastopia.teaml.service.ImageService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import io.reactivex.rxjava3.core.Observable;
@@ -59,6 +60,8 @@ class MenuControllerTest extends ApplicationTest {
     DataCache cache;
     @Mock
     Prefs prefs;
+    @Mock
+    ImageService imageService;
     @Spy
     @SuppressWarnings("unused")
     App app;

@@ -14,6 +14,8 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -38,6 +40,10 @@ public class EditProfileController extends Controller {
     public PasswordField passwordRepeatInput;
     @FXML
     public ImageView avatarPreview;
+    @FXML
+    public HBox backroundHbox;
+    @FXML
+    public VBox innerVBox;
     @Inject
     Provider<MenuController> menuControllerProvider;
     @Inject

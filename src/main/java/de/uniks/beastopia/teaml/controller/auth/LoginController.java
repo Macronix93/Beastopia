@@ -1,9 +1,9 @@
 package de.uniks.beastopia.teaml.controller.auth;
 
-import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.menu.MenuController;
 import de.uniks.beastopia.teaml.service.AuthService;
+import de.uniks.beastopia.teaml.service.ImageService;
 import de.uniks.beastopia.teaml.utils.Dialog;
 import de.uniks.beastopia.teaml.utils.LoadingPage;
 import de.uniks.beastopia.teaml.utils.Prefs;
@@ -12,14 +12,20 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.text.Text;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.*;
 
 public class LoginController extends Controller {
+    private final SimpleStringProperty username = new SimpleStringProperty();
+    private final SimpleStringProperty password = new SimpleStringProperty();
     @FXML
     public ComboBox<String> usernameInput;
     @FXML
@@ -34,7 +40,14 @@ public class LoginController extends Controller {
     public RadioButton selectGermanLanguage;
     @FXML
     public ImageView banner;
-
+    @FXML
+    public HBox backroundHbox;
+    @FXML
+    public GridPane innerGridPane;
+    @FXML
+    public Text singupText;
+    @FXML
+    public ImageView companyLogo;
     @Inject
     Provider<RegistrationController> registrationControllerProvider;
     @Inject
@@ -44,12 +57,11 @@ public class LoginController extends Controller {
     @Inject
     Prefs prefs;
     @Inject
+    ImageService imageService;
+    @Inject
     Provider<ResourceBundle> resourcesProvider;
-
     private List<String> userHistory = new ArrayList<>();
     private BooleanBinding isInValid;
-    private final SimpleStringProperty username = new SimpleStringProperty();
-    private final SimpleStringProperty password = new SimpleStringProperty();
     private LoadingPage loadingPage;
 
     @Inject
@@ -90,7 +102,8 @@ public class LoginController extends Controller {
             onUI(() -> loadingPage.setDone());
         }
 
-        banner.setImage(new Image(Objects.requireNonNull(Main.class.getResourceAsStream("assets/beastopia_banner.png"))));
+        banner.setImage(imageService.getBanner());
+        companyLogo.setImage(imageService.getCompanyLogo());
         usernameInput.valueProperty().bindBidirectional(username);
         passwordInput.textProperty().bindBidirectional(password);
         usernameInput.getItems().addAll(userHistory);

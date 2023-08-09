@@ -4,8 +4,8 @@ import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Group;
 import de.uniks.beastopia.teaml.service.GroupListService;
+import de.uniks.beastopia.teaml.service.ImageService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
-import de.uniks.beastopia.teaml.utils.AssetProvider;
 import de.uniks.beastopia.teaml.utils.Dialog;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
@@ -25,6 +25,8 @@ public class ChatGroupController extends Controller {
 
     @FXML
     public ImageView groupAvatar;
+    @FXML
+    public ImageView editButton;
     @FXML
     HBox _rootElement;
     @FXML
@@ -46,7 +48,7 @@ public class ChatGroupController extends Controller {
     @Inject
     Prefs prefs;
     @Inject
-    AssetProvider assets;
+    ImageService imageService;
     private Group group;
     private ImageView pinnedImg;
     private ImageView notPinnedImg;
@@ -56,12 +58,6 @@ public class ChatGroupController extends Controller {
     @Inject
     public ChatGroupController() {
 
-    }
-
-    @Override
-    public void init() {
-        pinnedImg = assets.getIcon("buttons", "filled_pin", 25, 25);
-        notPinnedImg = assets.getIcon("buttons", "pin", 25, 25);
     }
 
     public void setOnGroupClicked(Consumer<Group> onGroupClicked) {
@@ -81,9 +77,14 @@ public class ChatGroupController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
+
+        pinnedImg = imageService.getPinnedImage();
+        notPinnedImg = imageService.getNotPinnedImage();
+
         name.setText(group.name());
 
         groupAvatar.setImage(new Image(Objects.requireNonNull(Main.class.getResource("assets/group.png")).toString()));
+        editButton.setImage(imageService.getThemeImage(new Image(Objects.requireNonNull(Main.class.getResourceAsStream("assets/buttons/edit.png")))));
 
         if (prefs.isPinned(this.group)) {
             this.pinGroupBtn.setGraphic(pinnedImg);
