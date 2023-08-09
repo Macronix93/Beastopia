@@ -3,6 +3,7 @@ package de.uniks.beastopia.teaml.controller.menu.social;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.DataCache;
+import de.uniks.beastopia.teaml.service.ImageService;
 import de.uniks.beastopia.teaml.utils.AssetProvider;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
@@ -29,6 +30,8 @@ public class UserController extends Controller {
     Prefs prefs;
     @Inject
     DataCache cache;
+    @Inject
+    ImageService imageService;
     @Inject
     AssetProvider assets;
     private User user;
@@ -63,9 +66,15 @@ public class UserController extends Controller {
         avatar.setImage(cache.getImageAvatar(user));
 
         if (prefs.isPinned(user)) {
-            this.pinButton.setGraphic(assets.getIcon("buttons", "filled_pin", 15, 15));
+            ImageView pin = imageService.getPinnedImage();
+            pin.setFitHeight(15);
+            pin.setFitWidth(15);
+            this.pinButton.setGraphic(pin);
         } else {
-            this.pinButton.setGraphic(assets.getIcon("buttons", "pin", 15, 15));
+            ImageView pin = imageService.getNotPinnedImage();
+            pin.setFitHeight(15);
+            pin.setFitWidth(15);
+            this.pinButton.setGraphic(pin);
         }
 
         if (isAdded) {
