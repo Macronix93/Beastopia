@@ -3,6 +3,7 @@ package de.uniks.beastopia.teaml.controller.auth;
 import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.service.DataCache;
+import de.uniks.beastopia.teaml.service.ImageService;
 import de.uniks.beastopia.teaml.service.RegistrationService;
 import de.uniks.beastopia.teaml.utils.Dialog;
 import de.uniks.beastopia.teaml.utils.Prefs;
@@ -16,6 +17,8 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
@@ -35,6 +38,14 @@ public class RegistrationController extends Controller {
     @FXML
     public ImageView banner;
     @FXML
+    public HBox backroundHbox;
+    @FXML
+    public GridPane innerGridPane;
+    @FXML
+    public Button login;
+    @FXML
+    public ImageView companyLogo;
+    @FXML
     private TextField usernameInput;
     @FXML
     private PasswordField passwordInput;
@@ -46,6 +57,8 @@ public class RegistrationController extends Controller {
     public RadioButton selectEnglishLanguage;
     @FXML
     public RadioButton selectGermanLanguage;
+    @Inject
+    ImageService imageService;
     @Inject
     Provider<ResourceBundle> resourcesProvider;
     @Inject
@@ -85,7 +98,9 @@ public class RegistrationController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
-        banner.setImage(new Image(Objects.requireNonNull(Main.class.getResourceAsStream("assets/beastopia_banner.png"))));
+        banner.setImage(imageService.getBanner());
+        companyLogo.setImage(imageService.getCompanyLogo());
+
         avatarPreview.setImage(new Image(Objects.requireNonNull(Main.class.getResourceAsStream("assets/user.png"))));
 
         if (prefs.getLocale().contains("de")) {
@@ -111,6 +126,7 @@ public class RegistrationController extends Controller {
     @FXML
     private void uploadAvatar() {
         File file = cache.provideImageFile(app);
+        if (file == null) return;
         this.bufferedImage = cache.provideBufferedImage(file);
         avatarPreview.setImage(new Image(file.toURI().toString(), 128, 128, true, true, true));
     }

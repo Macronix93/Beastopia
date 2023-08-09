@@ -5,6 +5,7 @@ import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.controller.menu.MenuController;
 import de.uniks.beastopia.teaml.rest.LoginResult;
 import de.uniks.beastopia.teaml.service.AuthService;
+import de.uniks.beastopia.teaml.service.ImageService;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.scene.Node;
@@ -38,6 +39,8 @@ class LoginControllerTest extends ApplicationTest {
     Provider<MenuController> menuControllerProvider;
     @Mock
     AuthService authService;
+    @Mock
+    ImageService imageService;
     @Mock
     @SuppressWarnings("unused")
     Prefs prefs;
