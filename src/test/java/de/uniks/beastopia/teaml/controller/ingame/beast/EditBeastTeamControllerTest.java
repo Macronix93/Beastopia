@@ -8,7 +8,6 @@ import de.uniks.beastopia.teaml.rest.MonsterAttributes;
 import de.uniks.beastopia.teaml.rest.MonsterTypeDto;
 import de.uniks.beastopia.teaml.rest.Trainer;
 import de.uniks.beastopia.teaml.service.DataCache;
-import de.uniks.beastopia.teaml.service.PresetsService;
 import de.uniks.beastopia.teaml.service.TrainerService;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import io.reactivex.rxjava3.core.Observable;
@@ -30,7 +29,12 @@ import java.util.ResourceBundle;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyList;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class EditBeastTeamControllerTest extends ApplicationTest {
@@ -48,8 +52,6 @@ class EditBeastTeamControllerTest extends ApplicationTest {
     @Mock
     TrainerService trainerService;
     @Mock
-    PresetsService presetsService;
-    @Mock
     DataCache cache;
 
     final MonsterAttributes attributes = new MonsterAttributes(1, 1, 1, 1);
@@ -58,7 +60,7 @@ class EditBeastTeamControllerTest extends ApplicationTest {
     final Monster monster2 = new Monster(null, null, "MONSTER_2", "TRAINER_ID", 4, 2, 5, null, attributes, currentAttributes, null);
     final Monster monster3 = new Monster(null, null, "MONSTER_3", "TRAINER_ID", 0, 3, 2, null, attributes, currentAttributes, null);
     final Trainer trainer = new Trainer(null, null, "123", "A", "123", "A", "A.png", List.of("MONSTER_1"), List.of(), List.of(), 0, null, 0, 0, 0, null);
-    final MonsterTypeDto monsterTypeDto = new MonsterTypeDto(0, "MONSTER_1", "MONSTER_TYPE.png", List.of(""), "");
+    final MonsterTypeDto monsterTypeDto = new MonsterTypeDto(4, "MONSTER_2", "image", List.of(), "a");
 
     @Override
     public void start(Stage stage) {
@@ -66,12 +68,11 @@ class EditBeastTeamControllerTest extends ApplicationTest {
 
         when(cache.getTrainer()).thenReturn(trainer);
         when(trainerService.getTrainerMonsters(any(), any())).thenReturn(Observable.empty());
-        when(presetsService.getAllBeasts()).thenReturn(Observable.just(List.of(monsterTypeDto)));
-        doNothing().when(cache).setAllBeasts(any());
 
         app.start(stage);
         app.show(editBeastTeamController);
         stage.requestFocus();
+        editBeastTeamController.loadingPage.setDone();
         Platform.runLater(() -> this.editBeastTeamController.setupListView(List.of(monster1, monster2, monster3)));
     }
 
@@ -160,10 +161,11 @@ class EditBeastTeamControllerTest extends ApplicationTest {
 
     @Test
     public void filterNameTest() {
+        when(cache.getAllBeasts()).thenReturn(List.of(monsterTypeDto));
         ListView<Monster> beastListView = lookup("#beastListView").query();
         assertEquals(2, beastListView.getItems().size());
         clickOn("#filterBar");
-        write("MONSTER_1");
+        write("MONSTER_2");
         assertEquals(1, beastListView.getItems().size());
     }
 

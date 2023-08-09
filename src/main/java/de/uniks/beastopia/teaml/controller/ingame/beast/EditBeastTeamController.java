@@ -50,7 +50,7 @@ public class EditBeastTeamController extends Controller {
     Provider<BeastListElementController> beastListElementControllerProvider;
     final ObservableList<Monster> beastList = FXCollections.observableArrayList();
     final ObservableList<Monster> teamList = FXCollections.observableArrayList();
-    private LoadingPage loadingPage;
+    public LoadingPage loadingPage;
 
     @Inject
     public EditBeastTeamController() {
