@@ -141,7 +141,7 @@ public class InventoryController extends Controller {
 
     @Override
     public String getTitle() {
-        if (this.isShop) {
+        if (isShop) {
             return resources.getString("titleShop");
         } else {
             return resources.getString("titleInventory");

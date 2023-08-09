@@ -1998,6 +1998,7 @@ public class IngameController extends Controller {
         scoreBoardController.destroy();
         beastListController.destroy();
         shopController.destroy();
+        inventoryController.destroy();
 
         if (dialogWindowController != null) {
             dialogWindowController.destroy();
@@ -2026,6 +2027,9 @@ public class IngameController extends Controller {
         tilePane = null;
         mondexListParent = null;
         mondexDetailParent = null;
+        shopParent = null;
+        inventoryParent = null;
+        itemDetailParent = null;
         super.destroy();
     }
 }
