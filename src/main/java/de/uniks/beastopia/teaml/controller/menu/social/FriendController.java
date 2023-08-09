@@ -1,13 +1,13 @@
 package de.uniks.beastopia.teaml.controller.menu.social;
 
 
+import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.FriendListService;
 import de.uniks.beastopia.teaml.service.ImageService;
 import de.uniks.beastopia.teaml.sockets.EventListener;
-import de.uniks.beastopia.teaml.utils.AssetProvider;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -21,6 +21,7 @@ import javafx.scene.text.Text;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import static de.uniks.beastopia.teaml.rest.UserApiService.STATUS_ONLINE;
@@ -54,8 +55,6 @@ public class FriendController extends Controller {
     ImageService imageService;
     @Inject
     DataCache cache;
-    @Inject
-    AssetProvider assets;
     private User user;
     private Boolean friendPin;
     private ImageView pinned;
@@ -100,6 +99,14 @@ public class FriendController extends Controller {
         this.user = user;
         this.friendPin = friendPin;
         return this;
+    }
+
+    private ImageView createImage(String imageUrl) {
+        ImageView imageView = new ImageView(imageUrl);
+        imageView.setCache(false);
+        imageView.setFitHeight(25.0);
+        imageView.setFitWidth(25.0);
+        return imageView;
     }
 
     @Override

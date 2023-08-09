@@ -6,7 +6,6 @@ import de.uniks.beastopia.teaml.rest.Group;
 import de.uniks.beastopia.teaml.service.GroupListService;
 import de.uniks.beastopia.teaml.service.ImageService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
-import de.uniks.beastopia.teaml.utils.AssetProvider;
 import de.uniks.beastopia.teaml.utils.Dialog;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
@@ -48,8 +47,6 @@ public class ChatGroupController extends Controller {
     TokenStorage tokenStorage;
     @Inject
     Prefs prefs;
-    @Inject
-    AssetProvider assets;
     @Inject
     ImageService imageService;
     private Group group;

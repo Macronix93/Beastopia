@@ -6,7 +6,6 @@ import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.GroupListService;
 import de.uniks.beastopia.teaml.service.ImageService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
-import de.uniks.beastopia.teaml.utils.AssetProvider;
 import de.uniks.beastopia.teaml.utils.Dialog;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
@@ -44,8 +43,6 @@ public class ChatUserController extends Controller {
     ImageService imageService;
     @Inject
     Provider<DirectMessageController> directMessageControllerProvider;
-    @Inject
-    AssetProvider assets;
     private Group group;
     private ImageView pinnedImg;
     private ImageView notPinnedImg;
