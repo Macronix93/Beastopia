@@ -5,6 +5,7 @@ import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.rest.Group;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.DataCache;
+import de.uniks.beastopia.teaml.service.ImageService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.scene.text.Text;
@@ -28,6 +29,11 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class ChatUserControllerTest extends ApplicationTest {
 
+    final User me = new User(null, null, "1", "1", null, null, null);
+    final User other = new User(null, null, "2", "2", null, null, null);
+    final Group testGrp = new Group(null, null, "1", "1", List.of(me._id(), other._id()));
+    final Consumer<Group> onGroupClicked = mock();
+    final Consumer<Group> onPinChanged = mock();
     @Spy
     @SuppressWarnings("unused")
     ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang");
@@ -38,16 +44,13 @@ class ChatUserControllerTest extends ApplicationTest {
     Prefs prefs;
     @Mock
     DataCache cache;
+    @SuppressWarnings("unused")
+    @Mock
+    ImageService imageService;
     @Spy
     App app;
     @InjectMocks
     ChatUserController chatUserController;
-
-    final User me = new User(null, null, "1", "1", null, null, null);
-    final User other = new User(null, null, "2", "2", null, null, null);
-    final Group testGrp = new Group(null, null, "1", "1", List.of(me._id(), other._id()));
-    final Consumer<Group> onGroupClicked = mock();
-    final Consumer<Group> onPinChanged = mock();
 
     @Override
     public void start(Stage stage) {
