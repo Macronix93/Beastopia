@@ -108,7 +108,7 @@ class DataCacheTest {
         assertEquals(dataCache.getOrLoadTrainerImage(characters.get(0), false).blockingFirst(), images.get(0));
         assertEquals(dataCache.getOrLoadTrainerImage(characters.get(1), false).blockingFirst(), images.get(1));
 
-        assertEquals(dataCache.getTrainer("ID1"), trainers.get("1"));
+        assertEquals(dataCache.getTrainer("ID1"), trainers.get("ID1"));
 
         assertEquals(dataCache.getCharacters().size(), 2);
         assertEquals(dataCache.getCharacterImage(characters.get(0)).getValue(), images.get(0));
