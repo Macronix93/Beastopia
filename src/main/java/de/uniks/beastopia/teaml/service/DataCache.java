@@ -506,6 +506,7 @@ public class DataCache {
     }
 
     public void setTrainerItems(List<Item> itemList) {
+        this.trainerItems.clear();
         this.trainerItems = itemList;
     }
 
