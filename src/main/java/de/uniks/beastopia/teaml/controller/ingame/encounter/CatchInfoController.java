@@ -1,6 +1,8 @@
 package de.uniks.beastopia.teaml.controller.ingame.encounter;
 
 import de.uniks.beastopia.teaml.controller.Controller;
+import de.uniks.beastopia.teaml.rest.Monster;
+import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -25,25 +27,34 @@ public class CatchInfoController extends Controller {
     private Runnable onCloseRequest;
     private String catchInfoText;
     private String catchToTeam;
-    private int beastType;
+    private Monster monster;
     @Inject
     PresetsService presetsService;
+    @Inject
+    DataCache cache;
 
     @Inject
     public CatchInfoController() {
     }
 
-    public CatchInfoController setCatchInfo(String catchInfoText, String catchToTeam, int beastType) {
+    public CatchInfoController setCatchInfo(String catchInfoText, String catchToTeam, Monster monster) {
         this.catchInfoText = catchInfoText;
         this.catchToTeam = catchToTeam;
-        this.beastType = beastType;
+        this.monster = monster;
         return this;
     }
 
     @Override
     public Parent render() {
         Parent parent = super.render();
-        disposables.add(presetsService.getMonsterType(beastType).observeOn(FX_SCHEDULER).subscribe(
+
+        catchInfo.setText(catchInfoText + " " + cache.getBeastDto(monster.type()).name() + "!");
+        if (!catchToTeam.isEmpty()) {
+            catchToTeamLabel.setText(cache.getBeastDto(monster.type()).name() + " " + catchToTeam);
+        }
+        catchImage.setImage(cache.getMonsterImage(monster.type()));
+
+        /*disposables.add(presetsService.getMonsterType(beastType).observeOn(FX_SCHEDULER).subscribe(
                 t -> {
                     catchInfo.setText(catchInfoText + " " + t.name() + "!");
                     if (!catchToTeam.isEmpty()) {
@@ -52,7 +63,7 @@ public class CatchInfoController extends Controller {
                     disposables.add(presetsService.getMonsterImage(t.id()).subscribe(
                             i -> catchImage.setImage(i)));
                 }
-        ));
+        ));*/
         return parent;
     }
 
