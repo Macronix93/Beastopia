@@ -16,6 +16,7 @@ import javafx.scene.layout.VBox;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 
 public class MondexDetailController extends Controller {
 
@@ -47,6 +48,8 @@ public class MondexDetailController extends Controller {
     TrainerService trainerService;
     @Inject
     Prefs prefs;
+    @Inject
+    ResourceBundle resourceBundle;
 
     private MonsterTypeDto monster;
     private boolean known;
@@ -88,9 +91,9 @@ public class MondexDetailController extends Controller {
                             }
                         }
                         if (inTeam) {
-                            monsterTeamLabel.setText("Team");
+                            monsterTeamLabel.setText(monster.name() + resourceBundle.getString("monsterInTeam"));
                         } else {
-                            monsterTeamLabel.setText("Not in Team");
+                            monsterTeamLabel.setText(monster.name() + resourceBundle.getString("monsterNotInTeam"));
                         }
 
                     }));
