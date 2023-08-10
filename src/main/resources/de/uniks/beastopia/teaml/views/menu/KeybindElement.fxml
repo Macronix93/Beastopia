@@ -14,7 +14,7 @@
     <RowConstraints vgrow="SOMETIMES" />
   </rowConstraints>
       <VBox alignment="CENTER">
-            <Button fx:id="keyBtn" mnemonicParsing="false" onAction="#changeKey" text="Key">
+            <Button fx:id="keyBtn" mnemonicParsing="false" text="Key">
                <font>
                   <Font size="16.0" />
                </font>

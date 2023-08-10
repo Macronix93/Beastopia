@@ -74,6 +74,7 @@ public class EndScreenController extends Controller {
         }
 
         coinInfo.setText(gainedCoins);
+        dataCache.setCurrentEncounter(null);
 
         return parent;
     }

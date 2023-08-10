@@ -5,11 +5,7 @@ import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.ingame.IngameController;
 import de.uniks.beastopia.teaml.controller.ingame.encounter.EncounterController;
 import de.uniks.beastopia.teaml.rest.*;
-import de.uniks.beastopia.teaml.service.DataCache;
-import de.uniks.beastopia.teaml.service.EncounterOpponentsService;
-import de.uniks.beastopia.teaml.service.PresetsService;
-import de.uniks.beastopia.teaml.service.TrainerItemsService;
-import de.uniks.beastopia.teaml.service.TrainerService;
+import de.uniks.beastopia.teaml.service.*;
 import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.utils.Dialog;
 import de.uniks.beastopia.teaml.utils.FormatString;
@@ -66,6 +62,7 @@ public class ItemDetailController extends Controller {
     private EncounterController encounterController;
     private Disposable itemEventListenerDisposable = null;
     private Disposable monsterEventListenerDisposable = null;
+    private int amount = 0;
 
     public void setItem(ItemTypeDto itemType) {
         this.itemType = itemType;
@@ -92,11 +89,13 @@ public class ItemDetailController extends Controller {
             if (itemType.price() > cache.getTrainer().coins()) {
                 shopBtn.setDisable(true);
             }
-            shopBtn.setText(resources.getString("buy"));
+            amount = 1;
+            shopBtn.setText(resources.getString("buy") + " x" + amount);
             cost.setText(resources.getString("val") + ": " + itemType.price());
             buy = true;
         } else if (!onlyInventory) {
-            shopBtn.setText(resources.getString("sell"));
+            amount = -1;
+            shopBtn.setText(resources.getString("sell") + " x" + -amount);
             buy = false;
             if (itemType.price() == 0) {
                 cost.setText(resources.getString("val") + ": " + itemType.price());
@@ -112,6 +111,7 @@ public class ItemDetailController extends Controller {
                 shopBtn.setOpacity(0);
                 shopBtn.setDisable(true);
             } else {
+                amount = 1;
                 shopBtn.setText(resources.getString("use"));
             }
             if (itemType.price() == 0) {
@@ -130,9 +130,43 @@ public class ItemDetailController extends Controller {
     }
 
     @FXML
+    public void onContextMenuRequested() {
+        if (onlyInventory) { //  use
+            return;
+        }
+        if (!buy) { // sell
+            amount -= 1;
+            if (-amount > getMaxSellItemCount()) {
+                amount = -1;
+            }
+            shopBtn.setText(resources.getString("sell") + " x" + amount * (-1));
+            float price = (float) (itemType.price() * 0.5);
+            String formattedPrice = String.format(Locale.ENGLISH, "%.1f", price);
+            cost.setText(resources.getString("val") + ": " + formattedPrice);
+        } else { // buy
+            amount += 1;
+            if (amount * itemType.price() > cache.getTrainer().coins()) {
+                amount = 1;
+            }
+            shopBtn.setText(resources.getString("buy") + " x" + amount);
+            cost.setText(resources.getString("val") + ": " + itemType.price());
+        }
+
+
+    }
+
+    private int getMaxSellItemCount() {
+        for (Item item : cache.getTrainerItems()) {
+            if (item.type() == itemType.id()) {
+                return item.amount();
+            }
+        }
+        return 0;
+    }
+
+    @FXML
     public void shopFunction() {
-        String usage = "trade";
-        int amount = 1; // use and buy
+        String usage = "trade"; //buy
         if (onlyInventory) { //use
             usage = "use";
             switch (itemType.use()) {
@@ -169,10 +203,7 @@ public class ItemDetailController extends Controller {
                 }
             }
         }
-        if (itemType.use() != null && !itemType.use().contains("effect") && !itemType.use().contains("ball") || !onlyInventory ) {
-            if (!buy && !onlyInventory) { //sell
-                amount = -1;
-            }
+        if (itemType.use() != null && !itemType.use().contains("effect") && !itemType.use().contains("ball") || !onlyInventory) {
             useDetailButton(amount, usage, null);
         }
         Timer timer = new Timer();
@@ -224,13 +255,48 @@ public class ItemDetailController extends Controller {
                         System.out.println("Error:" + error);
                     }
                 }));
-        disposables.add(trainerService.getTrainer(cache.getJoinedRegion()._id(), cache.getTrainer()._id())
-                .observeOn(FX_SCHEDULER).subscribe(trainer -> {
-                            cache.setTrainer(trainer);
+        cache.setTrainer(updateTrainer(amount, usage));
+        if (itemType.price() > cache.getTrainer().coins() && isShop && !onlyInventory) {
+            shopBtn.setDisable(true);
+            ingameController.toggleShopItemDetails(itemType);
+        } else if (!onlyInventory && !isShop) {
+            ingameController.toggleInventoryItemDetails(itemType);
+        }
+        disposables.add(trainerItemsService.getItems(cache.getJoinedRegion()._id(), cache.getTrainer()._id())
+                .observeOn(FX_SCHEDULER).subscribe
+                        (itemList -> {
+                            cache.setTrainerItems(itemList);
                             inventoryController.updateInventory();
-                        }, error -> System.out.println("Error:" + error)
-                ));
-        ingameController.toggleInventoryItemDetails(itemType);
+                        }, error -> System.out.println("Error:" + error)));
+    }
+
+    private Trainer updateTrainer(int amount, String usage) {
+        if (usage.equals("trade")) {
+            Trainer oldTrainer = cache.getTrainer();
+            float multiplier = 1;
+            if (amount < 0) { // sell item value = item value / 2
+                multiplier = 0.5f;
+            }
+            return new Trainer(
+                    oldTrainer.createdAt(),
+                    oldTrainer.updatedAt(),
+                    oldTrainer._id(),
+                    oldTrainer.region(),
+                    oldTrainer.user(),
+                    oldTrainer.name(),
+                    oldTrainer.image(),
+                    oldTrainer.team(),
+                    oldTrainer.encounteredMonsterTypes(),
+                    oldTrainer.visitedAreas(),
+                    oldTrainer.coins() + (itemType.price() * (-1) * amount * multiplier),
+                    oldTrainer.area(),
+                    oldTrainer.x(),
+                    oldTrainer.y(),
+                    oldTrainer.direction(),
+                    oldTrainer.npc()
+            );
+        }
+        return cache.getTrainer();
     }
 
     private void listenToNewMonster() {

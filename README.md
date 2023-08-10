@@ -1,10 +1,21 @@
 # Beastopia
 
-short game description
+Welcome to beastopia, the brand new 2D adventure designed and developed by Team Lumnix!
+Play as a trainer in a dangerous unknown world with many beasts! Explore the world, fight
+other trainers and beasts! There are over 200 dangerous beasts waiting for you to be discovered.
+Explore caves and islands, train and level your beasts, show the world that you are the greatest
+beast trainer ever! The world and its beasts are quite dangerous, but you are not alone! Add friends to play with,
+create chat groups and group up with other players to explore the world of Beastopia!
+Beastopia is available for windows, linux and macOS.
 
 ## Installation
 
-install instructions
+Make sure you have at least Java version 17 installed.
+
+Otherwise, you can download it here:
+https://jdk.java.net/archive/
+
+After that just launch the downloaded Beastopia .jar file, and you can play the game. Have fun !
 
 ## Use of licensed .png files, sounds and font
 
