@@ -2,6 +2,7 @@ package de.uniks.beastopia.teaml.controller.ingame.encounter;
 
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Monster;
+import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import de.uniks.beastopia.teaml.utils.AssetProvider;
 import javafx.fxml.FXML;
@@ -9,6 +10,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
@@ -32,6 +34,8 @@ public class ChangeBeastElementController extends Controller {
 
     @Inject
     PresetsService presetsService;
+    @Inject
+    DataCache cache;
     @Inject
     AssetProvider assets;
     @Inject
@@ -65,16 +69,15 @@ public class ChangeBeastElementController extends Controller {
         removeImage = assets.getIcon("buttons", "minus", 20, 20);
         addImage = assets.getIcon("buttons", "plus", 20, 20);
 
-        disposables.add(presetsService.getMonsterType(monster.type())
-                .observeOn(FX_SCHEDULER)
-                .subscribe(type -> {
-                    beastLabel.setText(type.name() + " " + type.type() + " Lv. " + monster.level());
-                    beastLabel.setStyle("-fx-font-size: 16px");
-                }, Throwable::printStackTrace));
-        disposables.add(presetsService.getMonsterImage(monster.type())
-                .observeOn(FX_SCHEDULER)
-                .subscribe(image -> beastImg.setImage(image),
-                        Throwable::printStackTrace));
+        beastLabel.setText(cache.getBeastDto(monster.type()).name() + " " + cache.getBeastDto(monster.type()).type() + " Lv. " + monster.level());
+        beastLabel.setStyle("-fx-font-size: 16px");
+        if (!cache.imageIsDownloaded(monster.type())) {
+            Image monsterImage = presetsService.getMonsterImage(monster.type()).blockingFirst();
+            cache.addMonsterImages(monster.type(), monsterImage);
+            beastImg.setImage(cache.getMonsterImage(monster.type()));
+        } else {
+            beastImg.setImage(cache.getMonsterImage(monster.type()));
+        }
 
         int maxExp = (int) Math.round(Math.pow(monster.level(), 3) - Math.pow((monster.level() - 1), 3));
         expProgress.setProgress((double) monster.experience() / maxExp);

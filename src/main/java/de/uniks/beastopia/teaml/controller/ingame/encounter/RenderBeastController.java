@@ -2,6 +2,7 @@ package de.uniks.beastopia.teaml.controller.ingame.encounter;
 
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Monster;
+import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -37,6 +38,8 @@ public class RenderBeastController extends Controller {
     @Inject
     PresetsService presetsService;
     @Inject
+    DataCache cache;
+    @Inject
     Provider<EncounterController> encounterControllerProvider;
 
     public Monster monster1;
@@ -65,40 +68,44 @@ public class RenderBeastController extends Controller {
         itemImageBox.toBack();
 
         if (monster1 != null) {
-            disposables.add(presetsService.getMonsterImage(monster1.type())
-                    .observeOn(FX_SCHEDULER)
-                    .subscribe(monsterImage -> {
-                        firstMonster.setImage(monsterImage);
-                        selectBox.setOnMouseClicked(event -> {
-                            if (selectBox2 != null && selectBox2.getStyle().contains("-fx-border-radius: 10px;")) {
-                                selectBox2.setStyle("-fx-border-radius: 0px; -fx-alignment: BOTTOM_CENTER; -fx-max-height: 150px; -fx-pref-height: 150px; -fx-pref-width: 125px;");
-                            }
-                            selectBox.setStyle("-fx-border-radius: 10px; -fx-border-color: #000000;");
-                            encounterController.setChosenTarget(opponentIdMonsterOne);
-                        });
-                    }));
+            if (!cache.imageIsDownloaded(monster1.type())) {
+                Image monsterImage = presetsService.getMonsterImage(monster1.type()).blockingFirst();
+                cache.addMonsterImages(monster1.type(), monsterImage);
+                firstMonster.setImage(monsterImage);
+            } else {
+                firstMonster.setImage(cache.getMonsterImage(monster1.type()));
+            }
+            selectBox.setOnMouseClicked(event -> {
+                if (selectBox2 != null && selectBox2.getStyle().contains("-fx-border-radius: 10px;")) {
+                    selectBox2.setStyle("-fx-border-radius: 0px; -fx-alignment: BOTTOM_CENTER; -fx-max-height: 150px; -fx-pref-height: 150px; -fx-pref-width: 125px;");
+                }
+                selectBox.setStyle("-fx-border-radius: 10px; -fx-border-color: #000000;");
+                encounterController.setChosenTarget(opponentIdMonsterOne);
+            });
         }
 
         if (monster2 != null) {
             secondMonster = new ImageView();
             selectBox2 = new VBox();
 
-            disposables.add(presetsService.getMonsterImage(monster2.type())
-                    .observeOn(FX_SCHEDULER)
-                    .subscribe(monsterImage -> {
-                        secondMonster.setImage(monsterImage);
-                        selectBox2.setStyle("-fx-alignment: BOTTOM_CENTER; -fx-max-height: 150px; -fx-pref-height: 150px; -fx-pref-width: 125px;");
-                        selectBox2.getChildren().add(secondMonster);
-                        monsterContainer.getChildren().addAll(selectBox2);
+            if (!cache.imageIsDownloaded(monster2.type())) {
+                Image monsterImage = presetsService.getMonsterImage(monster2.type()).blockingFirst();
+                cache.addMonsterImages(monster2.type(), monsterImage);
+                secondMonster.setImage(monsterImage);
+            } else {
+                secondMonster.setImage(cache.getMonsterImage(monster2.type()));
+            }
+            selectBox2.setStyle("-fx-alignment: BOTTOM_CENTER; -fx-max-height: 150px; -fx-pref-height: 150px; -fx-pref-width: 125px;");
+            selectBox2.getChildren().add(secondMonster);
+            monsterContainer.getChildren().addAll(selectBox2);
 
-                        selectBox2.setOnMouseClicked(event -> {
-                            if (selectBox.getStyle().contains("-fx-border-radius: 10px;")) {
-                                selectBox.setStyle("");
-                            }
-                            selectBox2.setStyle("-fx-border-radius: 10px; -fx-border-color: #000000; -fx-alignment: BOTTOM_CENTER; -fx-max-height: 150px; -fx-pref-height: 150px; -fx-pref-width: 125px;");
-                            encounterController.setChosenTarget(opponentIdMonsterTwo);
-                        });
-                    }));
+            selectBox2.setOnMouseClicked(event -> {
+                if (selectBox.getStyle().contains("-fx-border-radius: 10px;")) {
+                    selectBox.setStyle("");
+                }
+                selectBox2.setStyle("-fx-border-radius: 10px; -fx-border-color: #000000; -fx-alignment: BOTTOM_CENTER; -fx-max-height: 150px; -fx-pref-height: 150px; -fx-pref-width: 125px;");
+                encounterController.setChosenTarget(opponentIdMonsterTwo);
+            });
         }
 
         return parent;

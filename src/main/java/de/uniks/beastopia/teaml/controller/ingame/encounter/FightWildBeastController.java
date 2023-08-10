@@ -8,6 +8,7 @@ import de.uniks.beastopia.teaml.service.EncounterOpponentsService;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import de.uniks.beastopia.teaml.service.TrainerService;
 import de.uniks.beastopia.teaml.utils.Prefs;
+import io.reactivex.rxjava3.core.Observable;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -65,10 +66,14 @@ public class FightWildBeastController extends Controller {
 
         disposables.add(trainerService.getTrainerMonster(prefs.getRegionID(), trainerId, beastId)
                 .observeOn(FX_SCHEDULER)
-                .concatMap(b -> { //Nacheinander ausführen
+                .concatMap(b -> {
                     this.type = b.type();
-                    return presetsService.getMonsterType(this.type);
-                }).observeOn(FX_SCHEDULER)
+                    if (cache.getAllBeasts().stream().noneMatch(type -> type.id() == this.type)) {
+                        cache.addToAllBeasts(presetsService.getMonsterType(this.type).blockingFirst());
+                    }
+                    return Observable.just(cache.getBeastDto(this.type));
+                })
+                .observeOn(FX_SCHEDULER)
                 .subscribe(type -> {
                     if (prefs.getLocale().contains("de")) {
                         headline.setText("Ein wildes " + type.name() + " erscheint!");
@@ -81,7 +86,10 @@ public class FightWildBeastController extends Controller {
                 .observeOn(FX_SCHEDULER)
                 .concatMap(b -> { //Nacheinander ausführen
                     this.type = b.type();
-                    return presetsService.getMonsterImage(this.type);
+                    if (!cache.imageIsDownloaded(this.type)) {
+                        cache.addMonsterImages(this.type, presetsService.getMonsterImage(this.type).blockingFirst());
+                    }
+                    return Observable.just(cache.getMonsterImage(this.type));
                 }).observeOn(FX_SCHEDULER).subscribe(beastImage -> image.setImage(beastImage)));
 
         return parent;

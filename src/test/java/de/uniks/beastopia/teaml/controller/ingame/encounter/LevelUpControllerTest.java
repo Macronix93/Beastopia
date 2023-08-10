@@ -6,6 +6,7 @@ import de.uniks.beastopia.teaml.rest.AbilityDto;
 import de.uniks.beastopia.teaml.rest.Monster;
 import de.uniks.beastopia.teaml.rest.MonsterAttributes;
 import de.uniks.beastopia.teaml.rest.MonsterTypeDto;
+import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.scene.image.Image;
@@ -19,7 +20,12 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.ResourceBundle;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -38,26 +44,34 @@ class LevelUpControllerTest extends ApplicationTest {
             new MonsterAttributes(1, 1, 1, 1), null);
     final Image expectedImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/de/uniks/beastopia/teaml/assets/group.png")));
     final MonsterTypeDto monsterTypeDto = new MonsterTypeDto(3, "name", "image", List.of("1", "2"), "a");
+    final Map<String, Integer> abilities = new HashMap<>() {{
+        put("1", 1);
+    }};
+    final AbilityDto abilityDto = new AbilityDto(1, "name", "description", "type", 1, 1, 1);
     @InjectMocks
     LevelUpController levelUpController;
     @Spy
     App app;
     @Mock
+    DataCache cache;
+    @Mock
     PresetsService presetsService;
 
     @Override
-    public void start(Stage stage) {
+    public void start(Stage stage) throws InterruptedException {
         AppPreparer.prepare(app);
 
-        levelUpController.setBeast(monster, true, true, 2, null); // other scenarios don't have more tests
-        when(presetsService.getMonsterType(10)).thenReturn(Observable.just(monsterTypeDto));
+        when(cache.getBeastDto(anyInt())).thenReturn(monsterTypeDto);
+        when(cache.getMonsterImage(anyInt())).thenReturn(expectedImage);
+        when(presetsService.getAbility(anyInt())).thenReturn(Observable.just(abilityDto));
         when(presetsService.getMonsterImage(anyInt())).thenReturn(Observable.just(expectedImage));
-        when(presetsService.getAbility(anyInt())).thenReturn(Observable.just(new AbilityDto(1, "a", "b",
-                "fire", 1, 1, 1)));
+        levelUpController.setBeast(monster, abilities, true, 2, 2, 2, 2, null); // other scenarios don't have more tests
 
         app.start(stage);
         app.show(levelUpController);
         stage.requestFocus();
+
+        Thread.sleep(2000);
     }
 
     @Test
