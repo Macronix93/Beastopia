@@ -5,7 +5,6 @@ public class FormatString {
         if (stringToFormat.length() <= length) {
             return stringToFormat;
         }
-
         int lastSpace = stringToFormat.lastIndexOf(' ', length);
         if (lastSpace != -1) {
             return stringToFormat.substring(0, lastSpace) + "\n" + formatString(stringToFormat.substring(lastSpace + 1), length);
