@@ -51,6 +51,7 @@ class FriendControllerTest extends ApplicationTest {
     @SuppressWarnings("unused")
     @Mock
     DataCache cache;
+    @SuppressWarnings("unused")
     @Mock
     ImageService imageService;
     @InjectMocks

@@ -49,10 +49,6 @@ public class EntityController extends Controller {
         return state;
     }
 
-    public Position getPosition() {
-        return position;
-    }
-
     public Position getOldPosition() {
         return oldPosition;
     }
