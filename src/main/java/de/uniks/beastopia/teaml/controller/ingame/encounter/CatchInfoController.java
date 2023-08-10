@@ -54,16 +54,6 @@ public class CatchInfoController extends Controller {
         }
         catchImage.setImage(cache.getMonsterImage(monster.type()));
 
-        /*disposables.add(presetsService.getMonsterType(beastType).observeOn(FX_SCHEDULER).subscribe(
-                t -> {
-                    catchInfo.setText(catchInfoText + " " + t.name() + "!");
-                    if (!catchToTeam.isEmpty()) {
-                        catchToTeamLabel.setText(t.name() + " " + catchToTeam);
-                    }
-                    disposables.add(presetsService.getMonsterImage(t.id()).subscribe(
-                            i -> catchImage.setImage(i)));
-                }
-        ));*/
         return parent;
     }
 
