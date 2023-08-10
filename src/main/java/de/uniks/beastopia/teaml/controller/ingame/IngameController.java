@@ -1524,13 +1524,21 @@ public class IngameController extends Controller {
         } else {
             opacity = 1;
             pauseHint.toFront();
+            pauseHint.setDisable(false);
             beastlistHint.toFront();
+            beastlistHint.setDisable(false);
             scoreboardHint.toFront();
+            scoreboardHint.setDisable(false);
             mapHint.toFront();
+            mapHint.setDisable(false);
             invHint.toFront();
+            invHint.setDisable(false);
             mondexHint.toFront();
+            mondexHint.setDisable(false);
             beastTeamHint.toFront();
+            beastTeamHint.setDisable(false);
             talkHint.toFront();
+            talkHint.setDisable(false);
             disableHint.setText("Disable Buttons with Shift + B");
             cache.setHintsNotVisible(true);
         }
@@ -1540,13 +1548,21 @@ public class IngameController extends Controller {
 
     public void hideButtonHints() {
         pauseHint.toBack();
+        pauseHint.setDisable(true);
         beastlistHint.toBack();
+        beastlistHint.setDisable(true);
         scoreboardHint.toBack();
+        scoreboardHint.setDisable(true);
         mapHint.toBack();
+        mapHint.setDisable(true);
         invHint.toBack();
+        invHint.setDisable(true);
         mondexHint.toBack();
+        mondexHint.setDisable(true);
         beastTeamHint.toBack();
+        beastTeamHint.setDisable(true);
         talkHint.toBack();
+        talkHint.setDisable(true);
         disableHint.setText("Enable Buttons with Shift + B");
         cache.setHintsNotVisible(false);
     }
@@ -1857,8 +1873,13 @@ public class IngameController extends Controller {
                         beastListController.destroy();
                     }
                     currentMenu = MENU_NONE;
-                    cache.setHintsNotVisible(true);
-                    handleButtonHints();
+                    if (cache.getHintsNotVisible()) {
+                        cache.setHintsNotVisible(false);
+                        handleButtonHints();
+                    } else {
+                        cache.setHintsNotVisible(true);
+                        handleButtonHints();
+                    }
                 });
                 inventoryParent = inventoryController.render();
                 inventoryParent.setPickOnBounds(false);
