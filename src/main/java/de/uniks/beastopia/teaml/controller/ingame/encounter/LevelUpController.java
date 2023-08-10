@@ -2,7 +2,9 @@ package de.uniks.beastopia.teaml.controller.ingame.encounter;
 
 import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
+import de.uniks.beastopia.teaml.rest.AbilityDto;
 import de.uniks.beastopia.teaml.rest.Monster;
+import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
@@ -17,6 +19,7 @@ import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
 import javax.inject.Inject;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -66,12 +69,19 @@ public class LevelUpController extends Controller {
     public VBox beastInfo;
     @FXML
     public VBox abilityInfo;
+    @FXML
+    public Label statsLabel;
     @Inject
     PresetsService presetsService;
+    @Inject
+    DataCache cache;
     private Monster beast;
-    private boolean newAbility;
+    private Map<String, Integer> newAbilities;
     private boolean dev;
     private double plusHP;
+    private int plusAttack;
+    private int plusDefense;
+    private int plusSpeed;
     private double healthWidth;
     private double expWidth;
     private EndScreenController endScreenController;
@@ -80,11 +90,14 @@ public class LevelUpController extends Controller {
     public LevelUpController() {
     }
 
-    public void setBeast(Monster beast, boolean newAbility, boolean dev, double hp, EndScreenController endScreenController) {
-        this.newAbility = newAbility;
+    public void setBeast(Monster beast, Map<String, Integer> newAbilities, boolean dev, double hp, int attack, int defense, int speed, EndScreenController endScreenController) {
+        this.newAbilities = newAbilities;
         this.beast = beast;
         this.dev = dev;
         this.plusHP = hp;
+        this.plusAttack = attack;
+        this.plusDefense = defense;
+        this.plusSpeed = speed;
         this.endScreenController = endScreenController;
     }
 
@@ -104,6 +117,8 @@ public class LevelUpController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
+
+        abilityInfo.setVisible(false);
         headline.setText("Level up!");
         heart.setImage(new Image(Objects.requireNonNull(Main.class.getResourceAsStream("assets/herz.png"))));
         heart.setFitWidth(25);
@@ -113,20 +128,18 @@ public class LevelUpController extends Controller {
         star.setFitWidth(25);
         star.setFitHeight(25);
 
-        disposables.add(presetsService.getMonsterType(beast.type())
-                .observeOn(FX_SCHEDULER)
-                .subscribe(type -> {
-                    up_text_bottom.setText(type.name() + " " + type.type() + " Lvl. " + beast.level());
-                    if (this.newAbility) {
-                        up_text.setText(type.name() + " " + resources.getString("lvl+A"));
-                    } else {
-                        up_text.setText(type.name() + " " + resources.getString("lvl+"));
-                    }
-                }));
+        up_text_bottom.setText(cache.getBeastDto(beast.type()).name() + " " + cache.getBeastDto(beast.type()).type() + " Lvl. " + beast.level());
+        if (this.newAbilities != null) {
+            up_text.setText(cache.getBeastDto(beast.type()).name() + " " + resources.getString("lvl+A") + " ");
+        } else {
+            up_text.setText(cache.getBeastDto(beast.type()).name() + " " + resources.getString("lvl+"));
+        }
 
         lifeValueLabel.setText((int) beast.currentAttributes().health() + " ");
         maxLifeLabel.setText(" " + (int) beast.attributes().health());
         plusHPLabel.setText(" (+" + (int) plusHP + " Max HP)");
+        statsLabel.setText("Attack: " + beast.attributes().attack() + " (+" + plusAttack + "), Defense: " +
+                beast.attributes().defense() + " (+" + plusDefense + "), Speed: " + beast.attributes().speed() + " (+" + plusSpeed + ")");
         xpValueLabel.setText(beast.experience() + " ");
         int maxExp = (int) Math.pow(beast.level(), 3) - (int) Math.pow(beast.level() - 1, 3);
         maxXpLabel.setText(maxExp + " ");
@@ -145,49 +158,67 @@ public class LevelUpController extends Controller {
                     starBg.setMaxWidth(expWidth * borderBg.getWidth());
                 });
             }
-        }, 100);
+        }, 200);
 
         if (dev) { //Fade old Image -> New one
-            disposables.add(presetsService.getMonsterImage(beast.type() - 1)
-                    .observeOn(FX_SCHEDULER)
-                    .subscribe(beforeImg -> {
-                        image.setImage(beforeImg);
+            image.setImage(cache.getMonsterImage(beast.type() - 1));
 
-                        FadeTransition fadeOut = new FadeTransition(Duration.seconds(2), image);
-                        fadeOut.setFromValue(1.0);
-                        fadeOut.setToValue(0.0);
+            FadeTransition fadeOut = new FadeTransition(Duration.seconds(2), image);
+            fadeOut.setFromValue(1.0);
+            fadeOut.setToValue(0.0);
+            fadeOut.play();
 
-                        disposables.add(presetsService.getMonsterImage(beast.type())
-                                .observeOn(FX_SCHEDULER)
-                                .subscribe(afterImage -> {
-                                    FadeTransition fadeIn = new FadeTransition(Duration.seconds(2), image);
-                                    fadeIn.setFromValue(0.0);
-                                    fadeIn.setToValue(1.0);
+            FadeTransition fadeIn = new FadeTransition(Duration.seconds(2), image);
+            fadeIn.setFromValue(0.0);
+            fadeIn.setToValue(1.0);
 
-                                    fadeOut.setOnFinished(event -> { // set new img and start fade
-                                        image.setImage(afterImage);
-                                        fadeIn.play();
-                                    });
-                                    fadeOut.play();
-                                }));
-                    }));
+            fadeOut.setOnFinished(event -> { // set new img and start fade
+                if (cache.imageIsDownloaded(beast.type())) {
+                    image.setImage(cache.getMonsterImage(beast.type()));
+                    fadeIn.play();
+                } else {
+                    disposables.add(presetsService.getMonsterImage(beast.type())
+                            .observeOn(FX_SCHEDULER)
+                            .subscribe(afterImage -> {
+                                cache.addMonsterImages(beast.type(), afterImage);
+                                image.setImage(afterImage);
+                                fadeIn.play();
+                            }));
+                }
+            });
         } else {
-            disposables.add(presetsService.getMonsterImage(beast.type())
-                    .observeOn(FX_SCHEDULER)
-                    .subscribe(monsterImage -> image.setImage(monsterImage)));
+            image.setImage(cache.getMonsterImage(beast.type()));
         }
 
-        if (this.newAbility) {
-            String lastKey = (String) beast.abilities().keySet().toArray()[beast.abilities().size() - 1];
-            disposables.add(presetsService.getAbility(beast.abilities().get(lastKey))
-                    .observeOn(FX_SCHEDULER)
-                    .subscribe(abilityDto -> {
-                        attack.setText(abilityDto.name());
-                        abilityLabel.setText(abilityDto.name());
-                        accuracy.setText("Accuracy: " + abilityDto.accuracy());
-                        type.setText("Type: " + abilityDto.type());
-                        power.setText("Power: " + abilityDto.power());
-                    }));
+        if (this.newAbilities != null) {
+            Map.Entry<String, Integer> lastEntry = null;
+            for (Map.Entry<String, Integer> entry : newAbilities.entrySet()) {
+                lastEntry = entry;
+            }
+            if (lastEntry != null) {
+                abilityInfo.setVisible(true);
+
+                int index = Integer.parseInt(lastEntry.getKey());
+                if (cache.getAbilities().containsKey(index)) {
+                    AbilityDto abilityDto = cache.getAbilities().get(index);
+                    abilityLabel.setText(cache.getAbilities().get(index).name() + ".");
+                    attack.setText(abilityDto.name());
+                    accuracy.setText("Accuracy: " + abilityDto.accuracy());
+                    type.setText("Type: " + abilityDto.type());
+                    power.setText("Power: " + abilityDto.power());
+                } else {
+                    disposables.add(presetsService.getAbility(Integer.parseInt(lastEntry.getKey()))
+                            .observeOn(FX_SCHEDULER)
+                            .subscribe(abilityDto -> {
+                                cache.getAbilities().put(abilityDto.id(), abilityDto);
+                                abilityLabel.setText(abilityDto.name() + ".");
+                                attack.setText(abilityDto.name());
+                                accuracy.setText("Accuracy: " + abilityDto.accuracy());
+                                type.setText("Type: " + abilityDto.type());
+                                power.setText("Power: " + abilityDto.power());
+                            }));
+                }
+            }
         }
 
         return parent;

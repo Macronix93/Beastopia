@@ -57,7 +57,7 @@
             <ImageView fx:id="itemImage" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" />
         </VBox>
         <VBox alignment="CENTER" GridPane.rowIndex="3">
-            <Button fx:id="shopBtn" mnemonicParsing="false" onAction="#shopFunction" prefWidth="75.0">
+            <Button fx:id="shopBtn" mnemonicParsing="false" onAction="#shopFunction" onContextMenuRequested="#onContextMenuRequested" prefWidth="100.0">
             <VBox.margin>
                <Insets bottom="5.0" />
             </VBox.margin></Button>

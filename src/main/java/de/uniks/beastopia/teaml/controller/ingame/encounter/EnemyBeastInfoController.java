@@ -2,6 +2,7 @@ package de.uniks.beastopia.teaml.controller.ingame.encounter;
 
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Monster;
+import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import de.uniks.beastopia.teaml.utils.AssetProvider;
 import javafx.application.Platform;
@@ -28,6 +29,9 @@ public class EnemyBeastInfoController extends Controller {
     HBox lifeBar;
     @FXML
     HBox lifeBarValue;
+
+    @Inject
+    DataCache cache;
     @Inject
     PresetsService presetsService;
     @Inject
@@ -47,13 +51,10 @@ public class EnemyBeastInfoController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
-        disposables.add(presetsService.getMonsterType(monster.type())
-                .observeOn(FX_SCHEDULER)
-                .subscribe(monsterType -> enemyName.setText(monsterType.name())));
+
+        enemyName.setText(cache.getBeastDto(monster.type()).name());
         enemyLevel.setText(String.valueOf(monster.level()));
         setStatus(monster.status(), false);
-
-        //TODO: calculate lifebar value, call setLifeBarValue()
 
         timer = new Timer();
         timer.schedule(new TimerTask() {

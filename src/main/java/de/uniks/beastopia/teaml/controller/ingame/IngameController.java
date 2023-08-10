@@ -18,12 +18,41 @@ import de.uniks.beastopia.teaml.controller.ingame.mondex.MondexDetailController;
 import de.uniks.beastopia.teaml.controller.ingame.mondex.MondexListController;
 import de.uniks.beastopia.teaml.controller.ingame.scoreboard.ScoreboardController;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
+import de.uniks.beastopia.teaml.rest.Achievement;
+import de.uniks.beastopia.teaml.rest.Area;
+import de.uniks.beastopia.teaml.rest.Chunk;
+import de.uniks.beastopia.teaml.rest.Encounter;
+import de.uniks.beastopia.teaml.rest.ItemTypeDto;
+import de.uniks.beastopia.teaml.rest.Layer;
 import de.uniks.beastopia.teaml.rest.Map;
-import de.uniks.beastopia.teaml.rest.*;
-import de.uniks.beastopia.teaml.service.*;
+import de.uniks.beastopia.teaml.rest.Monster;
+import de.uniks.beastopia.teaml.rest.MonsterTypeDto;
+import de.uniks.beastopia.teaml.rest.MoveTrainerDto;
+import de.uniks.beastopia.teaml.rest.Opponent;
+import de.uniks.beastopia.teaml.rest.Position;
+import de.uniks.beastopia.teaml.rest.Region;
+import de.uniks.beastopia.teaml.rest.Tile;
+import de.uniks.beastopia.teaml.rest.TileProperty;
+import de.uniks.beastopia.teaml.rest.TileSet;
+import de.uniks.beastopia.teaml.rest.TileSetDescription;
+import de.uniks.beastopia.teaml.rest.Trainer;
+import de.uniks.beastopia.teaml.service.AStarService;
+import de.uniks.beastopia.teaml.service.AchievementsService;
+import de.uniks.beastopia.teaml.service.AreaService;
+import de.uniks.beastopia.teaml.service.DataCache;
+import de.uniks.beastopia.teaml.service.EncounterOpponentsService;
+import de.uniks.beastopia.teaml.service.PresetsService;
+import de.uniks.beastopia.teaml.service.RegionEncountersService;
+import de.uniks.beastopia.teaml.service.TokenStorage;
+import de.uniks.beastopia.teaml.service.TrainerService;
 import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.sockets.UDPEventListener;
-import de.uniks.beastopia.teaml.utils.*;
+import de.uniks.beastopia.teaml.utils.Dialog;
+import de.uniks.beastopia.teaml.utils.Direction;
+import de.uniks.beastopia.teaml.utils.LoadingPage;
+import de.uniks.beastopia.teaml.utils.PlayerState;
+import de.uniks.beastopia.teaml.utils.Prefs;
+import de.uniks.beastopia.teaml.utils.SoundController;
 import javafx.animation.FadeTransition;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -50,7 +79,19 @@ import javafx.util.Pair;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
@@ -246,6 +287,10 @@ public class IngameController extends Controller {
             cache.setMapImage(presetsService.getImage(cache.getMapTileset()).blockingFirst());
         }
 
+        if (cache.getAllBeasts().isEmpty()) {
+            disposables.add(presetsService.getAllBeasts().observeOn(FX_SCHEDULER).subscribe(beasts -> cache.setAllBeasts(beasts), error -> Dialog.error(error.getMessage(), "Error")));
+        }
+
         scoreBoardController.setOnCloseRequested(() -> {
             scoreBoardLayout.getChildren().remove(scoreBoardParent);
             currentMenu = MENU_NONE;
@@ -300,7 +345,6 @@ public class IngameController extends Controller {
             aStarService.updateMap(new Position(posx, posy), false);
 
             updateOrigin();
-
 
             timerPause = false;
             spawned = true;
@@ -424,7 +468,7 @@ public class IngameController extends Controller {
         Trainer myTrainer = loadMyTrainer(trainers);
         cache.setTrainer(myTrainer);
         java.util.Map<String, Trainer> trainerMap = new HashMap<>();
-        for (Trainer t: trainers) {
+        for (Trainer t : trainers) {
             trainerMap.put(t._id(), t);
         }
         cache.setTrainers(trainerMap);
@@ -463,9 +507,10 @@ public class IngameController extends Controller {
         invHint.toFront();
 
         if (!cache.getHintsNotVisible()) {
-            hideButtonHints();
+            hideButtonHints(true);
             setOpacities(0);
             disableHint.setOpacity(1);
+            disableHint.setText(resources.getString("EnableHints"));
         }
     }
 
@@ -1101,6 +1146,8 @@ public class IngameController extends Controller {
     public void chooseBeast(Monster monster, ItemDetailController itemDetailController) {
         itemDetailController.useDetailButton(1, "use", monster._id());
         shopLayout.getChildren().remove(beastListParent);
+        scoreBoardLayout.getChildren().remove(itemDetailParent);
+        shopLayout.toBack();
         beastListController.destroy();
     }
 
@@ -1200,7 +1247,7 @@ public class IngameController extends Controller {
                 talkToStartersNPC(trainer);
             } else if (trainer.npc().canHeal()) {
                 talkToNurse(trainer);
-            } else if (trainer.npc().sells() != null) {
+            } else if (trainer.npc().sells() != null && currentMenu != MENU_SHOP) {
                 openShop(trainer);
             }
         } else {
@@ -1331,10 +1378,24 @@ public class IngameController extends Controller {
                         List<Image> beastImages = new ArrayList<>();
                         List<MonsterTypeDto> monsterTypeDtoList = new ArrayList<>();
                         for (int id : trainer.npc().starters()) {
-                            MonsterTypeDto monsterTypeDto = presetsService.getMonsterType(id).blockingFirst();
+                            MonsterTypeDto monsterTypeDto;
+                            Image beastImage;
+
+                            if (cache.getAllBeasts().stream().noneMatch(type -> type.id() == id)) {
+                                monsterTypeDto = presetsService.getMonsterType(id).blockingFirst();
+                                cache.addToAllBeasts(monsterTypeDto);
+                            } else {
+                                monsterTypeDto = cache.getBeastDto(id);
+                            }
                             beastNames.add(monsterTypeDto.name());
                             monsterTypeDtoList.add(monsterTypeDto);
-                            Image beastImage = presetsService.getMonsterImage(id).blockingFirst();
+
+                            if (!cache.imageIsDownloaded(id)) {
+                                beastImage = presetsService.getMonsterImage(id).blockingFirst();
+                                cache.addMonsterImages(id, beastImage);
+                            } else {
+                                beastImage = cache.getMonsterImage(id);
+                            }
                             beastImages.add(beastImage);
                         }
                         talk(newImage, " Welcome! \n Please select a starter Beast. ", beastNames, beastImages, (i -> {
@@ -1458,9 +1519,29 @@ public class IngameController extends Controller {
         int opacity;
         if (cache.getHintsNotVisible()) {
             opacity = 0;
-            hideButtonHints();
+            hideButtonHints(true);
+            cache.setHintsNotVisible(false);
         } else {
             opacity = 1;
+            hideButtonHints(false);
+        }
+        setOpacities(opacity);
+        disableHint.setOpacity(1);
+    }
+
+    public void hideButtonHints(boolean hide) {
+        if (hide) {
+            pauseHint.toBack();
+            beastlistHint.toBack();
+            scoreboardHint.toBack();
+            mapHint.toBack();
+            invHint.toBack();
+            mondexHint.toBack();
+            beastTeamHint.toBack();
+            talkHint.toBack();
+            disableHint.setText(resources.getString("EnableHints"));
+            cache.setHintsNotVisible(false);
+        } else {
             pauseHint.toFront();
             beastlistHint.toFront();
             scoreboardHint.toFront();
@@ -1469,24 +1550,16 @@ public class IngameController extends Controller {
             mondexHint.toFront();
             beastTeamHint.toFront();
             talkHint.toFront();
-            disableHint.setText("Disable Buttons with Shift + B");
+            disableHint.setText(resources.getString("DisableHints"));
             cache.setHintsNotVisible(true);
         }
-        setOpacities(opacity);
-        disableHint.setOpacity(1);
-    }
-
-    public void hideButtonHints() {
-        pauseHint.toBack();
-        beastlistHint.toBack();
-        scoreboardHint.toBack();
-        mapHint.toBack();
-        invHint.toBack();
-        mondexHint.toBack();
-        beastTeamHint.toBack();
-        talkHint.toBack();
-        disableHint.setText("Enable Buttons with Shift + B");
-        cache.setHintsNotVisible(false);
+        pauseHint.setDisable(hide);
+        beastlistHint.setDisable(hide);
+        scoreboardHint.setDisable(hide);
+        mapHint.setDisable(hide);
+        invHint.setDisable(hide);
+        mondexHint.setDisable(hide);
+        beastTeamHint.setDisable(hide);
     }
 
     private void handlePlayerMovement(KeyEvent keyEvent) {
@@ -1721,8 +1794,8 @@ public class IngameController extends Controller {
         HBox hbox = scoreBoardLayout;
         if (layout.equals("shop")) {
             setOpacities(0);
-            setDisables(0);
             hbox = shopLayout;
+            shopLayout.toFront();
         }
         if (hbox.getChildren().contains(beastListParent)) {
             hbox.getChildren().remove(beastListParent);
@@ -1770,6 +1843,8 @@ public class IngameController extends Controller {
     public void openInventory() {
         if (scoreBoardLayout.getChildren().contains(inventoryParent)) {
             scoreBoardLayout.getChildren().remove(inventoryParent);
+            scoreBoardLayout.getChildren().remove(itemDetailParent);
+            inventoryController.destroy();
             currentMenu = MENU_NONE;
         } else {
             currentMenu = MENU_INVENTORY;
@@ -1784,14 +1859,27 @@ public class IngameController extends Controller {
                 inventoryController.setIfShop(false);
                 inventoryController.setOnItemClicked(this::toggleInventoryItemDetails);
                 inventoryController.setOnCloseRequest(() -> {
-                    setCloseRequests(scoreBoardLayout, inventoryParent);
-                    lastMonster = null;
-                    setCloseRequests(scoreBoardLayout, itemDetailParent);
-                    setCloseRequests(shopLayout, beastListParent);
+                    scoreBoardLayout.getChildren().remove(inventoryParent);
+                    scoreBoardLayout.getChildren().remove(itemDetailParent);
+                    inventoryController.destroy();
+                    if (shopLayout.getChildren().contains(beastListParent)) {
+                        shopLayout.getChildren().remove(beastListParent);
+                        shopLayout.getChildren().remove(beastDetailParent);
+                        beastListController.destroy();
+                    }
+                    currentMenu = MENU_NONE;
+                    if (cache.getHintsNotVisible()) {
+                        cache.setHintsNotVisible(false);
+                        handleButtonHints();
+                    } else {
+                        cache.setHintsNotVisible(true);
+                        handleButtonHints();
+                    }
                 });
                 inventoryParent = inventoryController.render();
                 inventoryParent.setPickOnBounds(false);
                 scoreBoardLayout.getChildren().add(inventoryParent);
+                currentMenu = MENU_INVENTORY;
             }
         }
     }
@@ -1808,21 +1896,7 @@ public class IngameController extends Controller {
         disableHint.setOpacity(value);
     }
 
-    public void setDisables(int value) {
-        pauseHint.setDisable(value == 0);
-        beastlistHint.setDisable(value == 0);
-        scoreboardHint.setDisable(value == 0);
-        mapHint.setDisable(value == 0);
-        invHint.setDisable(value == 0);
-        mondexHint.setDisable(value == 0);
-        beastTeamHint.setDisable(value == 0);
-        talkHint.setDisable(value == 0);
-        disableHint.setDisable(value == 0);
-    }
-
     public void openShopInventory() {
-        setOpacities(0);
-        setDisables(0);
         for (Node tile : tilePane.getChildren()) {
             if (tile instanceof ImageView imageView) {
                 imageView.setFitWidth(TILE_SIZE);
@@ -1843,23 +1917,21 @@ public class IngameController extends Controller {
             inventoryController.init();
             inventoryController.setIfShop(true);
             inventoryController.setOnItemClicked(this::toggleInventoryItemDetails);
-            inventoryController.setOnCloseRequest(() -> {
-                setCloseRequests(scoreBoardLayout, inventoryParent);
-                lastMonster = null;
-                setCloseRequests(scoreBoardLayout, itemDetailParent);
-                inventoryController.destroy();
-            });
             inventoryParent = inventoryController.render();
             inventoryParent.setPickOnBounds(false);
             scoreBoardLayout.getChildren().add(inventoryParent);
+            currentMenu = MENU_SHOP;
         }
     }
 
-    public void setCloseRequests(HBox hBox, Parent parent) {
-        closePause();
-        hBox.getChildren().remove(parent);
-        currentMenu = MENU_NONE;
-        setOpacities(1);
+    public void setTileOpacity() {
+        for (Node tile : tilePane.getChildren()) {
+            if (tile instanceof ImageView imageView) {
+                imageView.setFitWidth(TILE_SIZE + 1);
+                imageView.setFitHeight(TILE_SIZE + 1);
+            }
+            tile.setOpacity(1);
+        }
     }
 
     public void openShop(Trainer trainer) {
@@ -1873,19 +1945,31 @@ public class IngameController extends Controller {
             tile.setOpacity(0.5);
         }
         setOpacities(0);
+        shopLayout.toFront();
         shopController.setOnItemClicked(this::toggleShopItemDetails);
         shopController.setOnCloseRequest(() -> {
-            setCloseRequests(shopLayout, shopParent);
-            inventoryController.close();
-            inventoryController.destroy();
-            setCloseRequests(shopLayout, itemDetailParent);
+            shopLayout.getChildren().remove(shopParent);
+            shopLayout.getChildren().remove(itemDetailParent);
             shopController.destroy();
+            setTileOpacity();
+            scoreBoardLayout.getChildren().remove(inventoryParent);
+            scoreBoardLayout.getChildren().remove(itemDetailParent);
+            inventoryController.destroy();
+            currentMenu = MENU_NONE;
+            if (cache.getHintsNotVisible()) {
+                cache.setHintsNotVisible(false);
+                handleButtonHints();
+            } else {
+                cache.setHintsNotVisible(true);
+                handleButtonHints();
+            }
+            shopLayout.toBack();
         });
+        openInventory(true);
         shopParent = shopController.render();
         shopParent.setPickOnBounds(false);
         shopLayout.getChildren().add(shopParent);
         currentMenu = MENU_SHOP;
-        openInventory(true);
     }
 
     public void toggleInventoryItemDetails(ItemTypeDto itemTypeDto) {
@@ -1898,7 +1982,7 @@ public class IngameController extends Controller {
         //false = details: inventory shop, true = details: only inventory
     }
 
-    private void toggleShopItemDetails(ItemTypeDto itemTypeDto) {
+    public void toggleShopItemDetails(ItemTypeDto itemTypeDto) {
         if (Objects.equals(lastItemTypeDto, itemTypeDto)) {
             shopLayout.getChildren().remove(itemDetailParent);
             lastItemTypeDto = null;
@@ -1941,7 +2025,6 @@ public class IngameController extends Controller {
                 }
                 tile.setOpacity(0.5);
             }
-            pauseHint.setOpacity(0);
             pauseMenuLayout.getChildren().add(pauseMenuParent);
             pauseMenuParent.requestFocus();
             currentMenu = MENU_PAUSE;
@@ -1963,16 +2046,9 @@ public class IngameController extends Controller {
     }
 
     public void closePause() {
-        for (Node tile : tilePane.getChildren()) {
-            if (tile instanceof ImageView imageView) {
-                imageView.setFitWidth(TILE_SIZE + 1);
-                imageView.setFitHeight(TILE_SIZE + 1);
-            }
-            tile.setOpacity(1);
-        }
+        setTileOpacity();
         pauseMenuLayout.getChildren().remove(pauseMenuParent);
         currentMenu = MENU_NONE;
-        pauseHint.setOpacity(1);
     }
 
     @Override
@@ -1987,7 +2063,12 @@ public class IngameController extends Controller {
         playerController.destroy();
         scoreBoardController.destroy();
         beastListController.destroy();
-        shopController.destroy();
+        if (shopController != null) {
+            shopController.destroy();
+        }
+        if (inventoryController != null) {
+            inventoryController.destroy();
+        }
 
         if (dialogWindowController != null) {
             dialogWindowController.destroy();
@@ -2016,6 +2097,9 @@ public class IngameController extends Controller {
         tilePane = null;
         mondexListParent = null;
         mondexDetailParent = null;
+        shopParent = null;
+        inventoryParent = null;
+        itemDetailParent = null;
         super.destroy();
     }
 }
