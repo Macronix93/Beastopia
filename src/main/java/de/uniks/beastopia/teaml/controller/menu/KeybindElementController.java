@@ -36,10 +36,4 @@ public class KeybindElementController extends Controller {
         keyLabel.setText(resources.getString(action));
         return parent;
     }
-
-    @FXML
-    @SuppressWarnings("EmptyMethod")
-    public void changeKey() {
-        //ToDo change key
-    }
 }

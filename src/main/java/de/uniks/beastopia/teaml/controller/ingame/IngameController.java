@@ -510,7 +510,7 @@ public class IngameController extends Controller {
             hideButtonHints(true);
             setOpacities(0);
             disableHint.setOpacity(1);
-            disableHint.setText("Enable Buttons with Shift + B");
+            disableHint.setText(resources.getString("EnableHints"));
         }
     }
 
@@ -1539,7 +1539,7 @@ public class IngameController extends Controller {
             mondexHint.toBack();
             beastTeamHint.toBack();
             talkHint.toBack();
-            disableHint.setText("Enable Buttons with Shift + B");
+            disableHint.setText(resources.getString("EnableHints"));
             cache.setHintsNotVisible(false);
         } else {
             pauseHint.toFront();
@@ -1550,7 +1550,7 @@ public class IngameController extends Controller {
             mondexHint.toFront();
             beastTeamHint.toFront();
             talkHint.toFront();
-            disableHint.setText("Disable Buttons with Shift + B");
+            disableHint.setText(resources.getString("DisableHints"));
             cache.setHintsNotVisible(true);
         }
         pauseHint.setDisable(hide);
