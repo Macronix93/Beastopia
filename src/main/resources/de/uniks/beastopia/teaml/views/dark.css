@@ -259,13 +259,19 @@ Text {
     -fx-border-color: #162326;
 }
 
+#abilityInfo {
+    -fx-background-color: #677878;
+    -fx-border-color: #162326;
+}
+
 #hpLabel,
 #xpLabel {
     -fx-text-fill: black;
 }
 
 #beastInfoContainer,
-#enemyBeastInfoContainer {
+#enemyBeastInfoContainer,
+#beastInfo {
     -fx-background-color: #677878;
     -fx-border-color: #162326;
 }

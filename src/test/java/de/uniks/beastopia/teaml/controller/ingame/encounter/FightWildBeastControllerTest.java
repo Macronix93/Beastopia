@@ -4,6 +4,7 @@ import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.rest.Monster;
 import de.uniks.beastopia.teaml.rest.MonsterTypeDto;
+import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.PresetsService;
 import de.uniks.beastopia.teaml.service.TrainerService;
 import de.uniks.beastopia.teaml.utils.Prefs;
@@ -20,6 +21,7 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.ResourceBundle;
@@ -49,6 +51,8 @@ class FightWildBeastControllerTest extends ApplicationTest {
     TrainerService trainerService;
     @Mock
     Prefs prefs;
+    @Mock
+    DataCache cache;
 
     @Override
     public void start(Stage stage) {
@@ -63,6 +67,9 @@ class FightWildBeastControllerTest extends ApplicationTest {
         when(presetsService.getMonsterImage(anyInt()))
                 .thenReturn(Observable.just(expectedImage));
         when(prefs.getLocale()).thenReturn("en");
+        when(cache.getAllBeasts()).thenReturn(List.of(monsterTypeDto));
+        when(cache.getBeastDto(anyInt())).thenReturn(monsterTypeDto);
+        when(cache.getMonsterImage(anyInt())).thenReturn(expectedImage);
 
         app.start(stage);
         app.show(fightWildBeastController);

@@ -39,6 +39,7 @@ class LoginControllerTest extends ApplicationTest {
     Provider<MenuController> menuControllerProvider;
     @Mock
     AuthService authService;
+    @SuppressWarnings("unused")
     @Mock
     ImageService imageService;
     @Mock

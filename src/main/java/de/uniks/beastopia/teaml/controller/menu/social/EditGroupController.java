@@ -67,34 +67,45 @@ public class EditGroupController extends Controller {
 
     @FXML
     public void updateUserList() {
-        availableUserControllers.clear();
-        users.getChildren().clear();
+        clearAvailableUser();
 
-        if (usernameField.getText().isEmpty()) {
-            return;
+        if (!usernameField.getText().isEmpty()) {
+            fillUserIn();
         }
+    }
 
+    private void fillUserIn() {
         for (User user : reverse(sortByPin(cache.getAllUsers()))) {
-            if (addedUsersList.contains(user) ||
-                    !user.name().toLowerCase().startsWith(usernameField.getText().toLowerCase())) {
+            if (addedUsersList.contains(user)
+                    || !user.name().toLowerCase().startsWith(usernameField.getText().toLowerCase())) {
                 continue;
             }
-
             users.getChildren().add(0, showUser(user));
         }
+    }
+
+    private void clearAvailableUser() {
+        availableUserControllers.clear();
+        users.getChildren().clear();
     }
 
     private Parent showUser(User user) {
         UserController controller = userControllerProvider.get()
                 .setIsAdded(true);
+        return setUpUser(controller, user);
+    }
+
+    private Parent setUpUser(UserController controller, User user) {
         controller.setUser(user);
         controller.setOnUserToggled(this::toggleUser);
-        controller.setOnUserPinToggled(u -> {
-            prefs.setPinned(u, !prefs.isPinned(u));
-            updateLists();
-        });
+        controller.setOnUserPinToggled(this::pinToggelAction);
         controller.init();
         return controller.render();
+    }
+
+    private void pinToggelAction(User u) {
+        prefs.setPinned(u, !prefs.isPinned(u));
+        updateLists();
     }
 
     @FXML
@@ -123,11 +134,15 @@ public class EditGroupController extends Controller {
     }
 
     private List<User> sortByPin(List<User> users) {
-        List<User> result = new ArrayList<>();
         List<User> sortedUsers = new ArrayList<>(users);
         sortedUsers.sort(Comparator.comparing(u -> u.name().toLowerCase()));
-        result.addAll(sortedUsers.stream().filter(prefs::isPinned).toList());
-        result.addAll(sortedUsers.stream().filter(u -> !prefs.isPinned(u)).toList());
+        return pinnedToStart(sortedUsers);
+    }
+
+    private List<User> pinnedToStart(List<User> sortedUserNames) {
+        List<User> result = new ArrayList<>();
+        result.addAll(sortedUserNames.stream().filter(prefs::isPinned).toList());
+        result.addAll(sortedUserNames.stream().filter(u -> !prefs.isPinned(u)).toList());
         return result;
     }
 

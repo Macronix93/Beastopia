@@ -66,26 +66,22 @@ public class MondexListController extends Controller {
                 .subscribe(newTrainer -> {
                     dataCache.setTrainer(newTrainer);
                     mondexService.setTrainer(newTrainer);
-                    disposables.add(presetsService.getAllBeasts()
-                            .subscribe(monsters -> { //No UI Stuff here!!!
-                                for (MonsterTypeDto monster : monsters) {
-                                    Thread.sleep(288);
-                                    if (destroyed) {
-                                        return;
-                                    }
-                                    if (dataCache.imageIsDownloaded(monster.id())) {
-                                        disposables.add(delay().observeOn(FX_SCHEDULER).subscribe(t ->
-                                                createController(monster)));
-                                        continue;
-                                    }
-                                    disposables.add(presetsService.getMonsterImage(monster.id())
-                                            .observeOn(FX_SCHEDULER)
-                                            .subscribe(image -> { //UI Stuff allowed again!!!
-                                                dataCache.addMonsterImages(monster.id(), image);
-                                                createController(monster);
-                                            }));
-                                }
-                            }));
+
+                    for (MonsterTypeDto monster : dataCache.getAllBeasts()) {
+                        if (destroyed) {
+                            return;
+                        }
+                        if (dataCache.imageIsDownloaded(monster.id())) {
+                            createController(monster);
+                        } else {
+                            disposables.add(presetsService.getMonsterImage(monster.id())
+                                    .observeOn(FX_SCHEDULER)
+                                    .subscribe(image -> { //UI Stuff allowed again!!!
+                                        dataCache.addMonsterImages(monster.id(), image);
+                                        createController(monster);
+                                    }));
+                        }
+                    }
                 }));
 
         return parent;

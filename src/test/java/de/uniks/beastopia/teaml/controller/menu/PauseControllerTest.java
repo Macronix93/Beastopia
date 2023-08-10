@@ -39,6 +39,7 @@ class PauseControllerTest extends ApplicationTest {
     Provider<SoundController> soundControllerProvider;
     @Mock
     SoundController soundController;
+    @SuppressWarnings("unused")
     @Mock
     ImageService imageService;
     @Spy

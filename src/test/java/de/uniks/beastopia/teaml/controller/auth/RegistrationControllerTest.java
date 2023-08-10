@@ -45,6 +45,7 @@ class RegistrationControllerTest extends ApplicationTest {
 
     @Mock
     DataCache cache;
+    @SuppressWarnings("unused")
     @Mock
     ImageService imageService;
 
