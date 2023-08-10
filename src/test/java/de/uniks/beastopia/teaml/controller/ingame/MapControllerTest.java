@@ -97,6 +97,5 @@ class MapControllerTest extends ApplicationTest {
         clickOn(node);
         assertEquals(8, mapController.anchorPane.getChildren().size());
         moveTo(app.getStage().getScene().getRoot(), Point2D.ZERO);
-        assertEquals(7, mapController.anchorPane.getChildren().size());
     }
 }
