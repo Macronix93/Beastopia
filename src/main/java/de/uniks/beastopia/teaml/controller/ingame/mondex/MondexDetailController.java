@@ -87,9 +87,9 @@ public class MondexDetailController extends Controller {
                             }
                         }
                         if (inTeam) {
-                            monsterTeamLabel.setText(monster.name() + resourceBundle.getString("monsterInTeam"));
+                            monsterTeamLabel.setText(monster.name() + " " + resourceBundle.getString("monsterInTeam"));
                         } else {
-                            monsterTeamLabel.setText(monster.name() + resourceBundle.getString("monsterNotInTeam"));
+                            monsterTeamLabel.setText(monster.name() + " " + resourceBundle.getString("monsterNotInTeam"));
                         }
 
                     }));
