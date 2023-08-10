@@ -14,8 +14,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 
 public class MondexDetailController extends Controller {
@@ -54,7 +52,6 @@ public class MondexDetailController extends Controller {
     private MonsterTypeDto monster;
     private boolean known;
     private boolean inTeam;
-    List<Monster> trainerMonsters = new ArrayList<>();
 
 
     @Inject
@@ -78,14 +75,13 @@ public class MondexDetailController extends Controller {
     public Parent render() {
         Parent parent = super.render();
         if (known) {
-            inTeam = false;
 
             disposables.add(trainerService.getTrainerMonsters(prefs.getRegionID(), dataCache.getTrainer()._id())
                     .observeOn(FX_SCHEDULER)
                     .subscribe(monsters -> {
-                        trainerMonsters.addAll(monsters);
-                        for (Monster trainerMonster : trainerMonsters) {
-                            if (dataCache.getTrainer().team().contains(trainerMonster._id())) {
+                        inTeam = false;
+                        for (Monster m : monsters) {
+                            if (m.type() == monster.id()) {
                                 inTeam = true;
                                 break;
                             }
