@@ -335,6 +335,7 @@ public class IngameController extends Controller {
                 IngameController controller = ingameControllerProvider.get();
                 controller.setRegion(region);
                 controller.checkAreaAchievement(cache.getArea(trainer.area())._id());
+                controller.checkMonsterAchievement();
                 app.show(controller);
                 return;
             }
@@ -499,6 +500,9 @@ public class IngameController extends Controller {
                         error -> System.err.println("Fehler: " + error.getMessage())
                 )
         );
+
+        disposables.add(eventListener.listen("trainers." + cache.getTrainer()._id() + ".monsters.*.created", Monster.class)
+                .observeOn(FX_SCHEDULER).subscribe(monster -> checkMonsterAchievement()));
 
         pauseHint.toFront();
         beastlistHint.toFront();
@@ -1742,6 +1746,66 @@ public class IngameController extends Controller {
                 }
             }
         }
+    }
+
+    private void checkMonsterAchievement() {
+        disposables.add(trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), cache.getTrainer()._id())
+                .observeOn(FX_SCHEDULER)
+                .subscribe(ml -> {
+                    if (!ml.isEmpty()) {
+                        Achievement firstMonsterAchievement = cache.getMyAchievements().stream()
+                                .filter(achievement -> achievement.id().equals("FirstMonster"))
+                                .findFirst()
+                                .orElse(null);
+
+                        Achievement tenMonstersAchievement = cache.getMyAchievements().stream()
+                                .filter(achievement -> achievement.id().equals("TenMonsters"))
+                                .findFirst()
+                                .orElse(null);
+
+                        Achievement fiftyMonstersAchievement = cache.getMyAchievements().stream()
+                                .filter(achievement -> achievement.id().equals("FiftyMonsters"))
+                                .findFirst()
+                                .orElse(null);
+
+                        Achievement allMonstersAchievement = cache.getMyAchievements().stream()
+                                .filter(achievement -> achievement.id().equals("AllMonsters"))
+                                .findFirst()
+                                .orElse(null);
+
+                        if (firstMonsterAchievement == null) {
+                            firstMonsterAchievement = new Achievement(null, null, "FirstMonster", tokenStorage.getCurrentUser()._id(), new Date(), 100);
+                            cache.addMyAchievement(firstMonsterAchievement);
+                            Dialog.info(resources.getString("achievementUnlockHeader"), resources.getString("achievementUnlockedPre") + "\n" + resources.getString("achievementFirstMonster"));
+
+                            disposables.add(achievementsService.updateUserAchievement(tokenStorage.getCurrentUser()._id(), "FirstMonster", firstMonsterAchievement).subscribe());
+                        }
+
+                        if (ml.size() > 9 && tenMonstersAchievement == null) {
+                            tenMonstersAchievement = new Achievement(null, null, "TenMonsters", tokenStorage.getCurrentUser()._id(), new Date(), 100);
+                            cache.addMyAchievement(tenMonstersAchievement);
+                            Dialog.info(resources.getString("achievementUnlockHeader"), resources.getString("achievementUnlockedPre") + "\n" + resources.getString("achievementTenMonsters"));
+
+                            disposables.add(achievementsService.updateUserAchievement(tokenStorage.getCurrentUser()._id(), "TenMonsters", tenMonstersAchievement).subscribe());
+                        }
+
+                        if (ml.size() > 49 && fiftyMonstersAchievement == null) {
+                            fiftyMonstersAchievement = new Achievement(null, null, "FiftyMonsters", tokenStorage.getCurrentUser()._id(), new Date(), 100);
+                            cache.addMyAchievement(fiftyMonstersAchievement);
+                            Dialog.info(resources.getString("achievementUnlockHeader"), resources.getString("achievementUnlockedPre") + "\n" + resources.getString("achievementFiftyMonsters"));
+
+                            disposables.add(achievementsService.updateUserAchievement(tokenStorage.getCurrentUser()._id(), "FiftyMonsters", fiftyMonstersAchievement).subscribe());
+                        }
+
+                        if (cache.getTrainer().encounteredMonsterTypes().size() == 210 && allMonstersAchievement == null) {
+                            allMonstersAchievement = new Achievement(null, null, "AllMonsters", tokenStorage.getCurrentUser()._id(), new Date(), 100);
+                            cache.addMyAchievement(allMonstersAchievement);
+                            Dialog.info(resources.getString("achievementUnlockHeader"), resources.getString("achievementUnlockedPre") + "\n" + resources.getString("achievementAllMonsters"));
+
+                            disposables.add(achievementsService.updateUserAchievement(tokenStorage.getCurrentUser()._id(), "AllMonsters", allMonstersAchievement).subscribe());
+                        }
+                    }
+                }));
     }
 
     @FXML
