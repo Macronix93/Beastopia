@@ -7,27 +7,8 @@ import de.uniks.beastopia.teaml.controller.ingame.items.ShopController;
 import de.uniks.beastopia.teaml.controller.ingame.mondex.MondexListController;
 import de.uniks.beastopia.teaml.controller.ingame.scoreboard.ScoreboardController;
 import de.uniks.beastopia.teaml.controller.menu.PauseController;
-import de.uniks.beastopia.teaml.rest.Achievement;
-import de.uniks.beastopia.teaml.rest.Area;
-import de.uniks.beastopia.teaml.rest.Chunk;
-import de.uniks.beastopia.teaml.rest.Layer;
-import de.uniks.beastopia.teaml.rest.Map;
-import de.uniks.beastopia.teaml.rest.MonsterTypeDto;
-import de.uniks.beastopia.teaml.rest.NPCInfo;
-import de.uniks.beastopia.teaml.rest.Position;
-import de.uniks.beastopia.teaml.rest.Region;
-import de.uniks.beastopia.teaml.rest.Spawn;
-import de.uniks.beastopia.teaml.rest.TileSet;
-import de.uniks.beastopia.teaml.rest.TileSetDescription;
-import de.uniks.beastopia.teaml.rest.Trainer;
-import de.uniks.beastopia.teaml.rest.User;
-import de.uniks.beastopia.teaml.service.AStarService;
-import de.uniks.beastopia.teaml.service.AreaService;
-import de.uniks.beastopia.teaml.service.DataCache;
-import de.uniks.beastopia.teaml.service.EncounterOpponentsService;
-import de.uniks.beastopia.teaml.service.PresetsService;
-import de.uniks.beastopia.teaml.service.TokenStorage;
-import de.uniks.beastopia.teaml.service.TrainerService;
+import de.uniks.beastopia.teaml.rest.*;
+import de.uniks.beastopia.teaml.service.*;
 import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.sockets.UDPEventListener;
 import de.uniks.beastopia.teaml.utils.PlayerState;
@@ -59,13 +40,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.atLeast;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class IngameControllerTest extends ApplicationTest {
@@ -93,6 +68,8 @@ class IngameControllerTest extends ApplicationTest {
     PresetsService presetsService;
     @Mock
     AStarService aStarService;
+    @Mock
+    AchievementsService achievementsService;
     @Mock
     UDPEventListener udpEventListener;
     @Mock
@@ -137,6 +114,7 @@ class IngameControllerTest extends ApplicationTest {
     final Achievement achievement = new Achievement(null, null, "MoveCharacter", "ID_USER", null, 100);
     final List<Area> areas = List.of(area);
     final MonsterTypeDto monsterTypeDto = new MonsterTypeDto(3, "name", "image", List.of("1", "2"), "a");
+    final Monster monster = new Monster(null, null, "ID_MONSTER", "ID_TRAINER", 3, 1, 0, null, null, null, List.of());
 
     @Override
     public void start(Stage stage) {
@@ -178,6 +156,9 @@ class IngameControllerTest extends ApplicationTest {
         doNothing().when(pauseController).setOnCloseRequest(any());
         doNothing().when(pauseController).init();
         when(pauseController.render()).thenReturn(new Pane());
+        when(achievementsService.getUserAchievements(anyString())).thenReturn(Observable.just(List.of(achievement)));
+        when(trainerService.getTrainerMonsters(anyString(), anyString())).thenReturn(Observable.just(List.of(monster)));
+        when(achievementsService.updateUserAchievement(anyString(), anyString(), any())).thenReturn(Observable.just(achievement));
         ingameController.setRegion(region);
 
         app.start(stage);

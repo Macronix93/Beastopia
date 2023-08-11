@@ -291,6 +291,15 @@ public class IngameController extends Controller {
             disposables.add(presetsService.getAllBeasts().observeOn(FX_SCHEDULER).subscribe(beasts -> cache.setAllBeasts(beasts), error -> Dialog.error(error.getMessage(), "Error")));
         }
 
+        if (cache.getMyAchievements().isEmpty()) {
+            disposables.add(achievementsService.getUserAchievements(tokenStorage.getCurrentUser()._id()).observeOn(FX_SCHEDULER).subscribe(achievements -> {
+                cache.setMyAchievements(achievements);
+                checkCoinAchievement();
+            }, error -> Dialog.error(error.getMessage(), "Error")));
+        } else {
+            checkCoinAchievement();
+        }
+
         scoreBoardController.setOnCloseRequested(() -> {
             scoreBoardLayout.getChildren().remove(scoreBoardParent);
             currentMenu = MENU_NONE;
@@ -499,6 +508,10 @@ public class IngameController extends Controller {
                         error -> System.err.println("Fehler: " + error.getMessage())
                 )
         );
+
+        disposables.add(eventListener.listen("trainers." + cache.getTrainer()._id() + ".monsters.*.created", Monster.class)
+                .observeOn(FX_SCHEDULER).subscribe(monster -> checkMonsterAchievement()));
+        checkMonsterAchievement();
 
         pauseHint.toFront();
         beastlistHint.toFront();
@@ -1740,6 +1753,122 @@ public class IngameController extends Controller {
                         Dialog.info(resources.getString("achievementUnlockHeader"), resources.getString("achievementUnlockedPre") + "\n" + resources.getString("achievementVisitAllRegions"));
                     }
                 }
+            }
+        }
+    }
+
+    public void checkMonsterAchievement() {
+        disposables.add(trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), cache.getTrainer()._id())
+                .observeOn(FX_SCHEDULER)
+                .subscribe(ml -> {
+                    if (!ml.isEmpty()) {
+                        Achievement firstMonsterAchievement = cache.getMyAchievements().stream()
+                                .filter(achievement -> achievement.id().equals("FirstMonster"))
+                                .findFirst()
+                                .orElse(null);
+
+                        Achievement tenMonstersAchievement = cache.getMyAchievements().stream()
+                                .filter(achievement -> achievement.id().equals("TenMonsters"))
+                                .findFirst()
+                                .orElse(null);
+
+                        Achievement fiftyMonstersAchievement = cache.getMyAchievements().stream()
+                                .filter(achievement -> achievement.id().equals("FiftyMonsters"))
+                                .findFirst()
+                                .orElse(null);
+
+                        Achievement allMonstersAchievement = cache.getMyAchievements().stream()
+                                .filter(achievement -> achievement.id().equals("AllMonsters"))
+                                .findFirst()
+                                .orElse(null);
+
+                        if (firstMonsterAchievement == null) {
+                            firstMonsterAchievement = new Achievement(null, null, "FirstMonster", tokenStorage.getCurrentUser()._id(), new Date(), 100);
+                            cache.addMyAchievement(firstMonsterAchievement);
+                            Dialog.info(resources.getString("achievementUnlockHeader"), resources.getString("achievementUnlockedPre") + "\n" + resources.getString("achievementFirstMonster"));
+
+                            disposables.add(achievementsService.updateUserAchievement(tokenStorage.getCurrentUser()._id(), "FirstMonster", firstMonsterAchievement).subscribe());
+                        }
+
+                        if (ml.size() > 9 && tenMonstersAchievement == null) {
+                            tenMonstersAchievement = new Achievement(null, null, "TenMonsters", tokenStorage.getCurrentUser()._id(), new Date(), 100);
+                            cache.addMyAchievement(tenMonstersAchievement);
+                            Dialog.info(resources.getString("achievementUnlockHeader"), resources.getString("achievementUnlockedPre") + "\n" + resources.getString("achievementTenMonsters"));
+
+                            disposables.add(achievementsService.updateUserAchievement(tokenStorage.getCurrentUser()._id(), "TenMonsters", tenMonstersAchievement).subscribe());
+                        }
+
+                        if (ml.size() > 49 && fiftyMonstersAchievement == null) {
+                            fiftyMonstersAchievement = new Achievement(null, null, "FiftyMonsters", tokenStorage.getCurrentUser()._id(), new Date(), 100);
+                            cache.addMyAchievement(fiftyMonstersAchievement);
+                            Dialog.info(resources.getString("achievementUnlockHeader"), resources.getString("achievementUnlockedPre") + "\n" + resources.getString("achievementFiftyMonsters"));
+
+                            disposables.add(achievementsService.updateUserAchievement(tokenStorage.getCurrentUser()._id(), "FiftyMonsters", fiftyMonstersAchievement).subscribe());
+                        }
+
+                        if (cache.getTrainer().encounteredMonsterTypes().size() == 210 && allMonstersAchievement == null) {
+                            allMonstersAchievement = new Achievement(null, null, "AllMonsters", tokenStorage.getCurrentUser()._id(), new Date(), 100);
+                            cache.addMyAchievement(allMonstersAchievement);
+                            Dialog.info(resources.getString("achievementUnlockHeader"), resources.getString("achievementUnlockedPre") + "\n" + resources.getString("achievementAllMonsters"));
+
+                            disposables.add(achievementsService.updateUserAchievement(tokenStorage.getCurrentUser()._id(), "AllMonsters", allMonstersAchievement).subscribe());
+                        }
+                    }
+                }));
+    }
+
+    public void checkCoinAchievement() {
+        if (cache.getTrainer().coins() > 0) {
+            Achievement firstCoinsAchievement = cache.getMyAchievements().stream()
+                    .filter(achievement -> achievement.id().equals("firstCoins"))
+                    .findFirst()
+                    .orElse(null);
+
+            Achievement hundredCoinsAchievement = cache.getMyAchievements().stream()
+                    .filter(achievement -> achievement.id().equals("hundredCoins"))
+                    .findFirst()
+                    .orElse(null);
+
+            Achievement thousandCoinsAchievement = cache.getMyAchievements().stream()
+                    .filter(achievement -> achievement.id().equals("thousandCoins"))
+                    .findFirst()
+                    .orElse(null);
+
+            Achievement hundredThousandCoinsAchievement = cache.getMyAchievements().stream()
+                    .filter(achievement -> achievement.id().equals("hundredThousandCoins"))
+                    .findFirst()
+                    .orElse(null);
+
+            if (firstCoinsAchievement == null) {
+                firstCoinsAchievement = new Achievement(null, null, "firstCoins", tokenStorage.getCurrentUser()._id(), new Date(), 100);
+                cache.addMyAchievement(firstCoinsAchievement);
+                Dialog.info(resources.getString("achievementUnlockHeader"), resources.getString("achievementUnlockedPre") + "\n" + resources.getString("achievementFirstCoins"));
+
+                disposables.add(achievementsService.updateUserAchievement(tokenStorage.getCurrentUser()._id(), "firstCoins", firstCoinsAchievement).subscribe());
+            }
+
+            if (hundredCoinsAchievement == null && cache.getTrainer().coins() > 99) {
+                hundredCoinsAchievement = new Achievement(null, null, "hundredCoins", tokenStorage.getCurrentUser()._id(), new Date(), 100);
+                cache.addMyAchievement(hundredCoinsAchievement);
+                Dialog.info(resources.getString("achievementUnlockHeader"), resources.getString("achievementUnlockedPre") + "\n" + resources.getString("achievementHundredCoins"));
+
+                disposables.add(achievementsService.updateUserAchievement(tokenStorage.getCurrentUser()._id(), "hundredCoins", hundredCoinsAchievement).subscribe());
+            }
+
+            if (thousandCoinsAchievement == null && cache.getTrainer().coins() > 999) {
+                thousandCoinsAchievement = new Achievement(null, null, "thousandCoins", tokenStorage.getCurrentUser()._id(), new Date(), 100);
+                cache.addMyAchievement(thousandCoinsAchievement);
+                Dialog.info(resources.getString("achievementUnlockHeader"), resources.getString("achievementUnlockedPre") + "\n" + resources.getString("achievementThousandCoins"));
+
+                disposables.add(achievementsService.updateUserAchievement(tokenStorage.getCurrentUser()._id(), "thousandCoins", thousandCoinsAchievement).subscribe());
+            }
+
+            if (hundredThousandCoinsAchievement == null && cache.getTrainer().coins() > 99999) {
+                hundredThousandCoinsAchievement = new Achievement(null, null, "hundredThousandCoins", tokenStorage.getCurrentUser()._id(), new Date(), 100);
+                cache.addMyAchievement(hundredThousandCoinsAchievement);
+                Dialog.info(resources.getString("achievementUnlockHeader"), resources.getString("achievementUnlockedPre") + "\n" + resources.getString("achievementHundredThousandCoins"));
+
+                disposables.add(achievementsService.updateUserAchievement(tokenStorage.getCurrentUser()._id(), "hundredThousandCoins", hundredThousandCoinsAchievement).subscribe());
             }
         }
     }
