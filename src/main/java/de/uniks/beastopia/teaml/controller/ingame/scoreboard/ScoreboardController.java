@@ -84,6 +84,14 @@ public class ScoreboardController extends Controller {
                             cache.addAchievementDescription("MeetAlbert", resources.getString("achievementMeetAlbert"));
                     case "VisitAllRegions" ->
                             cache.addAchievementDescription("VisitAllRegions", resources.getString("achievementVisitAllRegions"));
+                    case "FirstMonster" ->
+                        cache.addAchievementDescription("FirstMonster", resources.getString("achievementFistMonster"));
+                    case "TenMonsters" ->
+                        cache.addAchievementDescription("TenMonsters", resources.getString("achievementTenMonsters"));
+                    case "FiftyMonsters" ->
+                        cache.addAchievementDescription("FiftyMonsters", resources.getString("achievementFiftyMonsters"));
+                    case "AllMonsters" ->
+                        cache.addAchievementDescription("AllMonsters", resources.getString("achievementAllMonsters"));
                     default -> cache.addAchievementDescription("NotFound", "NotFound");
                 }
             }
