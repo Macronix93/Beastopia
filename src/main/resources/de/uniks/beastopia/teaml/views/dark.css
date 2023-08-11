@@ -53,7 +53,6 @@
     -fx-effect: dropshadow(gaussian, #313131, 5, 0, 0, 1);
 }
 
-.radio-button .radio,
 .slider .track,
 .scroll-bar .track,
 .scroll-bar .increment-button,
@@ -63,8 +62,18 @@
     -fx-background-color: #395B64;
     -fx-border-color: #313131;
     -fx-border-width: 1px;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-effect: dropshadow(gaussian, #313131, 5, 0, 0, 1);
+    -fx-alignment: center;
+}
+
+.radio-button .radio {
+    -fx-background-color: #395B64;
+    -fx-border-color: #313131;
     -fx-border-radius: 50%;
-    -fx-background-radius: 50%;
+    -fx-background-radius: 50% ;
+    -fx-border-width: 1px;
     -fx-effect: dropshadow(gaussian, #313131, 5, 0, 0, 1);
     -fx-alignment: center;
 }

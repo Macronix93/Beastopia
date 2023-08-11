@@ -19,6 +19,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -36,6 +38,10 @@ public class EditBeastTeamController extends Controller {
     public Button beastTeamBack;
     @FXML
     public Button editBeastTeam;
+    @FXML
+    public HBox backroundHbox;
+    @FXML
+    public VBox innerVBox;
     @Inject
     App app;
     @Inject
