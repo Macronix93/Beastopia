@@ -4,6 +4,7 @@ import de.uniks.beastopia.teaml.App;
 import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.DataCache;
+import de.uniks.beastopia.teaml.service.ImageService;
 import de.uniks.beastopia.teaml.service.RegistrationService;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import io.reactivex.rxjava3.core.Observable;
@@ -44,6 +45,9 @@ class RegistrationControllerTest extends ApplicationTest {
 
     @Mock
     DataCache cache;
+    @SuppressWarnings("unused")
+    @Mock
+    ImageService imageService;
 
     @Spy
     @SuppressWarnings("unused")

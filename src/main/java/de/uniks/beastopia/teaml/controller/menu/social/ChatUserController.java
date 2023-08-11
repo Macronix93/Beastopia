@@ -4,8 +4,8 @@ import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Group;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.GroupListService;
+import de.uniks.beastopia.teaml.service.ImageService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
-import de.uniks.beastopia.teaml.utils.AssetProvider;
 import de.uniks.beastopia.teaml.utils.Dialog;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
@@ -40,9 +40,9 @@ public class ChatUserController extends Controller {
     @Inject
     GroupListService groupListService;
     @Inject
-    Provider<DirectMessageController> directMessageControllerProvider;
+    ImageService imageService;
     @Inject
-    AssetProvider assets;
+    Provider<DirectMessageController> directMessageControllerProvider;
     private Group group;
     private ImageView pinnedImg;
     private ImageView notPinnedImg;
@@ -52,12 +52,6 @@ public class ChatUserController extends Controller {
     @Inject
     public ChatUserController() {
 
-    }
-
-    @Override
-    public void init() {
-        pinnedImg = assets.getIcon("buttons", "filled_pin", 25, 25);
-        notPinnedImg = assets.getIcon("buttons", "pin", 25, 25);
     }
 
     public void setOnGroupClicked(Consumer<Group> onGroupClicked) {
@@ -75,6 +69,10 @@ public class ChatUserController extends Controller {
     @Override
     public Parent render() {
         Parent parent = super.render();
+
+        pinnedImg = imageService.getPinnedImage();
+        notPinnedImg = imageService.getNotPinnedImage();
+
         String otherID = group.members().get(0).equals(tokenStorage.getCurrentUser()._id())
                 ? group.members().get(1)
                 : group.members().get(0);

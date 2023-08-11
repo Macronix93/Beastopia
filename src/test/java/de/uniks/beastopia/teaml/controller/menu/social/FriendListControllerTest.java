@@ -5,6 +5,7 @@ import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.FriendListService;
+import de.uniks.beastopia.teaml.service.ImageService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import io.reactivex.rxjava3.core.Observable;
@@ -36,6 +37,11 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class FriendListControllerTest extends ApplicationTest {
 
+    final List<User> users = new ArrayList<>(List.of(
+            new User(null, null, "ID0", "user1", "online", null, List.of("ID1", "ID2")),
+            new User(null, null, "ID1", "user2", "online", null, List.of()),
+            new User(null, null, "ID2", "user3", "offline", null, List.of())
+    ));
     @Spy
     Provider<FriendController> friendControllerProvider;
     @Spy
@@ -50,6 +56,9 @@ class FriendListControllerTest extends ApplicationTest {
     DataCache cache;
     @Mock
     Prefs prefs;
+    @SuppressWarnings("unused")
+    @Mock
+    ImageService imageService;
     @Spy
     App app;
     @Spy
@@ -57,13 +66,6 @@ class FriendListControllerTest extends ApplicationTest {
     ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang");
     @InjectMocks
     FriendListController friendListController;
-
-    final List<User> users = new ArrayList<>(List.of(
-            new User(null, null, "ID0", "user1", "online", null, List.of("ID1", "ID2")),
-            new User(null, null, "ID1", "user2", "online", null, List.of()),
-            new User(null, null, "ID2", "user3", "offline", null, List.of())
-    ));
-
     FriendController mockedFriendController1;
     FriendController mockedFriendController2;
     DirectMessageController mockedDirectMessageController;

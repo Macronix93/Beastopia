@@ -4,10 +4,7 @@ import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.auth.LoginController;
 import de.uniks.beastopia.teaml.controller.menu.social.FriendListController;
-import de.uniks.beastopia.teaml.service.AchievementsService;
-import de.uniks.beastopia.teaml.service.AuthService;
-import de.uniks.beastopia.teaml.service.DataCache;
-import de.uniks.beastopia.teaml.service.TokenStorage;
+import de.uniks.beastopia.teaml.service.*;
 import de.uniks.beastopia.teaml.utils.Dialog;
 import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
@@ -35,6 +32,10 @@ public class MenuController extends Controller {
     public Button logoutBtn;
     @FXML
     public Button editProfileBtn;
+    @FXML
+    public ImageView editProfileImage;
+    @FXML
+    public ImageView settingsImage;
     @Inject
     Provider<RegionController> regionControllerProvider;
     @Inject
@@ -50,7 +51,13 @@ public class MenuController extends Controller {
     @Inject
     TokenStorage tokenStorage;
     @Inject
+    ImageService imageService;
+    @Inject
     AchievementsService achievementsService;
+    @Inject
+    DataCache cache;
+    @Inject
+    Prefs prefs;
     @FXML
     private VBox friendListContainer;
     @FXML
@@ -61,10 +68,6 @@ public class MenuController extends Controller {
     private ImageView userAvatar;
     @FXML
     private Text userName;
-    @Inject
-    DataCache cache;
-    @Inject
-    Prefs prefs;
 
     @Inject
     public MenuController() {
@@ -100,9 +103,11 @@ public class MenuController extends Controller {
     public Parent render() {
         Parent parent = super.render();
 
-        banner.setImage(new Image(Objects.requireNonNull(Main.class.getResourceAsStream("assets/beastopia_banner.png"))));
+        banner.setImage(imageService.getBanner());
         userAvatar.setImage(cache.getImageAvatar(tokenStorage.getCurrentUser()));
         userName.setText(tokenStorage.getCurrentUser().name());
+        editProfileImage.setImage(imageService.getThemeImage(new Image(Objects.requireNonNull(Main.class.getResourceAsStream("assets/buttons/edit.png")))));
+        settingsImage.setImage(imageService.getThemeImage(new Image(Objects.requireNonNull(Main.class.getResourceAsStream("assets/buttons/settings.png")))));
 
         Controller friendListController = friendListControllerProvider.get();
         subControllers.add(friendListController);

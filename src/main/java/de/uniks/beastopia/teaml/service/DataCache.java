@@ -34,7 +34,6 @@ public class DataCache {
 
     private static final ImageView IMAGE_VIEW = new ImageView();
     private static final Scheduler FX_SCHEDULER = io.reactivex.rxjava3.schedulers.Schedulers.from(Platform::runLater);
-    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     private Map<String, Trainer> trainers = new HashMap<>();
     private final List<Pair<String, Image>> characters = new ArrayList<>();
     private final List<Pair<String, Image>> charactersResized = new ArrayList<>();
@@ -318,6 +317,14 @@ public class DataCache {
         this.allBeasts = beasts;
     }
 
+    public List<MonsterTypeDto> getAllBeasts() {
+        return allBeasts;
+    }
+
+    public void addToAllBeasts(MonsterTypeDto beast) {
+        this.allBeasts.add(beast);
+    }
+
     public MonsterTypeDto getBeastDto(int id) {
         return allBeasts.stream()
                 .filter(monsterTypeDto -> monsterTypeDto.id() == id)
@@ -506,6 +513,7 @@ public class DataCache {
     }
 
     public void setTrainerItems(List<Item> itemList) {
+        this.trainerItems.clear();
         this.trainerItems = itemList;
     }
 

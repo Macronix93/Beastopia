@@ -5,10 +5,7 @@ import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.controller.menu.MenuController;
 import de.uniks.beastopia.teaml.rest.Map;
 import de.uniks.beastopia.teaml.rest.*;
-import de.uniks.beastopia.teaml.service.DataCache;
-import de.uniks.beastopia.teaml.service.PresetsService;
-import de.uniks.beastopia.teaml.service.TokenStorage;
-import de.uniks.beastopia.teaml.service.TrainerService;
+import de.uniks.beastopia.teaml.service.*;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -42,27 +39,8 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class TrainerControllerTest extends ApplicationTest {
     @Spy
-    App app;
-    @Spy
     final
     ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang", Locale.forLanguageTag("en"));
-    @InjectMocks
-    TrainerController trainerController;
-    @Mock
-    Provider<DeleteTrainerController> deleteTrainerControllerProvider;
-    @Mock
-    Provider<IngameController> ingameControllerProvider;
-    @Mock
-    Provider<MenuController> menuControllerProvider;
-    @Mock
-    DataCache cache;
-    @Mock
-    PresetsService presetsService;
-    @Mock
-    TrainerService trainerService;
-    @Mock
-    TokenStorage tokenStorage;
-
     final Image image = createImage(2, 2, List.of(new Color(255, 0, 255), new Color(0, 255, 0), new Color(0, 0, 255), new Color(255, 255, 0)));
     final List<Pair<String, Image>> allCharacters = List.of(
             new Pair<>("A.png", image),
@@ -93,6 +71,62 @@ class TrainerControllerTest extends ApplicationTest {
     final List<Achievement> achievements = List.of(
             new Achievement(null, null, "FirstTrainer", "123", null, 100),
             new Achievement(null, null, "FirstRegion", "123", null, 100));
+    @Spy
+    App app;
+    @InjectMocks
+    TrainerController trainerController;
+    @Mock
+    Provider<DeleteTrainerController> deleteTrainerControllerProvider;
+    @Mock
+    Provider<IngameController> ingameControllerProvider;
+    @Mock
+    Provider<MenuController> menuControllerProvider;
+    @Mock
+    DataCache cache;
+    @Mock
+    PresetsService presetsService;
+    @Mock
+    TrainerService trainerService;
+    @Mock
+    TokenStorage tokenStorage;
+    @SuppressWarnings("unused")
+    @Mock
+    ImageService imageService;
+
+    @SuppressWarnings("SameParameterValue")
+    private static Image createImage(int width, int height, List<Color> colors) {
+        // create buffered image
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        int i = 0;
+        for (int y = 0; y < image.getHeight(); y++) {
+            if (i >= colors.size()) {
+                break;
+            }
+            for (int x = 0; x < image.getWidth(); x++) {
+                if (i >= colors.size()) {
+                    break;
+                }
+                image.setRGB(x, y, colors.get(i++).getRGB());
+            }
+        }
+        return convertToFxImage(image);
+    }
+
+    // sauce: https://stackoverflow.com/questions/30970005/bufferedimage-to-javafx-image
+    private static Image convertToFxImage(BufferedImage image) {
+        WritableImage wr = null;
+        if (image != null) {
+            wr = new WritableImage(image.getWidth(), image.getHeight());
+            PixelWriter pw = wr.getPixelWriter();
+            for (int x = 0; x < image.getWidth(); x++) {
+                for (int y = 0; y < image.getHeight(); y++) {
+                    pw.setArgb(x, y, image.getRGB(x, y));
+                }
+            }
+        }
+
+        return new ImageView(wr).getImage();
+    }
 
     @Override
     public void start(Stage stage) {
@@ -127,7 +161,7 @@ class TrainerControllerTest extends ApplicationTest {
 
         when(trainerService.createTrainer(anyString(), anyString(), anyString()))
                 .thenReturn(Observable.just(
-                        new Trainer(null, null, "ID", "REGION", "USER", "TRAINER_NAME", "A.png", List.of(), List.of(), List.of(),0, null, 0, 0, 0, new NPCInfo(false, false, false, false, List.of(), List.of(), List.of()))));
+                        new Trainer(null, null, "ID", "REGION", "USER", "TRAINER_NAME", "A.png", List.of(), List.of(), List.of(), 0, null, 0, 0, 0, new NPCInfo(false, false, false, false, List.of(), List.of(), List.of()))));
 
         clickOn("#trainerNameInput");
         write("MyTrainer");
@@ -261,41 +295,5 @@ class TrainerControllerTest extends ApplicationTest {
         Node dialogPane = lookup(".dialog-pane").query();
         Node result = from(dialogPane).lookup((Text t) -> t.getText().contains("a name for your trainer")).query();
         assertNotNull(result);
-    }
-
-
-    @SuppressWarnings("SameParameterValue")
-    private static Image createImage(int width, int height, List<Color> colors) {
-        // create buffered image
-        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        int i = 0;
-        for (int y = 0; y < image.getHeight(); y++) {
-            if (i >= colors.size()) {
-                break;
-            }
-            for (int x = 0; x < image.getWidth(); x++) {
-                if (i >= colors.size()) {
-                    break;
-                }
-                image.setRGB(x, y, colors.get(i++).getRGB());
-            }
-        }
-        return convertToFxImage(image);
-    }
-
-    // sauce: https://stackoverflow.com/questions/30970005/bufferedimage-to-javafx-image
-    private static Image convertToFxImage(BufferedImage image) {
-        WritableImage wr = null;
-        if (image != null) {
-            wr = new WritableImage(image.getWidth(), image.getHeight());
-            PixelWriter pw = wr.getPixelWriter();
-            for (int x = 0; x < image.getWidth(); x++) {
-                for (int y = 0; y < image.getHeight(); y++) {
-                    pw.setArgb(x, y, image.getRGB(x, y));
-                }
-            }
-        }
-
-        return new ImageView(wr).getImage();
     }
 }

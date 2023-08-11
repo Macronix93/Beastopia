@@ -5,6 +5,7 @@ import de.uniks.beastopia.teaml.controller.AppPreparer;
 import de.uniks.beastopia.teaml.rest.Group;
 import de.uniks.beastopia.teaml.rest.User;
 import de.uniks.beastopia.teaml.service.GroupListService;
+import de.uniks.beastopia.teaml.service.ImageService;
 import de.uniks.beastopia.teaml.service.TokenStorage;
 import de.uniks.beastopia.teaml.utils.AssetProvider;
 import de.uniks.beastopia.teaml.utils.Prefs;
@@ -27,9 +28,11 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ChatGroupControllerTest extends ApplicationTest {
+    @Spy
+    final
+    App app = new App(null);
     @InjectMocks
     ChatGroupController chatGroupController;
-
     @Mock
     GroupListService groupListService;
     @Mock
@@ -38,10 +41,9 @@ public class ChatGroupControllerTest extends ApplicationTest {
     TokenStorage tokenStorage;
     @Mock
     Prefs prefs;
-
-    @Spy
-    final
-    App app = new App(null);
+    @SuppressWarnings("unused")
+    @Mock
+    ImageService imageService;
     @Spy
     @SuppressWarnings("unused")
     ResourceBundle resources = ResourceBundle.getBundle("de/uniks/beastopia/teaml/assets/lang");
