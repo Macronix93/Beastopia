@@ -1,11 +1,10 @@
 package de.uniks.beastopia.teaml.controller.ingame.mondex;
 
 import de.uniks.beastopia.teaml.controller.Controller;
+import de.uniks.beastopia.teaml.rest.Monster;
 import de.uniks.beastopia.teaml.rest.MonsterTypeDto;
-import de.uniks.beastopia.teaml.service.DataCache;
-import de.uniks.beastopia.teaml.service.ImageService;
-import de.uniks.beastopia.teaml.service.MondexService;
-import de.uniks.beastopia.teaml.service.PresetsService;
+import de.uniks.beastopia.teaml.service.*;
+import de.uniks.beastopia.teaml.utils.Prefs;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
@@ -15,6 +14,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
+import java.util.ResourceBundle;
 
 public class MondexDetailController extends Controller {
 
@@ -32,6 +32,8 @@ public class MondexDetailController extends Controller {
     public ImageView imageView_TypeIcon1;
     @FXML
     public ImageView imageView_TypeIcon2;
+    @FXML
+    public Label monsterTeamLabel;
     @Inject
     MondexService mondexService;
     @Inject
@@ -40,8 +42,16 @@ public class MondexDetailController extends Controller {
     ImageService imageService;
     @Inject
     DataCache dataCache;
+    @Inject
+    TrainerService trainerService;
+    @Inject
+    Prefs prefs;
+    @Inject
+    ResourceBundle resourceBundle;
+
     private MonsterTypeDto monster;
     private boolean known;
+    private boolean inTeam;
 
 
     @Inject
@@ -65,6 +75,27 @@ public class MondexDetailController extends Controller {
     public Parent render() {
         Parent parent = super.render();
         if (known) {
+
+            disposables.add(trainerService.getTrainerMonsters(prefs.getRegionID(), dataCache.getTrainer()._id())
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe(monsters -> {
+                        inTeam = false;
+                        for (Monster m : monsters) {
+                            if (m.type() == monster.id() && dataCache.getTrainer().team().contains(m._id())) {
+                                inTeam = true;
+                                break;
+                            }
+                        }
+                        if (inTeam) {
+                            monsterTeamLabel.setText(monster.name() + " " + resourceBundle.getString("monsterInTeam"));
+                        } else {
+                            monsterTeamLabel.setText(monster.name() + " " + resourceBundle.getString("monsterNotInTeam"));
+                        }
+
+                    }));
+
+
+
             label_name.setText(monster.name());
             label_type.setText("Type: " + monster.type().get(0));
             Image typeIcon1 = new Image("file:src/main/resources/de/uniks/beastopia/teaml/assets/monsterTypeIcons/" + monster.type().get(0) + ".png");
