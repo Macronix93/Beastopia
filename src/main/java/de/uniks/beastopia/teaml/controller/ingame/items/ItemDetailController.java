@@ -256,6 +256,7 @@ public class ItemDetailController extends Controller {
                     }
                 }));
         cache.setTrainer(updateTrainer(amount, usage));
+        ingameController.checkCoinAchievement();
         if (itemType.price() > cache.getTrainer().coins() && isShop && !onlyInventory) {
             shopBtn.setDisable(true);
             ingameController.toggleShopItemDetails(itemType);

@@ -504,11 +504,6 @@ public class IngameController extends Controller {
                 .observeOn(FX_SCHEDULER).subscribe(monster -> checkMonsterAchievement()));
         checkMonsterAchievement();
 
-        disposables.add(eventListener.listen("regions." + cache.getJoinedRegion()._id() + ".trainers." + cache.getTrainer()._id() + ".updated", Trainer.class)
-                .observeOn(FX_SCHEDULER).subscribe(t -> {
-                    cache.setTrainer(t.data());
-                    checkCoinAchievement();
-                }));
         checkCoinAchievement();
 
         pauseHint.toFront();
@@ -1815,7 +1810,7 @@ public class IngameController extends Controller {
                 }));
     }
 
-    private void checkCoinAchievement() {
+    public void checkCoinAchievement() {
         if (cache.getTrainer().coins() > 0) {
             Achievement firstCoinsAchievement = cache.getMyAchievements().stream()
                     .filter(achievement -> achievement.id().equals("firstCoins"))
@@ -1845,7 +1840,7 @@ public class IngameController extends Controller {
                 disposables.add(achievementsService.updateUserAchievement(tokenStorage.getCurrentUser()._id(), "firstCoins", firstCoinsAchievement).subscribe());
             }
 
-            if (hundredCoinsAchievement == null) {
+            if (hundredCoinsAchievement == null && cache.getTrainer().coins() > 99) {
                 hundredCoinsAchievement = new Achievement(null, null, "hundredCoins", tokenStorage.getCurrentUser()._id(), new Date(), 100);
                 cache.addMyAchievement(hundredCoinsAchievement);
                 Dialog.info(resources.getString("achievementUnlockHeader"), resources.getString("achievementUnlockedPre") + "\n" + resources.getString("achievementHundredCoins"));
@@ -1853,7 +1848,7 @@ public class IngameController extends Controller {
                 disposables.add(achievementsService.updateUserAchievement(tokenStorage.getCurrentUser()._id(), "hundredCoins", hundredCoinsAchievement).subscribe());
             }
 
-            if (thousandCoinsAchievement == null) {
+            if (thousandCoinsAchievement == null && cache.getTrainer().coins() > 999) {
                 thousandCoinsAchievement = new Achievement(null, null, "thousandCoins", tokenStorage.getCurrentUser()._id(), new Date(), 100);
                 cache.addMyAchievement(thousandCoinsAchievement);
                 Dialog.info(resources.getString("achievementUnlockHeader"), resources.getString("achievementUnlockedPre") + "\n" + resources.getString("achievementThousandCoins"));
@@ -1861,7 +1856,7 @@ public class IngameController extends Controller {
                 disposables.add(achievementsService.updateUserAchievement(tokenStorage.getCurrentUser()._id(), "thousandCoins", thousandCoinsAchievement).subscribe());
             }
 
-            if (hundredThousandCoinsAchievement == null) {
+            if (hundredThousandCoinsAchievement == null && cache.getTrainer().coins() > 99999) {
                 hundredThousandCoinsAchievement = new Achievement(null, null, "hundredThousandCoins", tokenStorage.getCurrentUser()._id(), new Date(), 100);
                 cache.addMyAchievement(hundredThousandCoinsAchievement);
                 Dialog.info(resources.getString("achievementUnlockHeader"), resources.getString("achievementUnlockedPre") + "\n" + resources.getString("achievementHundredThousandCoins"));
