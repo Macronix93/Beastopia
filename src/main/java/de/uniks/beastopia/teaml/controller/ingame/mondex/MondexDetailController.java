@@ -1,5 +1,6 @@
 package de.uniks.beastopia.teaml.controller.ingame.mondex;
 
+import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.rest.Monster;
 import de.uniks.beastopia.teaml.rest.MonsterTypeDto;
@@ -14,6 +15,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class MondexDetailController extends Controller {
@@ -98,11 +100,11 @@ public class MondexDetailController extends Controller {
 
             label_name.setText(monster.name());
             label_type.setText("Type: " + monster.type().get(0));
-            Image typeIcon1 = new Image("file:src/main/resources/de/uniks/beastopia/teaml/assets/monsterTypeIcons/" + monster.type().get(0) + ".png");
+            Image typeIcon1 = new Image(Objects.requireNonNull(Main.class.getResourceAsStream("assets/monsterTypeIcons/" + monster.type().get(0) + ".png")));
             imageView_TypeIcon1.setImage(typeIcon1);
             if (monster.type().size() == 2) {
                 label_type.setText(label_type.getText() + ", " + monster.type().get(1));
-                Image typeIcon2 = new Image("file:src/main/resources/de/uniks/beastopia/teaml/assets/monsterTypeIcons/" + monster.type().get(1) + ".png");
+                Image typeIcon2 = new Image(Objects.requireNonNull(Main.class.getResourceAsStream("assets/monsterTypeIcons/" + monster.type().get(1) + ".png")));
                 imageView_TypeIcon2.setImage(typeIcon2);
             }
             textArea_description.setText(monster.description());
