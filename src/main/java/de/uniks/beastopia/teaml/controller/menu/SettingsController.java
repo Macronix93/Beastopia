@@ -10,6 +10,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Slider;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
@@ -42,6 +43,10 @@ public class SettingsController extends Controller {
     public Button backButton;
     @FXML
     public VBox vboxKeybindings;
+    @FXML
+    public HBox backroundVbox;
+    @FXML
+    public VBox innerVBox;
     @Inject
     Prefs prefs;
     @Inject
