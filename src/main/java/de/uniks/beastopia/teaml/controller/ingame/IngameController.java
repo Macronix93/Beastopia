@@ -335,7 +335,6 @@ public class IngameController extends Controller {
                 IngameController controller = ingameControllerProvider.get();
                 controller.setRegion(region);
                 controller.checkAreaAchievement(cache.getArea(trainer.area())._id());
-                controller.checkMonsterAchievement();
                 app.show(controller);
                 return;
             }
@@ -503,6 +502,7 @@ public class IngameController extends Controller {
 
         disposables.add(eventListener.listen("trainers." + cache.getTrainer()._id() + ".monsters.*.created", Monster.class)
                 .observeOn(FX_SCHEDULER).subscribe(monster -> checkMonsterAchievement()));
+        checkMonsterAchievement();
 
         pauseHint.toFront();
         beastlistHint.toFront();
