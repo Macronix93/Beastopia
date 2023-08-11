@@ -1757,7 +1757,7 @@ public class IngameController extends Controller {
         }
     }
 
-    private void checkMonsterAchievement() {
+    public void checkMonsterAchievement() {
         disposables.add(trainerService.getTrainerMonsters(cache.getJoinedRegion()._id(), cache.getTrainer()._id())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(ml -> {
