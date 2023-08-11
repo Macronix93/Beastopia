@@ -504,6 +504,13 @@ public class IngameController extends Controller {
                 .observeOn(FX_SCHEDULER).subscribe(monster -> checkMonsterAchievement()));
         checkMonsterAchievement();
 
+        disposables.add(eventListener.listen("regions." + cache.getJoinedRegion()._id() + ".trainers." + cache.getTrainer()._id() + ".updated", Trainer.class)
+                .observeOn(FX_SCHEDULER).subscribe(t -> {
+                    cache.setTrainer(t.data());
+                    checkCoinAchievement();
+                }));
+        checkCoinAchievement();
+
         pauseHint.toFront();
         beastlistHint.toFront();
         scoreboardHint.toFront();
@@ -1806,6 +1813,62 @@ public class IngameController extends Controller {
                         }
                     }
                 }));
+    }
+
+    private void checkCoinAchievement() {
+        if (cache.getTrainer().coins() > 0) {
+            Achievement firstCoinsAchievement = cache.getMyAchievements().stream()
+                    .filter(achievement -> achievement.id().equals("firstCoins"))
+                    .findFirst()
+                    .orElse(null);
+
+            Achievement hundredCoinsAchievement = cache.getMyAchievements().stream()
+                    .filter(achievement -> achievement.id().equals("hundredCoins"))
+                    .findFirst()
+                    .orElse(null);
+
+            Achievement thousandCoinsAchievement = cache.getMyAchievements().stream()
+                    .filter(achievement -> achievement.id().equals("thousandCoins"))
+                    .findFirst()
+                    .orElse(null);
+
+            Achievement hundredThousandCoinsAchievement = cache.getMyAchievements().stream()
+                    .filter(achievement -> achievement.id().equals("hundredThousandCoins"))
+                    .findFirst()
+                    .orElse(null);
+
+            if (firstCoinsAchievement == null) {
+                firstCoinsAchievement = new Achievement(null, null, "firstCoins", tokenStorage.getCurrentUser()._id(), new Date(), 100);
+                cache.addMyAchievement(firstCoinsAchievement);
+                Dialog.info(resources.getString("achievementUnlockHeader"), resources.getString("achievementUnlockedPre") + "\n" + resources.getString("achievementFirstCoins"));
+
+                disposables.add(achievementsService.updateUserAchievement(tokenStorage.getCurrentUser()._id(), "firstCoins", firstCoinsAchievement).subscribe());
+            }
+
+            if (hundredCoinsAchievement == null) {
+                hundredCoinsAchievement = new Achievement(null, null, "hundredCoins", tokenStorage.getCurrentUser()._id(), new Date(), 100);
+                cache.addMyAchievement(hundredCoinsAchievement);
+                Dialog.info(resources.getString("achievementUnlockHeader"), resources.getString("achievementUnlockedPre") + "\n" + resources.getString("achievementHundredCoins"));
+
+                disposables.add(achievementsService.updateUserAchievement(tokenStorage.getCurrentUser()._id(), "hundredCoins", hundredCoinsAchievement).subscribe());
+            }
+
+            if (thousandCoinsAchievement == null) {
+                thousandCoinsAchievement = new Achievement(null, null, "thousandCoins", tokenStorage.getCurrentUser()._id(), new Date(), 100);
+                cache.addMyAchievement(thousandCoinsAchievement);
+                Dialog.info(resources.getString("achievementUnlockHeader"), resources.getString("achievementUnlockedPre") + "\n" + resources.getString("achievementThousandCoins"));
+
+                disposables.add(achievementsService.updateUserAchievement(tokenStorage.getCurrentUser()._id(), "thousandCoins", thousandCoinsAchievement).subscribe());
+            }
+
+            if (hundredThousandCoinsAchievement == null) {
+                hundredThousandCoinsAchievement = new Achievement(null, null, "hundredThousandCoins", tokenStorage.getCurrentUser()._id(), new Date(), 100);
+                cache.addMyAchievement(hundredThousandCoinsAchievement);
+                Dialog.info(resources.getString("achievementUnlockHeader"), resources.getString("achievementUnlockedPre") + "\n" + resources.getString("achievementHundredThousandCoins"));
+
+                disposables.add(achievementsService.updateUserAchievement(tokenStorage.getCurrentUser()._id(), "hundredThousandCoins", hundredThousandCoinsAchievement).subscribe());
+            }
+        }
     }
 
     @FXML
