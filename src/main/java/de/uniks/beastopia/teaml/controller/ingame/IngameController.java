@@ -291,6 +291,15 @@ public class IngameController extends Controller {
             disposables.add(presetsService.getAllBeasts().observeOn(FX_SCHEDULER).subscribe(beasts -> cache.setAllBeasts(beasts), error -> Dialog.error(error.getMessage(), "Error")));
         }
 
+        if (cache.getMyAchievements().isEmpty()) {
+            disposables.add(achievementsService.getUserAchievements(tokenStorage.getCurrentUser()._id()).observeOn(FX_SCHEDULER).subscribe(achievements -> {
+                cache.setMyAchievements(achievements);
+                checkCoinAchievement();
+            }, error -> Dialog.error(error.getMessage(), "Error")));
+        } else {
+            checkCoinAchievement();
+        }
+
         scoreBoardController.setOnCloseRequested(() -> {
             scoreBoardLayout.getChildren().remove(scoreBoardParent);
             currentMenu = MENU_NONE;
@@ -503,8 +512,6 @@ public class IngameController extends Controller {
         disposables.add(eventListener.listen("trainers." + cache.getTrainer()._id() + ".monsters.*.created", Monster.class)
                 .observeOn(FX_SCHEDULER).subscribe(monster -> checkMonsterAchievement()));
         checkMonsterAchievement();
-
-        checkCoinAchievement();
 
         pauseHint.toFront();
         beastlistHint.toFront();
