@@ -185,8 +185,8 @@ public class EncounterController extends Controller {
     Parent allyMonsterInfo;
     Parent enemyMonsterInfo;
     Parent enemyAllyMonsterInfo;
-    Parent inventoryParent;
-    Parent itemDetailParent;
+    public Parent inventoryParent;
+    public Parent itemDetailParent;
 
     private float oldCoinNum;
     private AbilityDto ability1;
@@ -235,6 +235,8 @@ public class EncounterController extends Controller {
 
             // Add monster listener and opponent id for my monster
             addMonsterListener(true, false, false, false);
+
+            setMonsterOldStats();
         }
 
         if (allyTrainer != null) {
@@ -492,6 +494,16 @@ public class EncounterController extends Controller {
         );
 
         return parent;
+    }
+
+    private void setMonsterOldStats() {
+        oldLevel = myMonster.level();
+        oldHp = myMonster.attributes().health();
+        oldAttack = myMonster.attributes().attack();
+        oldDefense = myMonster.attributes().defense();
+        oldSpeed = myMonster.attributes().speed();
+        oldType = myMonster.type();
+        oldAbilities = myMonster.abilities();
     }
 
     private Monster getNewEnemyMonster(Event<Opponent> o, EnemyBeastInfoController enemyBeastInfoController1, Trainer enemyTrainer) {
@@ -862,13 +874,7 @@ public class EncounterController extends Controller {
                                 } else if (beastInfoController2 != null && e.monster().equals(beastInfoController2.getMonster()._id()) && allyMonster.currentAttributes().health() <= 0) {
                                     setAttackBoxesDisabled(true);
                                 }
-                                oldLevel = myMonster.level();
-                                oldHp = myMonster.attributes().health();
-                                oldAttack = myMonster.attributes().attack();
-                                oldDefense = myMonster.attributes().defense();
-                                oldSpeed = myMonster.attributes().speed();
-                                oldType = myMonster.type();
-                                oldAbilities = myMonster.abilities();
+                                setMonsterOldStats();
                             }
                             , error -> System.err.println("Error: " + error.getMessage())));
         } else {
@@ -1103,7 +1109,6 @@ public class EncounterController extends Controller {
             itemBox.getChildren().remove(inventoryParent);
         }
         InventoryController inventoryController = inventoryControllerProvider.get();
-        inventoryParent = inventoryController.render();
         inventoryController.setIfShop(false);
         inventoryController.setOnItemClicked(this::toggleInventoryItemDetails);
         inventoryController.setOnCloseRequest(() -> {
@@ -1112,6 +1117,7 @@ public class EncounterController extends Controller {
             anchorPane.toBack();
             anchorPane.setStyle("-fx-background-color: none;");
         });
+        inventoryParent = inventoryController.render();
         itemBox.getChildren().add(inventoryParent);
         anchorPane.toFront();
         anchorPane.setStyle("-fx-background-color: rgba(0,0,0,0.5);");
