@@ -40,6 +40,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.Stack;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @SuppressWarnings("unused")
@@ -284,6 +285,7 @@ public class EncounterController extends Controller {
         if (!cache.getCurrentEncounter().isWild()) {
             leaveEncounter.setVisible(false);
         }
+        AtomicBoolean caughtBeast = new AtomicBoolean(false);
 
         disposables.add(eventListener.listen("encounters." + cache.getCurrentEncounter()._id() + ".trainers.*.opponents.*.*", Opponent.class)
                 .observeOn(FX_SCHEDULER)
@@ -432,27 +434,26 @@ public class EncounterController extends Controller {
                                 }
                             } else if (o.suffix().equals("deleted")) {
                                 cache.removeOpponent(o.data()._id());
-                                if (monBallUsed && o.data().trainer().equals(cache.getTrainer()._id())) {
+                                if (monBallUsed && o.data().trainer().equals(wildTrainerId)) {
                                     setMonBallUsed(false);
                                     setCatchInfoBox(true);
-                                    return;
-                                }
-                                if (o.data().trainer().equals(cache.getTrainer()._id()) && allyTrainer != null && !allyTrainer._id().equals(cache.getTrainer()._id())) {
-                                    if (myMonster.currentAttributes().health() == 0) {
-                                        boolean foundMonsterWithHP = false;
-                                        for (Monster monster : ownMonsters) {
-                                            if (!monster._id().equals(myMonster._id()) && cache.getTrainer().team().contains(monster._id()) && monster.currentAttributes().health() > 0) {
-                                                foundMonsterWithHP = true;
-                                                break;
+                                    caughtBeast.set(true);
+                                } else if (!monBallUsed && !caughtBeast.get()) {
+                                    if (o.data().trainer().equals(cache.getTrainer()._id()) && allyTrainer != null && !allyTrainer._id().equals(cache.getTrainer()._id())) {
+                                        if (myMonster.currentAttributes().health() == 0) {
+                                            boolean foundMonsterWithHP = false;
+                                            for (Monster monster : ownMonsters) {
+                                                if (!monster._id().equals(myMonster._id()) && cache.getTrainer().team().contains(monster._id()) && monster.currentAttributes().health() > 0) {
+                                                    foundMonsterWithHP = true;
+                                                    break;
+                                                }
+                                            }
+                                            if (!foundMonsterWithHP) {
+                                                EndScreenController endScreenController = setEndScreen(false, myMonster, allyMonster, enemyMonster, enemyAllyMonster);
+                                                app.show(endScreenController);
                                             }
                                         }
-                                        if (!foundMonsterWithHP) {
-                                            EndScreenController endScreenController = setEndScreen(false, myMonster, allyMonster, enemyMonster, enemyAllyMonster);
-                                            app.show(endScreenController);
-                                        }
-                                    }
-                                } else {
-                                    if (!monBallUsed) {
+                                    } else {
                                         updateUIOnChange();
 
                                         if (cache.getCurrentOpponents().size() > 1) {
@@ -917,7 +918,6 @@ public class EncounterController extends Controller {
                     break;
                 }
             }
-            System.out.println(foundMonsterWithHP);
 
             if (isOneVersusTwo) {
                 System.out.println("is a one versus two or two versus two");
@@ -1151,7 +1151,6 @@ public class EncounterController extends Controller {
             infoAnchorPane.setStyle("-fx-background-color: rgba(0,0,0,0.5);");
             showItemAnimation(renderBeastController2, null, -1);
         } else {
-            System.out.println("Catch failed");
             showItemAnimation(renderBeastController2, null, -5);
         }
 
