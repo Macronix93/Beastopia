@@ -257,6 +257,9 @@ public class ItemDetailController extends Controller {
     }
 
     public void useDetailButton(int amount, String usage, String monsterId) {
+        if (cache.getCurrentEncounter() != null) {
+            return;
+        }
         disposables.add(trainerItemsService.updateItem(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), usage,
                 new UpdateItemDto(amount, itemType.id(), monsterId)).observeOn(FX_SCHEDULER).subscribe(
                 itemUpdated -> {
