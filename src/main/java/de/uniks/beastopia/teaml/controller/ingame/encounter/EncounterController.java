@@ -1127,6 +1127,7 @@ public class EncounterController extends Controller {
                 infoAnchorPane.setStyle("-fx-background-color: none;");
                 IngameController controller = ingameControllerProvider.get();
                 controller.setRegion(cache.getJoinedRegion());
+                cache.setCurrentEncounter(null);
                 app.show(controller);
             });
             catchInfoBox.getChildren().add(catchInfoParent);
