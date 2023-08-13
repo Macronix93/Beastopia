@@ -4,8 +4,17 @@ import de.uniks.beastopia.teaml.Main;
 import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.ingame.IngameController;
 import de.uniks.beastopia.teaml.controller.ingame.encounter.EncounterController;
-import de.uniks.beastopia.teaml.rest.*;
-import de.uniks.beastopia.teaml.service.*;
+import de.uniks.beastopia.teaml.rest.Item;
+import de.uniks.beastopia.teaml.rest.ItemTypeDto;
+import de.uniks.beastopia.teaml.rest.Monster;
+import de.uniks.beastopia.teaml.rest.Trainer;
+import de.uniks.beastopia.teaml.rest.UpdateItemDto;
+import de.uniks.beastopia.teaml.rest.UseItemMove;
+import de.uniks.beastopia.teaml.service.DataCache;
+import de.uniks.beastopia.teaml.service.EncounterOpponentsService;
+import de.uniks.beastopia.teaml.service.PresetsService;
+import de.uniks.beastopia.teaml.service.TrainerItemsService;
+import de.uniks.beastopia.teaml.service.TrainerService;
 import de.uniks.beastopia.teaml.sockets.EventListener;
 import de.uniks.beastopia.teaml.utils.Dialog;
 import de.uniks.beastopia.teaml.utils.FormatString;
@@ -235,13 +244,22 @@ public class ItemDetailController extends Controller {
                 )
                 .observeOn(FX_SCHEDULER)
                 .subscribe(item -> {
-                    encounterController.itemBox.getChildren().clear();
+                    encounterController.itemBox.getChildren().remove(encounterController.inventoryParent);
+                    encounterController.itemBox.getChildren().remove(encounterController.itemDetailParent);
                     encounterController.anchorPane.toBack();
                     encounterController.anchorPane.setStyle("-fx-background-color: none;");
+
+                    // Update inventory items
+                    disposables.add(trainerItemsService.getItems(cache.getJoinedRegion()._id(), cache.getTrainer()._id())
+                            .observeOn(FX_SCHEDULER).subscribe
+                                    (itemList -> cache.setTrainerItems(itemList), error -> System.out.println("Error:" + error)));
                 }));
     }
 
     public void useDetailButton(int amount, String usage, String monsterId) {
+        if (cache.getCurrentEncounter() != null) {
+            return;
+        }
         disposables.add(trainerItemsService.updateItem(cache.getJoinedRegion()._id(), cache.getTrainer()._id(), usage,
                 new UpdateItemDto(amount, itemType.id(), monsterId)).observeOn(FX_SCHEDULER).subscribe(
                 itemUpdated -> {
@@ -261,6 +279,9 @@ public class ItemDetailController extends Controller {
             shopBtn.setDisable(true);
             ingameController.toggleShopItemDetails(itemType);
         } else if (!onlyInventory && !isShop) {
+            ingameController.toggleInventoryItemDetails(itemType);
+        }
+        if (onlyInventory) {
             ingameController.toggleInventoryItemDetails(itemType);
         }
         disposables.add(trainerItemsService.getItems(cache.getJoinedRegion()._id(), cache.getTrainer()._id())

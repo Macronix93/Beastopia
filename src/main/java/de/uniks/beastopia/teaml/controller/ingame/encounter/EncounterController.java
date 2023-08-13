@@ -5,14 +5,7 @@ import de.uniks.beastopia.teaml.controller.Controller;
 import de.uniks.beastopia.teaml.controller.ingame.IngameController;
 import de.uniks.beastopia.teaml.controller.ingame.items.InventoryController;
 import de.uniks.beastopia.teaml.controller.ingame.items.ItemDetailController;
-import de.uniks.beastopia.teaml.rest.AbilityDto;
-import de.uniks.beastopia.teaml.rest.AbilityMove;
-import de.uniks.beastopia.teaml.rest.Event;
-import de.uniks.beastopia.teaml.rest.ItemTypeDto;
-import de.uniks.beastopia.teaml.rest.Monster;
-import de.uniks.beastopia.teaml.rest.Opponent;
-import de.uniks.beastopia.teaml.rest.Result;
-import de.uniks.beastopia.teaml.rest.Trainer;
+import de.uniks.beastopia.teaml.rest.*;
 import de.uniks.beastopia.teaml.service.DataCache;
 import de.uniks.beastopia.teaml.service.EncounterOpponentsService;
 import de.uniks.beastopia.teaml.service.PresetsService;
@@ -25,21 +18,12 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -186,8 +170,8 @@ public class EncounterController extends Controller {
     Parent allyMonsterInfo;
     Parent enemyMonsterInfo;
     Parent enemyAllyMonsterInfo;
-    Parent inventoryParent;
-    Parent itemDetailParent;
+    public Parent inventoryParent;
+    public Parent itemDetailParent;
 
     private float oldCoinNum;
     private AbilityDto ability1;
@@ -236,6 +220,8 @@ public class EncounterController extends Controller {
 
             // Add monster listener and opponent id for my monster
             addMonsterListener(true, false, false, false);
+
+            setMonsterOldStats();
         }
 
         if (allyTrainer != null) {
@@ -384,8 +370,15 @@ public class EncounterController extends Controller {
                                         }
                                         for (Result result : results) {
                                             switch (result.type()) {
-                                                case "ability-success" ->
-                                                        actionInfoText.appendText(prefix + monsterName + " used " + cache.getAbilities().computeIfAbsent(result.ability(), id -> presetsService.getAbility(id).blockingFirst()).name() + ". It was " + result.effectiveness() + ".\n");
+                                                case "ability-success" -> {
+                                                    if (monBallUsed) {
+                                                        setMonBallUsed(false);
+                                                        setCatchInfoBox(false);
+                                                        actionInfoText.appendText(getMonsterName(result.monster(), null) + " got out the ball!\n");
+                                                        return;
+                                                    }
+                                                    actionInfoText.appendText(prefix + monsterName + " used " + cache.getAbilities().computeIfAbsent(result.ability(), id -> presetsService.getAbility(id).blockingFirst()).name() + ". It was " + result.effectiveness() + ".\n");
+                                                }
                                                 case "ability-failed" ->
                                                         actionInfoText.appendText(prefix + monsterName + "'s attack failed due to status!\n");
                                                 case "ability-no-uses" ->
@@ -400,23 +393,19 @@ public class EncounterController extends Controller {
                                                         actionInfoText.appendText(getMonsterName(result.monster(), null) + " got status damage. It was " + result.effectiveness() + "!\n");
                                                 case "target-unknown" ->
                                                         actionInfoText.appendText(getMonsterName(result.monster(), null) + " missed the attack!\n");
-                                                case "item-success" -> {
-                                                    if (monBallUsed) {
-                                                        setMonBallUsed(false);
-                                                        setCatchInfoBox(false);
-                                                        actionInfoText.appendText(getMonsterName(result.monster(), null) + " got out the ball!\n");
-                                                        return;
-                                                    } else {
-                                                        actionInfoText.appendText(getMonsterName(result.monster(), null) + " successfully used an item!\n");
-                                                    }
+                                                case "monster-caught" -> {
+                                                    setCatchInfoBox(true);
+                                                    actionInfoText.appendText(getMonsterName(result.monster(), null) + " was caught!\n");
+                                                    return;
                                                 }
+                                                case "item-success" -> actionInfoText.appendText(getMonsterName(result.monster(), null) + " successfully used an item!\n");
                                                 case "item-failed" ->
                                                         actionInfoText.appendText(getMonsterName(result.monster(), null) + " used an item, but it failed!\n");
                                             }
                                             if (result.status() != null && !result.type().equals("status-removed") && !result.type().equals("status-damage")) {
                                                 actionInfoText.appendText(prefix + getMonsterName(result.monster(), null) + " is " + result.status() + "!\n");
                                             }
-                                            if (result.type().contains("item")) {
+                                            if (result.type().contains("item") && !cache.getPresetItems().get(result.item() - 1).name().contains("ball")) {
                                                 if (renderBeastController1.getOpponentIdMonsterOne() != null && renderBeastController1.getOpponentIdMonsterOne().equals(opponentId)) {
                                                     showItemAnimation(renderBeastController1, renderBeastController1.selectBox, result.item());
                                                 } else if (renderBeastController1.getOpponentIdMonsterTwo() != null && renderBeastController1.getOpponentIdMonsterTwo().equals(opponentId)) {
@@ -432,11 +421,7 @@ public class EncounterController extends Controller {
                                 }
                             } else if (o.suffix().equals("deleted")) {
                                 cache.removeOpponent(o.data()._id());
-                                if (monBallUsed && o.data().trainer().equals(wildTrainerId)) {
-                                    setMonBallUsed(false);
-                                    setCatchInfoBox(true);
-                                    caughtBeast.set(true);
-                                } else if (!monBallUsed && !caughtBeast.get()) {
+                                if (!monBallUsed) {
                                     if (o.data().trainer().equals(cache.getTrainer()._id()) && allyTrainer != null && !allyTrainer._id().equals(cache.getTrainer()._id())) {
                                         if (myMonster.currentAttributes().health() == 0) {
                                             boolean foundMonsterWithHP = false;
@@ -493,6 +478,16 @@ public class EncounterController extends Controller {
         );
 
         return parent;
+    }
+
+    private void setMonsterOldStats() {
+        oldLevel = myMonster.level();
+        oldHp = myMonster.attributes().health();
+        oldAttack = myMonster.attributes().attack();
+        oldDefense = myMonster.attributes().defense();
+        oldSpeed = myMonster.attributes().speed();
+        oldType = myMonster.type();
+        oldAbilities = myMonster.abilities();
     }
 
     private Monster getNewEnemyMonster(Event<Opponent> o, EnemyBeastInfoController enemyBeastInfoController1, Trainer enemyTrainer) {
@@ -863,13 +858,7 @@ public class EncounterController extends Controller {
                                 } else if (beastInfoController2 != null && e.monster().equals(beastInfoController2.getMonster()._id()) && allyMonster.currentAttributes().health() <= 0) {
                                     setAttackBoxesDisabled(true);
                                 }
-                                oldLevel = myMonster.level();
-                                oldHp = myMonster.attributes().health();
-                                oldAttack = myMonster.attributes().attack();
-                                oldDefense = myMonster.attributes().defense();
-                                oldSpeed = myMonster.attributes().speed();
-                                oldType = myMonster.type();
-                                oldAbilities = myMonster.abilities();
+                                setMonsterOldStats();
                             }
                             , error -> System.err.println("Error: " + error.getMessage())));
         } else {
@@ -1103,7 +1092,6 @@ public class EncounterController extends Controller {
             itemBox.getChildren().remove(inventoryParent);
         }
         InventoryController inventoryController = inventoryControllerProvider.get();
-        inventoryParent = inventoryController.render();
         inventoryController.setIfShop(false);
         inventoryController.setOnItemClicked(this::toggleInventoryItemDetails);
         inventoryController.setOnCloseRequest(() -> {
@@ -1112,6 +1100,7 @@ public class EncounterController extends Controller {
             anchorPane.toBack();
             anchorPane.setStyle("-fx-background-color: none;");
         });
+        inventoryParent = inventoryController.render();
         itemBox.getChildren().add(inventoryParent);
         anchorPane.toFront();
         anchorPane.setStyle("-fx-background-color: rgba(0,0,0,0.5);");
