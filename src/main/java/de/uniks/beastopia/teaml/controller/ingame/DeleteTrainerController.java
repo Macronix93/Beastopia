@@ -54,6 +54,8 @@ public class DeleteTrainerController extends Controller {
             return;
         }
 
+        cache.setTrainerItems(null);
+
         disposables.add(trainerService.deleteTrainer(cache.getJoinedRegion()._id(), cache.getTrainer()._id())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(tr -> {
