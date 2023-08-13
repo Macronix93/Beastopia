@@ -92,10 +92,10 @@ public class ScoreboardController extends Controller {
                         cache.addAchievementDescription("FiftyMonsters", resources.getString("achievementFiftyMonsters"));
                     case "AllMonsters" ->
                         cache.addAchievementDescription("AllMonsters", resources.getString("achievementAllMonsters"));
-                    case "FirstCoins" ->
-                        cache.addAchievementDescription("FirstCoins", resources.getString("achievementFirstCoins"));
-                    case "HundredCoins" ->
-                        cache.addAchievementDescription("HundredCoins", resources.getString("achievementHundredCoins"));
+                    case "firstCoins" ->
+                        cache.addAchievementDescription("firstCoins", resources.getString("achievementFirstCoins"));
+                    case "hundredCoins" ->
+                        cache.addAchievementDescription("hundredCoins", resources.getString("achievementHundredCoins"));
                     case "thousandCoins" ->
                         cache.addAchievementDescription("thousandCoins", resources.getString("achievementThousandCoins"));
                     case "hundredThousandCoins" ->
