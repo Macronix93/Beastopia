@@ -281,6 +281,9 @@ public class ItemDetailController extends Controller {
         } else if (!onlyInventory && !isShop) {
             ingameController.toggleInventoryItemDetails(itemType);
         }
+        if (onlyInventory) {
+            ingameController.toggleInventoryItemDetails(itemType);
+        }
         disposables.add(trainerItemsService.getItems(cache.getJoinedRegion()._id(), cache.getTrainer()._id())
                 .observeOn(FX_SCHEDULER).subscribe
                         (itemList -> {
