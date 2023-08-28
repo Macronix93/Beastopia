@@ -8,6 +8,10 @@ beast trainer ever! The world and its beasts are quite dangerous, but you are no
 create chat groups and group up with other players to explore the world of Beastopia!
 Beastopia is available for windows, linux and macOS.
 
+## Promotion Video
+
+[![Beastopia Promotion Video](/documents/Beastopia_promotion_final.mp4)](/documents/Beastopia_promotion_final.mp4)
+
 ## Installation
 
 Make sure you have at least Java version 17 installed.

@@ -1,0 +1,3 @@
+remember me failed (popup kam dirket nach dem öffnen der jar auch wenn man von sing up nach sing in wechselt)
+sign up (kann nur betreten werden wenn danach die Sprache geändert wird)
+mit freund chatten (chat wird nicht angezeigt)

@@ -1,0 +1,19 @@
+Festgelegte Features:
+- Avatare
+- Sprachen (Englisch / Deutsch)
+- Chats anpinnen
+- Chat Edit-Berechtigungen: Jeder seinen eigenen Text
+- Admin einer Gruppe mit Stern markieren
+- Name / Passwort bearbeiten
+
+Gedropte Features:
+- Chat-Farben
+
+Server-Feature-Request:
+- Avatare              (Rel 1)
+- Admin Stern          (Rel 1)
+- Sprachunterstützung  (Rel 3?)
+
+Technisches:
+- Chat Edit-Icons nur anzeigen wenn Maus drüber
+- Avatar-Bild beim Hochladen automatisch verkleinern

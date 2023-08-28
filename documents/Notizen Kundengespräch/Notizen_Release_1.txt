@@ -1,0 +1,14 @@
+- Chat edit icons nur anzeigen wenn man mit der maus hovert
+- Admin Stern feature request
+- Avatar feature request
+- Chat Farben weglassen
+- Pause schema lassen
+- Avatarbilder verkleinern automatisch
+- Sprache auswählen
+ - Sprachfeature Server mon-beschreibung
+
+Features:
+- Avatar
+- Sprachen
+- Chats pinnen
+- Name Passwort bearbeiten
