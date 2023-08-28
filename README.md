@@ -10,7 +10,7 @@ Beastopia is available for windows, linux and macOS.
 
 ## Promotion Video
 
-[![Beastopia Promotion Video](/documents/Beastopia_promotion_final_small.mp4)](/documents/Beastopia_promotion_final_small.mp4)
+[![Beastopia Promotion Video](/documents/Beastopia_promotion_final.gif)](/documents/Beastopia_promotion_final.gif)
 
 ## Installation
 
